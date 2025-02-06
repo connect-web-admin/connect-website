@@ -10,7 +10,7 @@ See the License for the specific language governing permissions and limitations 
 
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')
@@ -56,7 +56,7 @@ app.get(path + '/object' + hashKeyPath + '/:fiscal_year', async function (req, r
 	 * ConnecterDDBからコネクターの情報を取得 *
 	 *************************************/
 	const connecterId = req.params.connecter_id
-	const fiscalYear = Number(req.params.fiscal_year)
+	const fiscalYear = req.params.fiscal_year
 	let fetchedDataFromConnecterDDB = []
 	let fetchedDataFromMatchDDB = []
 
@@ -70,6 +70,7 @@ app.get(path + '/object' + hashKeyPath + '/:fiscal_year', async function (req, r
 	try {
 		const command = new GetCommand(input)
 		fetchedDataFromConnecterDDB = await ddbDocClient.send(command)
+		console.log(fetchedDataFromConnecterDDB)
 	} catch (err) {
 		res.statusCode = 500;
 		res.json({ error: 'Could not load items: ' + err.message })
@@ -88,7 +89,7 @@ app.get(path + '/object' + hashKeyPath + '/:fiscal_year', async function (req, r
 	 *********************************/
     const queryParams = {
         TableName: matchDDBTable,
-		IndexName: "getByFiscalYear",
+		IndexName: "gsiByFiscalYear",
 		KeyConditionExpression: "fiscal_year = :fiscal_year",
 		ExpressionAttributeValues: {
             ":fiscal_year": fiscalYear
@@ -124,8 +125,7 @@ app.get(path + '/object' + hashKeyPath + '/:fiscal_year', async function (req, r
 			}
 		}
 
-		res.statusCode = 200
-		res.json(matchInfoToReturn)
+		res.status(200).json(matchInfoToReturn)
     } catch (err) {
         res.statusCode = 500
         res.json({ error: 'Could not load items: ' + err.message })

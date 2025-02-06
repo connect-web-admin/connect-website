@@ -19,7 +19,7 @@
       "function": {
         "connecterLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/connecterLambda-5a495434646967585a61-build.zip"
+          "s3Key": "amplify-builds/connecterLambda-55745557427056677761-build.zip"
         },
         "matchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",

@@ -5,7 +5,8 @@ import { Authenticator } from "@aws-amplify/ui-vue"
 import { Hub } from 'aws-amplify/utils'
 import { CognitoUserPool } from "amazon-cognito-identity-js";
 import '@aws-amplify/ui-vue/styles.css';
-import { ID_TOKEN_FOR_AUTH, USER_ATTR_SUB } from '@/utils/constants'
+import { USER_POOL_ID, CLIENT_ID, CONNECTER, ID_TOKEN_FOR_AUTH, 
+        USER_ATTR_EMAIL, USER_ATTR_MEMBERSHIP_TYPE, USER_ATTR_SESSION_ID, USER_ATTR_SUB } from '@/utils/constants'
 import HeaderComp from './components/HeaderComp.vue'
 import FooterComp from './components/FooterComp.vue'
 import EventView from './views/EventView.vue'
@@ -13,15 +14,6 @@ import SelectLiveReportingMatchView from './views/connecter/SelectMatchToRegiste
 import { fetchAuthSession } from 'aws-amplify/auth'
 
 const router = useRouter()
-
-// CognitoのユーザープールIDおよびクライアントID
-const USER_POOL_ID = 'ap-northeast-1_nziYUPFda';
-const CLIENT_ID    = '2l2tg8i2d5ncdo8sdmdtu1o4hn';
-
-// Cognitoのユーザー情報から属性を取得・ローカルストレージに保存する際のキー名
-const USER_ATTR_EMAIL = 'email'
-const USER_ATTR_MEMBERSHIP_TYPE = 'custom:membership_type'
-const USER_ATTR_SESSION_ID = 'sid'
 
 // ユーザー単位のデータ
 const isAccountAvailable = ref(true)
@@ -101,10 +93,10 @@ onMounted(() => {
             // // ユーザー情報の詳細をDynamoDBから取得
             // fetchUserInfoFromDDB()
 
-            if (userAttrMembershipType.value === 'connecter') {
-                router.push({name: SELECT_MATCH_TO_REGISTER_RESULT})
+            if (userAttrMembershipType.value === CONNECTER) {
+                router.push('/select_match_to_register_result')
             } else {
-                router.push({name: EVENT_VIEW})
+                router.push('/event_view')
             }
         }
     });

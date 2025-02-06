@@ -27,7 +27,7 @@ const getMatchInfoToRegisterResult = async () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${ idTokenForAuth }`
             }
-        });
+        })
 
         const originalData = await response.json()
         console.log(originalData)
@@ -49,28 +49,6 @@ const searchChampionshipIdByMatchId = ( selectedMatchId ) => {
     })
     return a
 }
-
-// matchInfoでスターティングメンバー等が登録済みでないもの
-const matchInfoToRegisterPlayers = computed(() => {
-    let a = []
-    for(const match of matchInfo.value) {
-        if(!match['is_players_registered']) {
-            a.push(match)
-        }
-    }
-    return a
-})
-
-// matchInfoでスターティングメンバー等が登録済みであるもの
-const matchInfoToLiveReport = computed(() => {
-    let a = []
-    for(const match of matchInfo.value) {
-        if(match['is_players_registered']) {
-            a.push(match)
-        }
-    }
-    return a
-})
 
 // ページ表示前にConnecterDDBから試合情報抽出
 onBeforeMount(async () => {
