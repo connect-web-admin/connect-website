@@ -1,0 +1,22 @@
+{
+  "resourceName": "ClubDDB",
+  "tableName": "ClubDDB",
+  "partitionKey": {
+    "fieldName": "club_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "address",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "gsiByAddress",
+      "partitionKey": {
+        "fieldName": "address",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

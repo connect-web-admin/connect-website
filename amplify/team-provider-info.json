@@ -9,11 +9,42 @@
       "UnauthRoleName": "amplify-connectwebsite-dev-0c0f1-unauthRole",
       "StackName": "amplify-connectwebsite-dev-0c0f1",
       "StackId": "arn:aws:cloudformation:ap-northeast-1:390844777137:stack/amplify-connectwebsite-dev-0c0f1/5d539d40-e37e-11ef-81a8-0ed208b5edb5",
-      "AmplifyAppId": "d2qkd8224aaeu0"
+      "AmplifyAppId": "d2qkd8224aaeu0",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-connectwebsite-dev-0c0f1-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
         "connectwebsite1f393904": {}
+      },
+      "function": {
+        "connecterLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/connecterLambda-5a495434646967585a61-build.zip"
+        },
+        "matchLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/matchLambda-79426830366961354244-build.zip"
+        },
+        "topicsLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/topicsLambda-356461742b7042377245-build.zip"
+        },
+        "clubLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/clubLambda-65754f524b2b6d637375-build.zip"
+        }
+      },
+      "storage": {
+        "ConnecterDDB": {},
+        "MatchDDB": {},
+        "TopicsDDB": {},
+        "ClubDDB": {}
+      },
+      "api": {
+        "connecterApi": {},
+        "matchApi": {},
+        "topicsApi": {},
+        "clubApi": {}
       }
     }
   }

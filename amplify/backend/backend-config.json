@@ -1,4 +1,62 @@
 {
+  "api": {
+    "clubApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "clubLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "connecterApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "connecterLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "matchApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "matchLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "topicsApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "topicsLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
   "auth": {
     "connectwebsite1f393904": {
       "customAuth": false,
@@ -25,6 +83,168 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
+    }
+  },
+  "function": {
+    "clubLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "ClubDDB"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "connecterLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "ConnecterDDB"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "matchLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "MatchDDB"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "topicsLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "TopicsDDB"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_clubLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "clubLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_clubLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "clubLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_connecterLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "connecterLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_connecterLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "connecterLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_matchLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "matchLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_matchLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "matchLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_topicsLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "topicsLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_topicsLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "topicsLambda"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "ClubDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "ConnecterDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "MatchDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "TopicsDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
     }
   }
 }

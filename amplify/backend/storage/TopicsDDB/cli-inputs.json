@@ -1,0 +1,22 @@
+{
+  "resourceName": "TopicsDDB",
+  "tableName": "TopicsDDB",
+  "partitionKey": {
+    "fieldName": "category",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "fiscal_year",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "gsiByFiscalYear",
+      "partitionKey": {
+        "fieldName": "fiscal_year",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

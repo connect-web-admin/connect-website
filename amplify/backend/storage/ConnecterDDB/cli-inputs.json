@@ -1,0 +1,10 @@
+{
+  "resourceName": "ConnecterDDB",
+  "tableName": "ConnecterDDB",
+  "partitionKey": {
+    "fieldName": "connecter_id",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}
