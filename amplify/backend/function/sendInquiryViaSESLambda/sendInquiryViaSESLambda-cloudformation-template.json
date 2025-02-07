@@ -47,12 +47,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "sendInquiryLambda",
+            "sendInquiryViaSESLambda",
             {
               "Fn::Join": [
                 "",
                 [
-                  "sendInquiryLambda",
+                  "sendInquiryViaSESLambda",
                   "-",
                   {
                     "Ref": "env"
@@ -89,12 +89,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "connectwebsiteLambdaRole65ab78b7",
+            "connectwebsiteLambdaRole98cfb5cb",
             {
               "Fn::Join": [
                 "",
                 [
-                  "connectwebsiteLambdaRole65ab78b7",
+                  "connectwebsiteLambdaRole98cfb5cb",
                   "-",
                   {
                     "Ref": "env"

@@ -49,6 +49,7 @@ export const CLUB_API_URL = "https://tpkjy2xfx1.execute-api.ap-northeast-1.amazo
 export const CONNECTER_API_URL = "https://x9etjju7dd.execute-api.ap-northeast-1.amazonaws.com/prod/items"
 export const MATCH_API_URL = "https://dvk11mi4fh.execute-api.ap-northeast-1.amazonaws.com/prod/items"
 export const TOPICS_API_URL = "https://hcr41st75h.execute-api.ap-northeast-1.amazonaws.com/prod/items"
+export const INQUIRY_API_URL = "https://ihdezl8qwe.execute-api.ap-northeast-1.amazonaws.com/prod/items"
 
 // ローカルストレージでgetItem, setItemをするときのキー
 // 主にDynamoDBからデータを取得する際に使われるRequestBodyとなることが多い

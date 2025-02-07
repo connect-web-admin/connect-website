@@ -15,7 +15,7 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
-    "sendInquiryApi": {
+    "sendInquiryViaSESApi": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"
@@ -59,7 +59,7 @@ export type AmplifyDependentResourcesAttributes = {
       "Name": "string",
       "Region": "string"
     },
-    "sendInquiryLambda": {
+    "sendInquiryViaSESLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

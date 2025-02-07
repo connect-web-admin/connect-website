@@ -305,31 +305,29 @@ const submitScores = async () => {
         scoreData: payload
     } 
 
-    console.log(requestBody)
+    try {
+        // 試合情報取得
+        const response = await fetch(url, { 
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ idTokenForAuth }`
+            },
+            body: JSON.stringify(requestBody)
+        })
 
-    // try {
-    //     // 試合情報取得
-    //     const response = await fetch(url, { 
-    //         method: 'PUT',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': `Bearer ${ idTokenForAuth }`
-    //         },
-    //         body: JSON.stringify(requestBody)
-    //     })
-
-    //     if (response.ok) {
-    //         // 
-    //         alert('OK')
-    //     } else {
-    //         alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
-    //     }
-    // } catch(error) {
-    //     alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
-    //     console.error('得点の登録に失敗しました。')
-    // } finally {
-    //     isProceeding.value = false
-    // }
+        if (response.ok) {
+            // 
+            alert('OK')
+        } else {
+            alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
+        }
+    } catch(error) {
+        alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
+        console.error('得点の登録に失敗しました。')
+    } finally {
+        isProceeding.value = false
+    }
 }
 
 // ページ遷移したら速報対象試合の情報を取得

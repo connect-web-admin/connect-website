@@ -23,7 +23,7 @@
     "clubApi": {
       "Type": "String"
     },
-    "sendInquiryApi": {
+    "sendInquiryViaSESApi": {
       "Type": "String"
     }
   },
@@ -1024,7 +1024,7 @@
                       },
                       ":",
                       {
-                        "Ref": "sendInquiryApi"
+                        "Ref": "sendInquiryViaSESApi"
                       },
                       "/",
                       {
@@ -1054,7 +1054,7 @@
                       },
                       ":",
                       {
-                        "Ref": "sendInquiryApi"
+                        "Ref": "sendInquiryViaSESApi"
                       },
                       "/",
                       {
@@ -1084,7 +1084,7 @@
                       },
                       ":",
                       {
-                        "Ref": "sendInquiryApi"
+                        "Ref": "sendInquiryViaSESApi"
                       },
                       "/",
                       {
@@ -1114,7 +1114,7 @@
                       },
                       ":",
                       {
-                        "Ref": "sendInquiryApi"
+                        "Ref": "sendInquiryViaSESApi"
                       },
                       "/",
                       {
@@ -1144,7 +1144,7 @@
                       },
                       ":",
                       {
-                        "Ref": "sendInquiryApi"
+                        "Ref": "sendInquiryViaSESApi"
                       },
                       "/",
                       {
@@ -1174,7 +1174,7 @@
                       },
                       ":",
                       {
-                        "Ref": "sendInquiryApi"
+                        "Ref": "sendInquiryViaSESApi"
                       },
                       "/",
                       {
@@ -1204,7 +1204,7 @@
                       },
                       ":",
                       {
-                        "Ref": "sendInquiryApi"
+                        "Ref": "sendInquiryViaSESApi"
                       },
                       "/",
                       {
@@ -1234,7 +1234,7 @@
                       },
                       ":",
                       {
-                        "Ref": "sendInquiryApi"
+                        "Ref": "sendInquiryViaSESApi"
                       },
                       "/",
                       {

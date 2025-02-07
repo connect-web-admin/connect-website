@@ -42,7 +42,7 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
-    "sendInquiryApi": {
+    "sendInquiryViaSESApi": {
       "dependsOn": [
         {
           "attributes": [
@@ -50,7 +50,7 @@
             "Arn"
           ],
           "category": "function",
-          "resourceName": "sendInquiryLambda"
+          "resourceName": "sendInquiryViaSESLambda"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -157,7 +157,7 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "sendInquiryLambda": {
+    "sendInquiryViaSESLambda": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
@@ -231,19 +231,19 @@
         }
       ]
     },
-    "AMPLIFY_function_sendInquiryLambda_deploymentBucketName": {
+    "AMPLIFY_function_sendInquiryViaSESLambda_deploymentBucketName": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "sendInquiryLambda"
+          "resourceName": "sendInquiryViaSESLambda"
         }
       ]
     },
-    "AMPLIFY_function_sendInquiryLambda_s3Key": {
+    "AMPLIFY_function_sendInquiryViaSESLambda_s3Key": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "sendInquiryLambda"
+          "resourceName": "sendInquiryViaSESLambda"
         }
       ]
     },
