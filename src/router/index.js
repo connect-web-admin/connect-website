@@ -7,6 +7,7 @@ import LatestResultsView from '@/views/LatestResultsView.vue'
 import TopicsView from '@/views/TopicsView.vue'
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue'
 import SelectMatchToRegisterResultView from '@/views/connecter/SelectMatchToRegisterResultView.vue'
+import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +20,12 @@ const router = createRouter({
 
 
 		// コネクター用のルーティング
+		{
+			path:'/connecter_home',
+			name: 'CONNECTER_HOME',
+			component: ConnecterHomeView
+		},
+
 		{
 			path: '/select_match_to_register_result',
 			name: 'SELECT_MATCH_TO_REGISTER_RESULT',

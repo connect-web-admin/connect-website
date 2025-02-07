@@ -1,51 +1,51 @@
 <script setup>
-// import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 
-// const props = defineProps({
-//     user: Object,
-//     signOut: Function,
-//     isAccountAvailable: Boolean
-// })
+const props = defineProps({
+    user: Object,
+    signOut: Function,
+    isAccountAvailable: Boolean
+})
 
-// // ハンバーガーメニュー、アコーディオンメニューの表示・非表示
-// const isActive = ref(false)
-// const isMenuOpen = ref(false)
-// const isResultReportMenuOpen = ref(false)
-// const isPicVidMenuOpen = ref(false)
-// const hideBanner = ref(false);
+// ハンバーガーメニュー、アコーディオンメニューの表示・非表示
+const isActive = ref(false)
+const isMenuOpen = ref(false)
+const isResultReportMenuOpen = ref(false)
+const isPicVidMenuOpen = ref(false)
+const hideBanner = ref(false);
 
-// // ハンバーガーメニュー、アコーディオンメニューの表示・非表示
-// const toggleMenu = () => {
-//     isActive.value = !isActive.value
-//     isMenuOpen.value = !isMenuOpen.value
-// }
-// const toggleResultReportMenuOpen = () => {
-//     isResultReportMenuOpen.value = !isResultReportMenuOpen.value
-// }
-// const togglePicVidMenuOpen = () => {
-//     isPicVidMenuOpen.value = !isPicVidMenuOpen.value
-// }
+// ハンバーガーメニュー、アコーディオンメニューの表示・非表示
+const toggleMenu = () => {
+    isActive.value = !isActive.value
+    isMenuOpen.value = !isMenuOpen.value
+}
+const toggleResultReportMenuOpen = () => {
+    isResultReportMenuOpen.value = !isResultReportMenuOpen.value
+}
+const togglePicVidMenuOpen = () => {
+    isPicVidMenuOpen.value = !isPicVidMenuOpen.value
+}
 
-// const handleScroll = () => {
-//     // スクロール位置を取得
-//     const scrollTop = window.scrollY;
+const handleScroll = () => {
+    // スクロール位置を取得
+    const scrollTop = window.scrollY;
 
-//     // 特定のスクロール位置でブロックを非表示にする
-//     hideBanner.value = scrollTop > 35; // 35pxを閾値として設定
-// }
+    // 特定のスクロール位置でブロックを非表示にする
+    hideBanner.value = scrollTop > 35; // 35pxを閾値として設定
+}
 
-// onMounted(() => {
-//     window.addEventListener('scroll', handleScroll);
-// })
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+})
 
-// onUnmounted(() => {
-//     window.removeEventListener('scroll', handleScroll);
-// })
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+})
 </script>
 
 <template>
-<!-- <div class="header-wrapper">
+<div class="header-wrapper">
     <div class="top-contents">
         <div class="account-info-container">
             <img src="../assets/icons/icon_account.png" />
@@ -166,11 +166,11 @@
             <li class="menu-item"><span class="active-red-line">メディア</span></li>
         </ul>
     </div>
-</div> -->
+</div>
 </template>
 
 <style scoped>
-/* @media screen and (max-width: 500px) {
+@media screen and (max-width: 500px) {
     .header-wrapper {
         width: 100%;
         background: linear-gradient(#F5FCFF 50%, #7FCDEC);
@@ -187,12 +187,12 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: flex-end;
-    } */
+    }
 
     /* --------------
     ハンバーガーメニュー
     ---------------*/
-    /* .hamburger-menu-container {
+    .hamburger-menu-container {
         width: 35px;
         height: 33px;
     }
@@ -247,12 +247,12 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-    } */
+    }
 
     /* ---------------------------------
     ハンバーガーメニューで開閉されるナビメニュー
     --------------------------------- */
-    /* .nav-menu {
+    .nav-menu {
         position: absolute;
         top: 100px;
         left: 0;
@@ -272,10 +272,10 @@
         box-shadow: 0px 3px 5px 0px rgba(138,138,138,0.75);
         -webkit-box-shadow: 0px 3px 5px 0px rgba(138,138,138,0.75);
         -moz-box-shadow: 0px 3px 5px 0px rgba(138,138,138,0.75);
-    } */
+    }
 
     /* ナビメニューの結果速報と写真・動画の表記と▲▼を両端に配置 */
-    /* .align-both-ends {
+    .align-both-ends {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -283,12 +283,12 @@
 
     .sub-item {
         text-align: right;
-    } */
+    }
 
     /* ----------------------------------------
     ナビメニューのX, facebook, YouTubeのSNSアイコン
     ---------------------------------------- */
-    /* .sns-icons-container {
+    .sns-icons-container {
         margin: 3.2em auto 2em;
     }
 
@@ -302,20 +302,20 @@
 
     .sns-icons-inner img:nth-child(2) {
         margin: 0 1.2em;
-    } */
+    }
 
     /* ナビメニューの会社概要とプライバシーポリシー */
-    /* .nav-menu-aside {
+    .nav-menu-aside {
         font-size: 0.5em;
         margin-bottom: 2em;
         text-align: center;
         letter-spacing: 0.4em;
-    } */
+    }
 
     /* ------------
     会員情報へのリンク
     ------------ */
-    /* .account-info-container {
+    .account-info-container {
         width: 40px;
         height: 40px;
         display: flex;
@@ -325,17 +325,17 @@
 
     .account-info-container span {
         font-size: 0.6em;
-    } */
+    }
 
     /* ---------
     協賛バナー広告
     --------- */
-    /* .banner-wrapper {
+    .banner-wrapper {
         margin: 0 30px;
-    } */
+    }
 
     /* 協賛とリンクの文言のデザイン */
-    /* .banner-index-partners, .banner-index-links {
+    .banner-index-partners, .banner-index-links {
         color: #FFF;
         font-size: 8px;
         background-color: #000;
@@ -353,10 +353,10 @@
 
     .banner-index-links {
         height: 66px;
-    } */
+    }
 
     /* 文言とバナー群を横並べ */
-    /* .banner-container-partners, .banner-container-links {
+    .banner-container-partners, .banner-container-links {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -424,14 +424,14 @@
         max-width: 171px;
         width: 45%;
         height: auto;
-    } */
+    }
 
     /* ------------------
     ヘッダー下部のメニューバー
     ------------------ */
-    /* .menu-wrapper {
+    .menu-wrapper {
         width: 100%;
-        margin-top: 15px;
+        margin-top: 10px;
         display: flex;
         flex-direction: row;
         overflow: hidden;
@@ -455,6 +455,6 @@
         color: #ff0000;
         padding-bottom: 3px;
         border-bottom: 2px solid #ff0000;
-    } */
-/* } */
+    }
+}
 </style>

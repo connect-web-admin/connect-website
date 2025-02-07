@@ -1,5 +1,31 @@
-// 年度切り替え。通常、4月始まり3月終わり
-export const THIS_FISCAL_YEAR = "2024"
+/**
+ * ▼▼▼▼▼　年度切替時に新しくするデータ　ここから　▼▼▼▼▼
+ */
+export const THIS_FISCAL_YEAR = "2024" // 年度切り替え。通常、4月始まり3月終わり
+export const CHAMPIONSHIP_NAMES = [ // 各ページで大会名を使って表示を切り替えることがあるので、まとめておく。
+    {
+        fiscalYear: "2025",
+        highSchool: ["第6回野鳥杯", "第11回高校生大会"],
+        middleSchool: ["第6回野犬杯", "第11回中学生大会"],
+        elementaryShool: ["第6回野良猫杯", "第11回小学生大会"],
+        woman: ["第6回野外杯", "第11回女子大会"]
+    },
+
+    {
+        fiscalYear: "2024",
+        highSchool: ["第5回野鳥杯", "第10回高校生大会"],
+        middleSchool: ["第5回野犬杯", "第10回中学生大会"],
+        elementaryShool: ["第5回野良猫杯", "第10回小学生大会"],
+        woman: ["第5回野外杯", "第10回女子大会"]
+    }
+]
+// export const CHAMPIONSHIP_NAMES_FOR_HIGH_SCHOOL = ["第5回野鳥杯", "第10回高校生大会"] // 高校生向け大会一覧
+// export const CHAMPIONSHIP_NAMES_FOR_MIDDLE_SCHOOL = ["第5回野鳥杯", "第10回高校生大会"] // 中学生向け大会一覧
+// export const CHAMPIONSHIP_NAMES_FOR_ELEMENTARY_SCHOOL = ["第5回野鳥杯", "第10回高校生大会"] // 小学生向け大会一覧
+// export const CHAMPIONSHIP_NAMES_FOR_WOMAN = ["第5回野鳥杯", "第10回高校生大会"]
+/**
+ * ▲▲▲▲▲　年度切替時に新しくするデータ　ここまで　▲▲▲▲▲
+ */
 
 
 // CognitoのユーザープールIDおよびクライアントID
@@ -28,6 +54,10 @@ export const TOPICS_API_URL = "https://hcr41st75h.execute-api.ap-northeast-1.ama
 // 主にDynamoDBからデータを取得する際に使われるRequestBodyとなることが多い
 export const CHAMPIONSHIP_ID = "championshipId"
 export const MATCH_ID = "matchId"
+
+
+
+
 
 // 主にDynamoDBから取得したデータをさらに細かくチームごとの変数に振り分けるために使われる
 export const HOME_CLUB = "home_club"
