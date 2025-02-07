@@ -8,6 +8,7 @@ import TopicsView from '@/views/TopicsView.vue'
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue'
 import SelectMatchToRegisterResultView from '@/views/connecter/SelectMatchToRegisterResultView.vue'
 import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
+import ContactView from '@/views/ContactView.vue'
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,6 +18,13 @@ const router = createRouter({
 			name: 'HOME',
 			component: App,
 		},
+
+		{
+			path:'/contact',
+			name: 'CONTACT',
+			component: ContactView
+		},
+
 
 
 		// コネクター用のルーティング

@@ -282,7 +282,7 @@ const failedFetchingMsg = ref('')
 const dateTpFormat = new Date();
 const today = dateTpFormat.getFullYear() + '-' + String(dateTpFormat.getMonth() + 1).padStart(2, '0') + '-' + String(dateTpFormat.getDate()).padStart(2, '0');
 
-const scores = Array.from({ length: 20 }, (_, i) => i + 1);
+const scores = Array.from({ length: 21 }, (_, i) => i);
 
 const submitScores = async () => {
     const payload = matchInfo.value.map(item => ({
@@ -291,8 +291,8 @@ const submitScores = async () => {
         homeClubFinalScore: item.match.home_club_final_score,
         awayClubFinalScore: item.match.away_club_final_score,
         hasPenaltyShootout: item.match.has_penalty_shootout,
-        homeClubPenaltyShootoutScore: item.match.has_penalty_shootout ? item.match.home_club_penalty_shootout_score : 0,
-        awayClubPenaltyShootoutScore: item.match.has_penalty_shootout ? item.match.away_club_penalty_shootout_score : 0
+        homeClubPenaltyShootoutScore: item.match.has_penalty_shootout ? item.match.home_club_penalty_shootout_score : -1,
+        awayClubPenaltyShootoutScore: item.match.has_penalty_shootout ? item.match.away_club_penalty_shootout_score : -1
     }))
     
     // API URLの組み立て
@@ -304,29 +304,32 @@ const submitScores = async () => {
         championshipId: championshipId,
         scoreData: payload
     } 
-    try {
-        // 試合情報取得
-        const response = await fetch(url, { 
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ idTokenForAuth }`
-            },
-            body: JSON.stringify(requestBody)
-        })
 
-        if (response.ok) {
-            // 
-            alert('OK')
-        } else {
-            alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
-        }
-    } catch(error) {
-        alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
-        console.error('得点の登録に失敗しました。')
-    } finally {
-        isProceeding.value = false
-    }
+    console.log(requestBody)
+
+    // try {
+    //     // 試合情報取得
+    //     const response = await fetch(url, { 
+    //         method: 'PUT',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Bearer ${ idTokenForAuth }`
+    //         },
+    //         body: JSON.stringify(requestBody)
+    //     })
+
+    //     if (response.ok) {
+    //         // 
+    //         alert('OK')
+    //     } else {
+    //         alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
+    //     }
+    // } catch(error) {
+    //     alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
+    //     console.error('得点の登録に失敗しました。')
+    // } finally {
+    //     isProceeding.value = false
+    // }
 }
 
 // ページ遷移したら速報対象試合の情報を取得
@@ -412,6 +415,7 @@ onBeforeMount(async () => {
                                 </p>
                                 <div class="score-container">
                                     <select v-model="item.match.home_club_final_score">
+                                        <option value="" disabled selected>選択</option>
                                         <option v-for="score in scores" :key="score" :value="score">
                                             {{ score }}
                                         </option>
@@ -424,6 +428,7 @@ onBeforeMount(async () => {
                                 </p>
                                 <div class="score-container">
                                     <select v-model="item.match.away_club_final_score">
+                                        <option value="" disabled selected>選択</option>
                                         <option v-for="score in scores" :key="score" :value="score">
                                             {{ score }}
                                         </option>
@@ -441,6 +446,7 @@ onBeforeMount(async () => {
                                     </p>
                                     <div class="score-container">
                                         <select v-model="item.match.home_club_penalty_shootout_score">
+                                            <option value="" disabled selected>選択</option>
                                             <option v-for="score in scores" :key="score" :value="score">
                                                 {{ score }}
                                             </option>
@@ -453,6 +459,7 @@ onBeforeMount(async () => {
                                     </p>
                                     <div class="score-container">
                                         <select v-model="item.match.away_club_penalty_shootout_score">
+                                            <option value="" disabled selected>選択</option>
                                             <option v-for="score in scores" :key="score" :value="score">
                                                 {{ score }}
                                             </option>

@@ -6,4 +6,10 @@
 </div>
 </template>
 <style scoped>
+.contents-wrapper button {
+    display: block;
+    width: 150px;
+    margin: 10em auto;
+    padding: 1em;
+}
 </style>
