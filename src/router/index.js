@@ -9,6 +9,8 @@ import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.v
 import SelectMatchToRegisterResultView from '@/views/connecter/SelectMatchToRegisterResultView.vue'
 import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
 import ContactView from '@/views/ContactView.vue'
+import AuthenticatedContentsView from '@/views/AuthenticatedContentsView.vue'
+import UnauthorizedMessageView from '@/views/UnauthorizedMessageView.vue'
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +25,18 @@ const router = createRouter({
 			path:'/contact',
 			name: 'CONTACT',
 			component: ContactView
+		},
+
+		{
+			path: '/authenticated-contents',
+			name: 'AUTHENTICATED_CONTENTS',
+			component: AuthenticatedContentsView,
+		},
+
+		{
+			path: '/unauthorized-message',
+			name: 'UNAUTHORIZED_MESSAGE',
+			component: UnauthorizedMessageView,
 		},
 
 

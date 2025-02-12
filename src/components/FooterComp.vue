@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<!-- <div class="footer-wrapper">
+<div class="footer-wrapper">
     <div class="live-report-icon-container">
         <img src="../assets/icons/icon_live_report.png" />
     </div>
@@ -33,11 +33,10 @@
             </div>
         </div>
     </div>
-</div> -->
+</div>
 </template>
 
 <style scoped>
-/* 
 @media screen and (max-width: 500px) {
     .footer-wrapper {
         height: 89px;
@@ -94,7 +93,7 @@
     }
 
     /* コンタクトの手紙アイコンだけ浮いて見えるので余白を増やして調整 */
-    /* .menus-on-right .each-icon-container:first-child {
+    .menus-on-right .each-icon-container:first-child {
         padding-top: 4px;
     }
 
@@ -114,5 +113,6 @@
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-    } */
+    } 
+}
 </style>

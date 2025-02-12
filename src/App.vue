@@ -1,8 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
-import { Authenticator } from "@aws-amplify/ui-vue"
+import { Authenticator, useAuthenticator } from "@aws-amplify/ui-vue"
 import { Hub } from 'aws-amplify/utils'
+import { fetchAuthSession } from 'aws-amplify/auth'
 import { CognitoUserPool } from "amazon-cognito-identity-js";
 import '@aws-amplify/ui-vue/styles.css';
 import { USER_POOL_ID, CLIENT_ID, CONNECTER, ID_TOKEN_FOR_AUTH, 
@@ -11,8 +12,9 @@ import HeaderComp from './components/HeaderComp.vue'
 import FooterComp from './components/FooterComp.vue'
 import EventView from './views/EventView.vue'
 import SelectLiveReportingMatchView from './views/connecter/SelectMatchToRegisterResultView.vue'
-import { fetchAuthSession } from 'aws-amplify/auth'
 
+
+const authState = useAuthenticator()
 const router = useRouter()
 
 // ユーザー単位のデータ
@@ -81,10 +83,11 @@ onMounted(() => {
             // 前回ログアウトボタンを押さなかった場合はローカルストレージに
             // セッションIDとメールアドレスが残っているので、それらを削除
             if (localStorage.getItem(USER_ATTR_SESSION_ID) !== null) {
-                localStorage.removeItem(USER_ATTR_SESSION_ID);
+                localStorage.removeItem(USER_ATTR_SESSION_ID)
             }
+
             if (localStorage.getItem(USER_ATTR_EMAIL) !== null) {
-                localStorage.removeItem(USER_ATTR_EMAIL);
+                localStorage.removeItem(USER_ATTR_EMAIL)
             }
 
             // ユーザー情報をCognitoから取得
@@ -99,46 +102,39 @@ onMounted(() => {
                 router.push('/event_view')
             }
         }
-    });
+    })
 })
 </script>
 
 <template>
-<authenticator :hide-sign-up="true" :login-mechanisms="['email']">
-    <template v-slot:sign-in-header>
-        <p class="sign-in-header-title">
-            あああ
-        </p>
-    </template>
-    
-    <template v-slot="{ user, signOut }">
-        <div v-if="isAccountAvailable">
-            <header>
-                <HeaderComp 
-                    :user="user"
-                    :signOut="signOut"
-                />
-            </header>
-            <main>
-                <RouterView />
-            </main>
-            <!-- <footer>
-                <FooterComp />
-            </footer> -->
-        </div>
-        <div v-else>
-            あんあべいらぼー
-            <!-- <AccountUnavailable :signOut="signOut" /> -->
-        </div>
-    </template>
+<div class="app-wrapper">
+    <header class="header">
+        <HeaderComp 
+            :user="authState.user"
+            :signOut="authState.signOut"
+        />
+    </header>        
 
-    <!-- <template v-slot:footer>
-        <div v-if="onMaintenanceNotice">
-            <MaintenanceNotice />
-        </div>
+    <main class="main">
+        <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
+            <template v-slot="{ user }">
+                <!-- This content only shows for logged-in users -->
+                <RouterView />
+            </template>
+
+            <template v-slot:unauthenticated>
+                <div class="login-container">
+                    <h2>Please Log In</h2>
+                    <!-- Amplify's built-in sign-in form will appear here -->
+                </div>
+            </template>
+        </Authenticator>
+    </main>
+        
+    <footer class="footer">
         <FooterComp />
-    </template> -->
-</authenticator>
+    </footer>
+</div>
 </template>
 
 <style scoped>

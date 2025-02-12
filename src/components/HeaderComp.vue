@@ -3,8 +3,14 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 
 const props = defineProps({
-    user: Object,
-    signOut: Function,
+    user: {
+        type: Object,
+        default: null
+    },
+    signOut: {
+        type: Function,
+        default: () => {}
+    },
     isAccountAvailable: Boolean
 })
 
@@ -120,6 +126,15 @@ onUnmounted(() => {
             </div>
             <aside class="nav-menu-aside">会社概要</aside>
             <aside class="nav-menu-aside">プライバシーポリシー</aside>
+            <div class="auth-buttons">
+                <template v-if="user">
+                    <button @click="signOut" class="auth-btn logout-btn">Log Out</button>
+                </template>
+                <template v-else>
+                    <button @click="$router.push('/login')" class="auth-btn login-btn">Log In</button>
+                    <button @click="$router.push('/signup')" class="auth-btn signup-btn">Sign Up</button>
+                </template>
+            </div>
         </nav>
     </div>
 
@@ -456,5 +471,38 @@ onUnmounted(() => {
         padding-bottom: 3px;
         border-bottom: 2px solid #ff0000;
     }
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.auth-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+}
+
+.login-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.signup-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.logout-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.auth-btn:hover {
+    opacity: 0.9;
 }
 </style>
