@@ -1,79 +1,50 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { RouterLink, RouterView, useRouter } from 'vue-router'
-import { Authenticator, useAuthenticator } from "@aws-amplify/ui-vue"
-import { Hub } from 'aws-amplify/utils'
-import { fetchAuthSession } from 'aws-amplify/auth'
-import { CognitoUserPool } from "amazon-cognito-identity-js";
+// vue及びvue-routerのインポート
+import { ref, onMounted } from 'vue';
+import { RouterView, useRouter } from 'vue-router';
+// aws-amplifyのインポート
+import { Authenticator, useAuthenticator } from "@aws-amplify/ui-vue";
 import '@aws-amplify/ui-vue/styles.css';
-import { USER_POOL_ID, CLIENT_ID, CONNECTER, ID_TOKEN_FOR_AUTH, 
-        USER_ATTR_EMAIL, USER_ATTR_MEMBERSHIP_TYPE, USER_ATTR_SESSION_ID, USER_ATTR_SUB } from '@/utils/constants'
-import HeaderComp from './components/HeaderComp.vue'
-import FooterComp from './components/FooterComp.vue'
-import EventView from './views/EventView.vue'
-import SelectLiveReportingMatchView from './views/connecter/SelectMatchToRegisterResultView.vue'
-import PreparationView from './views/PreparationView.vue'
+import { Hub } from 'aws-amplify/utils';
+import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
+// 自作コンポーネントのインポート
+import { CONNECTER, ID_TOKEN_FOR_AUTH, USER_ATTR_EMAIL, USER_ATTR_MEMBERSHIP_TYPE, USER_ATTR_SESSION_ID, USER_ATTR_SUB } from '@/utils/constants';
+import HeaderComp from './components/HeaderComp.vue'; 
+import FooterComp from './components/FooterComp.vue';
+import PreparationView from './views/PreparationView.vue';
 
-const isPreparation = ref(false)
+// 一般公開までの準備中ページを表示するためのフラグ
+const isPreparation = ref(false);
 
-const authState = useAuthenticator()
-const router = useRouter()
+// 認証状態を管理するオブジェクト   
+const authState = useAuthenticator();
+
+// ルーティングを管理するオブジェクト
+const router = useRouter();
 
 // ユーザー単位のデータ
-const isAccountAvailable = ref(true)
-const userAttrEmail = ref('')
-const userAttrMembershipType = ref('')
-const cognitoUserSub = ref('')
-const idTokenForAuth = ref([])
+const isAccountAvailable = ref(true);
+const userAttrMembershipType = ref('');
 
+// Cognitoからユーザー情報を取得し、ローカルストレージにセット
 const fetchUserInfoFromCognito = async () => {
     try {
-        const userPool = new CognitoUserPool({
-            UserPoolId: USER_POOL_ID,
-            ClientId: CLIENT_ID,
-        })
-        
-        const cognitoUser = userPool.getCurrentUser()
+        // 現在のユーザーと属性を取得
+        const attributes = await fetchUserAttributes();
 
-        if (cognitoUser === null) {
-            console.error("ログイン状態のユーザーが存在しません。")
-            return
-        }
+        // ユーザー属性を取得・ローカルストレージにセット
+        localStorage.setItem(USER_ATTR_EMAIL, attributes[USER_ATTR_EMAIL]);
+        localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, attributes[USER_ATTR_MEMBERSHIP_TYPE]);
 
-        await new Promise((resolve, reject) => {
-            cognitoUser.getSession((err, session) => {
-                if(err) {
-                    reject(err)
-                } else {
-                    resolve(session)
-                }
-            })
-        })
+        // ログイン後にユーザーの種別によりルーティングを変更するために格納
+        userAttrMembershipType.value = attributes[USER_ATTR_MEMBERSHIP_TYPE];
 
-        const attributes = await new Promise((resolve, reject) => {
-            cognitoUser.getUserAttributes((err, attributes) => {
-                if(err) {
-                    reject(err);
-                } else {
-                    resolve(attributes);
-                }
-            })
-        })
-
-        // データセット
-        userAttrEmail.value = attributes.find(attr => attr.Name === USER_ATTR_EMAIL).Value
-        userAttrMembershipType.value = attributes.find(attr => attr.Name === USER_ATTR_MEMBERSHIP_TYPE).Value
-        localStorage.setItem(USER_ATTR_EMAIL, userAttrEmail.value)
-        localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, userAttrMembershipType.value)
-
-        // API呼び出し（ユーザー情報取得及び動画情報取得）の認可のためのトークンを準備
-        const authSession = await fetchAuthSession()
-        idTokenForAuth.value = authSession['tokens'].idToken
-        cognitoUserSub.value = authSession['tokens'].idToken.payload.sub
-        localStorage.setItem(USER_ATTR_SUB, cognitoUserSub.value)
-        localStorage.setItem(ID_TOKEN_FOR_AUTH, idTokenForAuth.value)
+        // API認可用のトークンを取得・ローカルストレージにセット
+        const authSession = await fetchAuthSession();
+        localStorage.setItem(USER_ATTR_SUB, authSession.tokens.idToken);
+        localStorage.setItem(ID_TOKEN_FOR_AUTH, authSession.tokens.idToken.payload.sub);
     } catch (error) {
-        console.error('Cognitoユーザー情報の取得に失敗しました。', error)
+        console.error('Cognitoユーザー情報の取得に失敗しました。', error);
     }
 }
 
@@ -82,26 +53,16 @@ onMounted(() => {
     Hub.listen('auth', async (data) => {
         const { event } = data.payload;
         if (event === 'signedIn') {
-            // 前回ログアウトボタンを押さなかった場合はローカルストレージに
-            // セッションIDとメールアドレスが残っているので、それらを削除
-            if (localStorage.getItem(USER_ATTR_SESSION_ID) !== null) {
-                localStorage.removeItem(USER_ATTR_SESSION_ID)
-            }
-
-            if (localStorage.getItem(USER_ATTR_EMAIL) !== null) {
-                localStorage.removeItem(USER_ATTR_EMAIL)
-            }
-
             // ユーザー情報をCognitoから取得
-            await fetchUserInfoFromCognito()
+            await fetchUserInfoFromCognito();
 
             // // ユーザー情報の詳細をDynamoDBから取得
             // fetchUserInfoFromDDB()
 
             if (userAttrMembershipType.value === CONNECTER) {
-                router.push('/connecte/home')
+                router.push('/connecter/home');
             } else {
-                router.push('/event_view')
+                router.push('/event_view');
             }
         }
     })
@@ -113,12 +74,12 @@ onMounted(() => {
     <PreparationView />
 </div>
 <div v-else class="min-h-screen flex flex-col">
-    <!-- <header class="sticky top-0 z-50 bg-white">
+    <header class="sticky top-0 z-50 bg-white">
         <HeaderComp 
             :user="authState.user"
             :signOut="authState.signOut"
         />
-    </header>         -->
+    </header>        
 
     <main class="flex-1">
         <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
@@ -140,6 +101,4 @@ onMounted(() => {
 </div>
 </template>
 
-<style scoped>
-/* You can remove all the styles since we're using Tailwind classes */
-</style>
+<style scoped></style>

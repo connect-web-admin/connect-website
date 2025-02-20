@@ -10,7 +10,6 @@ import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
 import ContactView from '@/views/ContactView.vue'
 import AuthenticatedContentsView from '@/views/AuthenticatedContentsView.vue'
 import UnauthorizedMessageView from '@/views/UnauthorizedMessageView.vue'
-import PreparationView from '@/views/PreparationView.vue'
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,12 +18,6 @@ const router = createRouter({
 			path: '/',
 			name: 'Home',
 			component: App,
-		},
-
-		{
-			path: '/preparation',
-			name: 'Preparation',
-			component: PreparationView,
 		},
 
 		{
@@ -44,7 +37,6 @@ const router = createRouter({
 			name: 'UnauthorizedMessage',
 			component: UnauthorizedMessageView,
 		},
-
 
 
 		// コネクター用のルーティング
