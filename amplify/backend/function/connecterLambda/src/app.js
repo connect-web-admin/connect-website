@@ -70,14 +70,10 @@ app.get(path + '/object' + hashKeyPath + '/:fiscal_year', async function (req, r
 	try {
 		const command = new GetCommand(input)
 		fetchedDataFromConnecterDDB = await ddbDocClient.send(command)
-		console.log(fetchedDataFromConnecterDDB)
 	} catch (err) {
 		res.statusCode = 500;
 		res.json({ error: 'Could not load items: ' + err.message })
 	}
-
-	// 取得したコネクターが結果登録するべき対象試合をMatchDDBから絞り込むために、コネクターに登録されているchampionship_idをまとめておく	
-	// const championshipIds = fetchedDataFromConnecterDDB['matches_to_register_result'].map(item => item.championship_id)
 
 	// 取得したコネクターが結果登録するべき対象試合をMatchDDBから絞り込むために、
 	// コネクターに登録されているchampionship_idとmatch_idをまとめておく
@@ -112,8 +108,11 @@ app.get(path + '/object' + hashKeyPath + '/:fiscal_year', async function (req, r
 							for (const match in championship['matches'][round]) { // ▲ 大会アイテムのroundからmatch（に相当するもの）を一つ取り出す
 								const matchId = championship['matches'][round][match]['match_id']
 								if (midInConnecterDDB === matchId) {
-									const objGroup = {championshipName: '', match: {}}
+									const objGroup = {fiscalYear: fiscalYear,championshipId: '', championshipName: '', category:'', match: {}}
+									objGroup.fiscalYear = championship['fiscal_year']
+									objGroup.championshipId = championship['championship_id']
 									objGroup.championshipName = championship['championship_name']
+									objGroup.category = championship['category']
 									objGroup.match = championship['matches'][round][match]
 
 									matchInfoToReturn.push(objGroup)

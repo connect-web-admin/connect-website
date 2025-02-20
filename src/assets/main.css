@@ -1,20 +1,5 @@
 /* @import './base.css'; */
-
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-li {
-  list-style: none;
-}
-
-ul {
-  list-style: none;
-}
-
-
+@import 'tailwindcss';
 /* #app {
   max-width: 1280px;
   margin: 0 auto;

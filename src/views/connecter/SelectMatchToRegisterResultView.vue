@@ -1,381 +1,179 @@
-<!-- <script setup>
-import { ref, onBeforeMount, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { CONNECTER_API_URL, MATCH_API_URL, CHAMPIONSHIP_ID, MATCH_ID, ID_TOKEN_FOR_AUTH, USER_ATTR_SUB, THIS_FISCAL_YEAR, CHAMPIONSHIP_NAMES } from '@/utils/constants'
+<script setup>
 
-const scores = Array.from({ length: 20 }, (_, i) => i + 1); // 得点入力のプルダウンメニュー用
+import { ref, onBeforeMount, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { CONNECTER_API_URL, ID_TOKEN_FOR_AUTH, USER_ATTR_SUB, THIS_FISCAL_YEAR, CHAMPIONSHIPS, CATEGORIES } from '@/utils/constants';
 
-const router = useRouter()
+// ルーティング
+const router = useRouter();
 
-const userAttrSub = localStorage.getItem(USER_ATTR_SUB) // ConnecterDDBにあるconnecter_idと同じ値
-const championshipId = localStorage.getItem(CHAMPIONSHIP_ID)
-const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH)
+// ローディング画面切り替え及び試合情報取得の成否を管理
+const isLoading = ref(false);
+const isFetchingSuccessful = ref(false);
+const failedFetchingMsg = ref('');
 
-const matchInfo = ref([])
-const isLoading = ref(false)
-const isProceeding = ref(false)
-const isFetchingSuccessful = ref(false)
-const failedFetchingMsg = ref('')
+// ユーザー属性サブジェクト
+const userAttrSub = localStorage.getItem(USER_ATTR_SUB); // ConnecterDDBにあるconnecter_idと同じ値
+// REST APIで使う認証トークンを取得
+const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+// 当年度の大会情報を取得（年度ごとに一つの大会名群を保持しているのでfindで見つかるのは常に一つ）
+const championshipsFilteredByFiscalYear = CHAMPIONSHIPS.find(item => {
+    return item['年度'] === THIS_FISCAL_YEAR;
+});
 
-// MatchDDBに登録する得点
-const homeClubScoreToRegister = ref([])
-const awayClubScoreToRegister = ref([])
-const homeClubPenaltyShootoutScoreToRegister = ref([])
-const awayClubPenaltyShootoutScoreToRegister = ref([])
+// 試合情報
+const matchInfo = ref([]); // 選択中のカテゴリ
+const selectedCategory = ref(''); // 選択中の大会名
+const selectedChampionship = ref('');
+const selectedMatchDate = ref(''); // 選択中の試合開催日
+const selectedVenue = ref(''); // 選択中の試合開催日の試合会場
 
-// 今日の日付を作成
-const dateTpFormat = new Date();
-const today = dateTpFormat.getFullYear() + '-' + String(dateTpFormat.getMonth() + 1).padStart(2, '0') + '-' + String(dateTpFormat.getDate()).padStart(2, '0');
-
-// ページ遷移したら速報対象試合の情報を取得
+// 結果入力をする試合を選択するために試合情報を取得
 const getMatchInfoToRegisterResult = async () => {
     isLoading.value = true
 
     // API URLの組み立て
-    const url = new URL(`${ CONNECTER_API_URL }/object/${ userAttrSub }/${ THIS_FISCAL_YEAR }`)
+    const url = new URL(`${CONNECTER_API_URL}/object/${userAttrSub}/${THIS_FISCAL_YEAR}`)
 
     try {
         // 試合情報取得
-        const response = await fetch(url, { 
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ idTokenForAuth }`
+                'Authorization': `Bearer ${idTokenForAuth}`
             }
         })
 
         if (response.ok) {
             isFetchingSuccessful.value = true
             const data = await response.json()
-            for (const item of data) {
-                if (item.match.match_date === today) {
-                    matchInfo.value.push(item)
-                }
-            }
+            matchInfo.value = data;
         } else {
-            failedFetchingMsg.value = '試合情報の取得に失敗しました。ページを更新するか、ログアウトしてから再度ログインをしてください。それでも問題が解決しない場合は、運営にご連絡ください。'
+            failedFetchingMsg.value = '試合情報の取得に失敗しました。ページを更新するか、ログアウトしてから再度ログインをしてください。それでも問題が解決しない場合は、コネクトまでご連絡ください。'
         }
-    } catch(error) {
+    } catch (error) {
         console.error('試合情報の取得に失敗しました。')
     } finally {
-        console.log(matchInfo.value)
         isLoading.value = false
     }
 }
 
-const submitScores = async () => {
-    isProceeding.value = true
-
-    const scoreData = [
-        {
-            championshipId: '5thBirdsCup',
-            matchId: '5thBirdsCup-01-01',
-            homeClubFinalScore: 9,
-            awayClubFinalScore: 8,
-            hasPenaltyShootout: true,
-            homeClubPenaltyShootoutScore: 5,
-            awayClubPenaltyShootoutScore: 4
-        },
-        {
-            championshipId: '5thBirdsCup',
-            matchId: '5thBirdsCup-01-02',
-            homeClubFinalScore: 7,
-            awayClubFinalScore: 6,
-            hasPenaltyShootout: false,
-            homeClubPenaltyShootoutScore: 0,
-            awayClubPenaltyShootoutScore: 0
-        }
-    ]
-
-    // API URLの組み立て
-    const url = new URL(`${ MATCH_API_URL }/register_scores`)
-
-    // HTTPリクエスト送信時のボディに共通する部分 match_idで対象試合を特定
-    const requestBody = {
-        fiscalYear: THIS_FISCAL_YEAR,
-        championshipId: championshipId,
-        scoreData: scoreData
-    } 
-
-    try {
-        // 試合情報取得
-        const response = await fetch(url, { 
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ idTokenForAuth }`
-            },
-            body: JSON.stringify(requestBody)
-        })
-
-        if (response.ok) {
-            // 
-        } else {
-            alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
-        }
-    } catch(error) {
-        alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
-        console.error('得点の登録に失敗しました。')
-    } finally {
-        isProceeding.value = false
-    }
-}
-
 /**
- * ISO8601形式の年月日を和暦表示に変換する。
- * 2024-01-01　→　2024年1月1日
- * @param matchDate string YYYY-MM-DD
+ * ▼▼▼▼▼　カテゴリー、大会名、試合開催日、試合会場の順で絞り込み　ここから　▼▼▼▼▼
  */
-const formatDate = (matchDate) => {
-    const date = new Date(matchDate);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // getMonth() は 0 から始まるので +1
-    const day = date.getDate();
-    return `${year}年${month}月${day}日`;
-}
+// 選択可能な大会をカテゴリーから絞り込み
+const championshipsFilteredByCategory = computed(() => {
+    // 当年度の大会情報から、選択中のカテゴリーに対応するものを抽出
+    if (selectedCategory.value === '') {
+        return ['（選択肢が表示されます）'];
+    } else {
+        const preChampionshipsFilteredByCategory = championshipsFilteredByFiscalYear['カテゴリー'][selectedCategory.value];
 
-// ページ表示前にConnecterDDBから試合情報抽出
-onBeforeMount(async () => {
-    await getMatchInfoToRegisterResult()
+        // 該当する大会がない場合は、メッセージを返す
+        if (preChampionshipsFilteredByCategory.length === 0) {
+            return ['該当する大会はありません。'];
+        } else {
+            return preChampionshipsFilteredByCategory;
+        }
+    }
 })
-</script>
-
-<template>
-<div class=contents-wrapper>
-    <div v-if="isLoading">
-        読み込み中
-    </div>
-    <div v-else>
-        <div v-if="isFetchingSuccessful">
-            <div v-if="isProceeding">
-                得点登録中
-            </div>
-            <div v-else>
-                <form @submit.prevent="submitScores">
-                    <div class="input-guide">
-                        本日開催の試合は以下の通りです。<br />
-                        得点を入力し、ページ最下部の登録ボタンを<br />
-                        押してください。
-                    </div>
-                    <div v-for="item in matchInfo" :key="item['match_id']" class="each-match-wrapper">
-                        {{ item['championshipName'] }}<br />
-                        {{ formatDate(item['match']['match_date']) }}{{ item['match']['match_start_at'] }}<br />
-                        開催地：{{ item['match']['venue'] }}<br />
-                        <div class="clubs-wrapper">
-                            <div class="each-club-container">
-                                <p class="club-name">
-                                    {{ item['match']['home_club_name'] }}
-                                </p>
-                                <div class="score-container">
-                                    <select v-model="homeClubScoreToRegister">
-                                        <option v-for="item in scores" :value=item>
-                                            {{ item }}
-                                        </option>
-                                    </select>
-                                    <select v-model="homeClubPenaltyShootoutScoreToRegister">
-                                        <option v-for="item in scores" :value=item>
-                                            {{ item }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="each-club-container">
-                                <p class="club-name">
-                                    {{ item['match']['away_club_name'] }}
-                                </p>
-                                <div class="score-container">
-                                    <select v-model="awayClubScoreToRegister">
-                                        <option v-for="item in scores" :value=item>
-                                            {{ item }}
-                                        </option>
-                                    </select>
-                                    <select v-model="awayClubPenaltyShootoutScoreToRegister">
-                                        <option v-for="item in scores" :value=item>
-                                            {{ item }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button typ="submit">得点登録</button>
-                </form>
-            </div>
-        </div>
-        <div v-else>
-            {{ failedFetchingMsg }}
-        </div>
-    </div>
-</div>
-</template>
-
-<style scoped>
-@media screen and (max-width: 500px) {
-    .contents-wrapper {
-        text-align: center;
-    }
-
-    .input-guide {
-        width: 90%;
-        margin: 0 auto;
-    }
-    
-    .each-match-wrapper {
-        max-width: 380px;
-        min-width: 300px;
-        width: 75%;
-        padding: 0.6em 1em;
-        margin: 1em auto 0;
-        border: 0.1px solid #bebebe;
-        border-radius: 20px;
-        background: linear-gradient(#FFF, #dbf6ff);
-    }
-
-    .each-match-wrapper:not(:last-child) {
-        margin-bottom: 2em;
-    }
-
-    .each-club-container {
-        padding:0.5em;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .each-club-container select:first-child {
-        margin: 0 1em;
-    }
-
-    .club-name {
-        max-width: 140px;
-        min-width: 90px;
-        width: 50%;
-    }
-
-    .score-container {
-        max-width: 140px;
-        min-width: 90px;
-        width: 50%;
-    }
-}
-</style> -->
-<script setup>
-
-import { ref, onBeforeMount, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { CONNECTER_API_URL, MATCH_API_URL, CHAMPIONSHIP_ID, MATCH_ID, ID_TOKEN_FOR_AUTH, USER_ATTR_SUB, THIS_FISCAL_YEAR, CHAMPIONSHIP_NAMES } from '@/utils/constants'
-
-
-const userAttrSub = localStorage.getItem(USER_ATTR_SUB) // ConnecterDDBにあるconnecter_idと同じ値
-const championshipId = localStorage.getItem(CHAMPIONSHIP_ID)
-const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH)
-
-const matchInfo = ref([])
-const isLoading = ref(false)
-const isProceeding = ref(false)
-const isFetchingSuccessful = ref(false)
-const failedFetchingMsg = ref('')
-
-
-// 今日の日付を作成
-const dateTpFormat = new Date();
-const today = dateTpFormat.getFullYear() + '-' + String(dateTpFormat.getMonth() + 1).padStart(2, '0') + '-' + String(dateTpFormat.getDate()).padStart(2, '0');
-
-const scores = Array.from({ length: 21 }, (_, i) => i);
-
-const submitScores = async () => {
-    const payload = matchInfo.value.map(item => ({
-        championshipId: item.championshipId,
-        matchId: item.match.match_id,
-        homeClubFinalScore: item.match.home_club_final_score,
-        awayClubFinalScore: item.match.away_club_final_score,
-        hasPenaltyShootout: item.match.has_penalty_shootout,
-        homeClubPenaltyShootoutScore: item.match.has_penalty_shootout ? item.match.home_club_penalty_shootout_score : -1,
-        awayClubPenaltyShootoutScore: item.match.has_penalty_shootout ? item.match.away_club_penalty_shootout_score : -1
-    }))
-    
-    // API URLの組み立て
-    const url = new URL(`${ MATCH_API_URL }/register_scores`)
-
-    // HTTPリクエスト送信時のボディに共通する部分 match_idで対象試合を特定
-    const requestBody = {
-        fiscalYear: THIS_FISCAL_YEAR,
-        championshipId: championshipId,
-        scoreData: payload
-    } 
-
-    try {
-        // 試合情報取得
-        const response = await fetch(url, { 
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ idTokenForAuth }`
-            },
-            body: JSON.stringify(requestBody)
-        })
-
-        if (response.ok) {
-            // 
-            alert('OK')
-        } else {
-            alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
-        }
-    } catch(error) {
-        alert("得点の登録に失敗しました。ログアウトしてから再度ログインをして登録してください。それでも問題が解決しない場合は、運営にご連絡ください。")
-        console.error('得点の登録に失敗しました。')
-    } finally {
-        isProceeding.value = false
-    }
-}
-
-// ページ遷移したら速報対象試合の情報を取得
-const getMatchInfoToRegisterResult = async () => {
-    // isLoading.value = true
-
-    // API URLの組み立て
-    const url = new URL(`${ CONNECTER_API_URL }/object/${ userAttrSub }/${ THIS_FISCAL_YEAR }`)
-
-    try {
-        // 試合情報取得
-        const response = await fetch(url, { 
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ idTokenForAuth }`
-            }
-        })
-
-        if (response.ok) {
-            isFetchingSuccessful.value = true
-            const data = await response.json()
-            for (const item of data) {
-                if (item.match.match_date === today) {
-                    matchInfo.value.push(item)
-                }
-            }
-        } else {
-            failedFetchingMsg.value = '試合情報の取得に失敗しました。ページを更新するか、ログアウトしてから再度ログインをしてください。それでも問題が解決しない場合は、運営にご連絡ください。'
-        }
-    } catch(error) {
-        console.error('試合情報の取得に失敗しました。')
-    } finally {
-        // isLoading.value = false
-    }
-}
 
 /**
- * ISO8601形式の年月日を和暦表示に変換する。
- * 2024-01-01　→　2024年1月1日
- * @param matchDate string YYYY-MM-DD
+ * 年度と大会名と試合開催日から試合会場を絞り込む。
  */
-const formatDate = (matchDate) => {
-    const date = new Date(matchDate);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // getMonth() は 0 から始まるので +1
-    const day = date.getDate();
-    return `${year}年${month}月${day}日`;
+const venuesFilteredByChampionshipAndMatchDate = computed(() => {
+    // 選択中の大会に絞り込み
+    // 選択中の大会は、championshipsFilteredByCategoryで絞り込んだものの中から選択されているので、必ずどれかの大会名が入っている
+    const matchesFilteredByChampionship = matchInfo.value.filter(item => {
+        return item.championshipName === selectedChampionship.value;
+    });
+
+    // 選択中の試合開催日に絞り込み
+    // 選択中の大会は、championshipsFilteredByCategoryで絞り込んだものの中から選択されているので、必ず大会名に対応する試合開催日が入っている
+    const matchesFilteredByMatchDate = matchesFilteredByChampionship.filter(item => {
+        return item.match.match_date === selectedMatchDate.value;
+    });
+
+    // 選択された試合開催日に対応する試合会場を抽出
+    const venuesFilteredBySelectedMatchDate = []
+    for (const item of matchesFilteredByMatchDate) {
+        venuesFilteredBySelectedMatchDate.push(item.match.venue)
+    }
+
+    // 試合開催日に対応する試合会場がない場合は、メッセージを返す
+    if (venuesFilteredBySelectedMatchDate.length === 0) {
+        return ['試合がありません'];
+    } else {
+        // 重複を削除してソート
+        const deleteRepeatedVenuesAndSort = [...new Set(venuesFilteredBySelectedMatchDate)].sort()
+        return deleteRepeatedVenuesAndSort;
+    }
+})
+
+// 結果入力可能な試合を一覧で表示
+const matchesToRegisterResult = computed(() => {
+    // 選択中の大会に絞り込み
+    const matchesFilteredByChampionship = matchInfo.value.filter(item => {
+        return item.championshipName === selectedChampionship.value;
+    });
+
+    // 選択中の試合開催日に絞り込み
+    const matchesFilteredByMatchDate = matchesFilteredByChampionship.filter(item => {
+        return item.match.match_date === selectedMatchDate.value;
+    });
+
+    // 選択中の試合会場に絞り込み
+    const matchesFilteredByVenue = matchesFilteredByMatchDate.filter(item => {
+        return item.match.venue === selectedVenue.value;
+    });
+
+    return matchesFilteredByVenue;
+})
+
+// カテゴリーが選択された時に自動的に大会名を選択
+watch(selectedCategory, (newCategory) => {
+    if (newCategory !== '') {
+        // カテゴリーが選択され、かつ選択肢が存在する場合、最初の選択肢を自動選択
+        selectedChampionship.value = championshipsFilteredByCategory.value[0];
+        // 試合開催日をリセット
+        selectedMatchDate.value = '';
+        // 試合会場をリセット
+        selectedVenue.value = '';
+    } else {
+        // それ以外の場合は空にする
+        selectedChampionship.value = '';
+        // selectedMatchDate.value = '';
+        selectedVenue.value = '';
+    }
+});
+
+// 大会名が変更された時に試合開催日と試合会場をリセット
+watch(selectedChampionship, () => {
+    selectedMatchDate.value = '';
+    selectedVenue.value = '';
+});
+
+// 試合開催日が選択された時に自動的に試合会場を選択
+watch(selectedMatchDate, (newMatchDate) => {
+    if (newMatchDate !== '') {
+        selectedVenue.value = venuesFilteredByChampionshipAndMatchDate.value[0];
+    } else {
+        selectedVenue.value = '';
+    }
+});
+
+// 新しいウィンドウで結果入力画面を開く
+const moveToRegisterMatchResult = (championshipId, matchId) => {
+    // 新しいウィンドウで開くためにルーティングを解決（URLを生成）
+    const route = router.resolve({
+        name: 'RegisterMatchResult',
+        params: {
+            championshipId: championshipId,
+            matchId: matchId
+        }
+    });
+    window.open(route.href, '_blank');
 }
 
 // ページ表示前にConnecterDDBから試合情報抽出
@@ -383,219 +181,102 @@ onBeforeMount(async () => {
     await getMatchInfoToRegisterResult()
 })
 
+// CSS
+const eachMenuContainer = 'border-1 border-gray-300 rounded-sm';
+const menuHeading = 'py-1 bg-blue-200';
+const eachSelect = 'w-full px-2 py-1';
+const instructionText = 'px-2 py-1 text-left';
+const arrowDownwardIcon = 'w-5 my-2 mx-auto';
 </script>
 
 <template>
-<div class=contents-wrapper>
-    <div v-if="isLoading">
-        読み込み中
-    </div>
-    <div v-else>
-        <div v-if="isFetchingSuccessful">
-            <div v-if="isProceeding">
-                得点登録中
-            </div>
-            <div v-else>
-                <form @submit.prevent="submitScores">
-                    <div class="input-guide">
-                        本日開催の試合は以下の通りです。<br />
-                        得点を入力し、ページ最下部の登録ボタンを<br />
-                        押してください。
+    <div class="w-full h-full px-10 py-4">
+        <div v-if="isLoading" class="text-center">
+            読み込み中
+        </div>
+        <div v-else class="text-center mx-auto">
+            <div v-if="isFetchingSuccessful">
+                <!-- カテゴリーで絞り込み -->
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">カテゴリー</h2>
+                    <select v-model="selectedCategory" :class="eachSelect" id="category-select">
+                        <option value="" disabled>最初にカテゴリーを選択してください。</option>
+                        <option v-for="(category, idx) in CATEGORIES" :key="idx" :value="category">
+                            {{ category }}
+                        </option>
+                    </select>
+                </div>
+                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                <!-- 大会名で絞り込み -->
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">大会名</h2>
+                    <select v-model="selectedChampionship" :class="eachSelect" id="championship-select">
+                        <option v-if="championshipsFilteredByCategory.includes('（選択肢が表示されます）')" value="" disabled>
+                            （選択肢が表示されます）</option>
+                        <option v-else v-for="(championship, idx) in championshipsFilteredByCategory" :key="idx"
+                            :value="championship">
+                            {{ championship }}
+                        </option>
+                    </select>
+                </div>
+                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                <!-- 試合開催日で絞り込み -->
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">試合開催日</h2>
+                    <div v-if="selectedChampionship === ''">
+                        <p :class="instructionText">（日付を選択できるようになります）</p>
                     </div>
-                    <div v-for="item in matchInfo" :key="item['match_id']" class="each-match-wrapper">
-                        {{ item['championshipName'] }}<br />
-                        {{ formatDate(item['match']['match_date']) }}{{ item['match']['match_start_at'] }}<br />
-                        開催地：{{ item['match']['venue'] }}<br />
-                        <div class="clubs-wrapper">
-                            <div class="each-club-container">
-                                <p class="club-name">
-                                    {{ item['match']['home_club_name'] }}
-                                </p>
-                                <div class="score-container">
-                                    <select v-model="item.match.home_club_final_score">
-                                        <option value="" disabled selected>選択</option>
-                                        <option v-for="score in scores" :key="score" :value="score">
-                                            {{ score }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="each-club-container">
-                                <p class="club-name">
-                                    {{ item['match']['away_club_name'] }}
-                                </p>
-                                <div class="score-container">
-                                    <select v-model="item.match.away_club_final_score">
-                                        <option value="" disabled selected>選択</option>
-                                        <option v-for="score in scores" :key="score" :value="score">
-                                            {{ score }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="extra">
-                                <label>PK戦</label>
-                                <input type="checkbox" v-model="item.match.has_penalty_shootout" />
-                            </div>
-                            <div v-if="item.match.has_penalty_shootout">
-                                <div class="each-club-container">
-                                    <p class="club-name">
-                                        {{ item['match']['home_club_name'] }}
+                    <div v-else>
+                        <input type="date" v-model="selectedMatchDate" :class="eachSelect" id="match-date-input">
+                    </div>
+                </div>
+                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                <!-- 試合会場で絞り込み -->
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">試合会場</h2>
+                    <select v-model="selectedVenue" :class="eachSelect" id="venue-select">
+                        <option value="" disabled>（試合会場が表示されます）</option>
+                        <option
+                            v-if="selectedMatchDate && !venuesFilteredByChampionshipAndMatchDate.includes('試合がありません')"
+                            v-for="(venue, idx) in venuesFilteredByChampionshipAndMatchDate" :key="idx" :value="venue">
+                            {{ venue }}
+                        </option>
+                        <option v-else-if="selectedMatchDate" disabled>試合がありません</option>
+                    </select>
+                </div>
+                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                <!-- 結果入力可能な試合を一覧で表示-->
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">結果入力　対象試合一覧</h2>
+                    <div v-if="selectedVenue === ''">
+                        <p :class="instructionText">（全ての項目が選択されると表示されます）</p>
+                    </div>
+                    <div v-else class="px-2 py-2">
+                        <div v-for="(item, idx) in matchesToRegisterResult" :key="idx" class="group not-last:mb-2">
+                            <div class="flex">
+                                <form @submit.prevent="moveToRegisterMatchResult(item.championshipId, item.match.match_id)">
+                                    <button type="submit" class="h-12 px-4 mr-4 bg-amber-200 border-1 rounded-sm">選択</button>
+                                </form>
+                                <div>
+                                    <p class="text-left">{{ item.match.scheduled_match_start_time }}（開始予定時刻）</p>
+                                    <p class="text-left">
+                                        {{ item.match.home_club.club_name }}
+                                        <span class="mx-2">対</span>
+                                        {{ item.match.away_club.club_name }}
                                     </p>
-                                    <div class="score-container">
-                                        <select v-model="item.match.home_club_penalty_shootout_score">
-                                            <option value="" disabled selected>選択</option>
-                                            <option v-for="score in scores" :key="score" :value="score">
-                                                {{ score }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="each-club-container">
-                                    <p class="club-name">
-                                        {{ item['match']['away_club_name'] }}
-                                    </p>
-                                    <div class="score-container">
-                                        <select v-model="item.match.away_club_penalty_shootout_score">
-                                            <option value="" disabled selected>選択</option>
-                                            <option v-for="score in scores" :key="score" :value="score">
-                                                {{ score }}
-                                            </option>
-                                        </select>
-                                    </div>
                                 </div>
                             </div>
+                            <div class="group-not-last:border-b-1 group-not-last:border-gray-300 mt-2"></div>
                         </div>
                     </div>
-                    <button typ="submit">得点登録</button>
-                </form>
+                </div>
+                <p class="text-left text-red-900 font-bold">選択ボタンを押すと新しいウィンドウを開きます。</p>
             </div>
-        </div>
-        <div v-else>
-            {{ failedFetchingMsg }}
+            <div v-else>
+                {{ failedFetchingMsg }}
+            </div>
         </div>
     </div>
-</div>
-</template>
-    
-<style scoped>
-@media screen and (max-width: 500px) {
-    .contents-wrapper {
-        text-align: center;
-    }
-
-    .input-guide {
-        width: 90%;
-        margin: 0 auto;
-    }
-    
-    .each-match-wrapper {
-        max-width: 380px;
-        min-width: 300px;
-        width: 75%;
-        padding: 0.6em 1em;
-        margin: 1em auto 0;
-        border: 0.1px solid #bebebe;
-        border-radius: 20px;
-        background: linear-gradient(#FFF, #dbf6ff);
-    }
-
-    .each-match-wrapper:not(:last-child) {
-        margin-bottom: 2em;
-    }
-
-    .each-club-container {
-        padding:0.5em;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .each-club-container select:first-child {
-        margin: 0 1em;
-    }
-
-    .club-name {
-        max-width: 140px;
-        min-width: 90px;
-        width: 50%;
-    }
-
-    .score-container {
-        max-width: 140px;
-        min-width: 90px;
-        width: 50%;
-    }
-}
-</style>
-
-
-
-<!-- <template>
-    <form @submit.prevent="submitScores">
-        <h1>スコア入力</h1>
-        <div v-for="(match, index) in matchInfo" :key="match.matchId" class="match-block">
-            <p>大会ID: {{ match.championshipName }}</p>
-            <div class="player-score">
-                <label>Player C</label>
-                <select v-model="match.playerCScore">
-                    <option v-for="score in scores" :key="score" :value="score">{{ score }}</option>
-                </select>
-            </div>
-            <div class="player-score">
-                <label>Player D</label>
-                <select v-model="match.playerDScore">
-                    <option v-for="score in scores" :key="score" :value="score">{{ score }}</option>
-                </select>
-            </div>
-            <div class="extra">
-                <label>延長戦</label>
-                <input type="checkbox" v-model="match.hasPenaltyShootout" />
-            </div>
-            <div v-if="match.hasPenaltyShootout" class="extra-score">
-                <label>Player C 延長</label>
-                <select v-model="match.playerAExtraScore">
-                    <option v-for="score in scores" :key="score" :value="score">{{ score }}</option>
-                </select>
-                <label>Player D 延長</label>
-                <select v-model="match.playerBExtraScore">
-                    <option v-for="score in scores" :key="score" :value="score">{{ score }}</option>
-                </select>
-            </div>
-        </div>
-        <button type="submit">送信</button>
-    </form>
 </template>
 
-<style scoped>
-.match-block {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-.player-score {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-.player-score label {
-    width: 100px;
-}
-
-.extra {
-    margin-top: 5px;
-}
-
-.extra-score {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-button {
-    margin-top: 10px;
-}
-</style> -->
+<style scoped></style>

@@ -12,7 +12,9 @@ import HeaderComp from './components/HeaderComp.vue'
 import FooterComp from './components/FooterComp.vue'
 import EventView from './views/EventView.vue'
 import SelectLiveReportingMatchView from './views/connecter/SelectMatchToRegisterResultView.vue'
+import PreparationView from './views/PreparationView.vue'
 
+const isPreparation = ref(false)
 
 const authState = useAuthenticator()
 const router = useRouter()
@@ -97,7 +99,7 @@ onMounted(() => {
             // fetchUserInfoFromDDB()
 
             if (userAttrMembershipType.value === CONNECTER) {
-                router.push('/connecter_home')
+                router.push('/connecte/home')
             } else {
                 router.push('/event_view')
             }
@@ -107,50 +109,37 @@ onMounted(() => {
 </script>
 
 <template>
-<div class="app-wrapper">
-    <header class="header">
+<div v-if="isPreparation">
+    <PreparationView />
+</div>
+<div v-else class="min-h-screen flex flex-col">
+    <!-- <header class="sticky top-0 z-50 bg-white">
         <HeaderComp 
             :user="authState.user"
             :signOut="authState.signOut"
         />
-    </header>        
+    </header>         -->
 
-    <main class="main">
+    <main class="flex-1">
         <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
             <template v-slot="{ user }">
-                <!-- This content only shows for logged-in users -->
                 <RouterView />
             </template>
 
             <template v-slot:unauthenticated>
                 <div class="login-container">
                     <h2>Please Log In</h2>
-                    <!-- Amplify's built-in sign-in form will appear here -->
                 </div>
             </template>
         </Authenticator>
     </main>
         
-    <footer class="footer">
+    <footer class="mt-auto">
         <FooterComp />
     </footer>
 </div>
 </template>
 
 <style scoped>
-header {
-    width: 100%;
-    top: 0;
-    position: fixed;
-    z-index: 1;
-}
-
-main {
-    padding-top: 267px;
-    padding-bottom: 90px;
-    height: 100%;
-    width: 100%;
-}
-/* footer {
-} */
+/* You can remove all the styles since we're using Tailwind classes */
 </style>

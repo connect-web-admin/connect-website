@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import App from '@/App.vue'
-import FinishLiveReportView from '@/views/connecter/FinishLiveReportView.vue'
 import EventView from '@/views/EventView.vue'
 import ClubListView from '@/views/ClubListView.vue'
 import LatestResultsView from '@/views/LatestResultsView.vue'
@@ -11,31 +10,38 @@ import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
 import ContactView from '@/views/ContactView.vue'
 import AuthenticatedContentsView from '@/views/AuthenticatedContentsView.vue'
 import UnauthorizedMessageView from '@/views/UnauthorizedMessageView.vue'
+import PreparationView from '@/views/PreparationView.vue'
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
 			path: '/',
-			name: 'HOME',
+			name: 'Home',
 			component: App,
 		},
 
 		{
+			path: '/preparation',
+			name: 'Preparation',
+			component: PreparationView,
+		},
+
+		{
 			path:'/contact',
-			name: 'CONTACT',
+			name: 'Contact',
 			component: ContactView
 		},
 
 		{
 			path: '/authenticated-contents',
-			name: 'AUTHENTICATED_CONTENTS',
+			name: 'AuthenticatedContents',
 			component: AuthenticatedContentsView,
 		},
 
 		{
 			path: '/unauthorized-message',
-			name: 'UNAUTHORIZED_MESSAGE',
+			name: 'UnauthorizedMessage',
 			component: UnauthorizedMessageView,
 		},
 
@@ -43,51 +49,46 @@ const router = createRouter({
 
 		// コネクター用のルーティング
 		{
-			path:'/connecter_home',
-			name: 'CONNECTER_HOME',
+			path:'/connecter/home',
+			name: 'ConnecterHome',
 			component: ConnecterHomeView
 		},
 
 		{
-			path: '/select_match_to_register_result',
-			name: 'SELECT_MATCH_TO_REGISTER_RESULT',
+			path: '/connecter/select_match_to_register_result',
+			name: 'SelectMatchToRegisterResult',
 			component: SelectMatchToRegisterResultView,
 		},
 
 		{
-			path: '/finish_live_report',
-			name: 'FINISH_LIVE_REPORT',
-			component: FinishLiveReportView,
-		},
-
-		{
-			path:'/register_match_result',
-			name: 'REGISTER_MATCH_RESULT',
+			path: '/connecter/register_match_result/:championshipId/:matchId',
+			name: 'RegisterMatchResult',
 			component: RegisterMatchResultView,
+			props: true
 		},
 
 		// 一般会員（暫定）向けのルーティング
 		{
 			path: '/event_view',
-			name: 'EVENT_VIEW',
+			name: 'EventView',
 			component: EventView,
 		},
 
 		{
 			path: '/latest_results',
-			name: 'LATEST_RESULTS',
+			name: 'LatestResults',
 			component: LatestResultsView,
 		},
 
 		{
 			path: '/topics',
-			name: 'TOPICS',
+			name: 'Topics',
 			component: TopicsView,
 		},
 
 		{
 			path: '/club_list',
-			name: 'CLUB_LIST',
+			name: 'ClubList',
 			component: ClubListView,
 		}
 	],

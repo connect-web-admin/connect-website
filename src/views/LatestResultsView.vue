@@ -108,7 +108,7 @@ onMounted(async () => {
     <div v-for="(item, index) in matchInfoToShow" class="each-latest-result-container">
         <p>{{ item['match_name'] }}</p>
         <p>{{ item['match_date'].replace(/(\d{4})-(0?)(\d+)-(0?)(\d+)/, '$1年$3月$5日') }}</p>
-        <p>{{ item['match_start_at'] }}</p>
+        <p>{{ item['scheduled_match_start_time'] }}</p>
         <div class="each-latest-result-inner">
             <div class="home-inner">
                 <p>{{ item['home_club']['club_name'] }}</p>
