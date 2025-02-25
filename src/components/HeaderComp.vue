@@ -174,8 +174,8 @@ onUnmounted(() => {
     <div class="menu-wrapper">
         <ul class="menu-container">
             <li class="menu-item"><span class="active-red-line">TOP</span></li>
-            <li class="menu-item"><router-link to="/latest_results"><span class="active-red-line">結果速報</span></router-link></li>
-            <li class="menu-item"><router-link to="/club_list"><span class="active-red-line">チーム紹介</span></router-link></li>
+            <li class="menu-item"><router-link to="/latest-results"><span class="active-red-line">結果速報</span></router-link></li>
+            <li class="menu-item"><router-link to="/club-list"><span class="active-red-line">チーム紹介</span></router-link></li>
             <li class="menu-item"><span class="active-red-line">写真</span></li>
             <li class="menu-item"><span class="active-red-line">アーカイブ</span></li>
             <li class="menu-item"><span class="active-red-line">メディア</span></li>

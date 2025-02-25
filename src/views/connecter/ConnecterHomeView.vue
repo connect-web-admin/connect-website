@@ -2,7 +2,7 @@
 </script>
 <template>
 <div class="mx-auto">    
-    <router-link to="select_match_to_register_result"><button class="w-full">試合結果入力</button></router-link>
+    <router-link to="select-match-to-register-result"><button class="w-full">試合結果入力</button></router-link>
 </div>
 </template>
 <style scoped>

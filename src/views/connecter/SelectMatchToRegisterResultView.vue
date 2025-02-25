@@ -2,281 +2,334 @@
 
 import { ref, onBeforeMount, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { CONNECTER_API_URL, ID_TOKEN_FOR_AUTH, USER_ATTR_SUB, THIS_FISCAL_YEAR, CHAMPIONSHIPS, CATEGORIES } from '@/utils/constants';
+import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, CHAMPIONSHIPS, CATEGORIES } from '@/utils/constants';
 
-// ルーティング
 const router = useRouter();
 
-// ローディング画面切り替え及び試合情報取得の成否を管理
+/**
+ * 当日と、当日から一週間前の日付を取得
+ * 試合一覧（本日{{today}}から{{oneWeekAgoToDisplay}}までの開催分）の表示用
+ */
+const today = new Date().toLocaleDateString('ja-JP', { 
+    month: 'numeric', 
+    day: 'numeric' 
+});
+
+const oneWeekAgo = new Date(today);
+oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+const oneWeekAgoToDisplay = oneWeekAgo.toLocaleDateString('ja-JP', { 
+    month: 'numeric', 
+    day: 'numeric' 
+});
+
+const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
 const isLoading = ref(false);
 const isFetchingSuccessful = ref(false);
 const failedFetchingMsg = ref('');
 
-// ユーザー属性サブジェクト
-const userAttrSub = localStorage.getItem(USER_ATTR_SUB); // ConnecterDDBにあるconnecter_idと同じ値
-// REST APIで使う認証トークンを取得
-const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
-// 当年度の大会情報を取得（年度ごとに一つの大会名群を保持しているのでfindで見つかるのは常に一つ）
-const championshipsFilteredByFiscalYear = CHAMPIONSHIPS.find(item => {
-    return item['年度'] === THIS_FISCAL_YEAR;
-});
+const matchInfo = ref([]);
 
-// 試合情報
-const matchInfo = ref([]); // 選択中のカテゴリ
-const selectedCategory = ref(''); // 選択中の大会名
-const selectedChampionship = ref('');
-const selectedMatchDate = ref(''); // 選択中の試合開催日
-const selectedVenue = ref(''); // 選択中の試合開催日の試合会場
+const selectedCategory = ref('');
+const selectedChampionshipName = ref('');
+const selectedVenue = ref('');
 
-// 結果入力をする試合を選択するために試合情報を取得
-const getMatchInfoToRegisterResult = async () => {
+/**
+ * 当年度に開催される試合の中から、当日及び当日から一週間前の試合のみを取得
+ */
+const getMatchInfoInThisFiscalYear = async () => {
     isLoading.value = true
 
-    // API URLの組み立て
-    const url = new URL(`${CONNECTER_API_URL}/object/${userAttrSub}/${THIS_FISCAL_YEAR}`)
+    const queryUrl = new URL(`${MATCH_API_URL}/all-championships`);
+    queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
     try {
-        // 試合情報取得
-        const response = await fetch(url, {
+        const response = await fetch(queryUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${idTokenForAuth}`
             }
-        })
+        });
 
         if (response.ok) {
-            isFetchingSuccessful.value = true
-            const data = await response.json()
+            isFetchingSuccessful.value = true;
+            const data = await response.json();
             matchInfo.value = data;
         } else {
-            failedFetchingMsg.value = '試合情報の取得に失敗しました。ページを更新するか、ログアウトしてから再度ログインをしてください。それでも問題が解決しない場合は、コネクトまでご連絡ください。'
+            failedFetchingMsg.value = '試合情報の取得に失敗しました。ページを更新するか、ブラウザを更新しても問題が解決しない場合は、コネクトまでご連絡ください。'
         }
     } catch (error) {
-        console.error('試合情報の取得に失敗しました。')
+        console.error('試合情報の取得に失敗しました。');
     } finally {
-        isLoading.value = false
+        isLoading.value = false;
     }
 }
 
 /**
- * ▼▼▼▼▼　カテゴリー、大会名、試合開催日、試合会場の順で絞り込み　ここから　▼▼▼▼▼
+ * 選択された試合の速報画面に遷移
+ * 大会IDと試合IDをパラメーターとして渡す
  */
-// 選択可能な大会をカテゴリーから絞り込み
-const championshipsFilteredByCategory = computed(() => {
-    // 当年度の大会情報から、選択中のカテゴリーに対応するものを抽出
-    if (selectedCategory.value === '') {
-        return ['（選択肢が表示されます）'];
-    } else {
-        const preChampionshipsFilteredByCategory = championshipsFilteredByFiscalYear['カテゴリー'][selectedCategory.value];
+const moveToRegisterMatchResult = async (matchId) => {
+    if (selectedCategory.value && selectedChampionshipName.value && selectedVenue.value) {
+        // 選択されたカテゴリーから大会英を抽出
+        const filteredByCategory = matchInfo.value.filter(match => match['category'] === selectedCategory.value);
+        // 選択された大会名から大会情報を抽出
+        const filteredByChampionship = filteredByCategory.find(match => match['championship_name'] === selectedChampionshipName.value);
+        // 選択された大会情報から大会IDを抽出
+        const championshipId = filteredByChampionship['championship_id'];
 
-        // 該当する大会がない場合は、メッセージを返す
-        if (preChampionshipsFilteredByCategory.length === 0) {
-            return ['該当する大会はありません。'];
+        // 大会IDと試合IDから当該試合の情報を抽出
+        // 試合結果が登録済みの試合の結果を再度入力しようとした場合、確認させる
+        const matches = filteredByChampionship['matches']
+        let isAlreadyRegistered = false;
+        for (const round in matches) {
+            for (const match in matches[round]) {
+                if (matches[round][match]['match_id'] === matchId) {
+                    isAlreadyRegistered = matches[round][match]['is_result_registered'];
+                }
+            }
+        }
+
+        if (isAlreadyRegistered) {
+            if (confirm('この試合の結果はすでに登録されています。修正しますか？')) {
+                router.push({
+                    name: 'RegisterMatchResult', // TODO:修正用ページに遷移するように書き換えること
+                    params: {
+                        championshipId: championshipId,
+                        matchId: matchId
+                    }
+                });
+            } else {
+                // 何もしない
+                return;
+            }
         } else {
-            return preChampionshipsFilteredByCategory;
+            // 大会IDと試合IDをパラメーターとして渡す
+            router.push({
+                name: 'RegisterMatchResult',
+                params: {
+                    championshipId: championshipId,
+                    matchId: matchId
+                }
+            });
         }
-    }
-})
-
-/**
- * 年度と大会名と試合開催日から試合会場を絞り込む。
- */
-const venuesFilteredByChampionshipAndMatchDate = computed(() => {
-    // 選択中の大会に絞り込み
-    // 選択中の大会は、championshipsFilteredByCategoryで絞り込んだものの中から選択されているので、必ずどれかの大会名が入っている
-    const matchesFilteredByChampionship = matchInfo.value.filter(item => {
-        return item.championshipName === selectedChampionship.value;
-    });
-
-    // 選択中の試合開催日に絞り込み
-    // 選択中の大会は、championshipsFilteredByCategoryで絞り込んだものの中から選択されているので、必ず大会名に対応する試合開催日が入っている
-    const matchesFilteredByMatchDate = matchesFilteredByChampionship.filter(item => {
-        return item.match.match_date === selectedMatchDate.value;
-    });
-
-    // 選択された試合開催日に対応する試合会場を抽出
-    const venuesFilteredBySelectedMatchDate = []
-    for (const item of matchesFilteredByMatchDate) {
-        venuesFilteredBySelectedMatchDate.push(item.match.venue)
-    }
-
-    // 試合開催日に対応する試合会場がない場合は、メッセージを返す
-    if (venuesFilteredBySelectedMatchDate.length === 0) {
-        return ['試合がありません'];
     } else {
-        // 重複を削除してソート
-        const deleteRepeatedVenuesAndSort = [...new Set(venuesFilteredBySelectedMatchDate)].sort()
-        return deleteRepeatedVenuesAndSort;
+        alert('試合が正しく選択されていません。ブラウザを更新してから、もう一度お試しください。改善しない場合は、コネクトまでご連絡ください。');
     }
-})
-
-// 結果入力可能な試合を一覧で表示
-const matchesToRegisterResult = computed(() => {
-    // 選択中の大会に絞り込み
-    const matchesFilteredByChampionship = matchInfo.value.filter(item => {
-        return item.championshipName === selectedChampionship.value;
-    });
-
-    // 選択中の試合開催日に絞り込み
-    const matchesFilteredByMatchDate = matchesFilteredByChampionship.filter(item => {
-        return item.match.match_date === selectedMatchDate.value;
-    });
-
-    // 選択中の試合会場に絞り込み
-    const matchesFilteredByVenue = matchesFilteredByMatchDate.filter(item => {
-        return item.match.venue === selectedVenue.value;
-    });
-
-    return matchesFilteredByVenue;
-})
-
-// カテゴリーが選択された時に自動的に大会名を選択
-watch(selectedCategory, (newCategory) => {
-    if (newCategory !== '') {
-        // カテゴリーが選択され、かつ選択肢が存在する場合、最初の選択肢を自動選択
-        selectedChampionship.value = championshipsFilteredByCategory.value[0];
-        // 試合開催日をリセット
-        selectedMatchDate.value = '';
-        // 試合会場をリセット
-        selectedVenue.value = '';
-    } else {
-        // それ以外の場合は空にする
-        selectedChampionship.value = '';
-        // selectedMatchDate.value = '';
-        selectedVenue.value = '';
-    }
-});
-
-// 大会名が変更された時に試合開催日と試合会場をリセット
-watch(selectedChampionship, () => {
-    selectedMatchDate.value = '';
-    selectedVenue.value = '';
-});
-
-// 試合開催日が選択された時に自動的に試合会場を選択
-watch(selectedMatchDate, (newMatchDate) => {
-    if (newMatchDate !== '') {
-        selectedVenue.value = venuesFilteredByChampionshipAndMatchDate.value[0];
-    } else {
-        selectedVenue.value = '';
-    }
-});
-
-// 新しいウィンドウで結果入力画面を開く
-const moveToRegisterMatchResult = (championshipId, matchId) => {
-    // 新しいウィンドウで開くためにルーティングを解決（URLを生成）
-    const route = router.resolve({
-        name: 'RegisterMatchResult',
-        params: {
-            championshipId: championshipId,
-            matchId: matchId
-        }
-    });
-    window.open(route.href, '_blank');
 }
 
-// ページ表示前にConnecterDDBから試合情報抽出
+/**
+ * カテゴリーを選択したら、大会名を取得
+ * カテゴリーと大会はcoonstant.jsに記述されているものを参照
+ */
+const championshipsFilteredByCategory = computed(() => {
+    const championshipsInThisFiscalYear = CHAMPIONSHIPS.find(championship => championship['年度'] === THIS_FISCAL_YEAR);
+    const filteredByCategory = championshipsInThisFiscalYear['カテゴリー'][selectedCategory.value];
+    return filteredByCategory;
+});
+
+/**
+ * カテゴリーと大会名を選択したら、試合会場を取得
+ * （本日から数えて前後一週間に開催される試合会場のみ）
+ */
+const venuesFilteredByCategoryAndChampionship = computed(() => {
+    if (selectedCategory.value && selectedChampionshipName.value) {
+        // カテゴリーで絞り込み。一つひとつのカテゴリーは複数の大会を持つのでfilter
+        const filteredByCategory = matchInfo.value.filter(match => match['category'] === selectedCategory.value);
+        // 大会で絞り込み。各カテゴリーに同名の大会は二つ以上存在しないのでfind
+        const filteredByChampionship = filteredByCategory.find(match => match['championship_name'] === selectedChampionshipName.value);
+        // あとで処理しやすいようにmatchesだけを取得
+        const mathchesInTheChampionship = filteredByChampionship['matches'];
+        
+        // 試合会場だけを取得
+        const originalVenues = [];
+        for (const round in mathchesInTheChampionship) {
+            for (const match in mathchesInTheChampionship[round]) {
+                originalVenues.push(mathchesInTheChampionship[round][match]['venue']);
+            }
+        }
+
+        // 重複を除いた試合会場を取得
+        const uniqueVenues = [...new Set(originalVenues)];
+
+        return uniqueVenues;
+    } else {
+        return '';
+    }
+});
+
+/**
+ * カテゴリーと大会名と試合会場を選択したら、試合を取得
+ */
+const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
+        if (selectedCategory.value && selectedChampionshipName.value && selectedVenue.value) {
+        const filteredByCategory = matchInfo.value.filter(match => match['category'] === selectedCategory.value);
+        const filteredByChampionship = filteredByCategory.find(match => match['championship_name'] === selectedChampionshipName.value);
+
+        // 選択された試合会場を持つmatchだけを抽出
+        const filteredMatchesByVenue = []
+        const matches = filteredByChampionship['matches'];
+        for (const round in matches) {
+            for (const match in matches[round]) {
+                if (matches[round][match]['venue'] === selectedVenue.value) {
+                    filteredMatchesByVenue.push(matches[round][match]);
+                }
+            }
+        }
+
+        // 選択された試合会場を持つmatchを表示するためのデータを作成
+        const displayDataOfMatches = [];
+        filteredMatchesByVenue.forEach(match => {
+            // 試合開催日を表示用に整形
+            const matchDate = new Date(match['match_date']);
+            const matchDateToDisplay = matchDate.toLocaleDateString('ja-JP', { 
+                month: 'numeric', 
+                day: 'numeric' 
+            });
+            
+            const data = {
+                matchId: match['match_id'],
+                matchDate: matchDateToDisplay,
+                homeClubName: match['home_club']['club_name'],
+                awayClubName: match['away_club']['club_name'],
+                homeClubFinalScore: match['home_club']['final_score'],
+                awayClubFinalScore: match['away_club']['final_score'],
+                isResultRegistered: match['is_result_registered']
+            };
+
+            displayDataOfMatches.push(data);
+        });
+
+        return displayDataOfMatches;
+    } else {
+        return '';
+    }
+});
+
+// ページ表示前にConnecterDDBから試合情報抽出*
 onBeforeMount(async () => {
-    await getMatchInfoToRegisterResult()
-})
+    await getMatchInfoInThisFiscalYear();
+});
 
 // CSS
-const eachMenuContainer = 'border-1 border-gray-300 rounded-sm';
-const menuHeading = 'py-1 bg-blue-200';
-const eachSelect = 'w-full px-2 py-1';
-const instructionText = 'px-2 py-1 text-left';
+const eachMenuContainer = 'border-1 border-gray-300 rounded-lg';
+const menuHeading = 'px-2 py-1 bg-blue-200 rounded-t-md';
+const eachSelect = 'px-2 py-1 not-last:border-b-1 border-gray-300 cursor-pointer hover:bg-amber-100';
 const arrowDownwardIcon = 'w-5 my-2 mx-auto';
+const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
 </script>
 
 <template>
     <div class="w-full h-full px-10 py-4">
-        <div v-if="isLoading" class="text-center">
-            読み込み中
+        <h1 class="text-2xl text-center">速報対象試合検索</h1>
+        <div :class="eachMenuContainer">
+            <h2 :class="menuHeading">カテゴリー</h2>
+            <div v-for="(category, idx) in CATEGORIES" :key="idx" :class="[eachSelect, { 'bg-amber-100': selectedCategory === category }]">
+                <label :for="'category-selector-' + idx" class="block w-full cursor-pointer">
+                    <input type="radio" :value="category" v-model="selectedCategory" :id="'category-selector-' + idx" class="appearance-none" />
+                    {{ category }}
+                </label>
+            </div>
         </div>
-        <div v-else class="text-center mx-auto">
-            <div v-if="isFetchingSuccessful">
-                <!-- カテゴリーで絞り込み -->
-                <div :class="eachMenuContainer">
-                    <h2 :class="menuHeading">カテゴリー</h2>
-                    <select v-model="selectedCategory" :class="eachSelect" id="category-select">
-                        <option value="" disabled>最初にカテゴリーを選択してください。</option>
-                        <option v-for="(category, idx) in CATEGORIES" :key="idx" :value="category">
-                            {{ category }}
-                        </option>
-                    </select>
-                </div>
-                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-                <!-- 大会名で絞り込み -->
-                <div :class="eachMenuContainer">
-                    <h2 :class="menuHeading">大会名</h2>
-                    <select v-model="selectedChampionship" :class="eachSelect" id="championship-select">
-                        <option v-if="championshipsFilteredByCategory.includes('（選択肢が表示されます）')" value="" disabled>
-                            （選択肢が表示されます）</option>
-                        <option v-else v-for="(championship, idx) in championshipsFilteredByCategory" :key="idx"
-                            :value="championship">
+        <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+        <div :class="eachMenuContainer">
+            <h2 :class="menuHeading">大会名</h2>
+            <div v-if="!selectedCategory">
+                （大会名が表示されます）
+            </div>
+            <Transition
+                enter-active-class="transition-opacity duration-300 ease-in"
+                leave-active-class="transition-opacity duration-300 ease-out"
+                enter-from-class="opacity-0"
+                leave-to-class="opacity-0"
+            >
+                <div v-if="selectedCategory" class="championship-list">
+                    <div v-for="(championship, idx) in championshipsFilteredByCategory" :key="idx" :class="[eachSelect, { 'bg-amber-100': selectedChampionshipName === championship }]">
+                        <label :for="'championship-selector-' + idx" class="block w-full cursor-pointer">
+                            <input type="radio" :value="championship" v-model="selectedChampionshipName" :id="'championship-selector-' + idx" class="appearance-none" />
                             {{ championship }}
-                        </option>
-                    </select>
-                </div>
-                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-                <!-- 試合開催日で絞り込み -->
-                <div :class="eachMenuContainer">
-                    <h2 :class="menuHeading">試合開催日</h2>
-                    <div v-if="selectedChampionship === ''">
-                        <p :class="instructionText">（日付を選択できるようになります）</p>
-                    </div>
-                    <div v-else>
-                        <input type="date" v-model="selectedMatchDate" :class="eachSelect" id="match-date-input">
+                        </label>
                     </div>
                 </div>
-                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-                <!-- 試合会場で絞り込み -->
-                <div :class="eachMenuContainer">
-                    <h2 :class="menuHeading">試合会場</h2>
-                    <select v-model="selectedVenue" :class="eachSelect" id="venue-select">
-                        <option value="" disabled>（試合会場が表示されます）</option>
-                        <option
-                            v-if="selectedMatchDate && !venuesFilteredByChampionshipAndMatchDate.includes('試合がありません')"
-                            v-for="(venue, idx) in venuesFilteredByChampionshipAndMatchDate" :key="idx" :value="venue">
+            </Transition>
+        </div>
+        <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+        <div :class="eachMenuContainer">
+            <h2 :class="menuHeading">試合会場</h2>
+            <div v-if="!selectedChampionshipName">
+                （会場が表示されます）
+            </div>
+            <Transition
+                enter-active-class="transition-opacity duration-300 ease-in"
+                leave-active-class="transition-opacity duration-300 ease-out"
+                enter-from-class="opacity-0"
+                leave-to-class="opacity-0"
+            >
+                <div v-if="selectedChampionshipName" class="venue-list">   
+                    <div v-for="(venue, idx) in venuesFilteredByCategoryAndChampionship" :key="idx" :class="[eachSelect, { 'bg-amber-100': selectedVenue === venue }]">
+                        <label :for="'venue-selector-' + idx" class="block w-full cursor-pointer">
+                            <input type="radio" :value="venue" v-model="selectedVenue" :id="'venue-selector-' + idx" class="appearance-none" />
                             {{ venue }}
-                        </option>
-                        <option v-else-if="selectedMatchDate" disabled>試合がありません</option>
-                    </select>
-                </div>
-                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-                <!-- 結果入力可能な試合を一覧で表示-->
-                <div :class="eachMenuContainer">
-                    <h2 :class="menuHeading">結果入力　対象試合一覧</h2>
-                    <div v-if="selectedVenue === ''">
-                        <p :class="instructionText">（全ての項目が選択されると表示されます）</p>
+                        </label>
                     </div>
-                    <div v-else class="px-2 py-2">
-                        <div v-for="(item, idx) in matchesToRegisterResult" :key="idx" class="group not-last:mb-2">
-                            <div class="flex">
-                                <form @submit.prevent="moveToRegisterMatchResult(item.championshipId, item.match.match_id)">
-                                    <button type="submit" class="h-12 px-4 mr-4 bg-amber-200 border-1 rounded-sm">選択</button>
-                                </form>
-                                <div>
-                                    <p class="text-left">{{ item.match.scheduled_match_start_time }}（開始予定時刻）</p>
-                                    <p class="text-left">
-                                        {{ item.match.home_club.club_name }}
-                                        <span class="mx-2">対</span>
-                                        {{ item.match.away_club.club_name }}
-                                    </p>
+                </div>
+            </Transition>
+        </div>
+        <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+        <div :class="eachMenuContainer">
+            <h2 :class="menuHeading">試合一覧（本日{{today}}から{{oneWeekAgoToDisplay}}までの開催分）</h2>
+            <div v-if="!selectedVenue">
+                （試合が表示されます）
+            </div>
+            <Transition
+                enter-active-class="transition-opacity duration-300 ease-in"
+                leave-active-class="transition-opacity duration-300 ease-out"
+                enter-from-class="opacity-0"
+                leave-to-class="opacity-0"
+            >
+                <div v-if="selectedVenue" class="match-list">
+                    <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx" class="not-last:border-b-1 border-gray-300">
+                        <div v-if="match.isResultRegistered">
+                            <form @submit.prevent="moveToRegisterMatchResult(match.matchId)"  class="flex items-center px-2 py-1 bg-gray-200">
+                                <button type="button" @click="moveToRegisterMatchResult(match.matchId)" :class="selectBtn" class="bg-gray-200 border-1 border-black">選択</button>
+                                <div class="w-full">
+                                    <div class="text-left">
+                                        開催日：{{ match.matchDate }}
+                                    </div>
+                                    <div class="flex justify-start items-center w-full">
+                                        <div class="w-2/5">{{ match.homeClubName }}</div>
+                                        <div class="w-1/5 mx-3 italic text-center">{{ match.homeClubFinalScore }}<span class="mx-2">対</span>{{ match.awayClubFinalScore }}</div>
+                                        <div class="w-2/5">{{ match.awayClubName }}</div>
+                                    </div>
+                                    <div class="text-left text-red-600">
+                                        登録済み
+                                    </div>
                                 </div>
+                            </form>
+                        </div>
+                        <div v-else class="px-2 py-1 last:rounded-b-md">
+                            <div>
+                                <form @submit.prevent="moveToRegisterMatchResult(match.matchId)" class="flex items-center">
+                                    <button type="button" @click="moveToRegisterMatchResult(match.matchId)" :class="selectBtn" class="bg-red-200 border-1 border-black">選択</button>
+                                    <div class="w-full">
+                                        <div class="text-left">
+                                            開催日：{{ match.matchDate }}
+                                        </div>
+                                        <div class="flex">
+                                            <div>{{ match.homeClubName }}</div>
+                                            <div><span class="mx-2">対</span></div>
+                                            <div>{{ match.awayClubName }}</div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="group-not-last:border-b-1 group-not-last:border-gray-300 mt-2"></div>
                         </div>
                     </div>
                 </div>
-                <p class="text-left text-red-900 font-bold">選択ボタンを押すと新しいウィンドウを開きます。</p>
-            </div>
-            <div v-else>
-                {{ failedFetchingMsg }}
-            </div>
+            </Transition>
         </div>
     </div>
 </template>
 
-<style scoped></style>
+<style>
+</style>

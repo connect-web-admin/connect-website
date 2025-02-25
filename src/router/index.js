@@ -47,13 +47,13 @@ const router = createRouter({
 		},
 
 		{
-			path: '/connecter/select_match_to_register_result',
+			path: '/connecter/select-match-to-register-result',
 			name: 'SelectMatchToRegisterResult',
 			component: SelectMatchToRegisterResultView,
 		},
 
 		{
-			path: '/connecter/register_match_result/:championshipId/:matchId',
+			path: '/connecter/register-match-result/:championshipId/:matchId',
 			name: 'RegisterMatchResult',
 			component: RegisterMatchResultView,
 			props: true
@@ -61,13 +61,13 @@ const router = createRouter({
 
 		// 一般会員（暫定）向けのルーティング
 		{
-			path: '/event_view',
+			path: '/event-view',
 			name: 'EventView',
 			component: EventView,
 		},
 
 		{
-			path: '/latest_results',
+			path: '/latest-results',
 			name: 'LatestResults',
 			component: LatestResultsView,
 		},
@@ -79,7 +79,7 @@ const router = createRouter({
 		},
 
 		{
-			path: '/club_list',
+			path: '/club-list',
 			name: 'ClubList',
 			component: ClubListView,
 		}

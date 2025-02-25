@@ -11,7 +11,6 @@ import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
 import { CONNECTER, ID_TOKEN_FOR_AUTH, USER_ATTR_EMAIL, USER_ATTR_MEMBERSHIP_TYPE, USER_ATTR_SESSION_ID, USER_ATTR_SUB } from '@/utils/constants';
 import HeaderComp from './components/HeaderComp.vue'; 
 import FooterComp from './components/FooterComp.vue';
-import PreparationView from './views/PreparationView.vue';
 
 // 一般公開までの準備中ページを表示するためのフラグ
 const isPreparation = ref(false);
@@ -41,8 +40,8 @@ const fetchUserInfoFromCognito = async () => {
 
         // API認可用のトークンを取得・ローカルストレージにセット
         const authSession = await fetchAuthSession();
-        localStorage.setItem(USER_ATTR_SUB, authSession.tokens.idToken);
-        localStorage.setItem(ID_TOKEN_FOR_AUTH, authSession.tokens.idToken.payload.sub);
+        localStorage.setItem(ID_TOKEN_FOR_AUTH, authSession.tokens.idToken);
+        localStorage.setItem(USER_ATTR_SUB, authSession.tokens.idToken.payload.sub);
     } catch (error) {
         console.error('Cognitoユーザー情報の取得に失敗しました。', error);
     }
@@ -71,15 +70,16 @@ onMounted(() => {
 
 <template>
 <div v-if="isPreparation">
-    <PreparationView />
+    <h1>connect</h1>
+    <p>5月中旬一般公開予定</p>
 </div>
 <div v-else class="min-h-screen flex flex-col">
-    <header class="sticky top-0 z-50 bg-white">
+    <!-- <header class="sticky top-0 z-50 bg-white">
         <HeaderComp 
             :user="authState.user"
             :signOut="authState.signOut"
         />
-    </header>        
+    </header>         -->
 
     <main class="flex-1">
         <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
@@ -95,9 +95,9 @@ onMounted(() => {
         </Authenticator>
     </main>
         
-    <footer class="mt-auto">
+    <!-- <footer class="mt-auto">
         <FooterComp />
-    </footer>
+    </footer> -->
 </div>
 </template>
 
