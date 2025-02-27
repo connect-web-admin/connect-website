@@ -275,7 +275,7 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
         </div>
         <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
         <div :class="eachMenuContainer">
-            <h2 :class="menuHeading">試合一覧（本日{{today}}から{{oneWeekAgoToDisplay}}までの開催分）</h2>
+            <h2 :class="menuHeading">試合一覧（{{oneWeekAgoToDisplay}}から本日{{today}}までの開催分）</h2>
             <div v-if="!selectedVenue">
                 （試合が表示されます）
             </div>
