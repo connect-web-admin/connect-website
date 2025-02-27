@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import App from '@/App.vue'
+import TopView from '@/views/TopView.vue'
 import EventView from '@/views/EventView.vue'
 import ClubListView from '@/views/ClubListView.vue'
 import LatestResultsView from '@/views/LatestResultsView.vue'
@@ -18,6 +19,12 @@ const router = createRouter({
 			path: '/',
 			name: 'Home',
 			component: App,
+		},
+
+		{
+			path: '/top',
+			name : 'Top',
+			component: TopView
 		},
 
 		{
