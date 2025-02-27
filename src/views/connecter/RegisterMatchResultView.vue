@@ -1,11 +1,17 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import RegisterScoreModal from '@/components/RegisterScoreModal.vue';
+import RegisterMatchResultModal from '@/components/RegisterMatchResultModal.vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
 
 // 読み込み中・処理中の画面切り替え用フラグ
 const isLoading = ref(false);
 const isProcessing = ref(false);
+const showHomeClubPlusModal = ref(false);
+const showAwayClubPlusModal = ref(false);
+const showHomeClubMinusModal = ref(false);
+const showAwayClubMinusModal = ref(false);
 
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
@@ -13,62 +19,83 @@ const route = useRoute();
 // REST APIで使う認証トークンを取得
 const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
 
-// 結果入力対象試合の情報をブラウザに表示するためのデータ
-// 結果登録に使われるわけではない
-const targetMatchInfo = ref({
-    championshipName: '',
-    round: '',
-    match: '',
-    matchDetail: {
-        match_date: '',
-        scheduled_match_start_time: '',
-        home_club: {
-            club_name: ''
-        },
-        away_club: {
-            club_name: ''
-        },
-        venue: '',
-        is_result_registered: false
-    }
-});
+// 速報画面の初期状態
+const targetMatchInfo = ref({}) // おおもとの試合情報
+const championshipName = ref(''); // 大会名
+const round = ref(''); // ラウンド
+const match = ref(''); // 試合
+const matchDate = ref(''); // 試合日
+const scheduledMatchStartTime = ref(''); // 予定試合開始時刻
+const homeClubName = ref(''); // ホームクラブ名
+const awayClubName = ref(''); // アウェイクラブ名
+const venue = ref(''); // 会場
+const isLeague = ref(false); // リーグ戦フラグ
+const isResultRegistered = ref(false); // 試合結果登録済みフラグ
+const gameStatus = ref('前半'); // 試合進行状況
 
 // 試合結果入力フォームのデータを格納する
-const actualMatchStartTime = ref(''); // 実際の試合開始時刻
-const hasPK = ref(false); // PK戦有無
-const homeClubFinalScore = ref(0); // ホームクラブの得点
-const homeClubPKScore = ref(0); // ホームクラブのPK戦スコア
-const awayClubFinalScore = ref(0); // アウェイクラブの得点
-const awayClubPKScore = ref(0); // アウェイクラブのPK戦スコア
 const isDelayed = ref(false); // 試合順延フラグ
 const championshipId = route.params.championshipId; // 大会ID ルーティング時にパラメタで渡される
 const matchId = route.params.matchId; // 試合ID ルーティング時にパラメタで渡される
+const actualMatchStartTime = ref(''); // 実際の試合開始時刻
+const hasExtraHalves = ref(false); // 延長戦有無
+const hasPK = ref(false); // PK戦有無
+const isHome = ref(true); // ホームクラブかどうか 
+const isAway = ref(true); // アウェイクラブかどうか。isHomeだけで判定できるが、直感的に理解しやすくするために追加
+const isPlusScore = ref(true); // 得点追加フラグ
+const isMinusScore = ref(true); // 得点減少フラグ
+
+const homeClubFirstHalfScore = ref(0); // ホームクラブの前半得点
+const homeClubSecondHalfScore = ref(0); // ホームクラブの後半得点
+const homeClubFinalScore = ref(0); // ホームクラブの得点
+const homeClubPKScore = ref(0); // ホームクラブのPK戦スコア
+const awayClubFirstHalfScore = ref(0); // アウェイクラブの前半得点
+const awayClubSecondHalfScore = ref(0); // アウェイクラブの後半得点
+const awayClubFinalScore = ref(0); // アウェイクラブの得点
+const awayClubPKScore = ref(0); // アウェイクラブのPK戦スコア
 
 // エラーメッセージを格納する
 const errorMessage = ref('');
 
-// 試合日をフォーマット YYYY-MM-DDからYYYY/MM/DDに変換
+// 試合の進行状況
+
+// 試合日をフォーマット YYYY-MM-DDからMM/DDに変換
 const formattedMatchDate = computed(() => {
-    if (!targetMatchInfo.value?.matchDetail?.match_date) {
+    if (!matchDate.value) {
         return '';
     }
-    const matchDate = targetMatchInfo.value.matchDetail.match_date;
 
-    return new Date(matchDate).toLocaleDateString('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    });
+    const dateParts = matchDate.value.split('-'); // YYYY-MM-DDを[YYYY, MM, DD]に分割
+    const month = parseInt(dateParts[1], 10);
+    const day = parseInt(dateParts[2], 10);
+    const formattedDate = `${month}/${day}`;
+
+    return formattedDate;
 });
 
-// 結果入力対象試合を取得
+const homeScore = computed(() => {
+    return homeClubFirstHalfScore.value + homeClubSecondHalfScore.value;
+});
+
+const awayScore = computed(() => {
+    return awayClubFirstHalfScore.value + awayClubSecondHalfScore.value;
+});
+
+// ユーザーが時間を変更したときに selectedTime を更新
+const setActualMatchStartTime = (event) => {
+    actualMatchStartTime.value = event.target.value;
+};
+
+/**
+ * 結果入力対象の試合情報を取得する
+ */
 const getTargetMatchInfo = async () => {
     isLoading.value = true
     errorMessage.value = '' // エラーメッセージをリセット
 
     // 試合情報取得用のURLを作成
     // 試合を絞り込むために年度とIDをクエリパラメータに含める
-    const queryUrl = new URL(`${MATCH_API_URL}/target_match`);
+    const queryUrl = new URL(`${MATCH_API_URL}/target-match`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
     queryUrl.searchParams.append('championshipId', championshipId);
     queryUrl.searchParams.append('matchId', matchId);
@@ -87,51 +114,39 @@ const getTargetMatchInfo = async () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const data = await response.json()
-        targetMatchInfo.value = data
+        const data = await response.json();
+        targetMatchInfo.value = data;
+        championshipName.value = data['championship_name'];
+        isLeague.value = data['is_league'];
+        round.value = data['round'];
+        match.value = data['match'];
+        venue.value = data['match_detail']['venue'];
+        isResultRegistered.value = data['match_detail']['is_result_registered'];
+        matchDate.value = data['match_detail']['match_date'];
+        scheduledMatchStartTime.value = data['match_detail']['scheduled_match_start_time'];
+        homeClubName.value = data['match_detail']['home_club']['club_name'];
+        homeClubFirstHalfScore.value = data['match_detail']['home_club']['first_half_score'];
+        homeClubSecondHalfScore.value = data['match_detail']['home_club']['second_half_score'];
+        homeClubFinalScore.value = data['match_detail']['home_club']['final_score'];
+        awayClubName.value = data['match_detail']['away_club']['club_name'];
+        awayClubFirstHalfScore.value = data['match_detail']['away_club']['first_half_score'];
+        awayClubSecondHalfScore.value = data['match_detail']['away_club']['second_half_score'];  
     } catch (error) {
-        console.error('Error details:', error)
-        errorMessage.value = '試合データの取得に失敗しました。'
+        console.error('Error details:', error);
+        errorMessage.value = '試合データの取得に失敗しました。';
     } finally {
-        isLoading.value = false
+        isLoading.value = false;
     }
 };
 
-// 試合結果登録
+/**
+ * 試合結果登録
+ */
 const registerMatchResult = async () => {
     // 試合結果登録のバリデーション
     if (!actualMatchStartTime.value) {
         alert('実際の試合開始時刻を入力してください。');
         return;
-    }
-
-    // 両チームのの得点が0から99の間であるか確認
-    if (homeClubFinalScore.value < 0 || homeClubFinalScore.value > 99) {
-        alert('得点を0から99の間で入力してください。');
-        return;
-    }
-    if (awayClubFinalScore.value < 0 || awayClubFinalScore.value > 99) {
-        alert('得点を0から99の間で入力してください。');
-        return;
-    }
-
-    // PK戦が「あり」となっている場合のPK戦スコアのバリデーション
-    if (hasPK.value) {
-        // 両チームのPK戦スコアが0から99の間であるか確認
-        if (homeClubPKScore.value < 0 || homeClubPKScore.value > 99) {
-            alert('PK戦スコアを0から99の間で入力してください。');
-            return;
-        }
-        if (awayClubPKScore.value < 0 || awayClubPKScore.value > 99) {
-            alert('PK戦スコアを0から99の間で入力してください。');
-            return;
-        }
-
-        // 両チームのPK戦スコアが0の場合はPK戦がないと判断して良いか確認
-        if (homeClubPKScore.value === 0 && awayClubPKScore.value === 0) {
-            alert('PK戦が「あり」になっていますが、両チームのPK戦スコアが0です。PK戦の有無を確認してください。');
-            return;
-        }
     }
 
     if (!confirm('試合結果を登録してよろしいですか？')) {
@@ -181,12 +196,14 @@ const registerMatchResult = async () => {
     }
 };
 
-// 試合延期登録
+/**
+ * 試合延期登録
+ */
 const registerMatchDelay = async () => {
     isProcessing.value = true;
 
     try {
-        const putUrl = new URL(`${MATCH_API_URL}/register_match_delay`);
+        const putUrl = new URL(`${MATCH_API_URL}/register-match-delay`);
 
         const requestBody = {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
@@ -223,8 +240,17 @@ onMounted(async () => {
     await getTargetMatchInfo()
 });
 
+const showMatchResultModal = ref(false);
+
 // CSS
-const btnBase = 'min-w-1/3 w-1/3 text-white p-2 rounded-md mx-auto my-5';
+const textClubName = 'text-xl border-1 border-gray-200 py-2';
+const scoreInputBg = 'p-4 border-1 border-gray-200';
+const scoringOpenModal = 'text-4xl leading-none';
+const scoringBtn = 'bg-white border-2 border-red-600 rounded-md w-12 h-10';
+const undoScoring = 'mt-10 mb-2';
+const gameStatusBtnForPrev = 'px-3 py-1 bg-red-100 border-1 border-gray-200 rounded-md';
+const gameStatusBtnForNext = 'px-3 py-1 bg-indigo-100 border-1 border-gray-200 rounded-md';
+const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-auto my-5';
 </script>
 
 <template>
@@ -237,100 +263,194 @@ const btnBase = 'min-w-1/3 w-1/3 text-white p-2 rounded-md mx-auto my-5';
         <img src="../../assets/icons/loading_processing.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
         <p class="text-center">処理中</p>
     </div>
-    <div v-else-if="targetMatchInfo.matchDetail.is_result_registered">
-        <p>この試合の結果はすでに登録されています。ウィンドウを閉じてください。</p>
-    </div>
     <div v-else>
         <div v-if="errorMessage">
             {{ errorMessage }}
         </div>
         <div v-else class="text-center">
             <div>
-                <p>{{ targetMatchInfo.championshipName }}</p>
-                <p>{{ targetMatchInfo.round }}{{ targetMatchInfo.match }}</p>
-                <div class="my-4">
-                    <p>試合年月日：{{ formattedMatchDate }}</p>
-                    <p>開始予定時刻：{{ targetMatchInfo.matchDetail.scheduled_match_start_time }}</p>
-                    <p>会場：{{ targetMatchInfo.matchDetail.venue }}</p>
-                </div>
+                <p>{{ championshipName }}</p>
+                <p>{{ round }}{{ match }}</p>
+                <p>試合日時：{{ formattedMatchDate }} - {{ scheduledMatchStartTime }}</p>
+                <p>会場：{{ venue }}</p>
                 <div class="flex flex-row justify-center">
-                    <p class="w-48 break-words">{{ targetMatchInfo.matchDetail.home_club.club_name }}</p>
-                    <p class="w-4 mx-2">対</p>
-                    <p class="w-48 break-words">{{ targetMatchInfo.matchDetail.away_club.club_name }}</p>
+                    <p class="w-48 break-words text-right">{{ homeClubName }}</p>
+                    <p class="w-4 mx-2">vs</p>
+                    <p class="w-48 break-words text-left">{{ awayClubName }}</p>
                 </div>
             </div>
-            <div class="my-4 w-98 mx-auto flex flex-col border-1 border-gray-400 rounded-md">
-                <p class="p-1 bg-green-200 font-bold text-xl rounded-t-md">試合結果入力</p>
-                <form @submit.prevent="registerMatchResult">
-                    <div class="h-15">
-                        <p class="w-full bg-gray-200">実際の試合開始時刻</p>
-                        <input type="time" v-model="actualMatchStartTime" class="mt-2"/>
+            <div class="my-10">
+                <p class="p-1 bg-green-100 font-bold text-xl rounded-t-md">試合速報入力</p>
+                <div class="h-15">
+                    <label for="match-time"><p class="bg-gray-200">実際の試合開始時刻</p></label>
+                    <div class="flex items-center justify-center h-10">
+                        <input type="time" id="match-time" class="bg-cyan-50" :value="scheduledMatchStartTime" @input="setActualMatchStartTime" />
                     </div>
-                    <div class="my-4 h-15">
-                        <p class="w-full bg-gray-200">PK戦の有無</p>
-                        <div class="flex flex-row justify-center mt-2">
-                            <div class="mx-4">
-                                <input type="radio" id="hasPKRadio1" v-model="hasPK" :value="true" />
-                                <label for="hasPKRadio1">あり</label>
-                            </div>
-                            <div class="mx-4">
-                                <input type="radio" id="hasPKRadio2" v-model="hasPK" :value="false" />
-                                <label for="hasPKRadio2">なし</label>
-                            </div>
+                </div>
+                <div class="p-1 border-t-1 border-gray-400">
+                    <span v-if="(gameStatus !== '試合前') && (gameStatus !== '試合終了')">LIVE - </span><span class="italic">{{ gameStatus }}</span>
+                </div>
+                <!-- <div v-if="!isLeague" class="my-4 h-15">
+                    <p class="w-full bg-gray-200">PK戦の有無</p>
+                    <div class="flex flex-row justify-center mt-2">
+                        <div class="mx-4">
+                            <input type="radio" id="hasPKRadio1" v-model="hasPK" :value="true" />
+                            <label for="hasPKRadio1">あり</label>
+                        </div>
+                        <div class="mx-4">
+                            <input type="radio" id="hasPKRadio2" v-model="hasPK" :value="false" />
+                            <label for="hasPKRadio2">なし</label>
                         </div>
                     </div>
-                    <div class="flex flex-row w-full">
-                        <div class="w-1/2">
-                            <p class="bg-amber-100 border-1 border-gray-200 py-2">{{ targetMatchInfo.matchDetail.home_club.club_name }}</p>
-                            <div class="p-4 bg-amber-50 border-1 border-gray-200">
-                                <div>
-                                    <p>最終スコア</p>
-                                    <input type="number" min="0" max="99" v-model="homeClubFinalScore" class="px-4 py-2 text-center bg-white" />
-                                </div>
-                                <Transition
-                                    enter-active-class="transition-opacity duration-500"
-                                    enter-from-class="opacity-0"
-                                    enter-to-class="opacity-100"
-                                    leave-active-class="transition-opacity duration-200"
-                                    leave-from-class="opacity-100"
-                                    leave-to-class="opacity-0"
+                </div> -->
+                <div class="flex flex-row">
+                    <div class="w-1/2">
+                        <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
+                        <div :class="scoreInputBg" class="bg-blue-50">
+                            <div class="flex items-center justify-center gap-2">
+                                <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-black"></div>
+                                <button type="button" @click="showHomeClubPlusModal = true" :class="scoringBtn ">
+                                    <span :class="scoringOpenModal">{{ homeScore }}</span>
+                                </button>
+                                <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-black"></div>
+                            </div>
+                            <Teleport to="body">
+                                <!-- use the modal component, pass in the prop -->
+                                <register-score-modal
+                                    :show="showHomeClubPlusModal"
+                                    :championship-id="championshipId"
+                                    :match-id="matchId"
+                                    :game-status="gameStatus"
+                                    :isHome="isHome"
+                                    :is-plus-score="isPlusScore"
+                                    :home-club-first-half-score="homeClubFirstHalfScore"
+                                    :home-club-second-half-score="homeClubSecondHalfScore"
+                                    @close="showHomeClubPlusModal = false"
+                                    @plus-score="homeClubFirstHalfScore += 1">
                                 >
-                                    <div v-if="hasPK" class="mt-4">
-                                        <p>PK戦スコア</p>
-                                        <input type="number" min="0" max="99" v-model="homeClubPKScore" class="px-4 py-2 text-center bg-white" />
-                                    </div>
-                                </Transition>
-                            </div>
+                                    <template v-slot:body>
+                                        <p><span class="text-red-500 font-bold">{{ homeClubName }}</span>に１点を追加します。<br />よろしいですか？</p>
+                                    </template>
+                                </register-score-modal>
+                            </Teleport>
                         </div>
-                        <div class="w-1/2">
-                            <p class="bg-blue-100 border-1 border-gray-200 py-2">{{ targetMatchInfo.matchDetail.away_club.club_name }}</p>
-                            <div class="p-4 bg-blue-50 border-1 border-gray-200">
-                                <div>
-                                    <p>最終スコア</p>
-                                    <input type="number" min="0" max="99" v-model="awayClubFinalScore" class="px-4 py-2 text-center bg-white" />
-                                </div>
-                                <Transition
-                                    enter-active-class="transition-opacity duration-600"
-                                    enter-from-class="opacity-0"
-                                    enter-to-class="opacity-100"
-                                    leave-active-class="transition-opacity duration-200"
-                                    leave-from-class="opacity-100"
-                                    leave-to-class="opacity-0"
+                        <div :class="undoScoring">
+                            <button type="button" @click="showHomeClubMinusModal = true" class="px-2 bg-gray-400 text-white rounded-md">得点取り消し</button>
+                            <Teleport to="body">
+                                <!-- use the modal component, pass in the prop -->
+                                <register-score-modal
+                                    :show="showHomeClubMinusModal"
+                                    :championship-id="championshipId"
+                                    :match-id="matchId"
+                                    :game-status="gameStatus"
+                                    :is-home="isHome"
+                                    :is-minus-score="isMinusScore"
+                                    :home-club-first-half-score="homeClubFirstHalfScore"
+                                    :home-club-second-half-score="homeClubSecondHalfScore"
+                                    @close="showHomeClubMinusModal = false"
+                                    @minus-score="homeClubFirstHalfScore -= 1">
                                 >
-                                    <div v-if="hasPK" class="mt-4">
-                                        <p>PK戦スコア</p>
-                                        <input type="number" min="0" max="99" v-model="awayClubPKScore" class="px-4 py-2 text-center bg-white" />
-                                    </div>
-                                </Transition>
+                                    <template v-slot:body>
+                                        <p><span class="text-red-500 font-bold">{{ homeClubName }}</span>の１点を取り消します。<br />よろしいですか？</p>
+                                    </template>
+                                </register-score-modal>
+                            </Teleport>
+                        </div>
+                    </div>
+                    <div class="w-1/2">
+                        <p :class="textClubName" class="bg-amber-100">{{ awayClubName }}</p>
+                        <div :class="scoreInputBg" class="bg-amber-50">
+                            <div class="flex items-center justify-center gap-2">
+                                <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-black"></div>
+                                <button type="button" @click="showAwayClubPlusModal = true" :class="scoringBtn ">
+                                    <span :class="scoringOpenModal">{{ awayScore }}</span>
+                                </button>
+                                <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-black"></div>
+                            </div>
+                            <Teleport to="body">
+                                <!-- use the modal component, pass in the prop -->
+                                <register-score-modal
+                                    :show="showAwayClubPlusModal"
+                                    :championship-id="championshipId"
+                                    :match-id="matchId"
+                                    :game-status="gameStatus"
+                                    :is-away="isAway"
+                                    :is-plus-score="isPlusScore"
+                                    :away-club-first-half-score="awayClubFirstHalfScore"
+                                    :away-club-second-half-score="awayClubSecondHalfScore"
+                                    @close="showAwayClubPlusModal = false"
+                                    @plusScore="awayClubFirstHalfScore += 1"
+                                >
+                                    <template v-slot:body>
+                                        <p><span class="text-red-500 font-bold">{{ awayClubName }}</span>に１点を追加します。<br />よろしいですか？</p>
+                                    </template>
+                                </register-score-modal>
+                            </Teleport>
+                        </div>
+                        <div :class="undoScoring">
+                            <button type="button" @click="showAwayClubMinusModal = true"  class="px-2 bg-gray-400 text-white rounded-md">得点取り消し</button>
+                            <Teleport to="body">
+                                <!-- use the modal component, pass in the prop -->
+                                <register-score-modal
+                                    :show="showAwayClubMinusModal"
+                                    :championship-id="championshipId"
+                                    :match-id="matchId"
+                                    :game-status="gameStatus"
+                                    :is-away="isAway"
+                                    :is-minus-score="isMinusScore"
+                                    :away-club-first-half-score="awayClubFirstHalfScore"
+                                    :away-club-second-half-score="awayClubSecondHalfScore"
+                                    @close="showAwayClubMinusModal = false"
+                                    @minus-score="awayClubFirstHalfScore -= 1">
+                                >
+                                    <template v-slot:body>
+                                        <p><span class="text-red-500 font-bold">{{ awayClubName }}</span>の１点を取り消します。<br />よろしいですか？</p>
+                                    </template>
+                                </register-score-modal>
+                            </Teleport>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xl mt-2">
+                        <p>{{ homeClubFirstHalfScore }}　前半　{{ awayClubFirstHalfScore }}</p>
+                        <p>{{ homeClubSecondHalfScore }}　後半　{{ awayClubSecondHalfScore }}</p>
+                        <p>{{ homeScore }}　合計　{{ awayScore }}</p>
+                        <div class="flex flex-row justify-between items-center">
+                            <div class="w-1/4 text-right">
+                                <button type="button" v-if="gameStatus === '前半'" @click="gameStatus = '試合前'" :class="gameStatusBtnForPrev">試合前</button>
+                                <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '前半'" :class="gameStatusBtnForPrev">前半</button>
+                                <button type="button" v-else-if="gameStatus === '試合終了'" @click="gameStatus = '後半'" :class="gameStatusBtnForPrev">後半</button>
+                            </div>
+                            <div class="flex flex-row items-center gap-5 w-2/4 text-center justify-center">
+                                <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-black"></div>
+                                <p>試合進行</p>
+                                <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-black"></div>
+                            </div>
+                            <div class="w-1/4 text-left">
+                                <button type="button" v-if="gameStatus === '試合前'" @click="gameStatus = '前半'" :class="gameStatusBtnForPrev">前半</button>
+                                <button type="button" v-else-if="gameStatus === '前半'" @click="gameStatus = '後半'" :class="gameStatusBtnForNext">後半</button>
+                                <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '試合終了'" :class="gameStatusBtnForPrev">試合終了</button>
                             </div>
                         </div>
                     </div>
-                    <div :class="btnBase" class="bg-blue-500">
-                        <button type="submit">試合結果登録</button>
-                    </div>
-                </form>
+                </div>
+                <div :class="registerBtnBase" class="mt-10 bg-blue-600">
+                    <button type="button" @click="showMatchResultModal = true">試合結果登録</button>
+                    <Teleport to="body">
+                        <!-- use the modal component, pass in the prop -->
+                        <register-match-result-modal
+                            :show="showMatchResultModal"
+                            @close="showMatchResultModal = false"
+                        >
+                            <template v-slot:body>
+                                <p>試合結果を登録します。よろしいですか？</p>
+                            </template>
+                        </register-match-result-modal>
+                    </Teleport>
+                </div>
             </div>
-            <div class="my-4 w-98 mx-auto">
+            <div class="my-5">
                 <p>または、この試合の延期を登録します。</p>
                 <div class="flex flex-row justify-center mt-2">
                     <div class="mx-4">
@@ -343,8 +463,8 @@ const btnBase = 'min-w-1/3 w-1/3 text-white p-2 rounded-md mx-auto my-5';
                     </div>
                 </div>
                 <form @submit.prevent="registerMatchDelay">
-                    <div :class="[btnBase, isDelayed ? 'bg-amber-600' : 'bg-gray-400 cursor-not-allowed']">
-                        <button type="submit" :disabled="!isDelayed">延期登録</button>
+                    <div :class="[registerBtnBase, isDelayed ? 'bg-amber-600' : 'bg-gray-300 cursor-not-allowed']">
+                        <button type="button" :disabled="!isDelayed">延期登録</button>
                     </div>
                 </form>
             </div>
