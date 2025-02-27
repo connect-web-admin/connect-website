@@ -5,19 +5,22 @@ import RegisterScoreModal from '@/components/RegisterScoreModal.vue';
 import RegisterMatchResultModal from '@/components/RegisterMatchResultModal.vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
 
-// 読み込み中・処理中の画面切り替え用フラグ
-const isLoading = ref(false);
-const isProcessing = ref(false);
-const showHomeClubPlusModal = ref(false);
-const showAwayClubPlusModal = ref(false);
-const showHomeClubMinusModal = ref(false);
-const showAwayClubMinusModal = ref(false);
-
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
 
 // REST APIで使う認証トークンを取得
 const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+
+// 読み込み中・処理中の画面切り替え用フラグ
+const isLoading = ref(false);
+const isProcessing = ref(false);
+
+// モーダル表示用のフラグ
+const showHomeClubPlusModal = ref(false);
+const showAwayClubPlusModal = ref(false);
+const showHomeClubMinusModal = ref(false);
+const showAwayClubMinusModal = ref(false);
+const showMatchResultModal = ref(false);
 
 // 速報画面の初期状態
 const targetMatchInfo = ref({}) // おおもとの試合情報
@@ -31,7 +34,7 @@ const awayClubName = ref(''); // アウェイクラブ名
 const venue = ref(''); // 会場
 const isLeague = ref(false); // リーグ戦フラグ
 const isResultRegistered = ref(false); // 試合結果登録済みフラグ
-const gameStatus = ref('前半'); // 試合進行状況
+const gameStatus = ref('試合前'); // 試合進行状況
 
 // 試合結果入力フォームのデータを格納する
 const isDelayed = ref(false); // 試合順延フラグ
@@ -41,23 +44,25 @@ const actualMatchStartTime = ref(''); // 実際の試合開始時刻
 const hasExtraHalves = ref(false); // 延長戦有無
 const hasPK = ref(false); // PK戦有無
 const isHome = ref(true); // ホームクラブかどうか 
-const isAway = ref(true); // アウェイクラブかどうか。isHomeだけで判定できるが、直感的に理解しやすくするために追加
+const isAway = ref(true); // アウェイクラブかどうか。isHomeの真偽地を使えば良いが、直感的に理解しやすくするために追加
 const isPlusScore = ref(true); // 得点追加フラグ
 const isMinusScore = ref(true); // 得点減少フラグ
 
 const homeClubFirstHalfScore = ref(0); // ホームクラブの前半得点
 const homeClubSecondHalfScore = ref(0); // ホームクラブの後半得点
+const homeClubExtraFirstHalfScore = ref(0); // ホームクラブの延長前半得点
+const homeClubExtraSecondHalfScore = ref(0); // ホームクラブの延長後半得点
 const homeClubFinalScore = ref(0); // ホームクラブの得点
 const homeClubPKScore = ref(0); // ホームクラブのPK戦スコア
 const awayClubFirstHalfScore = ref(0); // アウェイクラブの前半得点
 const awayClubSecondHalfScore = ref(0); // アウェイクラブの後半得点
+const awayClubExtraFirstHalfScore = ref(0); // アウェイクラブの延長前半得点
+const awayClubExtraSecondHalfScore = ref(0); // アウェイクラブの延長後半得点
 const awayClubFinalScore = ref(0); // アウェイクラブの得点
 const awayClubPKScore = ref(0); // アウェイクラブのPK戦スコア
 
 // エラーメッセージを格納する
 const errorMessage = ref('');
-
-// 試合の進行状況
 
 // 試合日をフォーマット YYYY-MM-DDからMM/DDに変換
 const formattedMatchDate = computed(() => {
@@ -73,12 +78,20 @@ const formattedMatchDate = computed(() => {
     return formattedDate;
 });
 
+// ブラウザの合計欄に表示する得点
 const homeScore = computed(() => {
-    return homeClubFirstHalfScore.value + homeClubSecondHalfScore.value;
+    if (hasExtraHalves.value) {
+        return homeClubFirstHalfScore.value + homeClubSecondHalfScore.value + homeClubExtraFirstHalfScore.value + homeClubExtraSecondHalfScore.value;
+    } else {
+        return homeClubFirstHalfScore.value + homeClubSecondHalfScore.value;
+    }
 });
-
 const awayScore = computed(() => {
-    return awayClubFirstHalfScore.value + awayClubSecondHalfScore.value;
+    if (hasExtraHalves.value) {
+        return awayClubFirstHalfScore.value + awayClubSecondHalfScore.value + awayClubExtraFirstHalfScore.value + awayClubExtraSecondHalfScore.value;
+    } else {
+        return awayClubFirstHalfScore.value + awayClubSecondHalfScore.value;
+    }
 });
 
 // ユーザーが時間を変更したときに selectedTime を更新
@@ -240,16 +253,13 @@ onMounted(async () => {
     await getTargetMatchInfo()
 });
 
-const showMatchResultModal = ref(false);
-
 // CSS
 const textClubName = 'text-xl border-1 border-gray-200 py-2';
 const scoreInputBg = 'p-4 border-1 border-gray-200';
 const scoringOpenModal = 'text-4xl leading-none';
 const scoringBtn = 'bg-white border-2 border-red-600 rounded-md w-12 h-10';
 const undoScoring = 'mt-10 mb-2';
-const gameStatusBtnForPrev = 'px-3 py-1 bg-red-100 border-1 border-gray-200 rounded-md';
-const gameStatusBtnForNext = 'px-3 py-1 bg-indigo-100 border-1 border-gray-200 rounded-md';
+const gameStatusBtn = 'px-3 py-1 bg-gray-50 border-1 border-gray-400 rounded-md';
 const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-auto my-5';
 </script>
 
@@ -290,19 +300,6 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                 <div class="p-1 border-t-1 border-gray-400">
                     <span v-if="(gameStatus !== '試合前') && (gameStatus !== '試合終了')">LIVE - </span><span class="italic">{{ gameStatus }}</span>
                 </div>
-                <!-- <div v-if="!isLeague" class="my-4 h-15">
-                    <p class="w-full bg-gray-200">PK戦の有無</p>
-                    <div class="flex flex-row justify-center mt-2">
-                        <div class="mx-4">
-                            <input type="radio" id="hasPKRadio1" v-model="hasPK" :value="true" />
-                            <label for="hasPKRadio1">あり</label>
-                        </div>
-                        <div class="mx-4">
-                            <input type="radio" id="hasPKRadio2" v-model="hasPK" :value="false" />
-                            <label for="hasPKRadio2">なし</label>
-                        </div>
-                    </div>
-                </div> -->
                 <div class="flex flex-row">
                     <div class="w-1/2">
                         <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
@@ -418,9 +415,9 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                         <p>{{ homeScore }}　合計　{{ awayScore }}</p>
                         <div class="flex flex-row justify-between items-center">
                             <div class="w-1/4 text-right">
-                                <button type="button" v-if="gameStatus === '前半'" @click="gameStatus = '試合前'" :class="gameStatusBtnForPrev">試合前</button>
-                                <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '前半'" :class="gameStatusBtnForPrev">前半</button>
-                                <button type="button" v-else-if="gameStatus === '試合終了'" @click="gameStatus = '後半'" :class="gameStatusBtnForPrev">後半</button>
+                                <button type="button" v-if="gameStatus === '前半'" @click="gameStatus = '試合前'" :class="gameStatusBtn">試合前</button>
+                                <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '前半'" :class="gameStatusBtn">前半</button>
+                                <button type="button" v-else-if="gameStatus === '試合終了'" @click="gameStatus = '後半'" :class="gameStatusBtn">後半</button>
                             </div>
                             <div class="flex flex-row items-center gap-5 w-2/4 text-center justify-center">
                                 <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-black"></div>
@@ -428,9 +425,9 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                                 <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-black"></div>
                             </div>
                             <div class="w-1/4 text-left">
-                                <button type="button" v-if="gameStatus === '試合前'" @click="gameStatus = '前半'" :class="gameStatusBtnForPrev">前半</button>
-                                <button type="button" v-else-if="gameStatus === '前半'" @click="gameStatus = '後半'" :class="gameStatusBtnForNext">後半</button>
-                                <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '試合終了'" :class="gameStatusBtnForPrev">試合終了</button>
+                                <button type="button" v-if="gameStatus === '試合前'" @click="gameStatus = '前半'" :class="gameStatusBtn">前半</button>
+                                <button type="button" v-else-if="gameStatus === '前半'" @click="gameStatus = '後半'" :class="gameStatusBtn">後半</button>
+                                <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '試合終了'" :class="gameStatusBtn">試合終了</button>
                             </div>
                         </div>
                     </div>
