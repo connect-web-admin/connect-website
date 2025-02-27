@@ -91,18 +91,16 @@ const moveToRegisterMatchResult = async (matchId) => {
         }
 
         if (isAlreadyRegistered) {
-            if (confirm('この試合の結果はすでに登録されています。修正しますか？')) {
-                router.push({
-                    name: 'RegisterMatchResult', // TODO:修正用ページに遷移するように書き換えること
-                    params: {
-                        championshipId: championshipId,
-                        matchId: matchId
-                    }
-                });
-            } else {
-                // 何もしない
+            if (!confirm('この試合の結果はすでに登録されています。修正しますか？')) {
                 return;
             }
+            router.push({
+                name: 'RegisterMatchResult', // TODO:修正用ページに遷移するように書き換えること
+                params: {
+                    championshipId: championshipId,
+                    matchId: matchId
+                }
+            });
         } else {
             // 大会IDと試合IDをパラメーターとして渡す
             router.push({
