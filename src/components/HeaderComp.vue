@@ -117,12 +117,12 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                     <Transition enter-active-class="transition-transform duration-300 ease-in-out"
                         enter-from-class="translate-x-full" leave-to-class="translate-x-full"
                         leave-active-class="transition-transform duration-300 ease-in-out" mode="out-in">
-                        <div class="absolute top-0 right-0 w-full z-9998 max-h-screen overflow-y-auto">
-                            <div class="flex justify-between items-end px-3 pt-10 pb-6 border-b-1">
+                        <div class="absolute top-0 right-0 w-full z-9998 max-h-screen overflow-y-auto pb-50">
+                            <div class="flex justify-between items-centerpx-3 pt-10 pb-6 border-b-1">
                                 <div class="w-[33px] h-[33px]"></div>
                                 <div class="text-center w-fit">メニュー</div>
                                 <!-- ハンバーガーメニューを閉じるためのアイコン -->
-                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer pr-2 pb-3">
+                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer pr-4">
                                     <div class="w-[20px] h-0.5 my-2.5 bg-gray-400 mb-2 rotate-45"></div>
                                     <div class="w-[20px] h-0.5 -my-2.5 bg-gray-400 mb-2 -rotate-45"></div>
                                 </div>
