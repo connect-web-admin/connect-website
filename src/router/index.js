@@ -10,6 +10,7 @@ import VideosView from '@/views/VideosView.vue';
 import MediaView from '@/views/MediaView.vue';
 import FaqView from '@/views/FaqView.vue';
 import LiveReportForUserView from '@/views/LiveReportForUserView.vue';
+import PremiumView from '@/views/PremiumView.vue';
 
 // 会社概要や利用規約などの目立たせないようにするページ
 import CompanyInfoView from '@/views/CompanyInfoView.vue';
@@ -31,7 +32,7 @@ const router = createRouter({
 	routes: [
 		{
 			path: '/',
-			name: 'Top',
+			name: 'Home',
 			component: TopView
 		},
 
@@ -41,12 +42,26 @@ const router = createRouter({
 			component: LoginView
 		},
 
+		/**
+		 * ハンバーガーメニュー内のリンク
+		 */
+		{
+			path: '/top',
+			name: 'Top',
+			component: TopView
+		},
+
 		{
 			path: '/live-report-for-user',
 			name: 'LiveReportForUser',
 			component: LiveReportForUserView
 		},
 
+		{
+			path: '/media',
+			name: 'Media',
+			component: MediaView
+		},
 
 		{
 			path: '/championship-schedule',
@@ -55,10 +70,11 @@ const router = createRouter({
 		},
 
 		{
-			path: '/media',
-			name: 'Media',
-			component: MediaView
+			path: '/club-introduction',
+			name: 'ClubIntroduction',
+			component: ClubIntroductionView
 		},
+
 
 		{
 			path: '/pics',
@@ -73,15 +89,21 @@ const router = createRouter({
 		},
 
 		{
+			path: '/faq',
+			name: 'Faq',
+			component: FaqView
+		},
+
+		{
 			path: '/company-info',
 			name: 'CompanyInfo',
 			component: CompanyInfoView
 		},
-
+		
 		{
-			path: '/copyright-info',
-			name: 'CopyrightInfo',
-			component: CopyrightInfoView
+			path: '/terms-of-service',
+			name: 'TermsOfService',
+			component: TermsOfServiceView
 		},
 
 		{
@@ -91,21 +113,25 @@ const router = createRouter({
 		},
 
 		{
-			path: '/terms-of-service',
-			name: 'TermsOfService',
-			component: TermsOfServiceView
+			path: '/copyright-info',
+			name: 'CopyrightInfo',
+			component: CopyrightInfoView
 		},
 
-		{
-			path: '/faq',
-			name: 'Faq',
-			component: FaqView
-		},
-
+		/**
+		 * フッターに表示されるリンク
+		 * ハンバーガーメニューと重複するChampionshipScheduleとLiveReportForUserを除く
+		 */
 		{
 			path:'/contact',
 			name: 'Contact',
 			component: ContactView
+		},
+
+		{
+			path:'/premium',
+			name: 'Premium',
+			component: PremiumView
 		},
 
 		{
@@ -121,7 +147,9 @@ const router = createRouter({
 		},
 
 
-		// コネクター用のルーティング
+		/**
+		 * コネクター用のルーティング
+		 */
 		{
 			path:'/connecter/home',
 			name: 'ConnecterHome',
@@ -141,7 +169,9 @@ const router = createRouter({
 			props: true
 		},
 
-		// 一般会員（暫定）向けのルーティング
+		/**
+		 * その他のルーティング
+		 */
 		{
 			path: '/latest-results',
 			name: 'LatestResults',
@@ -152,14 +182,8 @@ const router = createRouter({
 			path: '/topics',
 			name: 'Topics',
 			component: TopicsView,
-		},
-
-		{
-			path: '/club-introduction',
-			name: 'ClubIntroduction',
-			component: ClubIntroductionView,
 		}
-	],
+	]
 })
 
 export default router
