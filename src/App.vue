@@ -75,7 +75,7 @@ onMounted(() => {
     <p>5月中旬一般公開予定</p>
 </div>
 <div v-else class="min-h-screen flex flex-col">
-    <header class="sticky top-0 z-100 bg-white">
+    <header class="sticky top-0 z-100">
         <HeaderComp 
             :user="authState.user"
             :signOut="authState.signOut"
@@ -97,7 +97,7 @@ onMounted(() => {
         <router-view />
     </main>
         
-    <footer class="sticky bottom-0 z-50 bg-white">
+    <footer class="sticky bottom-0 z-50">
         <FooterComp />
     </footer>
 </div>
