@@ -1,6 +1,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
+// スライダー表示の画像URLを配列に入れると正しく動作しないので個別に指定
+import firstSquare from '@/assets/slider/first_square.png'
+import sfa from '@/assets/slider/sfa.png'
+import sugenoTakanori from '@/assets/slider/sugeno_takanori.png'
 
 const props = defineProps({
     user: {
@@ -9,500 +13,257 @@ const props = defineProps({
     },
     signOut: {
         type: Function,
-        default: () => {}
+        default: () => { }
     },
     isAccountAvailable: Boolean
 })
 
-// ハンバーガーメニュー、アコーディオンメニューの表示・非表示
-const isActive = ref(false)
-const isMenuOpen = ref(false)
-const isResultReportMenuOpen = ref(false)
-const isPicVidMenuOpen = ref(false)
-const hideBanner = ref(false);
+/**
+ * スライダー表示
+ * onMountedで4秒ごとに画像を切り替える
+ * onUnmountedでインターバルをクリア
+ */
+// 画像リスト
+const imageList = ref([
+    { src: firstSquare, alt: "株式会社ファーストスクエア" },
+    { src: sfa, alt: "札幌地区サッカー協会"},
+    { src: sugenoTakanori, alt: "菅野孝憲公式アプリ" },
+]);
+const currentIndex = ref(0);
+let interval = null;
+const nextImage = () => {
+    // 0, 1, 2の繰り返し。配列のインデックス
+    currentIndex.value = (currentIndex.value + 1) % imageList.value.length;
+};
 
-// ハンバーガーメニュー、アコーディオンメニューの表示・非表示
-const toggleMenu = () => {
-    isActive.value = !isActive.value
-    isMenuOpen.value = !isMenuOpen.value
-}
-const toggleResultReportMenuOpen = () => {
-    isResultReportMenuOpen.value = !isResultReportMenuOpen.value
-}
-const togglePicVidMenuOpen = () => {
-    isPicVidMenuOpen.value = !isPicVidMenuOpen.value
-}
+/**
+ * スライドバー下のメニュー表示
+ */
+const menuList = ['TOP', '結果速報', 'お知らせ', 'メディア', '大会日程', 'チーム紹介', '写真'];
+const activeMenu = ref(0);
 
+/**
+ * ハンバーガーメニューの開閉
+ */
+const isMenuOpen = ref(false);
+
+/**
+ * スクロール時にヘッダーを非表示にする
+ */
+const hideSlider = ref(false);
 const handleScroll = () => {
     // スクロール位置を取得
     const scrollTop = window.scrollY;
-
     // 特定のスクロール位置でブロックを非表示にする
-    hideBanner.value = scrollTop > 35; // 35pxを閾値として設定
+    hideSlider.value = scrollTop > 0; // 30pxを閾値として設定
 }
+// デバウンスされたスクロールハンドラー
+// デバウンス関数の実装
+const debounce = (func, wait) => {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+// デバウンスされたスクロールハンドラー
+// スライダーを非表示にする機能が、スクロールイベントの度に発火する（スライダーが高速でちらつく）のを防ぐ
+const debouncedHandleScroll = debounce(handleScroll, 100);
 
 onMounted(() => {
-    window.addEventListener('scroll', handleScroll);
-})
+    // スライダー。4秒ごとに切り替え
+    interval = setInterval(nextImage, 4000);
+    // 下にスクロールするとスライダーを非表示にするスクロールイベントを追加
+    window.addEventListener('scroll', debouncedHandleScroll);
+});
 
 onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll);
-})
+    // スライダーのインターバルをクリア
+    clearInterval(interval);
+    // 下にスクロールするとスライダーを非表示にするスクロールイベントを削除
+    window.removeEventListener('scroll', debouncedHandleScroll);
+});
+
+// CSS
+const navMenu = 'flex justify-between items-center px-4 h-[29px] border-b-1 border-gray-200';
+const navMenuWithSubMenu = 'border-b-1 border-gray-200';
+const subMenuLiNotLastChild = 'flex justify-between items-center h-[29px] pr-4 pl-8 border-b-1 border-gray-200 border-dashed';
+const routerLinkClass = 'flex justify-between items-center w-full';
 </script>
 
 <template>
-<div class="header-wrapper">
-    <div class="top-contents">
-        <div class="account-info-container">
-            <img src="../assets/icons/icon_account.png" />
-            <span>会員情報</span>
+    <div>
+        <div class="flex justify-between items-end bg-white pt-20 pr-2 pb-4 pl-2 h-20 border-b-1">
+            <div>
+                <img src="@/assets/icons/membership_info.png" alt="会員情報">
+            </div>
+            <div>
+                <img src="@/assets/connect_title_logo.png" alt="connectロゴ">
+            </div>
+            <div>
+                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer flex flex-col items-center">
+                    <div class="w-[33px] h-0.5 bg-gray-400 mb-2"></div>
+                    <div class="w-[33px] h-0.5 bg-gray-400 mb-2"></div>
+                    <div class="w-[33px] h-0.5 bg-gray-400 "></div>
+                    <div class="flex justify-center items-center w-[40px] text-gray-600">
+                        <span class="text-[12px]">M</span>
+                        <span class="text-[12px]">e</span>
+                        <span class="text-[12px]">n</span>
+                        <span class="text-[12px]">u</span>
+                    </div>
+                </div>
+                <!-- ハンバーガーメニューの中身 -->
+                <nav v-if="isMenuOpen" class="h-full">
+                    <Transition enter-active-class="transition-transform duration-300 ease-in-out"
+                        enter-from-class="translate-x-full" leave-to-class="translate-x-full"
+                        leave-active-class="transition-transform duration-300 ease-in-out" mode="out-in">
+                        <div class="absolute top-0 right-0 bg-white w-full z-9998 max-h-screen overflow-y-auto">
+                            <!-- ハンバーガーメニューを閉じるためのアイコン -->
+                            <div class="flex justify-between items-center px-3 pt-10">
+                                <div class="w-[33px]"></div>
+                                <span class="block">メニュー</span>
+                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer">
+                                    <div class="w-[33px] h-0.5 my-2.5 pl- bg-gray-400 mb-2 rotate-45"></div>
+                                    <div class="w-[33px] h-0.5 -my-2.5 bg-gray-400 mb-2 -rotate-45"></div>
+                                </div>
+                            </div>
+                            <div class="h-[43px] bg-[#090A0A] mt-4"></div>
+                            <ul>
+                                <li @click="isMenuOpen = !isMenuOpen" class="pt-2 pl-4">
+                                    <router-link to="/login" class="flex items-center">
+                                        <img src="@/assets/icons/person_portrait.png" alt="ログイン" class="h-[16px]">
+                                        ログイン
+                                    </router-link>
+                                </li>
+                                <li class="flex items-end pl-4 h-[63px] bg-[#F1F2F4]">
+                                    コンテンツ
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
+                                    <router-link to="/" :class="routerLinkClass">
+                                        <span>TOP</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li :class='navMenuWithSubMenu'>
+                                    <span class="block h-[29px] pl-4 border-b-1 border-gray-200 border-dashed">結果速報</span>
+                                    <ul>
+                                        <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
+                                            <router-link to="/live-report-for-user" :class="routerLinkClass">
+                                                <span>U-12（ジュニア）</span>
+                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                            </router-link>
+                                        </li>
+                                        <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
+                                            <router-link to="/live-report-for-user" :class="routerLinkClass">
+                                                <span>U-15（ジュニアユース）</span>
+                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                            </router-link>
+                                        </li>
+                                        <li @click="isMenuOpen = !isMenuOpen" class="flex justify-between items-center h-[29px] pr-4 pl-8">
+                                            <router-link to="/live-report-for-user" :class="routerLinkClass">
+                                                <span>U-18（ユース）</span>
+                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                            </router-link>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
+                                    <router-link to="/media" :class="routerLinkClass">
+                                        <span>メディア</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
+                                    <router-link to="/championship-schedule" :class="routerLinkClass">
+                                        <span>大会日程</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
+                                    <router-link to="/club-introduction" :class="routerLinkClass">
+                                        <span>チーム紹介</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li :class='navMenuWithSubMenu'>
+                                    <span class="block h-[29px] pl-4 border-b-1 border-gray-200 border-dashed">写真</span>
+                                    <ul>
+                                        <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
+                                            <router-link to="/pics" :class="routerLinkClass">
+                                                <span>写真</span>
+                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                            </router-link>
+                                        </li>
+                                        <li @click="isMenuOpen = !isMenuOpen" class="flex justify-between items-center h-[29px] pr-4 pl-8">
+                                            <router-link to="/videos" :class="routerLinkClass">
+                                                <span>動画</span>
+                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                            </router-link>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
+                                    <router-link to="/faq" :class="routerLinkClass">
+                                        <span>FAQ</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
+                                    <router-link to="/company-info" :class="routerLinkClass">
+                                        <span>企業概要</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
+                                    <router-link to="/terms-of-service" :class="routerLinkClass">
+                                        <span>利用規約</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
+                                    <router-link to="/privacy-policy" :class="routerLinkClass">
+                                        <span>プライバシーポリシー</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
+                                    <router-link to="/copyright-info" :class="routerLinkClass">
+                                        <span>著作権情報</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                            </ul>
+                        </div>
+                    </Transition>
+                </nav>
+            </div>
         </div>
-
+        <!-- スライダー -->
         <div>
-            <img src="../assets/connect_title_logo.png" />
-        </div>
-
-        <div class="hamburger-menu-container">
-            <div class="hamburger-menu" @click="toggleMenu" :class="{ 'active': isMenuOpen }">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div v-if="isMenuOpen" class="hamburger-menu-state">
-                <span>B</span>
-                <span>a</span>
-                <span>c</span>
-                <span>k</span>
-            </div>
-            <div v-else class="hamburger-menu-state">
-                <span>M</span>
-                <span>e</span>
-                <span>n</span>
-                <span>u</span>
+            <div v-show="!hideSlider"
+                class="flex items-center justify-center overflow-hidden w-full h-27 bg-black relative">
+                <Transition enter-active-class="transition-transform duration-500 ease-in-out"
+                    enter-from-class="translate-x-full" leave-to-class="-translate-x-full"
+                    leave-active-class="transition-transform duration-500 ease-in-out" mode="out-in">
+                    <img :key="currentIndex" :src="imageList[currentIndex].src" :alt="imageList[currentIndex].alt"
+                        class="absolute w-[428px] max-w-full h-[126px] object-contain shadow-md" />
+                </Transition>
             </div>
         </div>
-        <nav v-show="isMenuOpen" class="nav-menu">
-            <div class="item-in-nav-menu">
-                <p>TOP</p>
-            </div>
-            <div @click="toggleResultReportMenuOpen" class="item-in-nav-menu align-both-ends">
-                <p>結果速報</p>
-                <span v-if="isResultReportMenuOpen">▲</span>
-                <span v-else>▼</span>
-            </div>
-            <div v-show="isResultReportMenuOpen">
-                <ul>
-                    <li class="item-in-nav-menu sub-item">高校生</li>
-                    <li class="item-in-nav-menu sub-item">中学生</li>
-                    <li class="item-in-nav-menu sub-item">小学生</li>
-                </ul>
-            </div>
-            <div class="item-in-nav-menu">
-                <p>チーム紹介</p>
-            </div>
-            <div @click="togglePicVidMenuOpen" class="item-in-nav-menu align-both-ends">
-                <p>写真・動画</p>
-                <span v-if="isPicVidMenuOpen">▲</span>
-                <span v-else>▼</span>
-            </div>
-            <div v-show="isPicVidMenuOpen">
-                <ul>
-                    <li class="item-in-nav-menu sub-item">写真</li>
-                    <li class="item-in-nav-menu sub-item">動画</li>
-                </ul>
-            </div>
-            <div class="item-in-nav-menu">
-                <p>アーカイブ</p>
-            </div>
-            <div class="item-in-nav-menu">
-                <p>メディア</p>
-            </div>
-            <div class="sns-icons-container">
-                <div class="sns-icons-inner">
-                    <img src="../assets/sns_logos/x_icon.png" />
-                    <img src="../assets/sns_logos/facebook_icon.png" />
-                    <img src="../assets/sns_logos/youtube_icon.png" />
-                </div>
-            </div>
-            <aside class="nav-menu-aside">会社概要</aside>
-            <aside class="nav-menu-aside">プライバシーポリシー</aside>
-            <div class="auth-buttons">
-                <template v-if="user">
-                    <button @click="signOut" class="auth-btn logout-btn">Log Out</button>
-                </template>
-                <template v-else>
-                    <button @click="$router.push('/login')" class="auth-btn login-btn">Log In</button>
-                    <button @click="$router.push('/signup')" class="auth-btn signup-btn">Sign Up</button>
-                </template>
-            </div>
-        </nav>
-    </div>
-
-    <div v-show="!hideBanner" class="banner-wrapper">
-        <div class="banner-container-partners">
-            <div class="banner-index-partners">
-                <span>協</span>
-                <span>賛</span>
-            </div>
-            <div class="banner-partners">
-                <img class="banner-partners-1" src="../assets/banners/partner/JFA.png" />
-                <img class="banner-partners-2" src="../assets/banners/partner/HFA.png" />
-                <img class="banner-partners-3" src="../assets/banners/partner/SFA.png" />
-            </div>
-        </div>
-        
-        <div class="banner-container-links">
-            <div class="banner-index-links">
-                <span>リ</span>
-                <span>ン</span>
-                <span>ク</span>
-            </div>
-            <div class="banner-links">
-                <div class="banner-links-first-line">
-                    <img class="banner-links-first-line-1" src="../assets/banners/link/consa.png" />
-                    <img class="banner-links-first-line-2" src="../assets/banners/link/espo.png" />
-                    <img class="banner-links-first-line-3" src="../assets/banners/link/sjfa.png" />
-                </div>
-                <div class="banner-links-second-line">
-                    <img class="banner-links-second-line-1" src="../assets/banners/link/hfutsal.png" />
-                    <img class="banner-links-second-line-2" src="../assets/banners/link/sfs.png" />
-                </div>
-            </div>
+        <!-- スライダー直下の横スクロールメニュー -->
+        <div class="overflow-x-auto">
+            <ul class="flex justify-start items-end whitespace-nowrap bg-black text-white h-11 min-w-max px-4">
+                <li v-for="(menu, index) in menuList" :key="index" @click="activeMenu = index" :class="[
+                    'pb-1',
+                    index === 0 ? 'ml-2 mr-4' : index === 6 ? 'ml-4 mr-2' : 'mx-4',
+                    activeMenu === index ? 'text-[#7FCDEC] border-[#7FCDEC]' : 'text-white border-transparent',
+                    'cursor-pointer border-b-2 transition-colors duration-200'
+                ]">
+                    {{ menu }}
+                </li>
+            </ul>
         </div>
     </div>
-
-    <div class="menu-wrapper">
-        <ul class="menu-container">
-            <li class="menu-item"><span class="active-red-line">TOP</span></li>
-            <li class="menu-item"><router-link to="/latest-results"><span class="active-red-line">結果速報</span></router-link></li>
-            <li class="menu-item"><router-link to="/club-list"><span class="active-red-line">チーム紹介</span></router-link></li>
-            <li class="menu-item"><span class="active-red-line">写真</span></li>
-            <li class="menu-item"><span class="active-red-line">アーカイブ</span></li>
-            <li class="menu-item"><span class="active-red-line">メディア</span></li>
-        </ul>
-    </div>
-</div>
 </template>
 
-<style scoped>
-@media screen and (max-width: 500px) {
-    .header-wrapper {
-        width: 100%;
-        background: linear-gradient(#F5FCFF 50%, #7FCDEC);
-        padding-top: 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-    }
-
-    .top-contents {
-        height: 60px;
-        padding: 5px 30px 15px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-end;
-    }
-
-    /* --------------
-    ハンバーガーメニュー
-    ---------------*/
-    .hamburger-menu-container {
-        width: 35px;
-        height: 33px;
-    }
-
-    .hamburger-menu {
-        width: 33px;
-        height: 18px;
-        position: relative;
-        margin: 0 auto;
-    }
-
-    .hamburger-menu span {
-        display: block;
-        position: absolute;
-        height: 1px;
-        width: 100%;
-        background: #333;
-        border-radius: 3px;
-        left: 0;
-        transition: all 0.3s ease-out;
-    }
-
-    .hamburger-menu span:nth-child(1) {
-        top: 0;
-    }
-
-    .hamburger-menu span:nth-child(2) {
-        top: 50%;
-        transform: translateY(-50%);
-    }
-
-    .hamburger-menu span:nth-child(3) {
-        bottom: 0;
-    }
-
-    .hamburger-menu.active span:nth-child(1) {
-        top: 50%;
-        transform: translateY(-50%) rotate(45deg);
-    }
-
-    .hamburger-menu.active span:nth-child(2) {
-        opacity: 0;
-    }
-
-    .hamburger-menu.active span:nth-child(3) {
-        bottom: 50%;
-        transform: translateY(50%) rotate(-45deg);
-    }
-
-    .hamburger-menu-state {
-        font-size: 0.8em;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    /* ---------------------------------
-    ハンバーガーメニューで開閉されるナビメニュー
-    --------------------------------- */
-    .nav-menu {
-        position: absolute;
-        top: 100px;
-        left: 0;
-        width: 100%;
-        height: 80vh;
-        background-color: #d9f5ff;
-        padding: 20px;
-        z-index: 10;
-        background: linear-gradient(#F5FCFF 50%, #7FCDEC);
-    }
-
-    .item-in-nav-menu {
-        width: 70%;
-        margin: 0 auto 1em;
-        padding: 0.3em 1.3em;
-        letter-spacing: 0.3em;
-        box-shadow: 0px 3px 5px 0px rgba(138,138,138,0.75);
-        -webkit-box-shadow: 0px 3px 5px 0px rgba(138,138,138,0.75);
-        -moz-box-shadow: 0px 3px 5px 0px rgba(138,138,138,0.75);
-    }
-
-    /* ナビメニューの結果速報と写真・動画の表記と▲▼を両端に配置 */
-    .align-both-ends {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .sub-item {
-        text-align: right;
-    }
-
-    /* ----------------------------------------
-    ナビメニューのX, facebook, YouTubeのSNSアイコン
-    ---------------------------------------- */
-    .sns-icons-container {
-        margin: 3.2em auto 2em;
-    }
-
-    .sns-icons-inner {
-        text-align: center;
-    }
-
-    .sns-icons-inner img {
-        height: 1.4em;
-    }
-
-    .sns-icons-inner img:nth-child(2) {
-        margin: 0 1.2em;
-    }
-
-    /* ナビメニューの会社概要とプライバシーポリシー */
-    .nav-menu-aside {
-        font-size: 0.5em;
-        margin-bottom: 2em;
-        text-align: center;
-        letter-spacing: 0.4em;
-    }
-
-    /* ------------
-    会員情報へのリンク
-    ------------ */
-    .account-info-container {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .account-info-container span {
-        font-size: 0.6em;
-    }
-
-    /* ---------
-    協賛バナー広告
-    --------- */
-    .banner-wrapper {
-        margin: 0 30px;
-    }
-
-    /* 協賛とリンクの文言のデザイン */
-    .banner-index-partners, .banner-index-links {
-        color: #FFF;
-        font-size: 8px;
-        background-color: #000;
-        padding: 2px;
-        margin-right: 2px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        align-items: center;
-    }
-
-    .banner-index-partners {
-        height: 40px;
-    }
-
-    .banner-index-links {
-        height: 66px;
-    }
-
-    /* 文言とバナー群を横並べ */
-    .banner-container-partners, .banner-container-links {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .banner-container-partners {
-        margin-bottom: 4px;
-    }
-
-    .banner-partners {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .banner-partners-1 {
-        max-width: 113px;
-        width: 30%;
-        height: auto;
-    }
-    .banner-partners-2 {
-        max-width: 59px;
-        width: 20%;
-        height: auto;
-    }
-    .banner-partners-3 {
-        max-width: 173px;
-        width: 50%;
-        height: auto;
-    }
-
-    .banner-links {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .banner-links-first-line, .banner-links-second-line {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    
-    .banner-links-first-line-1 {
-        max-width: 97px;
-        width: 30%;
-        height: auto;
-    }
-    .banner-links-first-line-2 {
-        max-width: 141px;
-        width: 45%;
-        height: auto;
-    }
-    .banner-links-first-line-3 {
-        max-width: 99px;
-        width: 25%;
-        height: auto;
-    }
-    .banner-links-second-line-1 {
-        max-width: 173px;
-        width: 55%;
-        height: auto;
-    }
-    .banner-links-second-line-2 {
-        max-width: 171px;
-        width: 45%;
-        height: auto;
-    }
-
-    /* ------------------
-    ヘッダー下部のメニューバー
-    ------------------ */
-    .menu-wrapper {
-        width: 100%;
-        margin-top: 10px;
-        display: flex;
-        flex-direction: row;
-        overflow: hidden;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    .menu-container {
-        display: flex;
-        flex-direction: row;
-    }
-
-    .menu-item {
-        color: #ffffff;
-        font-size: 1em;
-        font-weight:bold;
-        padding: 0.5em 1em 10px;
-    }
-
-    .active-red-line:active {
-        color: #ff0000;
-        padding-bottom: 3px;
-        border-bottom: 2px solid #ff0000;
-    }
-}
-
-.auth-buttons {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.auth-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    border: none;
-    font-weight: 500;
-}
-
-.login-btn {
-    background-color: #007bff;
-    color: white;
-}
-
-.signup-btn {
-    background-color: #28a745;
-    color: white;
-}
-
-.logout-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-.auth-btn:hover {
-    opacity: 0.9;
-}
-</style>
+<style></style>
