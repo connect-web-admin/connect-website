@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue';
 
 // スライダー表示の画像URLを配列に入れると正しく動作しないので個別に指定
-import firstSquare from '@/assets/slider/first_square.png'
-import sfa from '@/assets/slider/sfa.png'
-import sugenoTakanori from '@/assets/slider/sugeno_takanori.png'
+import firstSquare from '@/assets/slider/first-square.svg';
+import sfa from '@/assets/slider/sfa-slider-banner.svg';
+import sugenoTakanori from '@/assets/slider/sugeno-slider-banner.svg';
 
 const props = defineProps({
     user: {
@@ -16,7 +16,7 @@ const props = defineProps({
         default: () => { }
     },
     isAccountAvailable: Boolean
-})
+});
 
 /**
  * スライダー表示
@@ -93,12 +93,12 @@ const routerLinkClass = 'flex justify-between items-center w-full';
 
 <template>
     <div>
-        <div class="flex justify-between items-end bg-white pt-20 pr-2 pb-4 pl-2 h-20 border-b-1">
+        <div class="flex justify-between items-end pt-20 pr-2 pb-4 pl-2 h-20 border-b-1">
             <div>
-                <img src="@/assets/icons/membership_info.png" alt="会員情報">
+                <img src="@/assets/icons/user-info.svg" alt="会員情報">
             </div>
             <div>
-                <img src="@/assets/connect_title_logo.png" alt="connectロゴ">
+                <img src="@/assets/connect-title-logo.svg" alt="connectロゴ">
             </div>
             <div>
                 <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer flex flex-col items-center">
@@ -113,25 +113,25 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                     </div>
                 </div>
                 <!-- ハンバーガーメニューの中身 -->
-                <nav v-if="isMenuOpen" class="h-full">
+                <nav v-if="isMenuOpen" class="h-full pb-20">
                     <Transition enter-active-class="transition-transform duration-300 ease-in-out"
                         enter-from-class="translate-x-full" leave-to-class="translate-x-full"
                         leave-active-class="transition-transform duration-300 ease-in-out" mode="out-in">
-                        <div class="absolute top-0 right-0 bg-white w-full z-9998 max-h-screen overflow-y-auto">
-                            <!-- ハンバーガーメニューを閉じるためのアイコン -->
-                            <div class="flex justify-between items-center px-3 pt-10">
-                                <div class="w-[33px]"></div>
-                                <span class="block">メニュー</span>
-                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer">
-                                    <div class="w-[33px] h-0.5 my-2.5 pl- bg-gray-400 mb-2 rotate-45"></div>
-                                    <div class="w-[33px] h-0.5 -my-2.5 bg-gray-400 mb-2 -rotate-45"></div>
+                        <div class="absolute top-0 right-0 w-full z-9998 max-h-screen overflow-y-auto">
+                            <div class="flex justify-between items-end px-3 pt-10 pb-6 border-b-1">
+                                <div class="w-[33px] h-[33px]"></div>
+                                <div class="text-center w-fit">メニュー</div>
+                                <!-- ハンバーガーメニューを閉じるためのアイコン -->
+                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer pr-2 pb-3">
+                                    <div class="w-[20px] h-0.5 my-2.5 bg-gray-400 mb-2 rotate-45"></div>
+                                    <div class="w-[20px] h-0.5 -my-2.5 bg-gray-400 mb-2 -rotate-45"></div>
                                 </div>
                             </div>
-                            <div class="h-[43px] bg-[#090A0A] mt-4"></div>
+                            <div class="h-[43px] bg-[#090A0A]"></div>
                             <ul>
                                 <li @click="isMenuOpen = !isMenuOpen" class="pt-2 pl-4">
                                     <router-link to="/login" class="flex items-center">
-                                        <img src="@/assets/icons/person_portrait.png" alt="ログイン" class="h-[16px]">
+                                        <img src="@/assets/icons/person-portrait.svg" alt="ログイン" class="h-[16px]">
                                         ログイン
                                     </router-link>
                                 </li>
