@@ -14,18 +14,17 @@ import FooterComp from './components/FooterComp.vue';
 
 // 一般公開までの準備中ページを表示するためのフラグ
 const isPreparation = ref(false);
-
 // 認証状態を管理するオブジェクト   
 const authState = useAuthenticator();
-
 // ルーティングを管理するオブジェクト
 const router = useRouter();
-
 // ユーザー単位のデータ
 const isAccountAvailable = ref(true);
 const userAttrMembershipType = ref('');
 
-// Cognitoからユーザー情報を取得し、ローカルストレージにセット
+/**
+ * Cognitoからユーザー情報を取得し、ローカルストレージにセット
+ */
 const fetchUserInfoFromCognito = async () => {
     try {
         // 現在のユーザーと属性を取得
@@ -47,8 +46,10 @@ const fetchUserInfoFromCognito = async () => {
     }
 }
 
-// 認証イベントを監視
 onMounted(() => {
+    /**
+     * 認証イベントを監視
+     */
     Hub.listen('auth', async (data) => {
         const { event } = data.payload;
         if (event === 'signedIn') {
@@ -74,15 +75,15 @@ onMounted(() => {
     <p>5月中旬一般公開予定</p>
 </div>
 <div v-else class="min-h-screen flex flex-col">
-    <!-- <header class="sticky top-0 z-50 bg-white">
+    <header class="sticky top-0 z-100 bg-white">
         <HeaderComp 
             :user="authState.user"
             :signOut="authState.signOut"
         />
-    </header>         -->
+    </header>        
 
     <main class="flex-1">
-        <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
+        <!-- <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
             <template v-slot="{ user }">
                 <RouterView />
             </template>
@@ -92,12 +93,13 @@ onMounted(() => {
                     <h2>Please Log In</h2>
                 </div>
             </template>
-        </Authenticator>
+        </Authenticator> -->
+        <router-view />
     </main>
         
-    <!-- <footer class="mt-auto">
+    <footer class="sticky bottom-0 z-50 bg-white">
         <FooterComp />
-    </footer> -->
+    </footer>
 </div>
 </template>
 
