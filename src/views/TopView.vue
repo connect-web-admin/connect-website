@@ -5,7 +5,7 @@ const sampleRoundName = 'Aブロック';
 </script>
 
 <template>
-<div class="px-2 pt-8 pb-20">
+<div class="px-2 pt-8">
     <div>
         <h1 class="text-xl">今週の試合</h1>
         <div class="bg-[#090A0A] text-[#FAFAFC] w-fit px-1 mb-1">2025.2.22(Sat)</div>
