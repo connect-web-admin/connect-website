@@ -122,7 +122,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                 <div class="w-[33px] h-[33px]"></div>
                                 <div class="text-center w-fit">メニュー</div>
                                 <!-- ハンバーガーメニューを閉じるためのアイコン -->
-                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer pr-4">
+                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer pr-4.5">
                                     <div class="w-[20px] h-0.5 my-2.5 bg-gray-400 mb-2 rotate-45"></div>
                                     <div class="w-[20px] h-0.5 -my-2.5 bg-gray-400 mb-2 -rotate-45"></div>
                                 </div>
