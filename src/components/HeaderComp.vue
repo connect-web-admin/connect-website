@@ -246,7 +246,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                     enter-from-class="translate-x-full" leave-to-class="-translate-x-full"
                     leave-active-class="transition-transform duration-500 ease-in-out" mode="out-in">
                     <img :key="currentIndex" :src="imageList[currentIndex].src" :alt="imageList[currentIndex].alt"
-                        class="absolute w-[428px] max-w-full h-[126px] object-contain shadow-md" />
+                        class="absolute w-[428px] max-w-full h-full object-contain shadow-md" />
                 </Transition>
             </div>
         </div>
