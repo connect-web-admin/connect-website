@@ -57,26 +57,26 @@
             </li>
             <li class="mb-2">
                 3-3. 提携先への提供のため
-                <ul class="list-disc list-inside ml-4">
+                <ul class="list-inside ml-4">
                     <li>当社と個人情報に関する機密保持契約を締結している協力会社､提携会社および業務委託先会社に対して､お客様に明示した利用目的の達成に必要な範囲内で個人情報の取扱を委託するため</li>
                 </ul>
             </li>
             <li class="mb-2">
                 3-4. 本サービス以外の当社のサービスに関連した情報提供等のため
-                <ul class="list-disc list-inside ml-4">
+                <ul class="list-inside ml-4">
                     <li>(1) 当社が提供するその他のサービスの告知を行うため</li>
                     <li>(2) 当社が実施するアンケートへのご協力やイベント/セミナーへのご参加のお願い､その結果等の報告のため</li>
                 </ul>
             </li>
             <li class="mb-2">
                 3-5. 他社のサービスに関連した情報提供等のため
-                <ul class="list-disc list-inside ml-4">
+                <ul class="list-inside ml-4">
                     <li>お客様に有益と思われる当社の情報やアンケート､または第三者の広告等の送付のため</li>
                 </ul>
             </li>
             <li class="mb-2">
                 3-6. その他の利用目的のため
-                <ul class="list-disc list-inside ml-4">
+                <ul class="list-inside ml-4">
                     <li>個別のサービスにおいて､上記に規定のない目的で個人情報を利用する場合があります｡その場合には､事前にお客様から同意を得るものとします｡</li>
                 </ul>
             </li>
@@ -152,7 +152,7 @@
         <p class="mb-2">
             ご提供頂きました個人情報は､次の場合を除いてお客様の同意がない限り､第三者に開示することは致しません｡
         </p>
-        <ol class="list-decimal list-inside mb-2">
+        <ol class="list-inside mb-2">
             <li class="mb-2">(1) 統計的なデータとして､お客様個人を識別できない状態に加工した場合</li>
             <li class="mb-2">(2) 法令等により提供を求められた場合</li>
             <li class="mb-2">(3) 人の生命､身体または財産の保護のために必要であって､お客様の同意を得ることが困難である場合</li>
