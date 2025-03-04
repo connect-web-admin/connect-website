@@ -215,6 +215,12 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
+                                    <router-link to="/specified-commercial-transactions-law-notations" :class="routerLinkClass">
+                                        <span>特定商取引法に基づく表記</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/terms-of-service" :class="routerLinkClass">
                                         <span>利用規約</span>
                                         <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
@@ -223,12 +229,6 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/privacy-policy" :class="routerLinkClass">
                                         <span>プライバシーポリシー</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
-                                    </router-link>
-                                </li>
-                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
-                                    <router-link to="/specified-commercial-transactions-law-notations" :class="routerLinkClass">
-                                        <span>特定商取引法に基づく表記</span>
                                         <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
