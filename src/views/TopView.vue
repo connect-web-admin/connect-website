@@ -5,7 +5,7 @@ const sampleRoundName = 'Aブロック';
 </script>
 
 <template>
-<div class="p-4">
+<div class="px-2">
     <div>
         <h1 class="text-xl">今週の試合</h1>
         <div class="bg-[#090A0A] text-[#FAFAFC] w-fit px-1">2025.2.22(Sat)</div>
@@ -49,7 +49,7 @@ const sampleRoundName = 'Aブロック';
         </div>
 
         <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/bigball.svg" alt="苗穂FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/black.svg" alt="苗穂FC" class="w-1/7 h-full">
             <div class="text-center w-5/7 px-2">
                 <div>
                     <p class="text-[#666C6C]">{{ sampleChampionshipName }}</p>
@@ -104,7 +104,7 @@ const sampleRoundName = 'Aブロック';
                     <span class="text-[#F24D11] font-bold">2 PK 3</span>
                 </div>
             </div>
-            <img src="@/assets/top-sample/black.svg" alt="清田FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/hanover.svg" alt="清田FC" class="w-1/7 h-full">
         </div>
     </div>
 
@@ -187,23 +187,23 @@ const sampleRoundName = 'Aブロック';
         <div class="mb-8">
             <p class="bg-black text-white text-center font-light mb-2">提　携</p>
             <div class="flex justify-between">
-                <img src="@/assets/banners/partner/safa-banner.svg" alt="札幌地区サッカー協会" class="w-[198px]" />
-                <img src="@/assets/banners/partner/sugeno-banner.svg" alt="菅野孝憲公式アプリ" class="w-[198px]" />
+                <img src="@/assets/banners/partner/safa-banner.svg" alt="札幌地区サッカー協会" class="w-[170px]" />
+                <img src="@/assets/banners/partner/sugeno-banner.svg" alt="菅野孝憲公式アプリ" class="w-[170px]" />
             </div>
         </div>
         <div class="mb-8">
             <p class="bg-black text-white text-center font-light mb-2">リ　ー　グ　・　チ　ー　ム</p>
             <div class="flex justify-between">
-                <img src="@/assets/banners/jleague-club/jleague-banner.svg" alt="Jリーグ" class="h-[33px]" />
-                <img src="@/assets/banners/jleague-club/consadole-banner.svg" alt="北海道コンサドーレ札幌" class="h-[33px]" />
-                <img src="@/assets/banners/jleague-club/espolada-banner.svg" alt="エスポラーダ北海道" class="h-[33px]" />
+                <img src="@/assets/banners/jleague-club/jleague-banner.svg" alt="Jリーグ" class="h-[30px]" />
+                <img src="@/assets/banners/jleague-club/consadole-banner.svg" alt="北海道コンサドーレ札幌" class="h-[30px]" />
+                <img src="@/assets/banners/jleague-club/espolada-banner.svg" alt="エスポラーダ北海道" class="h-[30px]" />
             </div>
         </div>
         <div class="mb-8">
             <p class="bg-black text-white text-center font-light mb-2">サ　ッ　カ　ー　協　会</p>
             <div class="flex justify-between">
-                <img src="@/assets/banners/football-association/jfa.svg" alt="日本サッカー協会" class="w-[198px]" />
-                <img src="@/assets/banners/football-association/hfa.svg" alt="北海道サッカー協会" class="w-[198px]" />
+                <img src="@/assets/banners/football-association/jfa.svg" alt="日本サッカー協会" class="w-[170px]" />
+                <img src="@/assets/banners/football-association/hfa.svg" alt="北海道サッカー協会" class="w-[170px]" />
             </div>
         </div>
 
@@ -211,43 +211,43 @@ const sampleRoundName = 'Aブロック';
             <p class="bg-black text-white text-center font-light mb-2">地　区　協　会</p>
             <div class="grid grid-cols-2 gap-y-3">
                 <div class="flex justify-start">
-                    <img src="@/assets/banners/regional-association/hakodate-assoc.svg" alt="函館地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/hakodate-assoc.svg" alt="函館地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-end">
-                    <img src="@/assets/banners/regional-association/otaru-assoc.svg" alt="小樽地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/otaru-assoc.svg" alt="小樽地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-start">
-                    <img src="@/assets/banners/regional-association/sorachi-assoc.svg" alt="空知地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/sorachi-assoc.svg" alt="空知地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-end">
-                    <img src="@/assets/banners/regional-association/asahikawa-assoc.svg" alt="旭川地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/asahikawa-assoc.svg" alt="旭川地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-start">
-                    <img src="@/assets/banners/regional-association/kushiro-assoc.svg" alt="釧路地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/kushiro-assoc.svg" alt="釧路地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-end">
-                    <img src="@/assets/banners/regional-association/tokachi-assoc.svg" alt="十勝地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/tokachi-assoc.svg" alt="十勝地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-start">
-                    <img src="@/assets/banners/regional-association/muroran-assoc.svg" alt="室蘭地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/muroran-assoc.svg" alt="室蘭地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-end">
-                    <img src="@/assets/banners/regional-association/tomakomai-assoc.svg" alt="苫小牧地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/tomakomai-assoc.svg" alt="苫小牧地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-start">
-                    <img src="@/assets/banners/regional-association/kitasorachi-assoc.svg" alt="北空知地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/kitasorachi-assoc.svg" alt="北空知地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-end">
-                    <img src="@/assets/banners/regional-association/chitose-assoc.svg" alt="千歳地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/chitose-assoc.svg" alt="千歳地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-start">
-                    <img src="@/assets/banners/regional-association/okhotsk-assoc.svg" alt="オホーツク地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/okhotsk-assoc.svg" alt="オホーツク地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-end">
-                    <img src="@/assets/banners/regional-association/nemuro-assoc.svg" alt="根室地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/nemuro-assoc.svg" alt="根室地区サッカー協会" class="w-[170px]" />
                 </div>
                 <div class="flex justify-start">
-                    <img src="@/assets/banners/regional-association/souya-assoc.svg" alt="宗谷地区サッカー協会" class="w-[198px]" />
+                    <img src="@/assets/banners/regional-association/souya-assoc.svg" alt="宗谷地区サッカー協会" class="w-[170px]" />
                 </div>
             </div>
         </div>
@@ -255,14 +255,14 @@ const sampleRoundName = 'Aブロック';
         <div>
             <p class="bg-black text-white text-center font-light mb-2">そ　の　他　連　盟　等</p>
             <div class="flex justify-between flex-wrap">
-                <div class="grid grid-cols-2 gap-3">
-                    <img src="@/assets/banners/others/sp-takamadonomiya.svg" alt="札幌地区サッカー協会" class="w-[198px]" />
+                <div class="grid grid-cols-2 gap-y-3 gap-x-4">
+                    <img src="@/assets/banners/others/sp-takamadonomiya.svg" alt="札幌地区サッカー協会" class="w-[170px]" />
                     <img src="@/assets/banners/others/sjfa.svg" alt="札幌地区少年サッカー連盟" class="h-[33px]" />
-                    <img src="@/assets/banners/others/hokkaido-futsal.svg" alt="北海道フットサル連盟" class="w-[198px]" />
-                    <img src="@/assets/banners/others/sapporo-futsal.svg" alt="札幌フットサル連盟" class="w-[198px]" />
-                    <img src="@/assets/banners/others/chutairen.svg" alt="北海道中学校体育連盟" class="w-[198px]" />
-                    <img src="@/assets/banners/others/jcy.svg" alt="日本クラブユースサッカー連盟" class="w-[198px]" />
-                    <img src="@/assets/banners/others/amusement.svg" alt="札幌サッカーアミューズメントパーク" class="w-[198px]" />
+                    <img src="@/assets/banners/others/hokkaido-futsal.svg" alt="北海道フットサル連盟" class="w-[170px]" />
+                    <img src="@/assets/banners/others/sapporo-futsal.svg" alt="札幌フットサル連盟" class="w-[170px]" />
+                    <img src="@/assets/banners/others/chutairen.svg" alt="北海道中学校体育連盟" class="w-[170px]" />
+                    <img src="@/assets/banners/others/jcy.svg" alt="日本クラブユースサッカー連盟" class="w-[170px]" />
+                    <img src="@/assets/banners/others/amusement.svg" alt="札幌サッカーアミューズメントパーク" class="w-[170px]" />
                     <img src="@/assets/banners/others/highschool-soccer.svg" alt="高校サッカードットコム" class="h-[37px]" />
                 </div>
             </div>
