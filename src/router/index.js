@@ -17,6 +17,7 @@ import CompanyInfoView from '@/views/CompanyInfoView.vue';
 import CopyrightInfoView from '@/views/CopyrightInfoView.vue';
 import PrivacyPolicyView from '@/views/PrivacyPolicyView.vue';
 import TermsOfServiceView from '@/views/TermsOfServiceView.vue';
+import SctlNotationsView from '@/views/SctlNotationsView.vue';
 
 import LatestResultsView from '@/views/LatestResultsView.vue'
 import TopicsView from '@/views/TopicsView.vue'
@@ -100,6 +101,12 @@ const router = createRouter({
 			component: CompanyInfoView
 		},
 		
+		{
+			path: '/specified-commercial-transactions-law-notations',
+			name: 'SctlNotations',
+			component: SctlNotationsView
+		},
+
 		{
 			path: '/terms-of-service',
 			name: 'TermsOfService',
