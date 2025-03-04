@@ -82,7 +82,7 @@ onMounted(() => {
         />
     </header>        
 
-    <main class="flex-1">
+    <main class="flex-1 pb-20">
         <!-- <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
             <template v-slot="{ user }">
                 <RouterView />
