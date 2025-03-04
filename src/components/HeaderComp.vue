@@ -210,7 +210,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/company-info" :class="routerLinkClass">
-                                        <span>企業概要</span>
+                                        <span>企業情報</span>
                                         <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
@@ -227,11 +227,17 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
+                                    <router-link to="/specified-commercial-transactions-law-notations" :class="routerLinkClass">
+                                        <span>特定商取引法に基づく表記</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
+                                </li>
+                                <!-- <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/copyright-info" :class="routerLinkClass">
                                         <span>著作権情報</span>
                                         <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </Transition>
