@@ -5,7 +5,7 @@ const sampleRoundName = 'Aブロック';
 </script>
 
 <template>
-<div class="px-2">
+<div class="px-2 pt-8 pb-20">
     <div>
         <h1 class="text-xl">今週の試合</h1>
         <div class="bg-[#090A0A] text-[#FAFAFC] w-fit px-1 mb-1">2025.2.22(Sat)</div>
@@ -236,13 +236,13 @@ const sampleRoundName = 'Aブロック';
             <p class="bg-black text-white text-center font-light mb-2">そ　の　他　連　盟　等</p>
             <div class="grid grid-cols-2 gap-y-3 gap-x-2">
                 <img src="@/assets/banners/others/sp-takamadonomiya.svg" alt="札幌地区サッカー協会" class="w-full" />
-                <img src="@/assets/banners/others/sjfa.svg" alt="札幌地区少年サッカー連盟" class="h-[33px]" />
+                <img src="@/assets/banners/others/sjfa.svg" alt="札幌地区少年サッカー連盟" class="h-full" />
                 <img src="@/assets/banners/others/hokkaido-futsal.svg" alt="北海道フットサル連盟" class="w-full" />
                 <img src="@/assets/banners/others/sapporo-futsal.svg" alt="札幌フットサル連盟" class="w-full" />
                 <img src="@/assets/banners/others/chutairen.svg" alt="北海道中学校体育連盟" class="w-full" />
                 <img src="@/assets/banners/others/jcy.svg" alt="日本クラブユースサッカー連盟" class="w-full" />
                 <img src="@/assets/banners/others/amusement.svg" alt="札幌サッカーアミューズメントパーク" class="w-full" />
-                <img src="@/assets/banners/others/highschool-soccer.svg" alt="高校サッカードットコム" class="h-[37px]" />
+                <img src="@/assets/banners/others/highschool-soccer.svg" alt="高校サッカードットコム" class="h-full" />
             </div>
         </div>
     </div>
