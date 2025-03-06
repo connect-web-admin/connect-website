@@ -34,7 +34,7 @@ const awayClubName = ref(''); // アウェイクラブ名
 const venue = ref(''); // 会場
 const isLeague = ref(false); // リーグ戦フラグ
 const isResultRegistered = ref(false); // 試合結果登録済みフラグ
-const gameStatus = ref('試合前'); // 試合進行状況
+const gameStatus = ref(''); // 試合進行状況。試合前、前半、後半、試合終了のいずれかが入る
 
 // 試合結果入力フォームのデータを格納する
 const isDelayed = ref(false); // 試合順延フラグ
@@ -137,6 +137,7 @@ const getTargetMatchInfo = async () => {
         isResultRegistered.value = data['match_detail']['is_result_registered'];
         matchDate.value = data['match_detail']['match_date'];
         scheduledMatchStartTime.value = data['match_detail']['scheduled_match_start_time'];
+        gameStatus.value = data['match_detail']['game_status'];
         homeClubName.value = data['match_detail']['home_club']['club_name'];
         homeClubFirstHalfScore.value = data['match_detail']['home_club']['first_half_score'];
         homeClubSecondHalfScore.value = data['match_detail']['home_club']['second_half_score'];
@@ -151,6 +152,124 @@ const getTargetMatchInfo = async () => {
         isLoading.value = false;
     }
 };
+
+/**
+ * 得点を追加
+ */
+const plusScore = async (homeOrAway) => {
+    const club = homeOrAway // 文字列のhomeかawayが入る
+
+    // ここから結果登録処理
+    isProcessing.value = true;
+
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/plus-score`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            homeOrAway: club,
+            gameStatus: gameStatus.value
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        location.reload();
+    } catch (error) {
+        console.error('Error details:', error)
+    } finally {
+        isProcessing.value = false;
+    }
+}
+
+/**
+ * 得点を取り消し
+ */
+const minusScore = async (homeOrAway) => {
+    const club = homeOrAway // 文字列のhomeかawayが入る
+
+    // ここから結果登録処理
+    isProcessing.value = true;
+
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/minus-score`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            homeOrAway: club,
+            gameStatus: gameStatus.value
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        location.reload();
+    } catch (error) {
+        console.error('Error details:', error)
+    } finally {
+        isProcessing.value = false;
+    }
+}
+
+
+/**
+ * 試合状況を進行させる
+ */
+const handleGameStatus = async (direction) => {
+    // ここから結果登録処理
+    isProcessing.value = true;
+
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/handle-game-status`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            direction: direction // 引数で文字列nextかprevが入ってくる
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        location.reload();
+    } catch (error) {
+        console.error('Error details:', error)
+    } finally {
+        isProcessing.value = false;
+    }
+}
 
 /**
  * 試合結果登録
@@ -313,14 +432,10 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
                                     :show="showHomeClubPlusModal"
-                                    :championship-id="championshipId"
-                                    :match-id="matchId"
-                                    :game-status="gameStatus"
                                     :is-home="isHome"
                                     :is-plus-score="isPlusScore"
-                                    :home-club-first-half-score="homeClubFirstHalfScore"
-                                    :home-club-second-half-score="homeClubSecondHalfScore"
                                     @close="showHomeClubPlusModal = false"
+                                    @plus-score="plusScore"
                                 >
                                     <template v-slot:body>
                                         <p><span class="text-red-500 font-bold">{{ homeClubName }}</span>に１点を追加します。<br />よろしいですか？</p>
@@ -334,14 +449,10 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
                                     :show="showHomeClubMinusModal"
-                                    :championship-id="championshipId"
-                                    :match-id="matchId"
-                                    :game-status="gameStatus"
                                     :is-home="isHome"
                                     :is-minus-score="isMinusScore"
-                                    :home-club-first-half-score="homeClubFirstHalfScore"
-                                    :home-club-second-half-score="homeClubSecondHalfScore"
                                     @close="showHomeClubMinusModal = false"
+                                    @minus-score="minusScore"
                                 >
                                     <template v-slot:body>
                                         <p><span class="text-red-500 font-bold">{{ homeClubName }}</span>の１点を取り消します。<br />よろしいですか？</p>
@@ -360,14 +471,10 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
                                     :show="showAwayClubPlusModal"
-                                    :championship-id="championshipId"
-                                    :match-id="matchId"
-                                    :game-status="gameStatus"
                                     :is-away="isAway"
                                     :is-plus-score="isPlusScore"
-                                    :away-club-first-half-score="awayClubFirstHalfScore"
-                                    :away-club-second-half-score="awayClubSecondHalfScore"
                                     @close="showAwayClubPlusModal = false"
+                                    @plus-score="plusScore"
                                 >
                                     <template v-slot:body>
                                         <p><span class="text-red-500 font-bold">{{ awayClubName }}</span>に１点を追加します。<br />よろしいですか？</p>
@@ -381,14 +488,10 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
                                     :show="showAwayClubMinusModal"
-                                    :championship-id="championshipId"
-                                    :match-id="matchId"
-                                    :game-status="gameStatus"
                                     :is-away="isAway"
                                     :is-minus-score="isMinusScore"
-                                    :away-club-first-half-score="awayClubFirstHalfScore"
-                                    :away-club-second-half-score="awayClubSecondHalfScore"
                                     @close="showAwayClubMinusModal = false"
+                                    @minus-score="minusScore"
                                 >
                                     <template v-slot:body>
                                         <p><span class="text-red-500 font-bold">{{ awayClubName }}</span>の１点を取り消します。<br />よろしいですか？</p>
@@ -405,9 +508,9 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                         <p>{{ homeScore }}　合計　{{ awayScore }}</p>
                         <div class="flex flex-row justify-center items-center gap-5">
                             <div class="w-1/4 text-right">
-                                <button type="button" v-if="gameStatus === '前半'" @click="gameStatus = '試合前'" :class="gameStatusBtn">試合前</button>
-                                <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '前半'" :class="gameStatusBtn">前半</button>
-                                <button type="button" v-else-if="gameStatus === '試合終了'" @click="gameStatus = '後半'" :class="gameStatusBtn">後半</button>
+                                <button type="button" v-if="gameStatus === '前半'" @click="handleGameStatus('prev')" :class="gameStatusBtn">試合前</button>
+                                <button type="button" v-else-if="gameStatus === '後半'" @click="handleGameStatus('prev')" :class="gameStatusBtn">前半</button>
+                                <button type="button" v-else-if="gameStatus === '試合終了'" @click="handleGameStatus('prev')" :class="gameStatusBtn">後半</button>
                             </div>
                             <div class="flex flex-row items-center gap-2 text-center justify-center">
                                 <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-red-400"></div>
@@ -415,9 +518,9 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                                 <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-red-400"></div>
                             </div>
                             <div class="w-1/4 text-left">
-                                <button type="button" v-if="gameStatus === '試合前'" @click="gameStatus = '前半'" :class="gameStatusBtn">前半</button>
-                                <button type="button" v-else-if="gameStatus === '前半'" @click="gameStatus = '後半'" :class="gameStatusBtn">後半</button>
-                                <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '試合終了'" :class="gameStatusBtn">試合終了</button>
+                                <button type="button" v-if="gameStatus === '試合前'" @click="handleGameStatus('next')" :class="gameStatusBtn">前半</button>
+                                <button type="button" v-else-if="gameStatus === '前半'" @click="handleGameStatus('next')" :class="gameStatusBtn">後半</button>
+                                <button type="button" v-else-if="gameStatus === '後半'" @click="handleGameStatus('next')" :class="gameStatusBtn">試合終了</button>
                             </div>
                         </div>
                     </div>
