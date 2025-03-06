@@ -1,0 +1,14 @@
+{
+  "resourceName": "UserDDB",
+  "tableName": "UserDDB",
+  "partitionKey": {
+    "fieldName": "user_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "email",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

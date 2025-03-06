@@ -36,20 +36,26 @@
         "sendInquiryViaSESLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/sendInquiryViaSESLambda-547351636f4b39305844-build.zip"
+        },
+        "userLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/userLambda-6b745634665a79583638-build.zip"
         }
       },
       "storage": {
         "ConnecterDDB": {},
         "MatchDDB": {},
         "TopicsDDB": {},
-        "ClubDDB": {}
+        "ClubDDB": {},
+        "UserDDB": {}
       },
       "api": {
         "connecterApi": {},
         "matchApi": {},
         "topicsApi": {},
         "clubApi": {},
-        "sendInquiryViaSESApi": {}
+        "sendInquiryViaSESApi": {},
+        "userApi": {}
       }
     }
   }
