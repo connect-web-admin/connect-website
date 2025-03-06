@@ -256,11 +256,13 @@ onMounted(async () => {
 // CSS
 const textClubName = 'text-xl border-1 border-gray-200 py-2';
 const scoreInputBg = 'p-4 border-1 border-gray-200';
-const scoringOpenModal = 'text-4xl leading-none';
-const scoringBtn = 'border-2 border-red-600 rounded-md w-12 h-10';
+const scoringOpenModal = 'text-4xl';
+const scoringBtn = 'w-12 h-10';
+// const cursorScringBtnLeftSide = 'w-0 h-0 border-y-8 border-l-8 border-y-transparent border-red-400';
+// const cursorScringBtnRighttSide = 'w-0 h-0 border-y-8 border-r-8 border-y-transparent border-red-400';
 const undoScoring = 'mt-10 mb-2';
-const gameStatusBtn = 'px-3 py-1 bg-gray-50 border-1 border-gray-400 rounded-md';
-const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-auto my-5';
+const gameStatusBtn = 'px-3 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
+const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 rounded-md mx-auto my-5';
 </script>
 
 <template>
@@ -290,7 +292,7 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                 </div>
             </div>
             <div class="my-10">
-                <p class="p-1 bg-green-100 font-bold text-xl rounded-t-md">試合速報入力</p>
+                <p class="py-1 font-bold text-xl border-t-1 border-b-1 border-black">試合速報入力</p>
                 <div class="h-15">
                     <label for="match-time"><p class="bg-gray-200">実際の試合開始時刻</p></label>
                     <div class="flex items-center justify-center h-10">
@@ -298,19 +300,15 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                     </div>
                 </div>
                 <div class="p-1 border-t-1 border-gray-400">
-                    <span v-if="(gameStatus !== '試合前') && (gameStatus !== '試合終了')">LIVE - </span><span class="italic">{{ gameStatus }}</span>
+                    <span v-if="(gameStatus !== '試合前') && (gameStatus !== '試合終了')" class="text-lg">LIVE - </span><span class="text-lg">{{ gameStatus }}</span>
                 </div>
                 <div class="flex flex-row">
                     <div class="w-1/2">
                         <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
                         <div :class="scoreInputBg" class="bg-blue-50">
-                            <div class="flex items-center justify-center gap-2">
-                                <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-black"></div>
-                                <button type="button" @click="showHomeClubPlusModal = true" :class="scoringBtn ">
-                                    <span :class="scoringOpenModal">{{ homeScore }}</span>
-                                </button>
-                                <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-black"></div>
-                            </div>
+                            <button type="button" @click="showHomeClubPlusModal = true" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-1 border-red-400 rounded-md">
+                                <span :class="scoringOpenModal">{{ homeScore }}</span>
+                            </button>
                             <Teleport to="body">
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
@@ -318,12 +316,11 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                                     :championship-id="championshipId"
                                     :match-id="matchId"
                                     :game-status="gameStatus"
-                                    :isHome="isHome"
+                                    :is-home="isHome"
                                     :is-plus-score="isPlusScore"
                                     :home-club-first-half-score="homeClubFirstHalfScore"
                                     :home-club-second-half-score="homeClubSecondHalfScore"
                                     @close="showHomeClubPlusModal = false"
-                                    @plus-score="homeClubFirstHalfScore += 1">
                                 >
                                     <template v-slot:body>
                                         <p><span class="text-red-500 font-bold">{{ homeClubName }}</span>に１点を追加します。<br />よろしいですか？</p>
@@ -332,7 +329,7 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                             </Teleport>
                         </div>
                         <div :class="undoScoring">
-                            <button type="button" @click="showHomeClubMinusModal = true" class="px-2 bg-gray-400 text-white rounded-md">得点取り消し</button>
+                            <button type="button" @click="showHomeClubMinusModal = true" class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
                             <Teleport to="body">
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
@@ -345,7 +342,6 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                                     :home-club-first-half-score="homeClubFirstHalfScore"
                                     :home-club-second-half-score="homeClubSecondHalfScore"
                                     @close="showHomeClubMinusModal = false"
-                                    @minus-score="homeClubFirstHalfScore -= 1">
                                 >
                                     <template v-slot:body>
                                         <p><span class="text-red-500 font-bold">{{ homeClubName }}</span>の１点を取り消します。<br />よろしいですか？</p>
@@ -357,13 +353,9 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                     <div class="w-1/2">
                         <p :class="textClubName" class="bg-amber-100">{{ awayClubName }}</p>
                         <div :class="scoreInputBg" class="bg-amber-50">
-                            <div class="flex items-center justify-center gap-2">
-                                <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-black"></div>
-                                <button type="button" @click="showAwayClubPlusModal = true" :class="scoringBtn ">
-                                    <span :class="scoringOpenModal">{{ awayScore }}</span>
-                                </button>
-                                <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-black"></div>
-                            </div>
+                            <button type="button" @click="showAwayClubPlusModal = true" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-1 border-red-400 rounded-md">
+                                <span :class="scoringOpenModal">{{ awayScore }}</span>
+                            </button>
                             <Teleport to="body">
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
@@ -376,7 +368,6 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                                     :away-club-first-half-score="awayClubFirstHalfScore"
                                     :away-club-second-half-score="awayClubSecondHalfScore"
                                     @close="showAwayClubPlusModal = false"
-                                    @plusScore="awayClubFirstHalfScore += 1"
                                 >
                                     <template v-slot:body>
                                         <p><span class="text-red-500 font-bold">{{ awayClubName }}</span>に１点を追加します。<br />よろしいですか？</p>
@@ -385,7 +376,7 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                             </Teleport>
                         </div>
                         <div :class="undoScoring">
-                            <button type="button" @click="showAwayClubMinusModal = true"  class="px-2 bg-gray-400 text-white rounded-md">得点取り消し</button>
+                            <button type="button" @click="showAwayClubMinusModal = true"  class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
                             <Teleport to="body">
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
@@ -398,7 +389,6 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                                     :away-club-first-half-score="awayClubFirstHalfScore"
                                     :away-club-second-half-score="awayClubSecondHalfScore"
                                     @close="showAwayClubMinusModal = false"
-                                    @minus-score="awayClubFirstHalfScore -= 1">
                                 >
                                     <template v-slot:body>
                                         <p><span class="text-red-500 font-bold">{{ awayClubName }}</span>の１点を取り消します。<br />よろしいですか？</p>
@@ -413,16 +403,16 @@ const registerBtnBase = 'min-w-1/3 w-1/3 text-white text-xl p-2 rounded-md mx-au
                         <p>{{ homeClubFirstHalfScore }}　前半　{{ awayClubFirstHalfScore }}</p>
                         <p>{{ homeClubSecondHalfScore }}　後半　{{ awayClubSecondHalfScore }}</p>
                         <p>{{ homeScore }}　合計　{{ awayScore }}</p>
-                        <div class="flex flex-row justify-between items-center">
+                        <div class="flex flex-row justify-center items-center gap-5">
                             <div class="w-1/4 text-right">
                                 <button type="button" v-if="gameStatus === '前半'" @click="gameStatus = '試合前'" :class="gameStatusBtn">試合前</button>
                                 <button type="button" v-else-if="gameStatus === '後半'" @click="gameStatus = '前半'" :class="gameStatusBtn">前半</button>
                                 <button type="button" v-else-if="gameStatus === '試合終了'" @click="gameStatus = '後半'" :class="gameStatusBtn">後半</button>
                             </div>
-                            <div class="flex flex-row items-center gap-5 w-2/4 text-center justify-center">
-                                <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-black"></div>
+                            <div class="flex flex-row items-center gap-2 text-center justify-center">
+                                <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-red-400"></div>
                                 <p>試合進行</p>
-                                <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-black"></div>
+                                <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-red-400"></div>
                             </div>
                             <div class="w-1/4 text-left">
                                 <button type="button" v-if="gameStatus === '試合前'" @click="gameStatus = '前半'" :class="gameStatusBtn">前半</button>
