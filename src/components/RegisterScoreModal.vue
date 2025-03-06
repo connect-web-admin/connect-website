@@ -7,11 +7,7 @@ const props = defineProps({
     isHome: Boolean,
     isAway: Boolean,
     isPlusScore: Boolean,
-    isMinusScore: Boolean,
-    homeClubFirstHalfScore: Number,
-    homeClubSecondHalfScore: Number,
-    awayClubFirstHalfScore: Number,
-    awayClubSecondHalfScore: Number,
+    isMinusScore: Boolean
 });
 
 // CSS
@@ -28,15 +24,12 @@ const btnBase = 'w-1/4 py-1 text-white rounded-md';
 
                 <div class="modal-footer">
                     <slot name="footer">
-                        <div v-if="isPlusScore" class="flex justify-around">
+                        <div class=" flex flex-row justify-around">
                             <button type="submit" @click="$emit('close')" :class="btnBase" class="bg-gray-400">いいえ</button>
-                            <button type="submit" v-if="isHome" @click="$emit('plusScore'), $emit('close')" :class="btnBase" class="bg-blue-500">はい</button>                            
-                            <button type="submit" v-if="isAway" @click="$emit('plusScore'), $emit('close')" :class="btnBase" class="bg-blue-500">はい</button>                            
-                        </div>
-                        <div v-if="isMinusScore" class="flex justify-around">
-                            <button type="submit" @click="$emit('close')" :class="btnBase" class="bg-gray-400">いいえ</button>
-                            <button type="submit" v-if="isHome" @click="$emit('minusScore'), $emit('close')" :class="btnBase" class="bg-blue-500">はい</button>                            
-                            <button type="submit" v-if="isAway" @click="$emit('minusScore'), $emit('close')" :class="btnBase" class="bg-blue-500">はい</button>                            
+                            <button type="submit" v-if="isPlusScore && isHome" @click="$emit('plusScore', 'home'), $emit('close')" :class="btnBase" class="bg-blue-500">はい</button>
+                            <button type="submit" v-if="isPlusScore && isAway" @click="$emit('plusScore', 'away'), $emit('close')" :class="btnBase" class="bg-blue-500">はい</button>
+                            <button type="submit" v-if="isMinusScore && isHome" @click="$emit('minusScore', 'home'), $emit('close')" :class="btnBase" class="bg-blue-500">はい</button>
+                            <button type="submit" v-if="isMinusScore && isAway" @click="$emit('minusScore', 'away'), $emit('close')" :class="btnBase" class="bg-blue-500">はい</button>
                         </div>
                     </slot>
                 </div>
