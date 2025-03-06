@@ -26,7 +26,7 @@ const props = defineProps({
 // 画像リスト
 const imageList = ref([
     { src: firstSquare, alt: "株式会社ファーストスクエア" },
-    { src: sfa, alt: "札幌地区サッカー協会"},
+    { src: sfa, alt: "札幌地区サッカー協会" },
     { src: sugenoTakanori, alt: "菅野孝憲公式アプリ" },
 ]);
 const currentIndex = ref(0);
@@ -50,25 +50,27 @@ const isMenuOpen = ref(false);
 /**
  * スクロール時にヘッダーを非表示にする
  */
-const hideSlider = ref(false);
+ const hideSlider = ref(false);
 const handleScroll = () => {
     // スクロール位置を取得
     const scrollTop = window.scrollY;
-    // 特定のスクロール位置でブロックを非表示にする
-    hideSlider.value = scrollTop > 0; // 30pxを閾値として設定
+    // スクロール位置が0の時だけスライダーを表示
+    hideSlider.value = scrollTop !== 0;
 }
-// デバウンスされたスクロールハンドラー
+
 // デバウンス関数の実装
 const debounce = (func, wait) => {
     let timeout;
     return function (...args) {
         clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
+        timeout = setTimeout(() => {
+            func.apply(this, args);
+        }, wait);
     };
-}
+};
+
 // デバウンスされたスクロールハンドラー
-// スライダーを非表示にする機能が、スクロールイベントの度に発火する（スライダーが高速でちらつく）のを防ぐ
-const debouncedHandleScroll = debounce(handleScroll, 100);
+const debouncedHandleScroll = debounce(handleScroll, 200); // デバウンス時間を2000msから200msに短縮 ー`
 
 onMounted(() => {
     // スライダー。4秒ごとに切り替え
@@ -145,7 +147,8 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                     </router-link>
                                 </li>
                                 <li :class='navMenuWithSubMenu'>
-                                    <span class="block h-[29px] pl-4 border-b-1 border-gray-200 border-dashed">結果速報</span>
+                                    <span
+                                        class="block h-[29px] pl-4 border-b-1 border-gray-200 border-dashed">結果速報</span>
                                     <ul>
                                         <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
                                             <router-link to="/live-report-for-user" :class="routerLinkClass">
@@ -159,7 +162,8 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                                 <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
                                             </router-link>
                                         </li>
-                                        <li @click="isMenuOpen = !isMenuOpen" class="flex justify-between items-center h-[29px] pr-4 pl-8">
+                                        <li @click="isMenuOpen = !isMenuOpen"
+                                            class="flex justify-between items-center h-[29px] pr-4 pl-8">
                                             <router-link to="/live-report-for-user" :class="routerLinkClass">
                                                 <span>U-18（ユース）</span>
                                                 <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
@@ -194,7 +198,8 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                                 <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
                                             </router-link>
                                         </li>
-                                        <li @click="isMenuOpen = !isMenuOpen" class="flex justify-between items-center h-[29px] pr-4 pl-8">
+                                        <li @click="isMenuOpen = !isMenuOpen"
+                                            class="flex justify-between items-center h-[29px] pr-4 pl-8">
                                             <router-link to="/videos" :class="routerLinkClass">
                                                 <span>動画</span>
                                                 <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
@@ -215,7 +220,8 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
-                                    <router-link to="/specified-commercial-transactions-law-notations" :class="routerLinkClass">
+                                    <router-link to="/specified-commercial-transactions-law-notations"
+                                        :class="routerLinkClass">
                                         <span>特定商取引法に基づく表記</span>
                                         <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
@@ -245,16 +251,14 @@ const routerLinkClass = 'flex justify-between items-center w-full';
             </div>
         </div>
         <!-- スライダー -->
-        <div>
-            <div v-show="!hideSlider"
-                class="flex items-center justify-center overflow-hidden w-full h-27 bg-black relative">
-                <Transition enter-active-class="transition-transform duration-500 ease-in-out"
-                    enter-from-class="translate-x-full" leave-to-class="-translate-x-full"
-                    leave-active-class="transition-transform duration-500 ease-in-out" mode="out-in">
-                    <img :key="currentIndex" :src="imageList[currentIndex].src" :alt="imageList[currentIndex].alt"
-                        class="absolute w-[428px] max-w-full h-full object-contain shadow-md" />
-                </Transition>
-            </div>
+        <div v-show="!hideSlider"
+            class="flex items-center justify-center overflow-hidden w-full h-27 bg-black relative">
+            <Transition enter-active-class="transition-transform duration-500 ease-in-out"
+                enter-from-class="translate-x-full" leave-to-class="-translate-x-full"
+                leave-active-class="transition-transform duration-500 ease-in-out" mode="out-in">
+                <img :key="currentIndex" :src="imageList[currentIndex].src" :alt="imageList[currentIndex].alt"
+                    class="absolute w-[428px] max-w-full h-full object-contain shadow-md" />
+            </Transition>
         </div>
         <!-- スライダー直下の横スクロールメニュー -->
         <div class="overflow-x-auto">
