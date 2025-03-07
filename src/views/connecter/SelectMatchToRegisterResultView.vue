@@ -3,6 +3,7 @@
 import { ref, onBeforeMount, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, CHAMPIONSHIPS, CATEGORIES } from '@/utils/constants';
+import CopyrightComp from '@/components/CopyrightComp.vue';
 
 const router = useRouter();
 
@@ -308,7 +309,7 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                     <div v-else class="px-2 py-1 last:rounded-b-md">
                         <div>
                             <form @submit.prevent="moveToRegisterMatchResult(match.matchId)" class="flex items-center">
-                                <button type="button" @click="moveToRegisterMatchResult(match.matchId)" :class="selectBtn" class="bg-red-200 border-1 border-black">選択</button>
+                                <button type="button" @click="moveToRegisterMatchResult(match.matchId)" :class="selectBtn" class="bg-green-200 border-1 border-black">選択</button>
                                 <div class="w-full">
                                     <div class="text-left">
                                         開催日：{{ match.matchDate }}
@@ -326,6 +327,7 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
             </div>
         </Transition>
     </div>
+    <CopyrightComp />
 </div>
 </template>
 
