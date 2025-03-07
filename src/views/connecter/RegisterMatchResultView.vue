@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import RegisterScoreModal from '@/components/RegisterScoreModal.vue';
 import RegisterMatchResultModal from '@/components/RegisterMatchResultModal.vue';
+import RegisterMatchDelayModal from '@/components/RegisterMatchDelayModal.vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
 import CopyrightComp from '@/components/CopyrightComp.vue';
 
@@ -21,6 +22,7 @@ const showAwayClubPlusModal = ref(false);
 const showHomeClubMinusModal = ref(false);
 const showAwayClubMinusModal = ref(false);
 const showMatchResultModal = ref(false);
+const showMatchDelayModal = ref(false);
 
 // 速報画面の初期状態
 const targetMatchInfo = ref({}) // おおもとの試合情報
@@ -281,16 +283,6 @@ const minusScore = async (homeOrAway) => {
  * 試合状況進行・後退
  */
 const handleGameStatus = async (direction) => {
-    // if (direction === 'next') {
-    //     if (!confirm("試合状況を進行します。よろしいですか？")) {
-    //         return;
-    //     }
-    // } else if (direction === 'prev') {
-    //     if (!confirm("試合状況を戻します。よろしいですか？")) {
-    //         return;
-    //     }        
-    // }
-
     try {
         const putUrl = new URL(`${MATCH_API_URL}/handle-game-status`);
 
@@ -376,6 +368,7 @@ const registerMatchResult = async () => {
  * 試合延期登録
  */
 const registerMatchDelay = async () => {
+    console.log('registerMatchDelay');
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-match-delay`);
 
@@ -418,7 +411,7 @@ const scoringOpenModal = 'text-4xl';
 const scoringBtn = 'w-12 h-10';
 const minusScoring = 'mt-10 mb-2';
 const gameStatusBtn = 'w-full px-3 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
-const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 rounded-md mx-auto my-5';
+const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
 </script>
 
 <template>
@@ -443,7 +436,7 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                     <p class="w-48 break-words text-left">{{ awayClubName }}</p>
                 </div>
             </div>
-            <div class="mt-5 mb-10">
+            <div class="mt-5">
                 <p class="py-1 font-bold text-xl border-t-1 border-b-1 border-black">試合速報入力</p>
                 <div class="flex flex-row justify-center items-center gap-5 py-3 bg-green-100 border-b-1 border-black">
                     <div class="text-right w-[90px]"> 
@@ -557,8 +550,8 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                         <input type="time" id="match-time" :value="scheduledMatchStartTime" @input="setActualMatchStartTime" />
                     </div>
                 </div>
-                <div :class="registerBtnBase" class="mt-10 bg-blue-600">
-                    <button type="button" @click="registerMatchResultValidation">試合結果登録</button>
+                <div class="py-5">
+                    <button type="button" @click="registerMatchResultValidation"  :class="registerBtnBase" class=" bg-blue-600"><span class="text-xl bg-blue-600 text-white">試合結果登録</span></button>
                     <Teleport to="body">
                         <!-- use the modal component, pass in the prop -->
                         <register-match-result-modal
@@ -567,7 +560,7 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                             @register-match-result="registerMatchResult"
                         >
                             <template v-slot:body>
-                                <p>試合結果を登録します。よろしいですか？</p>
+                                <p>試合結果を登録します。<br />よろしいですか？</p>
                             </template>
                         </register-match-result-modal>
                     </Teleport>
@@ -585,11 +578,20 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                         <label for="isDelayedRadio2">いいえ</label>
                     </div>
                 </div>
-                <form @submit.prevent="registerMatchDelay">
-                    <div :class="[registerBtnBase, isDelayed ? 'bg-amber-600' : 'bg-gray-300 cursor-not-allowed']">
-                        <button type="button" :disabled="!isDelayed">延期登録</button>
-                    </div>
-                </form>
+                <div class="pt-5">
+                    <button type="button" @click="showMatchDelayModal = true" :disabled="!isDelayed" :class="[registerBtnBase, isDelayed ? 'bg-amber-600' : 'bg-gray-300 cursor-not-allowed']"><span class="text-xl text-white" :class="isDelayed ? 'bg-amber-600' : 'bg-gray-300 '">延期登録</span></button>
+                    <Teleport to="body">
+                        <register-match-delay-modal
+                            :show="showMatchDelayModal"
+                            @close="showMatchDelayModal = false"
+                            @register-match-delay="registerMatchDelay"
+                        >
+                            <template v-slot:body>
+                                <p>試合の延期を登録します。<br />よろしいですか？</p>
+                            </template>
+                        </register-match-delay-modal>
+                    </Teleport>
+                </div>
             </div>
         </div>
     </div>
