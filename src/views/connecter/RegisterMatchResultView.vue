@@ -368,7 +368,6 @@ const registerMatchResult = async () => {
  * 試合延期登録
  */
 const registerMatchDelay = async () => {
-    console.log('registerMatchDelay');
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-match-delay`);
 
