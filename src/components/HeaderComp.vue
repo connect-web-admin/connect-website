@@ -50,7 +50,7 @@ const isMenuOpen = ref(false);
 /**
  * スクロール時にヘッダーを非表示にする
  */
- const hideSlider = ref(false);
+const hideSlider = ref(false);
 const handleScroll = () => {
     // スクロール位置を取得
     const scrollTop = window.scrollY;
