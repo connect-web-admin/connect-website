@@ -7,11 +7,12 @@ import RegisterMatchDelayModal from '@/components/RegisterMatchDelayModal.vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
 import CopyrightComp from '@/components/CopyrightComp.vue';
 
+// 得点取り消しをするための最小得点数（1点）。0点では取り消し不可にする
+const LEAST_SCORE = 1;
+
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
 const router = useRouter();
-// REST APIで使う認証トークンを取得
-const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
 
 // 読み込み中・処理中の画面切り替え用フラグ
 const isLoading = ref(false);
@@ -220,10 +221,10 @@ const minusScoreValidation = (homeOrAway) => {
     }
 
     if (homeOrAway === 'home') {
-        if ((gameStatus.value === '前半' && homeClubFirstHalfScore.value < 1) ||
-            (gameStatus.value === '後半' && homeClubSecondHalfScore.value < 1 ) ||
-            (gameStatus.value === '延長前半' && homeClubExtraFirstHalfScore.value < 1 ) ||
-            (gameStatus.value === '延長後半' && homeClubExtraSecondHalfScore.value < 1 )            
+        if ((gameStatus.value === '前半' && homeClubFirstHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '後半' && homeClubSecondHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '延長前半' && homeClubExtraFirstHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '延長後半' && homeClubExtraSecondHalfScore.value < LEAST_SCORE)            
         ) {
             alert("取り消す得点がありません。");
             return;
@@ -231,10 +232,10 @@ const minusScoreValidation = (homeOrAway) => {
             showHomeClubMinusModal.value = true;
         }
     } else if (homeOrAway === 'away') {
-        if ((gameStatus.value === '前半' && awayClubFirstHalfScore.value < 1) ||
-            (gameStatus.value === '後半' && awayClubSecondHalfScore.value < 1 ) ||
-            (gameStatus.value === '延長前半' && awayClubExtraFirstHalfScore.value < 1 ) ||
-            (gameStatus.value === '延長後半' && awayClubExtraSecondHalfScore.value < 1 )            
+        if ((gameStatus.value === '前半' && awayClubFirstHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '後半' && awayClubSecondHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '延長前半' && awayClubExtraFirstHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '延長後半' && awayClubExtraSecondHalfScore.value < LEAST_SCORE)            
         ) {
             alert("取り消す得点がありません。");
             return;
@@ -242,8 +243,6 @@ const minusScoreValidation = (homeOrAway) => {
             showAwayClubMinusModal.value = true;
         }
     }
-
-
 }
 
 /**
