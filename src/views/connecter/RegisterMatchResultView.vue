@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import RegisterScoreModal from '@/components/RegisterScoreModal.vue';
 import RegisterMatchResultModal from '@/components/RegisterMatchResultModal.vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
@@ -8,13 +8,12 @@ import CopyrightComp from '@/components/CopyrightComp.vue';
 
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
-
+const router = useRouter();
 // REST APIで使う認証トークンを取得
 const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
 
 // 読み込み中・処理中の画面切り替え用フラグ
 const isLoading = ref(false);
-const isProcessing = ref(false);
 
 // モーダル表示用のフラグ
 const showHomeClubPlusModal = ref(false);
@@ -41,13 +40,17 @@ const gameStatus = ref(''); // 試合進行状況。試合前、前半、後半�
 const isDelayed = ref(false); // 試合順延フラグ
 const championshipId = route.params.championshipId; // 大会ID ルーティング時にパラメタで渡される
 const matchId = route.params.matchId; // 試合ID ルーティング時にパラメタで渡される
-const actualMatchStartTime = ref(''); // 実際の試合開始時刻
 const hasExtraHalves = ref(false); // 延長戦有無
 const hasPK = ref(false); // PK戦有無
 const isHome = ref(true); // ホームクラブかどうか 
 const isAway = ref(true); // アウェイクラブかどうか。isHomeの真偽地を使えば良いが、直感的に理解しやすくするために追加
 const isPlusScore = ref(true); // 得点追加フラグ
 const isMinusScore = ref(true); // 得点減少フラグ
+const actualMatchStartTime = ref(''); // 実際の試合開始時刻
+// scheduledMatchStartTimeの値が格納されたらactualMatchStartTimeにも反映する
+watch(scheduledMatchStartTime, (newValue) => {
+    actualMatchStartTime.value = newValue;
+});
 
 const homeClubFirstHalfScore = ref(0); // ホームクラブの前半得点
 const homeClubSecondHalfScore = ref(0); // ホームクラブの後半得点
@@ -155,12 +158,26 @@ const getTargetMatchInfo = async () => {
 };
 
 /**
+ * 得点追加のバリデーション
+ * 試合前や試合終了の状態では得点を追加できない
+ */
+const plusScoreValidation = (homeOrAway) => {
+    if (gameStatus.value === '試合前' || gameStatus.value === '試合終了') {
+        alert('試合前や試合終了の状態では得点を追加することはできません。');
+        return;
+    }
+
+    if (homeOrAway === 'home') {
+        showHomeClubPlusModal.value = true;
+    } else if (homeOrAway === 'away') {
+        showAwayClubPlusModal.value = true;
+    }
+}
+
+/**
  * 得点を追加
  */
 const plusScore = async (homeOrAway) => {
-    // ここから結果登録処理
-    isProcessing.value = true;
-
     try {
         const putUrl = new URL(`${MATCH_API_URL}/plus-score`);
 
@@ -187,12 +204,19 @@ const plusScore = async (homeOrAway) => {
         location.reload();
     } catch (error) {
         console.error('Error details:', error)
-    } finally {
-        isProcessing.value = false;
     }
 }
 
+/**
+ * 得点取り消しのバリデーション
+ * 得点取り消ししようとする試合進行状況の得点が0の場合はモーダルを表示しない
+ */
 const minusScoreValidation = (homeOrAway) => {
+    if (gameStatus.value === '試合前' || gameStatus.value === '試合終了') {
+        alert('試合前や試合終了の状態では得点を取り消すことはできません。');
+        return;
+    }
+
     if (homeOrAway === 'home') {
         if ((gameStatus.value === '前半' && homeClubFirstHalfScore.value < 1) ||
             (gameStatus.value === '後半' && homeClubSecondHalfScore.value < 1 ) ||
@@ -216,15 +240,14 @@ const minusScoreValidation = (homeOrAway) => {
             showAwayClubMinusModal.value = true;
         }
     }
+
+
 }
 
 /**
  * 得点を取り消し
  */
 const minusScore = async (homeOrAway) => {
-    // ここから結果登録処理
-    isProcessing.value = true;
-
     try {
         const putUrl = new URL(`${MATCH_API_URL}/minus-score`);
 
@@ -251,8 +274,6 @@ const minusScore = async (homeOrAway) => {
         location.reload();
     } catch (error) {
         console.error('Error details:', error)
-    } finally {
-        isProcessing.value = false;
     }
 }
 
@@ -269,9 +290,6 @@ const handleGameStatus = async (direction) => {
     //         return;
     //     }        
     // }
-
-    // ここから試合状況変更処理
-    isProcessing.value = true;
 
     try {
         const putUrl = new URL(`${MATCH_API_URL}/handle-game-status`);
@@ -298,49 +316,45 @@ const handleGameStatus = async (direction) => {
         location.reload();
     } catch (error) {
         console.error('Error details:', error)
-    } finally {
-        isProcessing.value = false;
     }
 }
 
 /**
- * 試合結果登録
+ * 試合結果登録のバリデーション
  */
-const registerMatchResult = async () => {
+const registerMatchResultValidation = () => {
     // 試合結果登録のバリデーション
     if (!actualMatchStartTime.value) {
         alert('実際の試合開始時刻を入力してください。');
         return;
     }
 
-    if (!confirm('試合結果を登録してよろしいですか？')) {
+    if (gameStatus.value !== '試合終了') {
+        alert('試合結果を登録するには試合終了の状態でなければなりません。');
         return;
     }
 
-    // ここから結果登録処理
-    isProcessing.value = true;
+    showMatchResultModal.value = true;
+}
 
+/**
+ * 試合結果登録
+ */
+const registerMatchResult = async () => {
     try {
-        const putUrl = new URL(`${MATCH_API_URL}/register_match_result`);
+        const putUrl = new URL(`${MATCH_API_URL}/register-match-result`);
 
         const requestBody = {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
             championshipId: championshipId, // パラメタで渡された大会ID
             matchId: matchId, // パラメタで渡された試合ID
-            actualMatchStartTime: actualMatchStartTime.value,
-            hasPK: hasPK.value,
-            homeClubFinalScore: homeClubFinalScore.value,
-            homeClubPKScore: hasPK.value ? homeClubPKScore.value : 0,
-            awayClubFinalScore: awayClubFinalScore.value,
-            awayClubPKScore: hasPK.value ? awayClubPKScore.value : 0,
-            isDelayed: isDelayed.value
+            actualMatchStartTime: actualMatchStartTime.value
         }
 
         const response = await fetch(putUrl, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idTokenForAuth}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestBody)
         });
@@ -350,13 +364,11 @@ const registerMatchResult = async () => {
         }
 
         // 成功時の処理を追加
-        alert('正常に試合結果を登録しました。自動でこのウィンドウを閉じます。閉じない場合、手動で閉じてください。');
-        window.close();
+        alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
+        router.push('/connecter/select-match-to-register-result');
     } catch (error) {
         console.error('Error details:', error)
         errorMessage.value = '試合結果の登録に失敗しました。'
-    } finally {
-        isProcessing.value = false;
     }
 };
 
@@ -364,8 +376,6 @@ const registerMatchResult = async () => {
  * 試合延期登録
  */
 const registerMatchDelay = async () => {
-    isProcessing.value = true;
-
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-match-delay`);
 
@@ -378,8 +388,7 @@ const registerMatchDelay = async () => {
         const response = await fetch(putUrl, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idTokenForAuth}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestBody)
         });
@@ -389,19 +398,17 @@ const registerMatchDelay = async () => {
         }
 
         // 成功時の処理を追加
-        alert('正常に試合延期を登録しました。自動でこのウィンドウを閉じます。閉じない場合、手動で閉じてください。');
-        window.close();
+        alert('試合延期を正常に登録しました。試合検索画面に戻ります。');
+        router.push('/connecter/select-match-to-register-result');
     } catch (error) {
         console.error('Error details:', error);
         errorMessage.value = '試合延期の登録に失敗しました。';
-    } finally {
-        isProcessing.value = false;
     }
 }
 
 onMounted(async () => {
     // 結果入力対象試合のデータを取得する
-    await getTargetMatchInfo()
+    await getTargetMatchInfo();
 });
 
 // CSS
@@ -409,8 +416,6 @@ const textClubName = 'text-xl border-1 border-gray-200 py-2';
 const scoreInputBg = 'p-4 border-b-1 border-black';
 const scoringOpenModal = 'text-4xl';
 const scoringBtn = 'w-12 h-10';
-// const cursorScringBtnLeftSide = 'w-0 h-0 border-y-8 border-l-8 border-y-transparent border-red-400';
-// const cursorScringBtnRighttSide = 'w-0 h-0 border-y-8 border-r-8 border-y-transparent border-red-400';
 const minusScoring = 'mt-10 mb-2';
 const gameStatusBtn = 'w-full px-3 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
 const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 rounded-md mx-auto my-5';
@@ -421,10 +426,6 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
     <div v-if="isLoading">
         <img src="../../assets/icons/loading_processing.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
         <p class="text-center">読み込み中</p>
-    </div>
-    <div v-else-if="isProcessing">
-        <img src="../../assets/icons/loading_processing.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
-        <p class="text-center">処理中</p>
     </div>
     <div v-else>
         <div v-if="errorMessage">
@@ -444,12 +445,6 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
             </div>
             <div class="mt-5 mb-10">
                 <p class="py-1 font-bold text-xl border-t-1 border-b-1 border-black">試合速報入力</p>
-                <div class="border-b-1 border-black">
-                    <label for="match-time"><p class="bg-gray-200">実際の試合開始時刻</p></label>
-                    <div class="flex items-center justify-center h-10 bg-cyan-50">
-                        <input type="time" id="match-time" :value="scheduledMatchStartTime" @input="setActualMatchStartTime" />
-                    </div>
-                </div>
                 <div class="flex flex-row justify-center items-center gap-5 py-3 bg-green-100 border-b-1 border-black">
                     <div class="text-right w-[90px]"> 
                         <button type="button" v-if="gameStatus === '前半'" @click="handleGameStatus('prev')" :class="gameStatusBtn">試合前</button>
@@ -474,7 +469,7 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                     <div class="w-1/2">
                         <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
                         <div :class="scoreInputBg" class="bg-blue-50">
-                            <button type="button" @click="showHomeClubPlusModal = true" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-1 border-red-400 rounded-md">
+                            <button type="button" @click="plusScoreValidation('home')" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-1 border-red-400 rounded-md">
                                 <span :class="scoringOpenModal">{{ homeScore }}</span>
                             </button>
                             <Teleport to="body">
@@ -513,7 +508,7 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                     <div class="w-1/2">
                         <p :class="textClubName" class="bg-amber-100">{{ awayClubName }}</p>
                         <div :class="scoreInputBg" class="bg-amber-50">
-                            <button type="button" @click="showAwayClubPlusModal = true" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-1 border-red-400 rounded-md">
+                            <button type="button" @click="plusScoreValidation('away')" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-1 border-red-400 rounded-md">
                                 <span :class="scoringOpenModal">{{ awayScore }}</span>
                             </button>
                             <Teleport to="body">
@@ -555,13 +550,21 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                         <p>{{ homeScore }}　合計　{{ awayScore }}</p>
                     </div>
                 </div>
+                <div class="border-t-1 border-b-1 border-black mt-5">
+                    <label for="match-time"><p class="bg-gray-200">実際の試合開始時刻<br />
+                        （１時間以上の遅れがある場合のみ変更）</p></label>
+                    <div class="flex items-center justify-center h-10">
+                        <input type="time" id="match-time" :value="scheduledMatchStartTime" @input="setActualMatchStartTime" />
+                    </div>
+                </div>
                 <div :class="registerBtnBase" class="mt-10 bg-blue-600">
-                    <button type="button" @click="showMatchResultModal = true">試合結果登録</button>
+                    <button type="button" @click="registerMatchResultValidation">試合結果登録</button>
                     <Teleport to="body">
                         <!-- use the modal component, pass in the prop -->
                         <register-match-result-modal
                             :show="showMatchResultModal"
                             @close="showMatchResultModal = false"
+                            @register-match-result="registerMatchResult"
                         >
                             <template v-slot:body>
                                 <p>試合結果を登録します。よろしいですか？</p>
