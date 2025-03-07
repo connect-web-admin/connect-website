@@ -12,8 +12,6 @@ import { CONNECTER, ID_TOKEN_FOR_AUTH, USER_ATTR_EMAIL, USER_ATTR_MEMBERSHIP_TYP
 import HeaderComp from './components/HeaderComp.vue'; 
 import FooterComp from './components/FooterComp.vue';
 
-// 一般公開までの準備中ページを表示するためのフラグ
-const isPreparation = ref(false);
 // 認証状態を管理するオブジェクト   
 const authState = useAuthenticator();
 // ルーティングを管理するオブジェクト
@@ -46,6 +44,15 @@ const fetchUserInfoFromCognito = async () => {
     }
 }
 
+
+/**
+ * connecterのパスかどうかを判定する関数
+ * connecterのパスは、試合を速報する時にしか使わず、ヘッダーとフッターは邪魔になるため表示しないようにする
+ */
+const isConnecterPath = () => {
+    return router.currentRoute.value.path.startsWith('/connecter');
+}
+
 onMounted(() => {
     /**
      * 認証イベントを監視
@@ -70,17 +77,13 @@ onMounted(() => {
 </script>
 
 <template>
-<div v-if="isPreparation">
-    <h1>connect</h1>
-    <p>5月中旬一般公開予定</p>
-</div>
-<div v-else class="min-h-screen flex flex-col">
-    <header class="sticky top-0 z-100">
+<div class="min-h-screen flex flex-col">
+    <header v-if="!isConnecterPath()" class="sticky top-0 z-100">
         <HeaderComp 
             :user="authState.user"
             :signOut="authState.signOut"
         />
-    </header>        
+    </header>          
 
     <main class="flex-1 pb-20">
         <!-- <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
@@ -97,7 +100,8 @@ onMounted(() => {
         <router-view />
     </main>
         
-    <footer class="sticky bottom-0 z-50">
+    <!-- connecterパス以外の場合のみフッターを表示 -->
+    <footer v-if="!isConnecterPath()" class="sticky bottom-0 z-50">
         <FooterComp />
     </footer>
 </div>
