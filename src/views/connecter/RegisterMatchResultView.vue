@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import RegisterScoreModal from '@/components/RegisterScoreModal.vue';
 import RegisterMatchResultModal from '@/components/RegisterMatchResultModal.vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
+import CopyrightComp from '@/components/CopyrightComp.vue';
 
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
@@ -157,8 +158,6 @@ const getTargetMatchInfo = async () => {
  * 得点を追加
  */
 const plusScore = async (homeOrAway) => {
-    const club = homeOrAway // 文字列のhomeかawayが入る
-
     // ここから結果登録処理
     isProcessing.value = true;
 
@@ -169,7 +168,7 @@ const plusScore = async (homeOrAway) => {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
             championshipId: championshipId, // パラメタで渡された大会ID
             matchId: matchId, // パラメタで渡された試合ID
-            homeOrAway: club,
+            homeOrAway: homeOrAway,
             gameStatus: gameStatus.value
         }
 
@@ -193,12 +192,36 @@ const plusScore = async (homeOrAway) => {
     }
 }
 
+const minusScoreValidation = (homeOrAway) => {
+    if (homeOrAway === 'home') {
+        if ((gameStatus.value === '前半' && homeClubFirstHalfScore.value < 1) ||
+            (gameStatus.value === '後半' && homeClubSecondHalfScore.value < 1 ) ||
+            (gameStatus.value === '延長前半' && homeClubExtraFirstHalfScore.value < 1 ) ||
+            (gameStatus.value === '延長後半' && homeClubExtraSecondHalfScore.value < 1 )            
+        ) {
+            alert("取り消す得点がありません。");
+            return;
+        } else {
+            showHomeClubMinusModal.value = true;
+        }
+    } else if (homeOrAway === 'away') {
+        if ((gameStatus.value === '前半' && awayClubFirstHalfScore.value < 1) ||
+            (gameStatus.value === '後半' && awayClubSecondHalfScore.value < 1 ) ||
+            (gameStatus.value === '延長前半' && awayClubExtraFirstHalfScore.value < 1 ) ||
+            (gameStatus.value === '延長後半' && awayClubExtraSecondHalfScore.value < 1 )            
+        ) {
+            alert("取り消す得点がありません。");
+            return;
+        } else {
+            showAwayClubMinusModal.value = true;
+        }
+    }
+}
+
 /**
  * 得点を取り消し
  */
 const minusScore = async (homeOrAway) => {
-    const club = homeOrAway // 文字列のhomeかawayが入る
-
     // ここから結果登録処理
     isProcessing.value = true;
 
@@ -209,7 +232,7 @@ const minusScore = async (homeOrAway) => {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
             championshipId: championshipId, // パラメタで渡された大会ID
             matchId: matchId, // パラメタで渡された試合ID
-            homeOrAway: club,
+            homeOrAway: homeOrAway,
             gameStatus: gameStatus.value
         }
 
@@ -233,12 +256,21 @@ const minusScore = async (homeOrAway) => {
     }
 }
 
-
 /**
- * 試合状況を進行させる
+ * 試合状況進行・後退
  */
 const handleGameStatus = async (direction) => {
-    // ここから結果登録処理
+    // if (direction === 'next') {
+    //     if (!confirm("試合状況を進行します。よろしいですか？")) {
+    //         return;
+    //     }
+    // } else if (direction === 'prev') {
+    //     if (!confirm("試合状況を戻します。よろしいですか？")) {
+    //         return;
+    //     }        
+    // }
+
+    // ここから試合状況変更処理
     isProcessing.value = true;
 
     try {
@@ -374,13 +406,13 @@ onMounted(async () => {
 
 // CSS
 const textClubName = 'text-xl border-1 border-gray-200 py-2';
-const scoreInputBg = 'p-4 border-1 border-gray-200';
+const scoreInputBg = 'p-4 border-b-1 border-black';
 const scoringOpenModal = 'text-4xl';
 const scoringBtn = 'w-12 h-10';
 // const cursorScringBtnLeftSide = 'w-0 h-0 border-y-8 border-l-8 border-y-transparent border-red-400';
 // const cursorScringBtnRighttSide = 'w-0 h-0 border-y-8 border-r-8 border-y-transparent border-red-400';
-const undoScoring = 'mt-10 mb-2';
-const gameStatusBtn = 'px-3 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
+const minusScoring = 'mt-10 mb-2';
+const gameStatusBtn = 'w-full px-3 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
 const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 rounded-md mx-auto my-5';
 </script>
 
@@ -410,17 +442,34 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                     <p class="w-48 break-words text-left">{{ awayClubName }}</p>
                 </div>
             </div>
-            <div class="my-10">
+            <div class="mt-5 mb-10">
                 <p class="py-1 font-bold text-xl border-t-1 border-b-1 border-black">試合速報入力</p>
-                <div class="h-15">
+                <div class="border-b-1 border-black">
                     <label for="match-time"><p class="bg-gray-200">実際の試合開始時刻</p></label>
-                    <div class="flex items-center justify-center h-10">
-                        <input type="time" id="match-time" class="bg-cyan-50" :value="scheduledMatchStartTime" @input="setActualMatchStartTime" />
+                    <div class="flex items-center justify-center h-10 bg-cyan-50">
+                        <input type="time" id="match-time" :value="scheduledMatchStartTime" @input="setActualMatchStartTime" />
                     </div>
                 </div>
-                <div class="p-1 border-t-1 border-gray-400">
-                    <span v-if="(gameStatus !== '試合前') && (gameStatus !== '試合終了')" class="text-lg">LIVE - </span><span class="text-lg">{{ gameStatus }}</span>
+                <div class="flex flex-row justify-center items-center gap-5 py-3 bg-green-100 border-b-1 border-black">
+                    <div class="text-right w-[90px]"> 
+                        <button type="button" v-if="gameStatus === '前半'" @click="handleGameStatus('prev')" :class="gameStatusBtn">試合前</button>
+                        <button type="button" v-else-if="gameStatus === '後半'" @click="handleGameStatus('prev')" :class="gameStatusBtn">前半</button>
+                        <button type="button" v-else-if="gameStatus === '試合終了'" @click="handleGameStatus('prev')" :class="gameStatusBtn">後半</button>
+                    </div>
+                    <div v-if="gameStatus === '試合前'" class="w-[10px]"></div>
+                    <div v-else class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-red-400 bg-green-100"></div>
+                    <div class="w-[90px]">
+                        <span class="text-lg font-bold italic">{{ gameStatus }}</span>
+                    </div>
+                    <div v-if="gameStatus === '試合終了'" class="w-[10px]"></div>
+                    <div v-else class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-red-400 bg-green-100"></div>
+                    <div class="text-left w-[90px]">
+                        <button type="button" v-if="gameStatus === '試合前'" @click="handleGameStatus('next')" :class="gameStatusBtn">前半</button>
+                        <button type="button" v-else-if="gameStatus === '前半'" @click="handleGameStatus('next')" :class="gameStatusBtn">後半</button>
+                        <button type="button" v-else-if="gameStatus === '後半'" @click="handleGameStatus('next')" :class="gameStatusBtn">試合終了</button>
+                    </div>
                 </div>
+
                 <div class="flex flex-row">
                     <div class="w-1/2">
                         <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
@@ -443,8 +492,8 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                                 </register-score-modal>
                             </Teleport>
                         </div>
-                        <div :class="undoScoring">
-                            <button type="button" @click="showHomeClubMinusModal = true" class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
+                        <div :class="minusScoring">
+                            <button type="button" @click="minusScoreValidation('home')" class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
                             <Teleport to="body">
                                 <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
@@ -468,7 +517,6 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                                 <span :class="scoringOpenModal">{{ awayScore }}</span>
                             </button>
                             <Teleport to="body">
-                                <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
                                     :show="showAwayClubPlusModal"
                                     :is-away="isAway"
@@ -482,10 +530,9 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                                 </register-score-modal>
                             </Teleport>
                         </div>
-                        <div :class="undoScoring">
-                            <button type="button" @click="showAwayClubMinusModal = true"  class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
+                        <div :class="minusScoring">
+                            <button type="button" @click="minusScoreValidation('away')"  class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
                             <Teleport to="body">
-                                <!-- use the modal component, pass in the prop -->
                                 <register-score-modal
                                     :show="showAwayClubMinusModal"
                                     :is-away="isAway"
@@ -506,23 +553,6 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                         <p>{{ homeClubFirstHalfScore }}　前半　{{ awayClubFirstHalfScore }}</p>
                         <p>{{ homeClubSecondHalfScore }}　後半　{{ awayClubSecondHalfScore }}</p>
                         <p>{{ homeScore }}　合計　{{ awayScore }}</p>
-                        <div class="flex flex-row justify-center items-center gap-5">
-                            <div class="w-1/4 text-right">
-                                <button type="button" v-if="gameStatus === '前半'" @click="handleGameStatus('prev')" :class="gameStatusBtn">試合前</button>
-                                <button type="button" v-else-if="gameStatus === '後半'" @click="handleGameStatus('prev')" :class="gameStatusBtn">前半</button>
-                                <button type="button" v-else-if="gameStatus === '試合終了'" @click="handleGameStatus('prev')" :class="gameStatusBtn">後半</button>
-                            </div>
-                            <div class="flex flex-row items-center gap-2 text-center justify-center">
-                                <div class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-red-400"></div>
-                                <p>試合進行</p>
-                                <div class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-red-400"></div>
-                            </div>
-                            <div class="w-1/4 text-left">
-                                <button type="button" v-if="gameStatus === '試合前'" @click="handleGameStatus('next')" :class="gameStatusBtn">前半</button>
-                                <button type="button" v-else-if="gameStatus === '前半'" @click="handleGameStatus('next')" :class="gameStatusBtn">後半</button>
-                                <button type="button" v-else-if="gameStatus === '後半'" @click="handleGameStatus('next')" :class="gameStatusBtn">試合終了</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div :class="registerBtnBase" class="mt-10 bg-blue-600">
@@ -540,7 +570,7 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
                     </Teleport>
                 </div>
             </div>
-            <div class="my-5">
+            <div class="py-10 border-t-1 border-black">
                 <p>または、この試合の延期を登録します。</p>
                 <div class="flex flex-row justify-center mt-2">
                     <div class="mx-4">
@@ -560,6 +590,7 @@ const registerBtnBase = 'min-w-[150px] w-2/5 w-1/3 text-white text-xl py-2 px-4 
             </div>
         </div>
     </div>
+    <CopyrightComp />
 </div>
 </template>
 
