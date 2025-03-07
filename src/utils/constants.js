@@ -31,7 +31,7 @@ export const CHAMPIONSHIPS = [ // 各ページで大会名を使って表示を�
 /**
  * 大会関連のデータ
  */
-// 大会名のデータ
+// 大会カテゴリー
 export const CATEGORIES = [
     "U-12（ジュニア）",
     "U-15（ジュニアユース）",
