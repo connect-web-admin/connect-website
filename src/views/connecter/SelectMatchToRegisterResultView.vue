@@ -2,7 +2,7 @@
 
 import { ref, onBeforeMount, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, CHAMPIONSHIPS, CATEGORIES } from '@/utils/constants';
+import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, CATEGORIES } from '@/utils/constants';
 import CopyrightComp from '@/components/CopyrightComp.vue';
 
 const router = useRouter();
@@ -70,7 +70,7 @@ const getMatchInfoInThisFiscalYear = async () => {
  * 選択された試合の速報画面に遷移
  * 大会IDと試合IDをパラメーターとして渡す
  */
-const moveToRegisterMatchResult = async (matchId) => {
+const moveToRegisterMatchResult = async (matchId, isResultAlreadyRegistered) => {
     if (selectedCategory.value && selectedChampionshipName.value && selectedVenue.value) {
         // 選択されたカテゴリーから大会英を抽出
         const filteredByCategory = matchInfo.value.filter(match => match['category'] === selectedCategory.value);
@@ -81,17 +81,7 @@ const moveToRegisterMatchResult = async (matchId) => {
 
         // 大会IDと試合IDから当該試合の情報を抽出
         // 試合結果が登録済みの試合の結果を再度入力しようとした場合、確認させる
-        const matches = filteredByChampionship['matches']
-        let isAlreadyRegistered = false;
-        for (const round in matches) {
-            for (const match in matches[round]) {
-                if (matches[round][match]['match_id'] === matchId) {
-                    isAlreadyRegistered = matches[round][match]['is_result_registered'];
-                }
-            }
-        }
-
-        if (isAlreadyRegistered) {
+        if (isResultAlreadyRegistered) {
             if (!confirm('この試合の結果はすでに登録されています。修正しますか？')) {
                 return;
             }
@@ -122,9 +112,13 @@ const moveToRegisterMatchResult = async (matchId) => {
  * カテゴリーと大会はcoonstant.jsに記述されているものを参照
  */
 const championshipsFilteredByCategory = computed(() => {
-    const championshipsInThisFiscalYear = CHAMPIONSHIPS.find(championship => championship['年度'] === THIS_FISCAL_YEAR);
-    const filteredByCategory = championshipsInThisFiscalYear['カテゴリー'][selectedCategory.value];
-    return filteredByCategory;
+    const championshipNames = [];
+    matchInfo.value.forEach(match => {
+        if (match['category'] === selectedCategory.value) {
+            championshipNames.push(match['championship_name']);
+        }
+    });
+    return championshipNames;
 });
 
 /**
@@ -199,10 +193,31 @@ const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
             displayDataOfMatches.push(data);
         });
 
+        // 日付の降順でソート
+        displayDataOfMatches.sort((a, b) => {
+            const [aMonth, aDay] = a.matchDate.split('/').map(Number);
+            const [bMonth, bDay] = b.matchDate.split('/').map(Number);
+            
+            if (aMonth !== bMonth) {
+                return bMonth - aMonth;  // 月で比較
+            }
+            return bDay - aDay;  // 日で比較
+        });
+
         return displayDataOfMatches;
     } else {
         return '';
     }
+});
+
+/**
+ * カテゴリーが変更されたら、大会名と会場の選択をリセット
+ * 一度カテゴリーが選択され、表示された大会名を選択した後に再度カテゴリーを選択し直した場合、警告が出るため
+ * （選択された大会名を含むカテゴリーではなくなるため）
+ */
+watch(selectedCategory, () => {
+    selectedChampionshipName.value = '';
+    selectedVenue.value = '';
 });
 
 // ページ表示前にConnecterDDBから試合情報抽出*
@@ -288,39 +303,35 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
         >
             <div v-if="selectedVenue" class="match-list">
                 <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx" class="not-last:border-b-1 border-gray-300">
-                    <div v-if="match.isResultRegistered">
-                        <form @submit.prevent="moveToRegisterMatchResult(match.matchId)"  class="flex items-center px-2 py-1 bg-gray-200">
-                            <button type="button" @click="moveToRegisterMatchResult(match.matchId)" :class="selectBtn" class="bg-gray-200 border-1 border-black">選択</button>
+                    <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200">
+                        <button type="button" @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)" :class="selectBtn" class="bg-gray-200 border-1 border-black">選択</button>
+                        <div class="w-full">
+                            <div class="text-left">
+                                開催日：{{ match.matchDate }}
+                            </div>
+                            <div class="flex justify-start items-center w-full">
+                                <div class="w-2/5">{{ match.homeClubName }}</div>
+                                <div class="w-1/5 mx-3 italic text-center">{{ match.homeClubFinalScore }}<span class="mx-2">対</span>{{ match.awayClubFinalScore }}</div>
+                                <div class="w-2/5">{{ match.awayClubName }}</div>
+                            </div>
+                            <div class="text-left text-red-600">
+                                登録済み
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="px-2 py-1 last:rounded-b-md">
+                        <div class="flex items-center">
+                            <button type="button" @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)" :class="selectBtn" class="bg-green-200 border-1 border-black">選択</button>
                             <div class="w-full">
                                 <div class="text-left">
                                     開催日：{{ match.matchDate }}
                                 </div>
-                                <div class="flex justify-start items-center w-full">
-                                    <div class="w-2/5">{{ match.homeClubName }}</div>
-                                    <div class="w-1/5 mx-3 italic text-center">{{ match.homeClubFinalScore }}<span class="mx-2">対</span>{{ match.awayClubFinalScore }}</div>
-                                    <div class="w-2/5">{{ match.awayClubName }}</div>
-                                </div>
-                                <div class="text-left text-red-600">
-                                    登録済み
+                                <div class="flex">
+                                    <div>{{ match.homeClubName }}</div>
+                                    <div><span class="mx-2">対</span></div>
+                                    <div>{{ match.awayClubName }}</div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                    <div v-else class="px-2 py-1 last:rounded-b-md">
-                        <div>
-                            <form @submit.prevent="moveToRegisterMatchResult(match.matchId)" class="flex items-center">
-                                <button type="button" @click="moveToRegisterMatchResult(match.matchId)" :class="selectBtn" class="bg-green-200 border-1 border-black">選択</button>
-                                <div class="w-full">
-                                    <div class="text-left">
-                                        開催日：{{ match.matchDate }}
-                                    </div>
-                                    <div class="flex">
-                                        <div>{{ match.homeClubName }}</div>
-                                        <div><span class="mx-2">対</span></div>
-                                        <div>{{ match.awayClubName }}</div>
-                                    </div>
-                                </div>
-                            </form>
                         </div>
                     </div>
                 </div>
