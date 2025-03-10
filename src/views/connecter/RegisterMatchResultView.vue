@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import RegisterScoreModal from '@/components/RegisterScoreModal.vue';
 import RegisterMatchResultModal from '@/components/RegisterMatchResultModal.vue';
 import RegisterMatchDelayModal from '@/components/RegisterMatchDelayModal.vue';
-import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
+import { MATCH_API_URL, THIS_FISCAL_YEAR } from '@/utils/constants';
 import CopyrightComp from '@/components/CopyrightComp.vue';
 
 // 得点取り消しをするための最小得点数（1点）。0点では取り消し不可にする
@@ -67,6 +67,7 @@ const awayClubExtraFirstHalfScore = ref(0); // アウェイクラブの延長前
 const awayClubExtraSecondHalfScore = ref(0); // アウェイクラブの延長後半得点
 const awayClubFinalScore = ref(0); // アウェイクラブの得点
 const awayClubPKScore = ref(0); // アウェイクラブのPK戦スコア
+const comment = ref(''); // コメント
 
 // エラーメッセージを格納する
 const errorMessage = ref('');
@@ -124,8 +125,7 @@ const getTargetMatchInfo = async () => {
         const response = await fetch(queryUrl, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idTokenForAuth}`
+                'Content-Type': 'application/json'
             },
         });
         
@@ -339,7 +339,8 @@ const registerMatchResult = async () => {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
             championshipId: championshipId, // パラメタで渡された大会ID
             matchId: matchId, // パラメタで渡された試合ID
-            actualMatchStartTime: actualMatchStartTime.value
+            actualMatchStartTime: actualMatchStartTime.value,
+            comment: comment.value
         }
 
         const response = await fetch(putUrl, {
@@ -455,12 +456,12 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                         <button type="button" v-else-if="gameStatus === '後半'" @click="handleGameStatus('next')" :class="gameStatusBtn">試合終了</button>
                     </div>
                 </div>
-
+<!-- Homeクラブ得点入力 -->
                 <div class="flex flex-row">
                     <div class="w-1/2">
                         <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
                         <div :class="scoreInputBg" class="bg-blue-50">
-                            <button type="button" @click="plusScoreValidation('home')" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-1 border-red-400 rounded-md">
+                            <button type="button" @click="plusScoreValidation('home')" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-3 border-red-400 rounded-md">
                                 <span :class="scoringOpenModal">{{ homeScore }}</span>
                             </button>
                             <Teleport to="body">
@@ -478,6 +479,7 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                                 </register-score-modal>
                             </Teleport>
                         </div>
+<!-- Homeクラブ得点取り消し -->
                         <div :class="minusScoring">
                             <button type="button" @click="minusScoreValidation('home')" class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
                             <Teleport to="body">
@@ -496,10 +498,11 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                             </Teleport>
                         </div>
                     </div>
+<!-- Awayクラブ得点入力 -->
                     <div class="w-1/2">
                         <p :class="textClubName" class="bg-amber-100">{{ awayClubName }}</p>
                         <div :class="scoreInputBg" class="bg-amber-50">
-                            <button type="button" @click="plusScoreValidation('away')" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-1 border-red-400 rounded-md">
+                            <button type="button" @click="plusScoreValidation('away')" :class="scoringBtn" class="bg-[#FAFAFC] h-[50px] border-3 border-red-400 rounded-md">
                                 <span :class="scoringOpenModal">{{ awayScore }}</span>
                             </button>
                             <Teleport to="body">
@@ -516,6 +519,7 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                                 </register-score-modal>
                             </Teleport>
                         </div>
+<!-- Awayクラブ得点取り消し -->
                         <div :class="minusScoring">
                             <button type="button" @click="minusScoreValidation('away')"  class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
                             <Teleport to="body">
@@ -534,6 +538,7 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                         </div>
                     </div>
                 </div>
+                <!-- 得点表示 -->
                 <div>
                     <div class="text-xl mt-2">
                         <p>{{ homeClubFirstHalfScore }}　前半　{{ awayClubFirstHalfScore }}</p>
@@ -541,13 +546,21 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                         <p>{{ homeScore }}　合計　{{ awayScore }}</p>
                     </div>
                 </div>
+                <!-- 実際の試合時間登録 -->
                 <div class="border-t-1 border-b-1 border-black mt-5">
-                    <label for="match-time"><p class="bg-gray-200">実際の試合開始時刻<br />
-                        （１時間以上の遅れがある場合のみ変更）</p></label>
+                    <label for="match-time"><p class="bg-gray-200">実際の試合開始時刻</p></label>
                     <div class="flex items-center justify-center h-10">
                         <input type="time" id="match-time" :value="scheduledMatchStartTime" @input="setActualMatchStartTime" />
                     </div>
                 </div>
+                <!-- コメント入力 -->
+                <div>
+                    <label for="match-time"><p class="bg-gray-200">コメント（必要な場合のみ）</p></label>
+                    <div class="p-y">
+                        <textarea id="comment" v-model="comment" class="w-full h-full border-b-1 border-black" placeholder="コメントを入力してください。"></textarea>
+                    </div>
+                </div>
+                <!-- 試合結果登録 -->
                 <div class="py-5">
                     <button type="button" @click="registerMatchResultValidation"  :class="registerBtnBase" class=" bg-blue-600"><span class="text-xl bg-blue-600 text-white">試合結果登録</span></button>
                     <Teleport to="body">
