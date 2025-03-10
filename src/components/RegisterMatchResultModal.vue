@@ -10,7 +10,7 @@ const btnBase = 'w-1/4 py-1 text-white rounded-md';
 <template>
     <Transition name="modal">
         <div v-if="show" class="fixed inset-0 z-[9998] flex bg-black/20 transition-opacity duration-300">
-            <div class="m-auto w-[350px] rounded-lg bg-white p-[20px_30px] shadow-[0_2px_8px_rgba(0,0,0,0.33)] transition-all duration-300">
+            <div class="m-auto w-[350px] rounded-lg p-[20px_30px] shadow-[0_2px_8px_rgba(0,0,0,0.33)] transition-all duration-300">
                 <div class="my-5">
                     <slot name="body"></slot>
                 </div>
