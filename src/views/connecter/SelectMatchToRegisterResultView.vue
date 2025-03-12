@@ -56,6 +56,7 @@ const getMatchInfoInThisFiscalyear = async () => {
             matchInfo.value = allMatchDates;
             return true;
         } else {
+            inaccessibleMsg.value = 'アクセス可能期間外です。';
             return false;
         }
     } catch (error) {
