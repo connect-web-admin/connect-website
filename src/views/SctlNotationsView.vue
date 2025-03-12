@@ -6,7 +6,8 @@
     <ol class="list-decimal space-y-6 pl-6">
         <li>
             <h2 class="font-bold">サイト名</h2>
-            <p>コネクトニュース URL <a href="https://connect-goals.com/" class="text-blue-600 hover:underline">https://connect-goals.com/</a></p>
+            <p>コネクトニュース</p>
+            <p>（URL <a href="https://connect-goals.com/" class="text-blue-600 hover:underline">https://connect-goals.com/</a>）</p>
         </li>
 
         <li>
