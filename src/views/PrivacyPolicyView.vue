@@ -231,8 +231,8 @@
             株式会社 Connect<br>
             代表電話 011-790-6771<br>
             Connectサポートセンター 個人情報相談窓口 宛<br>
-            ■個人情報についてのお問い合わせ窓口<br>
-            <a href="mailto:info@connect-goals.com" class="text-blue-500">info@connect-goals.com</a>
+            個人情報についてのお問い合わせ窓口<br>
+            info■connect-goals.com（■を@に変換してください）
         </address>
     </section>
 </div>

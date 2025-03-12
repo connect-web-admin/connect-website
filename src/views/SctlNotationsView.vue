@@ -31,7 +31,7 @@
 
         <li>
             <h2 class="font-bold">メール発信送信元メールアドレス</h2>
-            <p><a href="mailto:info@connect-goals.com" class="text-blue-600 hover:underline">info@connect-goals.com</a></p>
+            <p>info■connect-goals.com（■を@に変換してください）</p>
         </li>
 
         <li>
@@ -50,7 +50,7 @@
         </li>
 
         <li>
-            <h2 class="font-bold">通信料・パケット代金、消費税等消費税等（デジタルコンテンツの代金以外に必要となる料金等）</h2>
+            <h2 class="font-bold">通信料・パケット代金、消費税等（デジタルコンテンツの代金以外に必要となる料金等）</h2>
             <p>当サイトのページの閲覧、デジタルコンテンツのダウンロード等に必要となる携帯電話の通信料金やパケット代金については、お客様の負担となります。それぞれの料金は、お客様がご利用の携帯電話事業者にお問合せください。消費税は内税として表示しております。</p>
         </li>
 

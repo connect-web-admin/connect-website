@@ -9,7 +9,7 @@
         <p>〒 001-0033</p>
         <p>札幌市北区北33条西2-1-15 KANTINE</p>
         <p>代表電話 011-790-6771</p>
-        <p>連絡先 <a href="mailto:info@connect-goals.com" class="text-blue-600 hover:underline">info@connect-goals.com</a></p>
+        <p>連絡先 info■connect-goals.com（■を@に変換してください）</p>
     </div>
 </div>
 </template>
