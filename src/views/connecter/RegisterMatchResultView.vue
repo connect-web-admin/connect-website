@@ -461,7 +461,7 @@ const handleGameStatus = async (direction) => {
             : transitions.prev[gameStatus.value]; // directionがprevの場合は逆方向の遷移
 
         if (!changingGameStatus) {
-            throw new Error('次の試合状態が見つかりません');
+            throw new Error('次の試合進行状況が見つかりません');
         }
 
         const putUrl = new URL(`${MATCH_API_URL}/handle-game-status`);
@@ -492,7 +492,6 @@ const handleGameStatus = async (direction) => {
     }
 }
 
-
 /**
  * 延長戦登録
  */
@@ -500,14 +499,14 @@ const registerExtraHalves = async (action) => {
     // バリデーション
     if (action === 'apply') {
         if (gameStatus.value !== '後半') {
-            alert('延長戦は試合進行が後半の時のみ登録できます。');
+            alert('試合進行状況が後半の時のみ延長戦に進行できるようになります。');
             return;
         }
-        if (!confirm('延長戦に進行できるようにしますか？')) {
+        if (!confirm('延長戦に移動しますか？')) {
             return;
         }
     } else if (action === 'cancel') {
-        if (!confirm('延長戦を取り消しますか？進行状況は後半に戻ります。')) {
+        if (!confirm('延長戦を取り消しますか？試合進行状況は後半に変わり、延長戦の得点が取り消されます。PK戦およびPK戦の得点も取り消されます。')) {
             return;
         }
     }
@@ -550,14 +549,14 @@ const registerPk = async (action) => {
     // バリデーション
     if (action === 'apply') {
         if (gameStatus.value !== '後半' && gameStatus.value !== '延長後半') {
-            alert('PK戦は試合進行が後半か延長後半の時のみ登録できます。');
+            alert('試合進行状況が後半か延長後半の時のみPK戦に移動できます。');
             return;
         }
-        if (!confirm('PK戦に進行できるようにしますか？')) {
+        if (!confirm('PK戦に移動しますか？')) {
             return;
         }
     } else if (action === 'cancel') {
-        if (!confirm('PK戦を取り消しますか？進行状況は後半に戻ります。延長戦がある場合、延長戦の得点を取り消します。')) {
+        if (!confirm('PK戦を取り消しますか？試合進行状況は後半に戻り、PK戦の得点が取り消されます。延長戦があった場合、延長戦の得点も取り消します。')) {
             return;
         }
     }
@@ -586,7 +585,7 @@ const registerPk = async (action) => {
         }
 
         // 成功時の処理を追加
-        window.location.reload();
+        location.reload();
     } catch (error) {
         console.error('Error details:', error)
         errorMessage.value = 'PK戦の登録に失敗しました。'
@@ -735,15 +734,28 @@ onMounted(async () => {
     await getTargetMatchInfo();
 });
 
-// CSS
+// CSS クラスの共通化
 const textClubName = 'text-xl border-1 border-gray-200 py-2';
 const scoreInputBg = 'p-4 border-b-1 border-black';
 const scoringOpenModal = 'text-4xl';
 const scoringBtn = 'w-12 h-10';
 const minusScoring = 'mt-10 mb-2';
 const gameStatusBtn = 'w-full px-3 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
-const pkScoreCell = 'py-1 px-3 text-center min-w-[40px] h-[30px] flex items-center justify-center relative';
 const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
+
+// PK表示用の共通クラス
+const pkCellBase = 'flex items-center justify-center min-w-[40px] h-[30px]';
+const pkCellWithBorder = `${pkCellBase} border border-slate-200 h-[50px]`;
+const pkCellHeader = `${pkCellWithBorder} font-bold`;
+
+// フレックスレイアウト用の共通クラス
+const flexRow = 'flex flex-row';
+const flexCol = 'flex flex-col';
+const flexCenter = 'flex items-center justify-center';
+const flexCenterGap = 'flex justify-center gap-20';
+
+// ボーダー用の共通クラス
+const borderTopBottom = 'border-t-1 border-b-1 border-black';
 </script>
 
 <template>
@@ -762,16 +774,16 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                     <p>{{ round }}{{ match }}</p>
                     <p>試合日時：{{ formattedMatchDate }} - {{ scheduledMatchStartTime }}</p>
                     <p>会場：{{ venue }}</p>
-                    <div class="flex flex-row justify-center">
+                    <div :class="flexRow" class="justify-center">
                         <p class="w-48 break-words text-right">{{ homeClubName }}</p>
                         <p class="w-4 mx-2">vs</p>
                         <p class="w-48 break-words text-left">{{ awayClubName }}</p>
                     </div>
                 </div>
                 <div class="mt-5">
-                    <p class="py-1 font-bold text-xl border-t-1 border-b-1 border-black">試合速報入力</p>
-                    <div
-                        class="flex flex-row justify-center items-center gap-5 py-3 bg-green-100 border-b-1 border-black">
+                    <p class="py-1 font-bold text-xl" :class="borderTopBottom">試合速報入力</p>
+                    <div :class="[flexRow, 'justify-center', 'items-center', 'gap-5', 'py-3', 'bg-green-100']"
+                        class="border-b-1 border-black">
                         <div class="text-right w-[90px]">
                             <button type="button"
                                 v-if="gameStatus !== '試合前' && getGameStatusTransitions.prev[gameStatus]"
@@ -803,7 +815,7 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                         </div>
                     </div>
                     <!-- Homeクラブ得点入力 -->
-                    <div class="flex flex-row">
+                    <div :class="flexRow">
                         <div class="w-1/2">
                             <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
                             <div :class="scoreInputBg" class="bg-blue-50">
@@ -877,13 +889,12 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                         </div>
                     </div>
                     <!-- PK戦のスコア登録 -->
-                    <div v-if="gameStatus === 'PK戦' || hasPk"
-                        class="flex flex-col border-t-1 border-b-1 border-black py-3">
+                    <div v-if="gameStatus === 'PK戦' && hasPk" :class="[flexCol, borderTopBottom, 'py-3']">
                         <h3 class="font-bold mb-2">PK戦スコア登録</h3>
 
                         <!-- 操作ボタン -->
-                        <div class="flex justify-center gap-15 mb-4">
-                            <div class="flex flex-col items-center">
+                        <div :class="[flexCenterGap, 'mb-4']">
+                            <div :class="[flexCol, 'items-center']">
                                 <p class="text-md mb-1">{{ homeClubName }}</p>
                                 <div class="flex gap-3">
                                     <button @click="managePkScore('home', 'success')"
@@ -901,7 +912,7 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                                 </div>
                             </div>
 
-                            <div class="flex flex-col items-center">
+                            <div :class="[flexCol, 'items-center']">
                                 <p class="text-md mb-1">{{ awayClubName }}</p>
                                 <div class="flex gap-3">
                                     <button @click="managePkScore('away', 'success')"
@@ -921,75 +932,52 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                         </div>
 
                         <!-- PK結果表示テーブル -->
-                        <div class="flex flex-row justify-center items-baseline overflow-x-auto max-w-full pb-[5px]">
-                            <div class="flex flex-col">
-                                <div
-                                    class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200 font-bold">
-                                    クラブ名
+                        <div class="w-full overflow-x-auto">
+                            <div :class="[flexRow, 'items-baseline', 'min-w-max', 'pb-[5px]']">
+                                <div :class="flexCol" class="w-[180px] sticky left-0 z-10">
+                                    <div :class="pkCellHeader" class="bg-white">クラブ名</div>
+                                    <div :class="[pkCellWithBorder, 'bg-blue-100']">{{ homeClubName }}</div>
+                                    <div :class="[pkCellWithBorder, 'bg-amber-100']">{{ awayClubName }}</div>
                                 </div>
-                                <div
-                                    class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200 bg-blue-100">
-                                    {{
-                                    homeClubName }}</div>
-                                <div
-                                    class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200 bg-amber-100">
-                                    {{
-                                    awayClubName }}</div>
-                            </div>
-                            <div class="flex flex-row">
-                                <!-- 基本の5キック -->
-                                <div v-for="i in 5" :key="i" class="flex flex-col">
-                                    <div
-                                        class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200 font-bold">
-                                        {{
-                                        i }}</div>
-                                    <div
-                                        class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200">
-                                        <span v-if="homeClubPkScoreList[i - 1] === 'success'"
-                                            class="text-green-600 font-bold">○</span>
-                                        <span v-else-if="homeClubPkScoreList[i - 1] === 'failure'"
-                                            class="text-red-600 font-bold">×</span>
+                                <div :class="flexRow">
+                                    <!-- 基本の5キック -->
+                                    <div v-for="i in 5" :key="i" :class="flexCol">
+                                        <div :class="pkCellHeader">{{ i }}</div>
+                                        <div :class="pkCellWithBorder">
+                                            <span v-if="homeClubPkScoreList[i - 1] === 'success'"
+                                                class="text-green-600 font-bold">○</span>
+                                            <span v-else-if="homeClubPkScoreList[i - 1] === 'failure'"
+                                                class="text-red-600 font-bold">×</span>
+                                        </div>
+                                        <div :class="pkCellWithBorder">
+                                            <span v-if="awayClubPkScoreList[i - 1] === 'success'"
+                                                class="text-green-600 font-bold">○</span>
+                                            <span v-else-if="awayClubPkScoreList[i - 1] === 'failure'"
+                                                class="text-red-600 font-bold">×</span>
+                                        </div>
                                     </div>
-                                    <div
-                                        class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200">
-                                        <span v-if="awayClubPkScoreList[i - 1] === 'success'"
-                                            class="text-green-600 font-bold">○</span>
-                                        <span v-else-if="awayClubPkScoreList[i - 1] === 'failure'"
-                                            class="text-red-600 font-bold">×</span>
-                                    </div>
-                                </div>
-                                <!-- 追加キック（サドンデス）用の列 -->
-                                <div v-for="i in extraPkRounds" :key="i + 5" class="flex flex-col">
-                                    <div
-                                        class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200 font-bold">
-                                        {{
-                                        i + 5 }}</div>
-                                    <div
-                                        class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200">
-                                        <span v-if="homeClubPkScoreList[i + 4] === 'success'"
-                                            class="text-green-600 font-bold">○</span>
-                                        <span v-else-if="homeClubPkScoreList[i + 4] === 'failure'"
-                                            class="text-red-600 font-bold">×</span>
-                                    </div>
-                                    <div
-                                        class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200">
-                                        <span v-if="awayClubPkScoreList[i + 4] === 'success'"
-                                            class="text-green-600 font-bold">○</span>
-                                        <span v-else-if="awayClubPkScoreList[i + 4] === 'failure'"
-                                            class="text-red-600 font-bold">×</span>
+                                    <!-- 追加キック（サドンデス）用の列 -->
+                                    <div v-for="i in extraPkRounds" :key="i + 5" :class="flexCol">
+                                        <div :class="pkCellHeader">{{ i + 5 }}</div>
+                                        <div :class="pkCellWithBorder">
+                                            <span v-if="homeClubPkScoreList[i + 4] === 'success'"
+                                                class="text-green-600 font-bold">○</span>
+                                            <span v-else-if="homeClubPkScoreList[i + 4] === 'failure'"
+                                                class="text-red-600 font-bold">×</span>
+                                        </div>
+                                        <div :class="pkCellWithBorder">
+                                            <span v-if="awayClubPkScoreList[i + 4] === 'success'"
+                                                class="text-green-600 font-bold">○</span>
+                                            <span v-else-if="awayClubPkScoreList[i + 4] === 'failure'"
+                                                class="text-red-600 font-bold">×</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="flex flex-col">
-                                <div class="font-bold">合計</div>
-                                <div
-                                    class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200">
-                                    {{
-                                    homeClubPkScore }}</div>
-                                <div
-                                    class="flex items-center justify-center min-w-[40px] h-[30px] border border-slate-200">
-                                    {{
-                                    awayClubPkScore }}</div>
+                                <div :class="flexCol" class="sticky right-0 z-10">
+                                    <div :class="pkCellHeader" class="bg-white">合計</div>
+                                    <div :class="pkCellWithBorder" class="bg-white">{{ homeClubPkScore }}</div>
+                                    <div :class="pkCellWithBorder" class="bg-white">{{ awayClubPkScore }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1008,14 +996,15 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                             <p>{{ homeScore }}　合計　{{ awayScore }}</p>
                         </div>
                     </div>
-                    <div v-if="!isLeague" class="flex flex-row justify-center items-center my-8">
-                        <div class="w-1/2 flex flex-col gap-8 items-center">
+                    <div v-if="!isLeague" :class="[flexRow, 'justify-center', 'items-center', 'my-8']">
+                        <div v-if="gameStatus === '後半'" class="w-1/2 flex flex-col gap-8 items-center">
                             <button v-if="!hasExtraHalves" type="button" @click="registerExtraHalves('apply')"
                                 class="w-2/3 py-1 bg-amber-600 text-white rounded-sm">延長戦</button>
                             <button v-else type="button" @click="registerExtraHalves('cancel')"
                                 class="w-2/3 py-1 bg-amber-600 text-white rounded-sm">延長戦取り消し</button>
                         </div>
-                        <div class="w-1/2 flex flex-col gap-8 items-center">
+                        <div v-if="gameStatus === '後半' || gameStatus === '延長後半'"
+                            class="w-1/2 flex flex-col gap-8 items-center">
                             <button v-if="!hasPk" type="button" @click="registerPk('apply')"
                                 class="w-2/3 py-1 bg-purple-600 text-white rounded-sm">PK戦</button>
                             <button v-else type="button" @click="registerPk('cancel')"
@@ -1023,11 +1012,11 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                         </div>
                     </div>
                     <!-- 実際の試合時間登録 -->
-                    <div class="border-t-1 border-b-1 border-black mt-5">
+                    <div :class="borderTopBottom" class="mt-5">
                         <label for="match-time">
                             <p class="bg-gray-200">実際の試合開始時刻</p>
                         </label>
-                        <div class="flex items-center justify-center h-10">
+                        <div :class="[flexCenter, 'h-10']">
                             <input type="time" id="match-time" :value="scheduledMatchStartTime"
                                 @input="setActualMatchStartTime" />
                         </div>
@@ -1045,7 +1034,7 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                     <!-- 試合結果登録 -->
                     <div class="py-5">
                         <button type="button" @click="registerMatchResultValidation" :class="registerBtnBase"
-                            class=" bg-blue-600"><span class="text-xl bg-blue-600 text-white">試合結果登録</span></button>
+                            class="bg-blue-600"><span class="text-xl bg-blue-600 text-white">試合結果登録</span></button>
                         <Teleport to="body">
                             <!-- use the modal component, pass in the prop -->
                             <register-match-result-modal :show="showMatchResultModal"
@@ -1059,7 +1048,7 @@ const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
                 </div>
                 <div class="py-10">
                     <p>または、この試合の延期を登録します。</p>
-                    <div class="flex flex-row justify-center mt-2">
+                    <div :class="[flexRow, 'justify-center', 'mt-2']">
                         <div class="mx-4">
                             <input type="radio" id="isDelayedRadio1" v-model="isDelayed" :value="true" />
                             <label for="isDelayedRadio1">はい</label>
