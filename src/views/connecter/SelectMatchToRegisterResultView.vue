@@ -222,10 +222,13 @@ const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
             const data = {
                 matchId: match['match_id'],
                 matchDate: matchDateToDisplay,
+                hasPk: match['has_pk'],
                 homeClubName: match['home_club']['club_name'],
                 awayClubName: match['away_club']['club_name'],
                 homeClubFinalScore: match['home_club']['final_score'],
                 awayClubFinalScore: match['away_club']['final_score'],
+                homeClubPkScore: match['home_club']['pk_score'],
+                awayClubPkScore: match['away_club']['pk_score'],
                 isResultRegistered: match['is_result_registered']
             };
 
@@ -267,16 +270,16 @@ const setSelectedItems = () => {
     if (localStorage.getItem('selectedCategory')) {
         selectedCategory.value = localStorage.getItem('selectedCategory');
     }
-    
+
     // 少し遅延させて大会名を復元（カテゴリー選択後にcomputedが更新されるのを待つ）
     setTimeout(() => {
-        if (localStorage.getItem('selectedChampionshipName') && 
+        if (localStorage.getItem('selectedChampionshipName') &&
             championshipsFilteredByCategory.value.includes(localStorage.getItem('selectedChampionshipName'))) {
             selectedChampionshipName.value = localStorage.getItem('selectedChampionshipName');
-            
+
             // さらに遅延させて会場を復元（大会名選択後にcomputedが更新されるのを待つ）
             setTimeout(() => {
-                if (localStorage.getItem('selectedVenue') && 
+                if (localStorage.getItem('selectedVenue') &&
                     venuesFilteredByCategoryAndChampionship.value.includes(localStorage.getItem('selectedVenue'))) {
                     selectedVenue.value = localStorage.getItem('selectedVenue');
                 }
@@ -397,17 +400,17 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                                     @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
                                     :class="selectBtn" class="bg-gray-200 border-1 border-black">選択</button>
                                 <div class="w-full">
-                                    <div class="text-left">
-                                        開催日：{{ match.matchDate }}
+                                    <div class="text-left flex flex-row justify-between">
+                                        <span class="block">開催日：{{ match.matchDate }}</span>
+                                        <span class="block text-left text-red-600 ml-5">登録済み</span>
                                     </div>
-                                    <div class="flex justify-start items-center w-full">
-                                        <div class="w-2/5">{{ match.homeClubName }}</div>
-                                        <div class="w-1/5 mx-3 italic text-center">{{ match.homeClubFinalScore }}<span
-                                                class="mx-2">対</span>{{ match.awayClubFinalScore }}</div>
-                                        <div class="w-2/5">{{ match.awayClubName }}</div>
-                                    </div>
-                                    <div class="text-left text-red-600">
-                                        登録済み
+                                    <div>
+                                        <p>{{ match.homeClubName }}&nbsp;vs&nbsp;{{ match.awayClubName }}</p>
+                                        <p class="text-red-500 font-bold">
+                                            {{ match.homeClubFinalScore }} - {{ match.awayClubFinalScore }}
+                                            <span v-if="match.hasPk" class="text-red-500">（{{ match.homeClubPkScore }}PK{{
+                                                match.awayClubPkScore }}）</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -420,10 +423,10 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                                         <div class="text-left">
                                             開催日：{{ match.matchDate }}
                                         </div>
-                                        <div class="flex">
-                                            <div>{{ match.homeClubName }}</div>
-                                            <div><span class="mx-2">対</span></div>
-                                            <div>{{ match.awayClubName }}</div>
+                                        <div>
+                                            {{ match.homeClubName }}
+                                            <span class="mx-2">対</span>
+                                            {{ match.awayClubName }}
                                         </div>
                                     </div>
                                 </div>
