@@ -164,7 +164,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
                                     <router-link to="/" :class="routerLinkClass">
                                         <span>TOP</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li :class='navMenuWithSubMenu'>
@@ -174,20 +174,20 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                         <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
                                             <router-link to="/live-report-for-user" :class="routerLinkClass">
                                                 <span>U-12（ジュニア）</span>
-                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </router-link>
                                         </li>
                                         <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
                                             <router-link to="/live-report-for-user" :class="routerLinkClass">
                                                 <span>U-15（ジュニアユース）</span>
-                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </router-link>
                                         </li>
                                         <li @click="isMenuOpen = !isMenuOpen"
                                             class="flex justify-between items-center h-[29px] pr-4 pl-8">
                                             <router-link to="/live-report-for-user" :class="routerLinkClass">
                                                 <span>U-18（ユース）</span>
-                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </router-link>
                                         </li>
                                     </ul>
@@ -195,25 +195,25 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
                                     <router-link to="/pickup-news" :class="routerLinkClass">
                                         <span>お知らせ</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
                                     <router-link to="/media" :class="routerLinkClass">
                                         <span>メディア</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
                                     <router-link to="/archive" :class="routerLinkClass">
                                         <span>大会日程</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
                                     <router-link to="/club-introduction" :class="routerLinkClass">
                                         <span>チーム紹介</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li :class='navMenuWithSubMenu'>
@@ -222,14 +222,14 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                         <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
                                             <router-link to="/pics" :class="routerLinkClass">
                                                 <span>写真</span>
-                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </router-link>
                                         </li>
                                         <li @click="isMenuOpen = !isMenuOpen"
                                             class="flex justify-between items-center h-[29px] pr-4 pl-8">
                                             <router-link to="/videos" :class="routerLinkClass">
                                                 <span>動画</span>
-                                                <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </router-link>
                                         </li>
                                     </ul>
@@ -237,38 +237,38 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
                                     <router-link to="/faq" :class="routerLinkClass">
                                         <span>FAQ</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/company-info" :class="routerLinkClass">
                                         <span>企業情報</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/specified-commercial-transactions-law-notations"
                                         :class="routerLinkClass">
                                         <span>特定商取引法に基づく表記</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/terms-of-service" :class="routerLinkClass">
                                         <span>利用規約</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/privacy-policy" :class="routerLinkClass">
                                         <span>プライバシーポリシー</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li>
                                 <!-- <li @click="isMenuOpen = !isMenuOpen" :class="navMenu" class="text-xs">
                                     <router-link to="/copyright-info" :class="routerLinkClass">
                                         <span>著作権情報</span>
-                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                        <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
                                 </li> -->
                             </ul>
