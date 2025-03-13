@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
 import LoginView from '@/views/LoginView.vue';
-
+import ArchiveView from '@/views/ArchiveView.vue';
 import TopView from '@/views/TopView.vue';
 import ClubIntroductionView from '@/views/ClubIntroductionView.vue'
 import PicsView from '@/views/PicsView.vue';
