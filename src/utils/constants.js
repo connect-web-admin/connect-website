@@ -2,28 +2,6 @@
  * ▼▼▼▼▼　年度切替時に新しくするデータ　ここから　▼▼▼▼▼
  */
 export const THIS_FISCAL_YEAR = "2024"; // 年度切り替え。通常、4月始まり3月終わり
-export const CHAMPIONSHIPS = [ // 各ページで大会名を使って表示を切り替えることがあるので、まとめておく。
-    // 単科大学(college)も大学(university)に含める
-    {
-        "年度": "2025",
-        "カテゴリー": {
-            "U-12（ジュニア）": ["第6回ジュニア杯", "第11回小学生大会"],
-            "U-15（ジュニアユース）": ["第6回ジュニアユース杯", "第11回中学生大会"],
-            "U-18（ユース）": ["第6回ユース杯", "第11回高校生大会"],
-            "WOMAN": ["第6回なでしこ杯", "第11回女子大会"],
-        }
-    },
-
-    {
-        "年度": "2024",
-        "カテゴリー": {
-            "U-12（ジュニア）": ["第5回ジュニア杯", "第10回小学生大会"],
-            "U-15（ジュニアユース）": ["第5回ジュニアユース杯", "第10回中学生大会"],
-            "U-18（ユース）": ["第5回ユース杯", "第10回高校生大会"],
-            "WOMAN": ["第5回なでしこ杯", "第10回女子大会"],
-        }
-    }
-];
 /**
  * ▲▲▲▲▲　年度切替時に新しくするデータ　ここまで　▲▲▲▲▲
  */
@@ -57,7 +35,7 @@ export const CLIENT_ID = '2l2tg8i2d5ncdo8sdmdtu1o4hn';
 // APIGatewayのエンドポイント
 // サイト内コンテンツのAPIGatewayのエンドポイント
 // お知らせのAPIGatewayのエンドポイント
-export const TOPICS_API_URL = "https://hcr41st75h.execute-api.ap-northeast-1.amazonaws.com/prod/items";
+export const PICKUP_NEWS_API_URL = "https://vfdnlurtfj.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // お問い合わせのAPIGatewayのエンドポイント
 export const INQUIRY_API_URL = "https://ihdezl8qwe.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // クラブ情報のAPIGatewayのエンドポイント

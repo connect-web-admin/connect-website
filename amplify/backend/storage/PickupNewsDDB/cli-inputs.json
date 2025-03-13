@@ -6,9 +6,17 @@
     "fieldType": "string"
   },
   "sortKey": {
-    "fieldName": "category",
+    "fieldName": "fiscal_year",
     "fieldType": "string"
   },
-  "gsi": [],
+  "gsi": [
+    {
+      "name": "gsiByFiscalYear",
+      "partitionKey": {
+        "fieldName": "fiscal_year",
+        "fieldType": "string"
+      }
+    }
+  ],
   "triggerFunctions": []
 }
