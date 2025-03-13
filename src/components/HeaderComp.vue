@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 // スライダー表示の画像URLを配列に入れると正しく動作しないので個別に指定
 import firstSquare from '@/assets/slider/first-square.svg';
@@ -18,29 +19,49 @@ const props = defineProps({
     isAccountAvailable: Boolean
 });
 
+const router = useRouter();
+
 /**
  * スライダー表示
- * onMountedで4秒ごとに画像を切り替える
+ * onMountedでオブジェクトに設定された秒数ごとに画像を切り替える
  * onUnmountedでインターバルをクリア
  */
 // 画像リスト
 const imageList = ref([
-    { src: firstSquare, alt: "株式会社ファーストスクエア" },
-    { src: sfa, alt: "札幌地区サッカー協会" },
-    { src: sugenoTakanori, alt: "菅野孝憲公式アプリ" },
+    { src: firstSquare, alt: "株式会社ファーストスクエア", duration: 1000 },
+    { src: sfa, alt: "札幌地区サッカー協会", duration: 2000 },
+    { src: sugenoTakanori, alt: "菅野孝憲公式アプリ", duration: 5000 },
 ]);
 const currentIndex = ref(0);
 let interval = null;
+// 次の画像を表示することを繰り返す
 const nextImage = () => {
     // 0, 1, 2の繰り返し。配列のインデックス
     currentIndex.value = (currentIndex.value + 1) % imageList.value.length;
+    // 次の画像の表示時間に合わせてインターバルを設定
+    clearInterval(interval);
+    interval = setTimeout(nextImage, imageList.value[currentIndex.value].duration);
 };
 
 /**
  * スライドバー下のメニュー表示
  */
-const menuList = ['TOP', '結果速報', 'お知らせ', 'メディア', '大会日程', 'チーム紹介', '写真'];
+const menuList = [
+  { name: 'TOP', path: '/top' },
+  { name: '結果速報', path: '/live-report-for-user' },
+  { name: 'お知らせ', path: '/pickup-news' },
+  { name: 'メディア', path: '/media' },
+  { name: '大会日程', path: '/archive' },
+  { name: 'チーム紹介', path: '/club-introduction' },
+  { name: '写真', path: '/pics' }
+];
 const activeMenu = ref(0);
+
+// メニュー項目をクリックしたときのナビゲーション処理
+const navigateTo = (path, index) => {
+  activeMenu.value = index;
+  router.push(path);
+};
 
 /**
  * ハンバーガーメニューの開閉
@@ -73,8 +94,8 @@ const debounce = (func, wait) => {
 const debouncedHandleScroll = debounce(handleScroll, 200); // デバウンス時間を2000msから200msに短縮 ー`
 
 onMounted(() => {
-    // スライダー。4秒ごとに切り替え
-    interval = setInterval(nextImage, 4000);
+    // 最初の画像の表示時間でタイマーを開始
+    interval = setTimeout(nextImage, imageList.value[currentIndex.value].duration);
     // 下にスクロールするとスライダーを非表示にするスクロールイベントを追加
     window.addEventListener('scroll', debouncedHandleScroll);
 });
@@ -95,7 +116,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
 
 <template>
     <div>
-        <div class="flex justify-between items-end pt-20 pr-2 pb-4 pl-2 h-20 border-b-1">
+        <div class="flex justify-between items-end pt-20 px-4 pb-4 h-20 border-b-1">
             <div>
                 <img src="@/assets/icons/user-info.svg" alt="会員情報">
             </div>
@@ -170,6 +191,12 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                             </router-link>
                                         </li>
                                     </ul>
+                                </li>
+                                <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
+                                    <router-link to="/pickup-news" :class="routerLinkClass">
+                                        <span>お知らせ</span>
+                                        <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
+                                    </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
                                     <router-link to="/media" :class="routerLinkClass">
@@ -263,13 +290,13 @@ const routerLinkClass = 'flex justify-between items-center w-full';
         <!-- スライダー直下の横スクロールメニュー -->
         <div class="overflow-x-auto">
             <ul class="flex justify-start items-end whitespace-nowrap bg-black text-white h-11 min-w-max px-4">
-                <li v-for="(menu, index) in menuList" :key="index" @click="activeMenu = index" :class="[
+                <li v-for="(menu, index) in menuList" :key="index" @click="navigateTo(menu.path, index)" :class="[
                     'pb-1',
                     index === 0 ? 'ml-2 mr-4' : index === 6 ? 'ml-4 mr-2' : 'mx-4',
                     activeMenu === index ? 'text-[#7FCDEC] border-[#7FCDEC]' : 'text-white border-transparent',
                     'cursor-pointer border-b-2 transition-colors duration-200'
                 ]">
-                    {{ menu }}
+                    {{ menu.name }}
                 </li>
             </ul>
         </div>
