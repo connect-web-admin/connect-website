@@ -16,13 +16,13 @@
     "s3Key": {
       "Type": "String"
     },
-    "storageTopicsDDBName": {
+    "storagePickupNewsDDBName": {
       "Type": "String",
-      "Default": "storageTopicsDDBName"
+      "Default": "storagePickupNewsDDBName"
     },
-    "storageTopicsDDBArn": {
+    "storagePickupNewsDDBArn": {
       "Type": "String",
-      "Default": "storageTopicsDDBArn"
+      "Default": "storagePickupNewsDDBArn"
     }
   },
   "Conditions": {
@@ -55,12 +55,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "topicsLambda",
+            "pickupNewsLambda",
             {
               "Fn::Join": [
                 "",
                 [
-                  "topicsLambda",
+                  "pickupNewsLambda",
                   "-",
                   {
                     "Ref": "env"
@@ -97,12 +97,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "connectwebsiteLambdaRolefe3c0c44",
+            "connectwebsiteLambdaRole5d4be5e8",
             {
               "Fn::Join": [
                 "",
                 [
-                  "connectwebsiteLambdaRolefe3c0c44",
+                  "connectwebsiteLambdaRole5d4be5e8",
                   "-",
                   {
                     "Ref": "env"
@@ -182,14 +182,14 @@
               ],
               "Resource": [
                 {
-                  "Ref": "storageTopicsDDBArn"
+                  "Ref": "storagePickupNewsDDBArn"
                 },
                 {
                   "Fn::Join": [
                     "/",
                     [
                       {
-                        "Ref": "storageTopicsDDBArn"
+                        "Ref": "storagePickupNewsDDBArn"
                       },
                       "index/*"
                     ]

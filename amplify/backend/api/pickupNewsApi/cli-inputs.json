@@ -3,7 +3,7 @@
   "paths": {
     "/items": {
       "name": "/items",
-      "lambdaFunction": "topicsLambda",
+      "lambdaFunction": "pickupNewsLambda",
       "permissions": {
         "setting": "private",
         "auth": [

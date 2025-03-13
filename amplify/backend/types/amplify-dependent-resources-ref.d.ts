@@ -15,12 +15,12 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
-    "sendInquiryViaSESApi": {
+    "pickupNewsApi": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"
     },
-    "topicsApi": {
+    "sendInquiryViaSESApi": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"
@@ -64,14 +64,14 @@ export type AmplifyDependentResourcesAttributes = {
       "Name": "string",
       "Region": "string"
     },
-    "sendInquiryViaSESLambda": {
+    "pickupNewsLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
       "Name": "string",
       "Region": "string"
     },
-    "topicsLambda": {
+    "sendInquiryViaSESLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
@@ -115,7 +115,7 @@ export type AmplifyDependentResourcesAttributes = {
       "SortKeyType": "string",
       "StreamArn": "string"
     },
-    "TopicsDDB": {
+    "PickupNewsDDB": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",

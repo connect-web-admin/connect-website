@@ -42,6 +42,20 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
+    "pickupNewsApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "pickupNewsLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "sendInquiryViaSESApi": {
       "dependsOn": [
         {
@@ -51,20 +65,6 @@
           ],
           "category": "function",
           "resourceName": "sendInquiryViaSESLambda"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    },
-    "topicsApi": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "topicsLambda"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -171,12 +171,7 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "sendInquiryViaSESLambda": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
-    "topicsLambda": {
+    "pickupNewsLambda": {
       "build": true,
       "dependsOn": [
         {
@@ -189,9 +184,14 @@
             "Arn"
           ],
           "category": "storage",
-          "resourceName": "TopicsDDB"
+          "resourceName": "PickupNewsDDB"
         }
       ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "sendInquiryViaSESLambda": {
+      "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
@@ -264,6 +264,22 @@
         }
       ]
     },
+    "AMPLIFY_function_pickupNewsLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "pickupNewsLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_pickupNewsLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "pickupNewsLambda"
+        }
+      ]
+    },
     "AMPLIFY_function_sendInquiryViaSESLambda_deploymentBucketName": {
       "usedBy": [
         {
@@ -277,22 +293,6 @@
         {
           "category": "function",
           "resourceName": "sendInquiryViaSESLambda"
-        }
-      ]
-    },
-    "AMPLIFY_function_topicsLambda_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "topicsLambda"
-        }
-      ]
-    },
-    "AMPLIFY_function_topicsLambda_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "topicsLambda"
         }
       ]
     },
@@ -326,7 +326,7 @@
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },
-    "TopicsDDB": {
+    "PickupNewsDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },

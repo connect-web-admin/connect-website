@@ -1,0 +1,14 @@
+{
+  "resourceName": "PickupNewsDDB",
+  "tableName": "PickupNewsDDB",
+  "partitionKey": {
+    "fieldName": "news_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "category",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}
