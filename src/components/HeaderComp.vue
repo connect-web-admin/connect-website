@@ -205,7 +205,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
-                                    <router-link to="/championship-schedule" :class="routerLinkClass">
+                                    <router-link to="/archive" :class="routerLinkClass">
                                         <span>大会日程</span>
                                         <img src="@/assets/icons/arrow_right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
