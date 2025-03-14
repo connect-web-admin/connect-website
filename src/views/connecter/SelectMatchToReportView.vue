@@ -327,9 +327,16 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
 </script>
 
 <template>
-    <div class="w-full h-full px-10 pt-4 pb-50">
+    <div class="mt-8">
+        <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
+    </div>
+    <div v-if="isLoading">
+        <img src="@/assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
+        <p class="text-center">読み込み中……</p>
+    </div>
+    <div v-else class="w-full h-full px-10 pt-4 pb-50">
         <div v-if="isAccessible">
-            <h1 class="text-2xl text-center">速報対象試合検索</h1>
+            <h1 class="text-2xl text-center my-2">速報対象試合検索</h1>
             <div :class="eachMenuContainer">
                 <h2 :class="menuHeading">カテゴリー</h2>
                 <div v-for="(category, idx) in CATEGORIES" :key="idx"
@@ -439,8 +446,8 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
         <div v-else>
             <h1 class="text-2xl text-center mt-30">{{ inaccessibleMsg }}</h1>
         </div>
-        <CopyrightComp />
     </div>
+    <CopyrightComp />
 </template>
 
 <style></style>
