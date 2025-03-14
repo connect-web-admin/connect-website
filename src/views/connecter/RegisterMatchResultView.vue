@@ -639,7 +639,7 @@ const registerMatchResult = async () => {
 
         // 成功時の処理を追加
         alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
-        router.push('/connecter/select-match-to-register-result');
+        router.push('/connecter/select-match-to-report');
     } catch (error) {
         console.error('Error details:', error)
         errorMessage.value = '試合結果の登録に失敗しました。'
@@ -673,7 +673,7 @@ const registerMatchDelay = async () => {
 
         // 成功時の処理を追加
         alert('試合延期を正常に登録しました。試合検索画面に戻ります。');
-        router.push('/connecter/select-match-to-register-result');
+        router.push('/connecter/select-match-to-report');
     } catch (error) {
         console.error('Error details:', error);
         errorMessage.value = '試合延期の登録に失敗しました。';
@@ -1075,6 +1075,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                 </div>
             </div>
         </div>
+        <a href="/connecter/select-match-to-report" class="block text-center text-blue-600 underline mt-10">速報対象試合検索画面に戻る</a>
         <CopyrightComp />
     </div>
 </template>
