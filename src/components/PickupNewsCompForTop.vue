@@ -14,7 +14,10 @@ const isNew = (publishedDate) => {
     return diffDays <= 14;
 };
 
-const getPickupNews = async () => {
+/**
+ * 最新の4件のピックアップニュースを取得する
+ */
+const getLatestFourNews = async () => {
     const queryUrl = new URL(`${PICKUP_NEWS_API_URL}/get-latest-four-news`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
@@ -38,7 +41,8 @@ const getPickupNews = async () => {
 }
 
 onMounted(async () => {
-    await getPickupNews();
+    // 最新の4件のピックアップニュースを取得する
+    await getLatestFourNews();
 });
 </script>
 <template>
@@ -54,8 +58,11 @@ onMounted(async () => {
                 </span>
             </div>
             <div class="flex items-center">
-                <p>{{ news['title'] }}</p>
-                <img src="@/assets/icons/arrow-right.png" alt="new" class="w-4 h-4 ml-2" />
+                <!-- 40文字超過分は省略 -->
+                <router-link :to="`/pickup-news/${news.news_id}`" class="flex justify-between items-center">
+                    <p class="pl-4">{{ news['title'].length > 40 ? news['title'].substring(0, 40) + '……' : news['title'] }}</p>
+                    <img src="@/assets/icons/arrow-right.png" alt="new" class="w-4 h-4 ml-2" />
+                </router-link>
             </div>
         </div>
     </div>
