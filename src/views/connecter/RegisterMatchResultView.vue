@@ -760,9 +760,12 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
 
 <template>
     <div>
-        <div v-if="isLoading">
-            <img src="../../assets/icons/loading_processing.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
-            <p class="text-center">読み込み中</p>
+        <div class="mt-8">
+            <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
+        </div>
+        <div v-if="isLoading" class="mt-20">
+            <img src="../../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
+            <p class="text-center">読み込み中……</p>
         </div>
         <div v-else>
             <div v-if="errorMessage">
@@ -1074,8 +1077,9 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     </div>
                 </div>
             </div>
+            <a href="/connecter/select-match-to-report"
+                class="block text-center text-blue-600 underline mt-10">速報対象試合検索画面に戻る</a>
         </div>
-        <a href="/connecter/select-match-to-report" class="block text-center text-blue-600 underline mt-10">速報対象試合検索画面に戻る</a>
         <CopyrightComp />
     </div>
 </template>
