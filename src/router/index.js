@@ -3,7 +3,8 @@ import App from '@/App.vue';
 import LoginView from '@/views/LoginView.vue';
 import ArchiveView from '@/views/ArchiveView.vue';
 import TopView from '@/views/TopView.vue';
-import ClubIntroductionView from '@/views/ClubIntroductionView.vue'
+import ClubIntroductionView from '@/views/ClubIntroductionView.vue';
+import PickupNewsView from '@/views/PickupNewsView.vue';
 import PicsView from '@/views/PicsView.vue';
 import VideosView from '@/views/VideosView.vue';
 import MediaView from '@/views/MediaView.vue';
@@ -20,7 +21,7 @@ import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 
 import LatestResultsView from '@/views/LatestResultsView.vue'
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue'
-import SelectMatchToRegisterResultView from '@/views/connecter/SelectMatchToRegisterResultView.vue'
+import SelectMatchToReportView from '@/views/connecter/SelectMatchToReportView.vue'
 import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
 import ContactView from '@/views/ContactView.vue'
 
@@ -66,6 +67,11 @@ const router = createRouter({
 			component: ClubIntroductionView
 		},
 
+		{
+			path: '/pickup-news/:newsId?',
+			name: 'PickupNews',
+			component: PickupNewsView
+		},
 
 		{
 			path: '/pics',
@@ -142,9 +148,9 @@ const router = createRouter({
 		},
 
 		{
-			path: '/connecter/select-match-to-register-result',
-			name: 'SelectMatchToRegisterResult',
-			component: SelectMatchToRegisterResultView,
+			path: '/connecter/select-match-to-report',
+			name: 'SelectMatchToReport',
+			component: SelectMatchToReportView,
 		},
 
 		{
