@@ -403,7 +403,8 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                         <div v-if="selectedVenue" class="rounded-b-lg">
                             <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx"
                                 class="not-last:border-b-1 not-last:border-gray-300 rounded-b-md">
-                                <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200 rounded-t-lg">
+                                <div v-if="match.isResultRegistered"
+                                    class="flex items-center px-2 py-1 bg-gray-200 rounded-b-md">
                                     <button type="button"
                                         @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
                                         :class="selectBtn" class="bg-gray-200 border-1 border-black">選択</button>
@@ -417,7 +418,7 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                                             <p class="text-red-500 font-bold">
                                                 {{ match.homeClubFinalScore }} - {{ match.awayClubFinalScore }}
                                                 <span v-if="match.hasPk" class="text-red-500">（{{ match.homeClubPkScore
-                                                    }}PK{{
+                                                }}PK{{
                                                         match.awayClubPkScore }}）</span>
                                             </p>
                                         </div>
