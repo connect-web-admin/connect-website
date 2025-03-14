@@ -327,127 +327,130 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
 </script>
 
 <template>
-    <div class="mt-8">
-        <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
-    </div>
-    <div v-if="isLoading">
-        <img src="@/assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
-        <p class="text-center">読み込み中……</p>
-    </div>
-    <div v-else class="w-full h-full px-10 pt-4 pb-50">
-        <div v-if="isAccessible">
-            <h1 class="text-2xl text-center my-2">速報対象試合検索</h1>
-            <div :class="eachMenuContainer">
-                <h2 :class="menuHeading">カテゴリー</h2>
-                <div v-for="(category, idx) in CATEGORIES" :key="idx"
-                    :class="[eachSelect, { 'bg-amber-100': selectedCategory === category }]">
-                    <label :for="'category-selector-' + idx" class="block w-full cursor-pointer">
-                        <input type="radio" :value="category" v-model="selectedCategory"
-                            :id="'category-selector-' + idx" class="appearance-none" />
-                        {{ category }}
-                    </label>
-                </div>
-            </div>
-            <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-            <div :class="eachMenuContainer">
-                <h2 :class="menuHeading">大会名</h2>
-                <div v-if="!selectedCategory">
-                    （大会名が表示されます）
-                </div>
-                <Transition enter-active-class="transition-opacity duration-300 ease-in"
-                    leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
-                    leave-to-class="opacity-0">
-                    <div v-if="selectedCategory" class="championship-list">
-                        <div v-for="(championship, idx) in championshipsFilteredByCategory" :key="idx"
-                            :class="[eachSelect, { 'bg-amber-100': selectedChampionshipName === championship }]">
-                            <label :for="'championship-selector-' + idx" class="block w-full cursor-pointer">
-                                <input type="radio" :value="championship" v-model="selectedChampionshipName"
-                                    :id="'championship-selector-' + idx" class="appearance-none" />
-                                {{ championship }}
-                            </label>
-                        </div>
+    <div>
+        <div class="mt-8">
+            <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
+        </div>
+        <div v-if="isLoading" class="mt-20">
+            <img src="@/assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
+            <p class="text-center">読み込み中……</p>
+        </div>
+        <div v-else class="w-full h-full px-10 pt-4 pb-50">
+            <div v-if="isAccessible">
+                <h1 class="text-2xl text-center my-2">速報対象試合検索</h1>
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">カテゴリー</h2>
+                    <div v-for="(category, idx) in CATEGORIES" :key="idx"
+                        :class="[eachSelect, { 'bg-amber-100': selectedCategory === category }]">
+                        <label :for="'category-selector-' + idx" class="block w-full cursor-pointer">
+                            <input type="radio" :value="category" v-model="selectedCategory"
+                                :id="'category-selector-' + idx" class="appearance-none" />
+                            {{ category }}
+                        </label>
                     </div>
-                </Transition>
-            </div>
-            <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-            <div :class="eachMenuContainer">
-                <h2 :class="menuHeading">試合会場</h2>
-                <div v-if="!selectedChampionshipName">
-                    （会場が表示されます）
                 </div>
-                <Transition enter-active-class="transition-opacity duration-300 ease-in"
-                    leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
-                    leave-to-class="opacity-0">
-                    <div v-if="selectedChampionshipName" class="venue-list">
-                        <div v-for="(venue, idx) in venuesFilteredByCategoryAndChampionship" :key="idx"
-                            :class="[eachSelect, { 'bg-amber-100': selectedVenue === venue }]">
-                            <label :for="'venue-selector-' + idx" class="block w-full cursor-pointer">
-                                <input type="radio" :value="venue" v-model="selectedVenue" :id="'venue-selector-' + idx"
-                                    class="appearance-none" />
-                                {{ venue }}
-                            </label>
-                        </div>
+                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">大会名</h2>
+                    <div v-if="!selectedCategory">
+                        （大会名が表示されます）
                     </div>
-                </Transition>
-            </div>
-            <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-            <div :class="eachMenuContainer">
-                <h2 :class="menuHeading">試合一覧（本日と前日の開催分）</h2>
-                <div v-if="!selectedVenue">
-                    （試合が表示されます）
-                </div>
-                <Transition enter-active-class="transition-opacity duration-300 ease-in"
-                    leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
-                    leave-to-class="opacity-0">
-                    <div v-if="selectedVenue" class="match-list">
-                        <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx"
-                            class="not-last:border-b-1 border-gray-300">
-                            <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200">
-                                <button type="button"
-                                    @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
-                                    :class="selectBtn" class="bg-gray-200 border-1 border-black">選択</button>
-                                <div class="w-full">
-                                    <div class="text-left flex flex-row justify-between">
-                                        <span class="block">開催日：{{ match.matchDate }}</span>
-                                        <span class="block text-left text-red-600 ml-5">登録済み</span>
-                                    </div>
-                                    <div>
-                                        <p>{{ match.homeClubName }}&nbsp;vs&nbsp;{{ match.awayClubName }}</p>
-                                        <p class="text-red-500 font-bold">
-                                            {{ match.homeClubFinalScore }} - {{ match.awayClubFinalScore }}
-                                            <span v-if="match.hasPk" class="text-red-500">（{{ match.homeClubPkScore }}PK{{
-                                                match.awayClubPkScore }}）</span>
-                                        </p>
-                                    </div>
-                                </div>
+                    <Transition enter-active-class="transition-opacity duration-300 ease-in"
+                        leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
+                        leave-to-class="opacity-0">
+                        <div v-if="selectedCategory" class="championship-list">
+                            <div v-for="(championship, idx) in championshipsFilteredByCategory" :key="idx"
+                                :class="[eachSelect, { 'bg-amber-100': selectedChampionshipName === championship }]">
+                                <label :for="'championship-selector-' + idx" class="block w-full cursor-pointer">
+                                    <input type="radio" :value="championship" v-model="selectedChampionshipName"
+                                        :id="'championship-selector-' + idx" class="appearance-none" />
+                                    {{ championship }}
+                                </label>
                             </div>
-                            <div v-else class="px-2 py-1 last:rounded-b-md">
-                                <div class="flex items-center">
+                        </div>
+                    </Transition>
+                </div>
+                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">試合会場</h2>
+                    <div v-if="!selectedChampionshipName">
+                        （会場が表示されます）
+                    </div>
+                    <Transition enter-active-class="transition-opacity duration-300 ease-in"
+                        leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
+                        leave-to-class="opacity-0">
+                        <div v-if="selectedChampionshipName" class="venue-list">
+                            <div v-for="(venue, idx) in venuesFilteredByCategoryAndChampionship" :key="idx"
+                                :class="[eachSelect, { 'bg-amber-100': selectedVenue === venue }]">
+                                <label :for="'venue-selector-' + idx" class="block w-full cursor-pointer">
+                                    <input type="radio" :value="venue" v-model="selectedVenue"
+                                        :id="'venue-selector-' + idx" class="appearance-none" />
+                                    {{ venue }}
+                                </label>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+                <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                <div :class="eachMenuContainer">
+                    <h2 :class="menuHeading">試合一覧（本日と前日の開催分）</h2>
+                    <div v-if="!selectedVenue">
+                        （試合が表示されます）
+                    </div>
+                    <Transition enter-active-class="transition-opacity duration-300 ease-in"
+                        leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
+                        leave-to-class="opacity-0">
+                        <div v-if="selectedVenue" class="match-list">
+                            <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx"
+                                class="not-last:border-b-1 border-gray-300">
+                                <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200">
                                     <button type="button"
                                         @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
-                                        :class="selectBtn" class="bg-green-200 border-1 border-black">選択</button>
+                                        :class="selectBtn" class="bg-gray-200 border-1 border-black">選択</button>
                                     <div class="w-full">
-                                        <div class="text-left">
-                                            開催日：{{ match.matchDate }}
+                                        <div class="text-left flex flex-row justify-between">
+                                            <span class="block">開催日：{{ match.matchDate }}</span>
+                                            <span class="block text-left text-red-600 ml-5">登録済み</span>
                                         </div>
                                         <div>
-                                            {{ match.homeClubName }}
-                                            <span class="mx-2">対</span>
-                                            {{ match.awayClubName }}
+                                            <p>{{ match.homeClubName }}&nbsp;vs&nbsp;{{ match.awayClubName }}</p>
+                                            <p class="text-red-500 font-bold">
+                                                {{ match.homeClubFinalScore }} - {{ match.awayClubFinalScore }}
+                                                <span v-if="match.hasPk" class="text-red-500">（{{ match.homeClubPkScore
+                                                    }}PK{{
+                                                        match.awayClubPkScore }}）</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else class="px-2 py-1 last:rounded-b-md">
+                                    <div class="flex items-center">
+                                        <button type="button"
+                                            @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
+                                            :class="selectBtn" class="bg-green-200 border-1 border-black">選択</button>
+                                        <div class="w-full">
+                                            <div class="text-left">
+                                                開催日：{{ match.matchDate }}
+                                            </div>
+                                            <div>
+                                                {{ match.homeClubName }}
+                                                <span class="mx-2">対</span>
+                                                {{ match.awayClubName }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </Transition>
+                    </Transition>
+                </div>
+            </div>
+            <div v-else>
+                <h1 class="text-2xl text-center mt-30">{{ inaccessibleMsg }}</h1>
             </div>
         </div>
-        <div v-else>
-            <h1 class="text-2xl text-center mt-30">{{ inaccessibleMsg }}</h1>
-        </div>
+        <CopyrightComp />
     </div>
-    <CopyrightComp />
 </template>
 
 <style></style>
