@@ -1,7 +1,13 @@
 <script setup>
+import PickupNewsCompForTop from '@/components/PickupNewsCompForTop.vue';
+
 const sampleChampionshipName = '第102回 全国高校サッカー選手権大会'
 const sampleRound = '札幌地区予選会';
 const sampleRoundName = 'Aブロック';
+
+
+onMounted(async () => {
+});
 </script>
 
 <template>
@@ -108,41 +114,13 @@ const sampleRoundName = 'Aブロック';
         </div>
     </div>
 
-    <div class="mb-8">
+    <div class="mb-15">
         <h1 class="text-xl text-[#090A0A] border-b-1 border-gray-200">ピックアップニュース</h1>
-        <div>
-            <div class="border-b-1 border-gray-200 pb-1">
-                <div class="flex gap-2">
-                    <p>2026.01.01</p>
-                    <img src="@/assets/icons/new-notion.svg" alt="new" />
-                </div>
-                <h2 class="pl-2 text-[#090A0A]">高円宮杯 JFA U-18 サッカー2024北海道ブロックリー…</h2>
-            </div>
-            <div class="border-b-1 border-gray-200 pb-1">
-                <div class="flex gap-2">
-                    <p>2026.01.01</p>
-                    <img src="@/assets/icons/new-notion.svg" alt="new" />
-                </div>
-                <h2 class="pl-2 text-[#090A0A]">15名様限定！北海道コンサドーレ札幌の観戦チケット…</h2>
-            </div>
-            <div class="border-b-1 border-gray-200" pb-1>
-                <div class="flex gap-2">
-                    <p>2026.01.01</p>
-                </div>
-                <h2 class="pl-2 text-[#090A0A]">令和７年度小学生春の強化合宿のお申し込み受付を開始…</h2>
-            </div>
-            <div class="border-b-1 border-gray-200 mb-8 pb-1">
-                <div class="flex gap-2">
-                    <p>2026.01.01</p>
-                </div>
-                <h2 class="pl-2 text-[#090A0A]">コネクトWEBをリニューアルしました。</h2>
-            </div>
-            <div class="flex justify-end">
-                <button type="button" class="bg-[#231815] text-[#FAFAFC] w-28 py-2 rounded-md shadow-md">もっと読む</button>
-            </div>
-        </div>
+        <PickupNewsCompForTop />
+        <router-link to="/pickup-news" class="flex justify-end mt-5">
+            <button class="bg-[#231815] text-[#FAFAFC] text-center px-5 py-2 rounded-md shadow-lg" >もっと読む</button>
+        </router-link>
     </div>
-
 
     <div class="mb-15">
         <h1 class="text-xl text-[#090A0A] border-b-1 border-gray-200">メディア</h1>
