@@ -21,7 +21,7 @@ import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 
 import LatestResultsView from '@/views/LatestResultsView.vue'
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue'
-import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue'
+import SelectMatchToReportView from '@/views/connecter/SelectReportingMatchView.vue'
 import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
 import ContactView from '@/views/ContactView.vue'
 
@@ -148,7 +148,7 @@ const router = createRouter({
 		},
 
 		{
-			path: '/connecter/select-reporting-match',
+			path: '/connecter/select-match-to-report',
 			name: 'SelectReportingMatch',
 			component: SelectReportingMatchView,
 		},
