@@ -785,7 +785,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                 </div>
                 <div class="mt-5">
                     <p class="py-1 font-bold text-xl" :class="borderTopBottom">試合速報入力</p>
-                    <div :class="[flexRow, 'justify-center', 'items-center', 'gap-5', 'py-3', 'bg-green-100']"
+                    <div :class="[flexRow, 'justify-center', 'items-center', 'gap-3', 'py-3', 'bg-green-100']"
                         class="border-b-1 border-black">
                         <div class="text-right w-[90px]">
                             <button type="button"

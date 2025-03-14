@@ -321,7 +321,7 @@ onBeforeMount(async () => {
 // CSS
 const eachMenuContainer = 'border-1 border-gray-300 rounded-lg';
 const menuHeading = 'px-2 py-1 bg-blue-200 rounded-t-md';
-const eachSelect = 'px-2 py-1 not-last:border-b-1 border-gray-300 cursor-pointer hover:bg-amber-100';
+const eachSelect = 'px-2 py-1 not-last:border-b-1 not-last:border-gray-300 not-last:cursor-pointer';
 const arrowDownwardIcon = 'w-5 my-2 mx-auto';
 const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
 </script>
@@ -341,7 +341,7 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                 <div :class="eachMenuContainer">
                     <h2 :class="menuHeading">カテゴリー</h2>
                     <div v-for="(category, idx) in CATEGORIES" :key="idx"
-                        :class="[eachSelect, { 'bg-amber-100': selectedCategory === category }]">
+                        :class="[eachSelect, { 'bg-amber-100': selectedCategory === category }, { 'rounded-b-lg': idx === CATEGORIES.length - 1 }]">
                         <label :for="'category-selector-' + idx" class="block w-full cursor-pointer">
                             <input type="radio" :value="category" v-model="selectedCategory"
                                 :id="'category-selector-' + idx" class="appearance-none" />
@@ -358,9 +358,9 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
                         leave-to-class="opacity-0">
-                        <div v-if="selectedCategory" class="championship-list">
+                        <div v-if="selectedCategory" class="rounded-b-lg">
                             <div v-for="(championship, idx) in championshipsFilteredByCategory" :key="idx"
-                                :class="[eachSelect, { 'bg-amber-100': selectedChampionshipName === championship }]">
+                                :class="[eachSelect, { 'bg-amber-100': selectedChampionshipName === championship }, { 'rounded-b-lg': idx === championshipsFilteredByCategory.length - 1 }]">
                                 <label :for="'championship-selector-' + idx" class="block w-full cursor-pointer">
                                     <input type="radio" :value="championship" v-model="selectedChampionshipName"
                                         :id="'championship-selector-' + idx" class="appearance-none" />
@@ -379,9 +379,9 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
                         leave-to-class="opacity-0">
-                        <div v-if="selectedChampionshipName" class="venue-list">
+                        <div v-if="selectedChampionshipName" class="rounded-b-lg">
                             <div v-for="(venue, idx) in venuesFilteredByCategoryAndChampionship" :key="idx"
-                                :class="[eachSelect, { 'bg-amber-100': selectedVenue === venue }]">
+                                :class="[eachSelect, { 'bg-amber-100': selectedVenue === venue }, { 'rounded-b-lg': idx === venuesFilteredByCategoryAndChampionship.length - 1 }]">
                                 <label :for="'venue-selector-' + idx" class="block w-full cursor-pointer">
                                     <input type="radio" :value="venue" v-model="selectedVenue"
                                         :id="'venue-selector-' + idx" class="appearance-none" />
@@ -400,10 +400,10 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
                         leave-to-class="opacity-0">
-                        <div v-if="selectedVenue" class="match-list">
+                        <div v-if="selectedVenue" class="rounded-b-lg">
                             <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx"
-                                class="not-last:border-b-1 border-gray-300">
-                                <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200">
+                                class="not-last:border-b-1 not-last:border-gray-300 rounded-b-md">
+                                <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200 rounded-t-lg">
                                     <button type="button"
                                         @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
                                         :class="selectBtn" class="bg-gray-200 border-1 border-black">選択</button>
