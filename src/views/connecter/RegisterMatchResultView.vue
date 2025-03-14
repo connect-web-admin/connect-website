@@ -398,7 +398,7 @@ const minusScoreValidation = (homeOrAway) => {
             (gameStatus.value === '延長前半' && homeClubExtraFirstHalfScore.value < LEAST_SCORE) ||
             (gameStatus.value === '延長後半' && homeClubExtraSecondHalfScore.value < LEAST_SCORE)
         ) {
-            alert("取り消す得点がありません。");
+            alert(`${gameStatus.value}に取り消す得点がありません。`);
             return;
         } else {
             showHomeClubMinusModal.value = true;
@@ -409,7 +409,7 @@ const minusScoreValidation = (homeOrAway) => {
             (gameStatus.value === '延長前半' && awayClubExtraFirstHalfScore.value < LEAST_SCORE) ||
             (gameStatus.value === '延長後半' && awayClubExtraSecondHalfScore.value < LEAST_SCORE)
         ) {
-            alert("取り消す得点がありません。");
+            alert(`${gameStatus.value}に取り消す得点がありません。`);
             return;
         } else {
             showAwayClubMinusModal.value = true;
