@@ -21,7 +21,7 @@ import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 
 import LatestResultsView from '@/views/LatestResultsView.vue'
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue'
-import SelectMatchToReportView from '@/views/connecter/SelectReportingMatchView.vue'
+import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue'
 import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
 import ContactView from '@/views/ContactView.vue'
 
