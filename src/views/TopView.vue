@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue';
 import PickupNewsCompForTop from '@/components/PickupNewsCompForTop.vue';
 
 const sampleChampionshipName = '第102回 全国高校サッカー選手権大会'
