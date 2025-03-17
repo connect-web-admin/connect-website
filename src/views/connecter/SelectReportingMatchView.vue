@@ -31,7 +31,7 @@ dayjs.tz.setDefault('Asia/Tokyo');
 /**
  * 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
  */
-const getMatchInfoInThisFiscalyear = async () => {
+const getMatchCurrentMatches = async () => {
     isLoading.value = true
 
     const queryUrl = new URL(`${MATCH_API_URL}/current-matches`);
@@ -54,6 +54,7 @@ const getMatchInfoInThisFiscalyear = async () => {
         const allMatchDates = await response.json();
         if (allMatchDates.length > 0) {
             matchInfo.value = allMatchDates;
+            console.log(matchInfo.value);
             return true;
         } else {
             inaccessibleMsg.value = 'アクセス可能期間外です。';
@@ -65,37 +66,6 @@ const getMatchInfoInThisFiscalyear = async () => {
         isLoading.value = false;
     }
 }
-
-// /**
-//  * 当年度に開催される試合の中から、当日及び当日から一週間前の試合のみを取得
-//  */
-// const getMatchInfoInThisFiscalYear = async () => {
-//     isLoading.value = true
-
-//     const queryUrl = new URL(`${MATCH_API_URL}/all-championships`);
-//     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
-
-//     try {
-//         const response = await fetch(queryUrl, {
-//             method: 'GET',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             }
-//         });
-
-//         if (response.ok) {
-//             isFetchingSuccessful.value = true;
-//             const data = await response.json();
-//             matchInfo.value = data;
-//         } else {
-//             failedFetchingMsg.value = '試合情報の取得に失敗しました。ページを更新するか、ブラウザを更新しても問題が解決しない場合は、コネクトまでご連絡ください。'
-//         }
-//     } catch (error) {
-//         console.error('試合情報の取得に失敗しました。');
-//     } finally {
-//         isLoading.value = false;
-//     }
-// }
 
 /**
  * 選択された試合の速報画面に遷移
@@ -306,7 +276,7 @@ const checkExpiration = () => {
 // ページ表示前にConnecterDDBから試合情報抽出
 onBeforeMount(async () => {
     // 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
-    isAccessible.value = await getMatchInfoInThisFiscalyear();
+    isAccessible.value = await getMatchCurrentMatches();
 
     // selectedItemsExpirationが有効期限内かどうかを確認
     checkExpiration();
