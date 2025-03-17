@@ -19,11 +19,12 @@ import PrivacyPolicyView from '@/views/site-info/PrivacyPolicyView.vue';
 import TermsOfServiceView from '@/views/site-info/TermsOfServiceView.vue';
 import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 
-import LatestResultsView from '@/views/LatestResultsView.vue'
-import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue'
-import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue'
-import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue'
-import ContactView from '@/views/ContactView.vue'
+import LatestResultsView from '@/views/LatestResultsView.vue';
+import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
+import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue';
+import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue';
+import ContactView from '@/views/ContactView.vue';
+import MatchResultListForLeaderView from '@/views/connecter/MatchResultListForLeaderView.vue';
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -158,6 +159,12 @@ const router = createRouter({
 			name: 'RegisterMatchResult',
 			component: RegisterMatchResultView,
 			props: true
+		},
+
+		{
+			path: '/connecter/match-result-list-for-leader',
+			name: 'MatchResultListForLeader',
+			component: MatchResultListForLeaderView,
 		},
 
 		/**
