@@ -121,8 +121,8 @@ const getGameStatusTransitions = computed(() => {
     if (isLeague.value) {
         nextTransitions['後半'] = '試合終了';
     }
-    // リーグ戦ではない場合
-    else {
+
+    if (!isLeague.value) {
         // 延長戦戦の有無で遷移を変える
         if (hasExtraHalves.value) {
             nextTransitions['後半'] = '延長前半';
