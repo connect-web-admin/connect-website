@@ -11,7 +11,7 @@ import MediaView from '@/views/MediaView.vue';
 import FaqView from '@/views/FaqView.vue';
 import LiveReportForUserView from '@/views/LiveReportForUserView.vue';
 import PremiumView from '@/views/PremiumView.vue';
-
+import NotFoundView from '@/views/NotFoundView.vue';
 // 会社概要や利用規約などの目立たせないようにするページ
 import CompanyInfoView from '@/views/site-info/CompanyInfoView.vue';
 import CopyrightInfoView from '@/views/site-info/CopyrightInfoView.vue';
@@ -173,6 +173,13 @@ const router = createRouter({
 			path: '/archive',
 			name: 'Archive',
 			component: ArchiveView,
+		},
+
+		  // 404ルート - 最後に配置することが重要
+		{
+			path: '/:pathMatch(.*)*',
+			name: 'NotFound',
+			component: NotFoundView
 		}
 	]
 })
