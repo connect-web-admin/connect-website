@@ -785,8 +785,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                 </div>
                 <div class="mt-5">
                     <p class="py-1 font-bold text-xl" :class="borderTopBottom">試合速報入力</p>
-                    <div :class="[flexRow, 'justify-center', 'items-center', 'gap-3', 'py-3', 'bg-green-100']"
-                        class="border-b-1 border-black">
+                    <div :class="flexRow" class="justify-center items-center gap-3 py-3 bg-green-100">
                         <div class="text-right w-[90px]">
                             <button type="button"
                                 v-if="gameStatus !== '試合前' && getGameStatusTransitions.prev[gameStatus]"
@@ -1019,7 +1018,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                         <label for="match-time">
                             <p class="bg-gray-200">実際の試合開始時刻</p>
                         </label>
-                        <div :class="[flexCenter, 'h-10']">
+                        <div :class="flexCenter" class="h-10">
                             <input type="time" id="match-time" :value="scheduledMatchStartTime"
                                 @input="setActualMatchStartTime" />
                         </div>
@@ -1051,7 +1050,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                 </div>
                 <div class="py-10">
                     <p>または、この試合の延期を登録します。</p>
-                    <div :class="[flexRow, 'justify-center', 'mt-2']">
+                    <div :class="flexRow" class="justify-center mt-2">
                         <div class="mx-4">
                             <input type="radio" id="isDelayedRadio1" v-model="isDelayed" :value="true" />
                             <label for="isDelayedRadio1">はい</label>
