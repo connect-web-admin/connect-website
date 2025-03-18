@@ -36,6 +36,8 @@ export const CLIENT_ID = '2l2tg8i2d5ncdo8sdmdtu1o4hn';
 // サイト内コンテンツのAPIGatewayのエンドポイント
 // お知らせのAPIGatewayのエンドポイント
 export const PICKUP_NEWS_API_URL = "https://vfdnlurtfj.execute-api.ap-northeast-1.amazonaws.com/prod/items";
+// メディアのAPIGatewayのエンドポイント
+export const MEDIA_API_URL = "https://fyxwvf4vfc.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // お問い合わせのAPIGatewayのエンドポイント
 export const INQUIRY_API_URL = "https://ihdezl8qwe.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // クラブ情報のAPIGatewayのエンドポイント

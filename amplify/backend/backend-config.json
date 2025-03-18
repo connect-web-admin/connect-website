@@ -42,6 +42,20 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
+    "mediaApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "mediaLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "pickupNewsApi": {
       "dependsOn": [
         {
@@ -171,6 +185,25 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "mediaLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "MediaDDB"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "pickupNewsLambda": {
       "build": true,
       "dependsOn": [
@@ -264,6 +297,22 @@
         }
       ]
     },
+    "AMPLIFY_function_mediaLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "mediaLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_mediaLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "mediaLambda"
+        }
+      ]
+    },
     "AMPLIFY_function_pickupNewsLambda_deploymentBucketName": {
       "usedBy": [
         {
@@ -323,6 +372,10 @@
       "service": "DynamoDB"
     },
     "MatchDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "MediaDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },

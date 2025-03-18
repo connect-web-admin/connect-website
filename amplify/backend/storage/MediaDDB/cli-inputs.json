@@ -1,0 +1,22 @@
+{
+  "resourceName": "MediaDDB",
+  "tableName": "MediaDDB",
+  "partitionKey": {
+    "fieldName": "article_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "fiscal_year",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "gsiByFiscalYear",
+      "partitionKey": {
+        "fieldName": "fiscal_year",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}
