@@ -54,7 +54,6 @@ const getMatchCurrentMatches = async () => {
         const allMatchDates = await response.json();
         if (allMatchDates.length > 0) {
             matchInfo.value = allMatchDates;
-            console.log(matchInfo.value);
             return true;
         } else {
             inaccessibleMsg.value = 'アクセス可能期間外です。';
