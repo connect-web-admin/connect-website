@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import PickupNewsCompForTop from '@/components/PickupNewsCompForTop.vue';
-
+import MediaCompForTop from '@/components/MediaCompForTop.vue';
 const sampleChampionshipName = '第102回 全国高校サッカー選手権大会'
 const sampleRound = '札幌地区予選会';
 const sampleRoundName = 'Aブロック';
@@ -125,41 +125,10 @@ onMounted(async () => {
 
     <div class="mb-15">
         <h1 class="text-xl text-[#090A0A] border-b-1 border-gray-200">メディア</h1>
-        <div>
-            <div class="flex items-center border-b-1 border-gray-200 py-1">
-                <img src="@/assets/top-sample/AdobeStock_1.png" alt="イメージ" class="h-18"/>
-                <div class="pl-2">
-                    <img src="@/assets/icons/new-notion.svg" alt="new" class="float-left mt-2" />
-                    <h2 class="text-[#090A0A]">【元プロサッカー選手にインタビュー】 選手時代も、引退してからも、「楽しい！」っていうところは全く変わっていません。</h2>
-                    <p class="text-xs">2026.01.01</p>
-                </div>
-            </div>
-            <div class="flex items-center border-b-1 border-gray-200 py-1">
-                <img src="@/assets/top-sample/AdobeStock_2.png" alt="イメージ" class="h-18"/>
-                <div class="pl-2">
-                    <img src="@/assets/icons/new-notion.svg" alt="new" class="float-left mt-2" />
-                    <h2 class="text-[#090A0A]">【「子どもたちがサッカーに触れる機会を確保すべき」若年層育成のリアルな現場の声</h2>
-                    <p class="text-xs">2026.01.01</p>
-                </div>
-            </div>
-            <div class="flex items-center border-b-1 border-gray-200 py-1">
-                <img src="@/assets/top-sample/AdobeStock_3.png" alt="イメージ" class="h-18"/>
-                <div class="pl-2">
-                    <h2 class="text-[#090A0A]">【SPECIAL】サッカーはこう楽しむ、山田太郎さんインタビュー</h2>
-                    <p class="text-xs">2026.01.01</p>
-                </div>
-            </div>
-            <div class="flex items-center border-b-1 border-gray-200 py-1 mb-8">
-                <img src="@/assets/top-sample/AdobeStock_4.png" alt="イメージ" class="h-18"/>
-                <div class="pl-2">
-                    <h2 class="text-[#090A0A]">U-15春の強化合宿に潜入取材！「 賢いカラダづくり」とは？</h2>
-                    <p class="text-xs">2026.01.01</p>
-                </div>
-            </div>
-            <div class="flex justify-end">
-                <button type="button" class="bg-[#231815] text-[#FAFAFC] w-28 py-2 rounded-md shadow-md">もっと読む</button>
-            </div>
-        </div>
+        <MediaCompForTop />
+        <router-link to="/media" class="flex justify-end mt-5">
+            <button class="bg-[#231815] text-[#FAFAFC] text-center px-5 py-2 rounded-md shadow-lg" >もっと読む</button>
+        </router-link>
     </div>
 
     <div>
