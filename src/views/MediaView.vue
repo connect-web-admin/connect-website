@@ -3,7 +3,7 @@
 <template>
 <article class="p-4">
     <h1 class="text-2xl font-bold mb-4">タイトル</h1>
-    <img src="../assets/OishiRento.JPG" alt="大石蓮斗" class="w-full h-auto" />
+    <img src="../assets/OishiRento.jpg" alt="大石蓮斗" class="w-full h-auto" />
     <section class="[&>:not(:last-child)]:my-7">
         <p>この冬の全国高校サッカー選手権に出場した札幌大谷２年のＤＦ大石蓮斗（１７）が海外武者修行で世界トップ基準を体感している。
         本サッカー協会（ＪＦＡ）とアディダスジャパンの共同プロジェクト「ドリームロード」の２４年度最後の第５弾として、
