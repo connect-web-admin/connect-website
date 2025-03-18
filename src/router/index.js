@@ -1,17 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
+
+// レギュラー会員用のページ
 import LoginView from '@/views/LoginView.vue';
-import ArchiveView from '@/views/ArchiveView.vue';
 import TopView from '@/views/TopView.vue';
-import ClubIntroductionView from '@/views/ClubIntroductionView.vue';
+import LiveReportForUserView from '@/views/LiveReportForUserView.vue';
+import MediaView from '@/views/MediaView.vue';
 import PickupNewsView from '@/views/PickupNewsView.vue';
+import ArchiveView from '@/views/ArchiveView.vue';
+import ClubIntroductionView from '@/views/ClubIntroductionView.vue';
 import PicsView from '@/views/PicsView.vue';
 import VideosView from '@/views/VideosView.vue';
-import MediaView from '@/views/MediaView.vue';
 import FaqView from '@/views/FaqView.vue';
-import LiveReportForUserView from '@/views/LiveReportForUserView.vue';
+import ContactView from '@/views/ContactView.vue';
 import PremiumView from '@/views/PremiumView.vue';
-import NotFoundView from '@/views/NotFoundView.vue';
+
 // 会社概要や利用規約などの目立たせないようにするページ
 import CompanyInfoView from '@/views/site-info/CompanyInfoView.vue';
 import CopyrightInfoView from '@/views/site-info/CopyrightInfoView.vue';
@@ -19,31 +22,30 @@ import PrivacyPolicyView from '@/views/site-info/PrivacyPolicyView.vue';
 import TermsOfServiceView from '@/views/site-info/TermsOfServiceView.vue';
 import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 
+// コネクター用のページ
 import LatestResultsView from '@/views/LatestResultsView.vue';
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue';
-import ConnecterHomeView from '@/views/connecter/ConnecterHomeView.vue';
-import ContactView from '@/views/ContactView.vue';
 import MatchResultListForLeaderView from '@/views/connecter/MatchResultListForLeaderView.vue';
+
+// 404ルート
+import NotFoundView from '@/views/NotFoundView.vue';
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
-			path: '/',
-			name: 'Home',
-			component: TopView
-		},
-
-		{
 			path: '/login',
 			name: 'Login',
 			component: LoginView
 		},
-
-		/**
-		 * ハンバーガーメニュー内のリンク
-		 */
+		
+		{
+			path: '/',
+			name: 'Home',
+			component: TopView
+		},
+		
 		{
 			path: '/top',
 			name: 'Top',
@@ -63,15 +65,21 @@ const router = createRouter({
 		},
 
 		{
-			path: '/club-introduction',
-			name: 'ClubIntroduction',
-			component: ClubIntroductionView
-		},
-
-		{
 			path: '/pickup-news/:newsId?',
 			name: 'PickupNews',
 			component: PickupNewsView
+		},
+
+		{
+			path: '/archive',
+			name: 'Archive',
+			component: ArchiveView,
+		},
+
+		{
+			path: '/club-introduction',
+			name: 'ClubIntroduction',
+			component: ClubIntroductionView
 		},
 
 		{
@@ -92,41 +100,6 @@ const router = createRouter({
 			component: FaqView
 		},
 
-		// 会社概要、特商法、利用規約、プライバシーポリシー、著作権情報へのルーティング
-		{
-			path: '/site-info/company-info',
-			name: 'CompanyInfo',
-			component: CompanyInfoView
-		},
-		
-		{
-			path: '/site-info/specified-commercial-transactions-law-notations',
-			name: 'SctlNotations',
-			component: SctlNotationsView
-		},
-
-		{
-			path: '/site-info/terms-of-service',
-			name: 'TermsOfService',
-			component: TermsOfServiceView
-		},
-
-		{
-			path: '/site-info/privacy-policy',
-			name: 'PrivacyPolicy',
-			component: PrivacyPolicyView
-		},
-
-		{
-			path: '/site-info/copyright-info',
-			name: 'CopyrightInfo',
-			component: CopyrightInfoView
-		},
-
-		/**
-		 * フッターに表示されるリンク
-		 * ハンバーガーメニューと重複するChampionshipScheduleとLiveReportForUserを除く
-		 */
 		{
 			path:'/contact',
 			name: 'Contact',
@@ -139,19 +112,41 @@ const router = createRouter({
 			component: PremiumView
 		},
 
-		/**
-		 * コネクター用のルーティング
-		 */
+		// 会社概要、特商法、利用規約、プライバシーポリシー、著作権情報へのルーティング
 		{
-			path:'/connecter/home',
-			name: 'ConnecterHome',
-			component: ConnecterHomeView
+			path: '/site-info/company-info',
+			name: 'CompanyInfo',
+			component: CompanyInfoView
+		},
+		
+		{
+			path: '/site-info/copyright-info',
+			name: 'CopyrightInfo',
+			component: CopyrightInfoView
 		},
 
 		{
-			path: '/connecter/select-match-to-report',
-			name: 'SelectReportingMatch',
-			component: SelectReportingMatchView,
+			path: '/site-info/privacy-policy',
+			name: 'PrivacyPolicy',
+			component: PrivacyPolicyView
+		},
+
+		{
+			path: '/site-info/terms-of-service',
+			name: 'TermsOfService',
+			component: TermsOfServiceView
+		},
+
+		{
+			path: '/site-info/specified-commercial-transactions-law-notations',
+			name: 'SctlNotations',
+			component: SctlNotationsView
+		},
+
+		{
+			path: '/latest-results',
+			name: 'LatestResults',
+			component: LatestResultsView,
 		},
 
 		{
@@ -162,27 +157,18 @@ const router = createRouter({
 		},
 
 		{
+			path: '/connecter/select-match-to-report',
+			name: 'SelectReportingMatch',
+			component: SelectReportingMatchView,
+		},
+
+		{
 			path: '/connecter/match-result-list-for-leader',
 			name: 'MatchResultListForLeader',
 			component: MatchResultListForLeaderView,
 		},
 
-		/**
-		 * その他のルーティング
-		 */
-		{
-			path: '/latest-results',
-			name: 'LatestResults',
-			component: LatestResultsView,
-		},
-
-		{
-			path: '/archive',
-			name: 'Archive',
-			component: ArchiveView,
-		},
-
-		  // 404ルート - 最後に配置することが重要
+		// 404ルート - 最後に配置することが重要
 		{
 			path: '/:pathMatch(.*)*',
 			name: 'NotFound',
