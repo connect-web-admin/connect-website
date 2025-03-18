@@ -55,7 +55,7 @@ onMounted(async () => {
         <div v-else>
             <div v-for="article in latestFourArticles" :key="article.id" class="flex flex-row justify-between items-center gap-2 border-b-1 border-gray-200 py-2">
                 <div class="w-[100px] h-auto">
-                    <img src="../assets/OishiRento_thumbnail.JPG" alt="大石蓮斗" />
+                    <img src="../assets/OishiRento_thumbnail.jpg" alt="大石蓮斗" />
                 </div>
                 <div>
                     <div class="flex items-center">
