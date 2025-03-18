@@ -28,8 +28,8 @@ const router = useRouter();
  */
 // 画像リスト
 const imageList = ref([
-    { src: firstSquare, alt: "株式会社ファーストスクエア", duration: 1000 },
-    { src: sfa, alt: "札幌地区サッカー協会", duration: 2000 },
+    { src: firstSquare, alt: "株式会社ファーストスクエア", duration: 4000 },
+    { src: sfa, alt: "札幌地区サッカー協会", duration: 4000 },
     { src: sugenoTakanori, alt: "菅野孝憲公式アプリ", duration: 5000 },
 ]);
 const currentIndex = ref(0);
@@ -47,20 +47,20 @@ const nextImage = () => {
  * スライドバー下のメニュー表示
  */
 const menuList = [
-  { name: 'TOP', path: '/top' },
-  { name: '結果速報', path: '/live-report-for-user' },
-  { name: 'お知らせ', path: '/pickup-news' },
-  { name: 'メディア', path: '/media' },
-  { name: '大会日程', path: '/archive' },
-  { name: 'チーム紹介', path: '/club-introduction' },
-  { name: '写真', path: '/pics' }
+    { name: 'TOP', path: '/top' },
+    { name: '結果速報', path: '/live-report-for-user' },
+    { name: 'お知らせ', path: '/pickup-news' },
+    { name: 'メディア', path: '/media' },
+    { name: '大会日程', path: '/archive' },
+    { name: 'チーム紹介', path: '/club-introduction' },
+    { name: '写真', path: '/pics' }
 ];
 const activeMenu = ref(0);
 
 // メニュー項目をクリックしたときのナビゲーション処理
 const navigateTo = (path, index) => {
-  activeMenu.value = index;
-  router.push(path);
+    activeMenu.value = index;
+    router.push(path);
 };
 
 /**
