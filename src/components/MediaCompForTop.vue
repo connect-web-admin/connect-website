@@ -76,7 +76,7 @@ onMounted(async () => {
             </div>
             <div class="flex flex-row h-[100px] justify-between items-center gap-2 border-b-1 border-gray-200 py-2">
                 <div class="w-1/5 h-auto">
-                    <img src="../assets/top-sample/sample1.jpeg" alt="サムネ1" class="w-full h-full" />
+                    <img src="@/assets/top-sample/sample1.jpg" alt="サムネ1" class="w-full h-full" />
                 </div>
                 <div class="w-4/5 h-full flex flex-col items-start">
                     <div class="flex items-center">
@@ -92,7 +92,7 @@ onMounted(async () => {
             </div>
             <div class="flex flex-row h-[100px] justify-between items-center gap-2 border-b-1 border-gray-200 py-2">
                 <div class="w-1/5 h-auto">
-                    <img src="../assets/top-sample/sample2.jpeg" alt="サムネ2" />
+                    <img src="@/assets/top-sample/sample2.jpg" alt="サムネ2" class="w-full h-full" />
                 </div>
                 <div class="w-4/5">
                     <div class="flex items-center">
@@ -108,7 +108,7 @@ onMounted(async () => {
             </div>
             <div class="flex flex-row h-[100px] justify-between items-center gap-2 border-b-1 border-gray-200 py-2">
                 <div class="w-1/5 h-auto">
-                    <img src="../assets/top-sample/sample3.jpeg" alt="サムネ3" />
+                    <img src="@/assets/top-sample/sample3.jpg" alt="サムネ3" class="w-full h-full" />
                 </div>
                 <div class="w-4/5 h-full flex flex-col items-start">
                     <div class="flex items-center">
