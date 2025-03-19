@@ -31,7 +31,7 @@ dayjs.tz.setDefault('Asia/Tokyo');
 /**
  * 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
  */
-const getMatchCurrentMatches = async () => {
+const getCurrentMatches = async () => {
     isLoading.value = true
 
     const queryUrl = new URL(`${MATCH_API_URL}/current-matches`);
@@ -275,7 +275,7 @@ const checkExpiration = () => {
 // ページ表示前にConnecterDDBから試合情報抽出
 onBeforeMount(async () => {
     // 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
-    isAccessible.value = await getMatchCurrentMatches();
+    isAccessible.value = await getCurrentMatches();
 
     // selectedItemsExpirationが有効期限内かどうかを確認
     checkExpiration();
