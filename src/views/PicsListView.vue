@@ -1,16 +1,20 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import mirai1 from '@/assets/top-sample/mirai-1.png';
+import mirai2 from '@/assets/top-sample/mirai-2.png';
+import mirai3 from '@/assets/top-sample/mirai-3.png';
+import mirai4 from '@/assets/top-sample/mirai-4.png';
 
 const router = useRouter();
 const selectedImage = ref(null);
 const showModal = ref(false);
 
 const images = [
-    { src: '@/assets/top-sample/mirai-1.png', caption: '札幌未来杯の様子1' },
-    { src: '@/assets/top-sample/mirai-2.png', caption: '札幌未来杯の様子2' },
-    { src: '@/assets/top-sample/mirai-3.png', caption: '札幌未来杯の様子3' },
-    { src: '@/assets/top-sample/mirai-4.png', caption: '札幌未来杯の様子4' }
+    { src: mirai1, caption: '札幌未来杯の様子1' },
+    { src: mirai2, caption: '札幌未来杯の様子2' },
+    { src: mirai3, caption: '札幌未来杯の様子3' },
+    { src: mirai4, caption: '札幌未来杯の様子4' }
 ];
 
 const openModal = (index) => {
