@@ -59,7 +59,7 @@ const isClubSelected = ref(false);
         <div class="flex flex-col gap-10 justify-center items-center my-10">
             <div class="w-8/10">
                 <router-link to="/club-introduction">
-                    <img src="@/assets/top-sample/football-club-players-photo.jpeg" alt="チーム集合写真" class="w-full h-auto" />
+                    <img src="../assets/top-sample/football-club-players-photo.jpg" alt="チーム集合写真" class="w-full h-auto" />
                     <h2 class="text-center text-xl">
                         札幌市中央区ジュニアチームA
                         <span class="block bg-red-400 text-white text-xs px-2 py-1 ml-4 rounded-md">クリック可能</span>
@@ -67,15 +67,15 @@ const isClubSelected = ref(false);
                 </router-link>
             </div>
             <div class="w-8/10">
-                <img src="@/assets/top-sample/football-club-players-photo.jpeg" alt="チーム集合写真" class="w-full h-auto" />
+                <img src="../assets/top-sample/football-club-players-photo.jpg" alt="チーム集合写真" class="w-full h-auto" />
                 <h2 class="text-center text-xl">札幌市中央区ジュニアチームA</h2>
             </div>
             <div class="w-8/10">
-                <img src="@/assets/top-sample/football-club-players-photo.jpeg" alt="チーム集合写真" class="w-full h-auto" />
+                <img src="../assets/top-sample/football-club-players-photo.jpg" alt="チーム集合写真" class="w-full h-auto" />
                 <h2 class="text-center text-xl">札幌市北区ジュニアチームA</h2>
             </div>
             <div class="w-8/10">
-                <img src="@/assets/top-sample/football-club-players-photo.jpeg" alt="チーム集合写真" class="w-full h-auto" />
+                <img src="../assets/top-sample/football-club-players-photo.jpg" alt="チーム集合写真" class="w-full h-auto" />
                 <h2 class="text-center text-xl">札幌市東区ジュニアチームA</h2>
             </div>
         </div>

@@ -42,7 +42,7 @@ const router = useRouter();
 <div>
     <div class="max-w-4xl mx-auto p-6">
         <h1 class="text-3xl font-bold text-center mb-6">札幌市中央区ジュニアチームA</h1>
-        <img src="@/assets/top-sample/football-club-players-photo.jpeg" alt="札幌市中央区ジュニアチームA" class="w-full h-auto">
+        <img src="../assets/top-sample/football-club-players-photo.jpg" alt="札幌市中央区ジュニアチームA" class="w-full h-auto">
         <div class="space-y-2">
             <p><strong>HP:</strong> <a href="#" class="text-blue-500 underline">https://sapporoshichuoukujuniorteama.com</a></p>
             <p><strong>所在地:</strong> 札幌市中央区南S条西T丁目U-V</p>
