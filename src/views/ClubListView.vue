@@ -39,14 +39,16 @@ const isClubSelected = ref(false);
 </script>
 
 <template>
-<div class="my-5">
+<div>
     <div class="bg-gray-200 p-2 flex flex-row gap-5 justify-center">
         <select class="bg-white p-2 rounded-md">
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
+            <option value="年代" selected disabled> 年代</option>
+            <option value="第2種">第2種</option>
+            <option value="第3種">第3種</option>
+            <option value="第4種・WOMAN">第4種・WOMAN</option>
         </select>
         <select class="bg-white p-2 rounded-md">
+            <option value="地域" selected disabled>地域</option>
             <option value="札幌市中央区">札幌市中央区</option>
             <option value="札幌市北区">札幌市北区</option>
             <option value="札幌市東区">札幌市東区</option>
