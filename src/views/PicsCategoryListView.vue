@@ -11,8 +11,8 @@ const router = useRouter();
         <div>
             <h2 class="font-bold bg-gray-200 p-2">U-12（ジュニア）</h2>
             <ul>
-                <li class="p-2 border-b-1 border-gray-300">北海道ジュニア選手権大会札幌ブロック</li>
-                <li class="p-2"><router-link to="/pics-list">札幌未来杯<span class="bg-red-400 text-white text-xs px-2 py-1 ml-4 rounded-md">クリック可能</span></router-link></li>
+                <li class="p-2 border-b-1 border-gray-300 w-full block">北海道ジュニア選手権大会札幌ブロック</li>
+                <li class="p-2 w-full block"><router-link to="/pics-list" class="block w-full">札幌未来杯<span class="bg-red-400 text-white text-xs px-2 py-1 ml-4 rounded-md">クリック可能</span></router-link></li>
             </ul>
         </div>
         <div>
