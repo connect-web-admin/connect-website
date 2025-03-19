@@ -17,7 +17,7 @@ onMounted(async () => {
         <h1 class="text-xl">今週の試合</h1>
         <div class="bg-[#090A0A] text-[#FAFAFC] w-fit px-1 mb-1">2025.2.22(Sat)</div>
         <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/keithston.svg" alt="発寒南FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-1.svg" alt="発寒南FC" class="w-1/7 h-full">
             <div class="text-center w-5/7 px-2">
                 <div>
                     <p class="text-[#666C6C]">{{ sampleChampionshipName }}</p>
@@ -33,11 +33,11 @@ onMounted(async () => {
                     <span class="text-[#F24D11] font-bold">2 PK 3</span>
                 </div>
             </div>
-            <img src="@/assets/top-sample/salfordBlueYellow.svg" alt="清田FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-2.svg" alt="清田FC" class="w-1/7 h-full">
         </div>
 
         <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/bigball.svg" alt="苗穂FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-3.svg" alt="苗穂FC" class="w-1/7 h-full">
             <div class="text-center w-5/7 px-2">
                 <div>
                     <p class="text-[#666C6C]">{{ sampleChampionshipName }}</p>
@@ -52,11 +52,11 @@ onMounted(async () => {
                 <div>
                 </div>
             </div>
-            <img src="@/assets/top-sample/ball.svg" alt="厚別西FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-4.svg" alt="厚別西FC" class="w-1/7 h-full">
         </div>
 
         <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/black.svg" alt="苗穂FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-5.svg" alt="苗穂FC" class="w-1/7 h-full">
             <div class="text-center w-5/7 px-2">
                 <div>
                     <p class="text-[#666C6C]">{{ sampleChampionshipName }}</p>
@@ -69,14 +69,14 @@ onMounted(async () => {
                     <div class="w-2/5 text-[#666C6C]">清田FC</div>
                 </div>
             </div>
-            <img src="@/assets/top-sample/salfordGreenWhite.svg" alt="厚別西FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-6.svg" alt="厚別西FC" class="w-1/7 h-full">
         </div>
     </div>
 
     <div class="mt-4 mb-15">
         <div class="bg-[#090A0A] text-[#FAFAFC] w-fit px-1 mb-1">2025.2.23(Sun)</div>
         <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/salfordCrown.svg" alt="新琴似FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-7.svg" alt="新琴似FC" class="w-1/7 h-full">
             <div class="text-center w-5/7 px-2">
                 <div>
                     <p class="text-[#666C6C]">{{ sampleChampionshipName }}</p>
@@ -91,11 +91,11 @@ onMounted(async () => {
                 <div>
                 </div>
             </div>
-            <img src="@/assets/top-sample/black.svg" alt="白石FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-8.svg" alt="白石FC" class="w-1/7 h-full">
         </div>
 
         <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/keithston.svg" alt="発寒南FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-1.svg" alt="発寒南FC" class="w-1/7 h-full">
             <div class="text-center w-5/7 px-2">
                 <div>
                     <p class="text-[#666C6C]">{{ sampleChampionshipName }}</p>
@@ -111,7 +111,7 @@ onMounted(async () => {
                     <span class="text-[#F24D11] font-bold">2 PK 3</span>
                 </div>
             </div>
-            <img src="@/assets/top-sample/hanover.svg" alt="清田FC" class="w-1/7 h-full">
+            <img src="@/assets/top-sample/club-logo-3.svg" alt="清田FC" class="w-1/7 h-full">
         </div>
     </div>
 
