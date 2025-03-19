@@ -7,10 +7,10 @@ const selectedImage = ref(null);
 const showModal = ref(false);
 
 const images = [
-    { src: '/src/assets/top-sample/mirai-1.png', caption: '札幌未来杯の様子1' },
-    { src: '/src/assets/top-sample/mirai-2.png', caption: '札幌未来杯の様子2' },
-    { src: '/src/assets/top-sample/mirai-3.png', caption: '札幌未来杯の様子3' },
-    { src: '/src/assets/top-sample/mirai-4.png', caption: '札幌未来杯の様子4' }
+    { src: '@/assets/top-sample/mirai-1.png', caption: '札幌未来杯の様子1' },
+    { src: '@/assets/top-sample/mirai-2.png', caption: '札幌未来杯の様子2' },
+    { src: '@/assets/top-sample/mirai-3.png', caption: '札幌未来杯の様子3' },
+    { src: '@/assets/top-sample/mirai-4.png', caption: '札幌未来杯の様子4' }
 ];
 
 const openModal = (index) => {
