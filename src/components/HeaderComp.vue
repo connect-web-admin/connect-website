@@ -211,7 +211,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                     </router-link>
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
-                                    <router-link to="/club-introduction" :class="routerLinkClass">
+                                    <router-link to="/club-list" :class="routerLinkClass">
                                         <span>チーム紹介</span>
                                         <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                     </router-link>
@@ -220,7 +220,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                     <span class="block h-[29px] pl-4 border-b-1 border-gray-200 border-dashed">写真</span>
                                     <ul>
                                         <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
-                                            <router-link to="/pics" :class="routerLinkClass">
+                                            <router-link to="/pics-category-list" :class="routerLinkClass">
                                                 <span>写真</span>
                                                 <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </router-link>
