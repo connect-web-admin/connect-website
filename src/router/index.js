@@ -8,8 +8,10 @@ import LiveReportForUserView from '@/views/LiveReportForUserView.vue';
 import MediaView from '@/views/MediaView.vue';
 import PickupNewsView from '@/views/PickupNewsView.vue';
 import ArchiveView from '@/views/ArchiveView.vue';
+import ClubListView from '@/views/ClubListView.vue';
 import ClubIntroductionView from '@/views/ClubIntroductionView.vue';
-import PicsView from '@/views/PicsView.vue';
+import PicsCategoryListView from '@/views/PicsCategoryListView.vue';
+import PicsListView from '@/views/PicsListView.vue';
 import VideosView from '@/views/VideosView.vue';
 import FaqView from '@/views/FaqView.vue';
 import ContactView from '@/views/ContactView.vue';
@@ -60,6 +62,7 @@ const router = createRouter({
 
 		{
 			path: '/media',
+			// path: '/media/:articleId?',
 			name: 'Media',
 			component: MediaView
 		},
@@ -77,15 +80,27 @@ const router = createRouter({
 		},
 
 		{
+			path: '/club-list',
+			name: 'ClubList',
+			component: ClubListView
+		},
+
+		{
 			path: '/club-introduction',
 			name: 'ClubIntroduction',
 			component: ClubIntroductionView
 		},
 
 		{
-			path: '/pics',
-			name: 'Pics',
-			component: PicsView
+			path: '/pics-category-list',
+			name: 'PicsCategoryList',
+			component: PicsCategoryListView
+		},
+
+		{
+			path: '/pics-list',
+			name: 'PicsList',
+			component: PicsListView
 		},
 
 		{
