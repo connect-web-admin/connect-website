@@ -172,7 +172,7 @@ const router = createRouter({
 		},
 
 		{
-			path: '/connecter/select-match-to-report',
+			path: '/connecter/select-reporting-match',
 			name: 'SelectReportingMatch',
 			component: SelectReportingMatchView,
 		},
