@@ -910,7 +910,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                             <p :class="textClubName" class="bg-blue-100 border-r-1">{{ homeClubName }}</p>
                             <div :class="scoreInputBg" class="bg-blue-50 border-r-1 border-b-1">
                                 <button type="button" @click="plusScoreValidation('home')" :class="scoringBtn"
-                                    class="bg-[#FAFAFC] h-[50px] border-3 border-red-400 rounded-md">
+                                    class="h-[50px] border-3 border-red-400 rounded-md">
                                     <span :class="scoringOpenModal">{{ homeScore }}</span>
                                 </button>
                             </div>
@@ -925,7 +925,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                             <p :class="textClubName" class="bg-amber-100 border-l-1">{{ awayClubName }}</p>
                             <div :class="scoreInputBg" class="bg-amber-50 border-l-1 border-b-1">
                                 <button type="button" @click="plusScoreValidation('away')" :class="scoringBtn"
-                                    class="bg-[#FAFAFC] h-[50px] border-3 border-red-400 rounded-md">
+                                    class="h-[50px] border-3 border-red-400 rounded-md">
                                     <span :class="scoringOpenModal">{{ awayScore }}</span>
                                 </button>
                             </div>
