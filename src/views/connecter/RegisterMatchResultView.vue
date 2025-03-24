@@ -825,8 +825,8 @@ onMounted(async () => {
 });
 
 // CSS クラスの共通化
-const textClubName = 'text-xl border-1 border-gray-200 py-2';
-const scoreInputBg = 'p-4 border-b-1 border-black';
+const textClubName = 'text-xl py-2';
+const scoreInputBg = 'p-4';
 const scoringOpenModal = 'text-4xl';
 const scoringBtn = 'w-12 h-10';
 const minusScoring = 'my-10';
@@ -876,7 +876,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                 <div class="mt-5">
                     <p class="py-1 font-bold text-xl" :class="borderTopBottom">試合速報入力</p>
                     <div :class="flexRow" class="justify-around items-center py-3 bg-green-100 border-b-1 border-black">
-                        <div class="text-right w-[120px]">
+                        <div class="text-right w-[120px]  bg-green-100">
                             <button v-if="gameStatus !== '試合前'"
                                 type="button" @click="handleGameStatus('prev')" :class="gameStatusBtn">
                                 {{ getPrevButtonLabel }}
@@ -897,7 +897,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                             class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-red-400 bg-green-100">
                         </div>
                         <!-- 次の状態へ進むボタン -->
-                        <div class="text-left w-[120px]">
+                        <div class="text-left w-[120px] bg-green-100">
                             <button v-if="gameStatus !== '試合終了'" type="button" @click="handleNextGameStatus"
                                 :class="gameStatusBtn">
                                 {{ getNextButtonLabel }}
@@ -907,8 +907,8 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     <div :class="flexRow">
                         <!-- Homeクラブ得点入力 -->
                         <div class="w-1/2">
-                            <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
-                            <div :class="scoreInputBg" class="bg-blue-50">
+                            <p :class="textClubName" class="bg-blue-100 border-r-1">{{ homeClubName }}</p>
+                            <div :class="scoreInputBg" class="bg-blue-50 border-r-1 border-b-1">
                                 <button type="button" @click="plusScoreValidation('home')" :class="scoringBtn"
                                     class="bg-[#FAFAFC] h-[50px] border-3 border-red-400 rounded-md">
                                     <span :class="scoringOpenModal">{{ homeScore }}</span>
@@ -922,8 +922,8 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                         </div>
                         <!-- Awayクラブ得点入力 -->
                         <div class="w-1/2">
-                            <p :class="textClubName" class="bg-amber-100">{{ awayClubName }}</p>
-                            <div :class="scoreInputBg" class="bg-amber-50">
+                            <p :class="textClubName" class="bg-amber-100 border-l-1">{{ awayClubName }}</p>
+                            <div :class="scoreInputBg" class="bg-amber-50 border-l-1 border-b-1">
                                 <button type="button" @click="plusScoreValidation('away')" :class="scoringBtn"
                                     class="bg-[#FAFAFC] h-[50px] border-3 border-red-400 rounded-md">
                                     <span :class="scoringOpenModal">{{ awayScore }}</span>
@@ -983,7 +983,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                             <h3 class="text-center text-red-500 font-bold">※
                                 キック順と表中のクラブ名の上下は、<br />一致しないことがあります。ご注意ください。</h3>
                             <div :class="[flexRow, 'items-baseline', 'min-w-max', 'pb-[5px]']">
-                                <div :class="flexCol" class="w-[180px] sticky left-0 z-10">
+                                <div :class="flexCol" class="w-[150px] sticky left-0 z-10">
                                     <div :class="pkCellHeader" class="bg-white">クラブ名</div>
                                     <div :class="[pkCellWithBorder, 'bg-blue-100']">{{ homeClubName }}</div>
                                     <div :class="[pkCellWithBorder, 'bg-amber-100']">{{ awayClubName }}</div>
@@ -996,13 +996,13 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                                             <span v-if="homeClubPkScoreList[i - 1] === 'success'"
                                                 class="text-green-600 font-bold">○</span>
                                             <span v-else-if="homeClubPkScoreList[i - 1] === 'failure'"
-                                                class="text-red-600 font-bold">×</span>
+                                                class="text-red-600 font-bold text-[1.25rem]">×</span>
                                         </div>
                                         <div :class="pkCellWithBorder">
                                             <span v-if="awayClubPkScoreList[i - 1] === 'success'"
                                                 class="text-green-600 font-bold">○</span>
                                             <span v-else-if="awayClubPkScoreList[i - 1] === 'failure'"
-                                                class="text-red-600 font-bold">×</span>
+                                                class="text-red-600 font-bold text-[1.25rem]">×</span>
                                         </div>
                                     </div>
                                     <!-- 追加キック（サドンデス）用の列 -->
@@ -1078,7 +1078,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                         </div>
                         <button type="button" @click="registerMatchResult"
                             class="bg-blue-600 px-6 py-2 rounded-md"><span
-                                class="text-lg bg-blue-600 text-white">試合結果登録</span></button>
+                                class="text-lg bg-blue-600 text-white">結果登録</span></button>
                     </div>
                 </div>
                 <div v-if="gameStatus === '試合前'" class="mt-40 mb-10">
@@ -1195,7 +1195,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
             <register-match-result-modal :show="showRegisterMatchResultModal"
                 @close="showRegisterMatchResultModal = false">
                 <template v-slot:body>
-                    <p>速報内容を確認して、試合終了・結果登録ボタンを押してください。</p>
+                    <p>速報内容を確認して、結果登録ボタンを押してください。</p>
                 </template>
             </register-match-result-modal>
         </Teleport>
