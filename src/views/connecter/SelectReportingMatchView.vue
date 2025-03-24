@@ -82,9 +82,6 @@ const moveToRegisterMatchResult = async (matchId, isResultAlreadyRegistered) => 
         // 大会IDと試合IDから当該試合の情報を抽出
         // 試合結果が登録済みの試合の結果を再度入力しようとした場合、確認させる
         if (isResultAlreadyRegistered) {
-            if (!confirm('この試合の結果はすでに登録されています。修正しますか？')) {
-                return;
-            }
             router.push({
                 name: 'RegisterMatchResult', // TODO:修正用ページに遷移するように書き換えること
                 params: {
@@ -223,11 +220,16 @@ const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
 
 /**
  * カテゴリーが変更されたら、大会名と会場の選択をリセット
- * 一度カテゴリーが選択され、表示された大会名を選択した後に再度カテゴリーを選択し直した場合、警告が出るため
- * （選択された大会名を含むカテゴリーではなくなるため）
  */
 watch(selectedCategory, () => {
     selectedChampionshipName.value = '';
+    selectedVenue.value = '';
+});
+
+/**
+ * 大会名が変更されたら、会場の選択をリセット
+ */
+watch(selectedChampionshipName, () => {
     selectedVenue.value = '';
 });
 
@@ -252,9 +254,9 @@ const setSelectedItems = () => {
                     venuesFilteredByCategoryAndChampionship.value.includes(localStorage.getItem('selectedVenue'))) {
                     selectedVenue.value = localStorage.getItem('selectedVenue');
                 }
-            }, 150);
+            }, 250);
         }
-    }, 150);
+    }, 250);
 };
 /**
  * ローカルストレージに保存された選択項目の有効期限を確認   
@@ -288,11 +290,11 @@ onBeforeMount(async () => {
 });
 
 // CSS
-const eachMenuContainer = 'border-1 border-gray-300 rounded-lg';
-const menuHeading = 'px-2 py-1 bg-blue-200 rounded-t-md';
+const eachMenuContainer = 'border-1 border-gray-300';
+const menuHeading = 'px-2 py-1 bg-blue-200 border-b-1 border-gray-300';
 const eachSelect = 'px-2 py-1 not-last:border-b-1 not-last:border-gray-300 not-last:cursor-pointer';
 const arrowDownwardIcon = 'w-5 my-2 mx-auto';
-const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
+const selectBtn = 'mr-2 min-w-12 h-10';
 </script>
 
 <template>
@@ -304,13 +306,13 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
             <img src="@/assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
             <p class="text-center">読み込み中……</p>
         </div>
-        <div v-else class="w-full h-full px-10 pt-4 pb-50">
+        <div v-else class="w-full h-full px-6 pt-4 pb-50">
             <div v-if="isAccessible">
                 <h1 class="text-2xl text-center my-2">速報対象試合検索</h1>
                 <div :class="eachMenuContainer">
                     <h2 :class="menuHeading">カテゴリー</h2>
                     <div v-for="(category, idx) in CATEGORIES" :key="idx"
-                        :class="[eachSelect, { 'bg-amber-100': selectedCategory === category }, { 'rounded-b-lg': idx === CATEGORIES.length - 1 }]">
+                        :class="[eachSelect, { 'bg-amber-100': selectedCategory === category }]">
                         <label :for="'category-selector-' + idx" class="block w-full cursor-pointer">
                             <input type="radio" :value="category" v-model="selectedCategory"
                                 :id="'category-selector-' + idx" class="appearance-none" />
@@ -327,9 +329,9 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
                         leave-to-class="opacity-0">
-                        <div v-if="selectedCategory" class="rounded-b-lg">
+                        <div v-if="selectedCategory">
                             <div v-for="(championship, idx) in championshipsFilteredByCategory" :key="idx"
-                                :class="[eachSelect, { 'bg-amber-100': selectedChampionshipName === championship }, { 'rounded-b-lg': idx === championshipsFilteredByCategory.length - 1 }]">
+                                :class="[eachSelect, { 'bg-amber-100': selectedChampionshipName === championship }]">
                                 <label :for="'championship-selector-' + idx" class="block w-full cursor-pointer">
                                     <input type="radio" :value="championship" v-model="selectedChampionshipName"
                                         :id="'championship-selector-' + idx" class="appearance-none" />
@@ -348,9 +350,9 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
                         leave-to-class="opacity-0">
-                        <div v-if="selectedChampionshipName" class="rounded-b-lg">
+                        <div v-if="selectedChampionshipName">
                             <div v-for="(venue, idx) in venuesFilteredByCategoryAndChampionship" :key="idx"
-                                :class="[eachSelect, { 'bg-amber-100': selectedVenue === venue }, { 'rounded-b-lg': idx === venuesFilteredByCategoryAndChampionship.length - 1 }]">
+                                :class="[eachSelect, { 'bg-amber-100': selectedVenue === venue }]">
                                 <label :for="'venue-selector-' + idx" class="block w-full cursor-pointer">
                                     <input type="radio" :value="venue" v-model="selectedVenue"
                                         :id="'venue-selector-' + idx" class="appearance-none" />
@@ -369,24 +371,31 @@ const selectBtn = 'mr-2 min-w-12 h-10 rounded-md';
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
                         leave-to-class="opacity-0">
-                        <div v-if="selectedVenue" class="rounded-b-lg">
+                        <div v-if="selectedVenue">
                             <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx"
-                                class="not-last:border-b-1 not-last:border-gray-300 rounded-b-md">
-                                <div v-if="match.isResultRegistered"
-                                    class="flex items-center px-2 py-1 bg-gray-200 rounded-b-md">
-                                    <div class="w-full">
+                                class="not-last:border-b-1 not-last:border-gray-300">
+                                <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200">
+                                    <button type="button"
+                                        @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
+                                        :class="selectBtn" class="bg-gray-200 border-1 border-black rounded-xl">修正</button>
+                                    <div class="w-full pl-2">
                                         <p class="block">開催日：{{ match.matchDate }}
-                                            <span class="text-left text-red-600 ml-5">登録済み</span>
+                                            <span class="text-left text-red-600 ml-5">速報終了済み</span>
                                         </p>
                                         <p>{{ match.homeClubName }}&nbsp;vs&nbsp;{{ match.awayClubName }}</p>
+                                        <p class="text-red-600 font-bold">{{ match.homeClubFinalScore }}&nbsp;-&nbsp;{{ match.awayClubFinalScore }}
+                                            <span v-if="match.hasPk">
+                                                <p>(PK {{ match.homeClubPkScore }}&nbsp;vs&nbsp;{{ match.awayClubPkScore }})</p>
+                                            </span>
+                                        </p>
                                     </div>
                                 </div>
-                                <div v-else class="px-2 py-1 last:rounded-b-md">
+                                <div v-else class="px-2 py-1">
                                     <div class="flex items-center">
                                         <button type="button"
                                             @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
-                                            :class="selectBtn" class="bg-green-200 border-1 border-black">選択</button>
-                                        <div class="w-full">
+                                            :class="selectBtn" class="bg-green-200 border-1 border-black rounded-xl">選択</button>
+                                        <div class="w-full pl-2">
                                             <div class="text-left">
                                                 開催日：{{ match.matchDate }}
                                             </div>
