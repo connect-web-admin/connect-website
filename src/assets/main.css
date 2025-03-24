@@ -1,12 +1,12 @@
 /* @import './base.css'; */
 @import 'tailwindcss';
 
-@layer base {
+/* @layer base {
   div, p, span, nav {
     background-color: #FAFAFC;
     color: #676C6C;
   }
-}
+} */
 
 /* #app {
   max-width: 1280px;

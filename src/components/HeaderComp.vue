@@ -115,7 +115,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
 </script>
 
 <template>
-    <div>
+    <div class="bg-white">
         <div class="flex justify-between items-end pt-20 px-4 pb-4 h-20 border-b-1">
             <div>
                 <img src="@/assets/icons/user-info.svg" alt="会員情報">
@@ -140,7 +140,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                     <Transition enter-active-class="transition-transform duration-300 ease-in-out"
                         enter-from-class="translate-x-full" leave-to-class="translate-x-full"
                         leave-active-class="transition-transform duration-300 ease-in-out" mode="out-in">
-                        <div class="absolute top-0 right-0 w-full z-9998 max-h-screen overflow-y-auto pb-50">
+                        <div class="absolute top-0 right-0 w-full z-9998 max-h-screen overflow-y-auto pb-50 bg-white">
                             <div class="flex justify-between items-centerpx-3 pt-10 pb-6 border-b-1">
                                 <div class="w-[33px] h-[33px]"></div>
                                 <div class="text-center w-fit">メニュー</div>
