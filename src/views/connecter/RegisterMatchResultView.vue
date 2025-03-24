@@ -1,9 +1,12 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import RegisterScoreModal from '@/components/RegisterScoreModal.vue';
-import RegisterMatchResultModal from '@/components/RegisterMatchResultModal.vue';
-import RegisterMatchDelayModal from '@/components/RegisterMatchDelayModal.vue';
+import RegisterScoreModal from '@/components/connecter/RegisterScoreModal.vue';
+import RegisterMatchResultModal from '@/components/connecter/RegisterMatchResultModal.vue';
+import RegisterMatchDelayModal from '@/components/connecter/RegisterMatchDelayModal.vue';
+import RegisterPkModal from '@/components/connecter/RegisterPkModal.vue';
+import RegisterExtraHalvesModal from '@/components/connecter/RegisterExtraHalvesModal.vue';
+import SelectExtraHalvesPkModal from '@/components/connecter/SelectExtraHalvesPkModal.vue';
 import { MATCH_API_URL, THIS_FISCAL_YEAR } from '@/utils/constants';
 import CopyrightComp from '@/components/CopyrightComp.vue';
 
@@ -24,6 +27,12 @@ const showHomeClubMinusModal = ref(false);
 const showAwayClubMinusModal = ref(false);
 const showMatchResultModal = ref(false);
 const showMatchDelayModal = ref(false);
+const showExtraHalvesApplyModal = ref(false);
+const showExtraHalvesCancelModal = ref(false);
+const showPkApplyModal = ref(false);
+const showPkCancelModal = ref(false);
+const showSelectExtraHalvesPkModal = ref(false);
+const showRegisterMatchResultModal = ref(false);
 
 // 速報画面の初期状態
 const targetMatchInfo = ref({}) // おおもとの試合情報
@@ -69,7 +78,6 @@ const awayClubExtraSecondHalfScore = ref(0); // アウェイクラブの延長�
 const awayClubFinalScore = ref(0); // アウェイクラブの得点
 const awayClubPkScore = ref(0); // アウェイクラブのPK戦スコア
 const awayClubPkScoreList = ref([]); // アウェイクラブのPK戦スコアリスト
-const comment = ref(''); // コメント
 
 // エラーメッセージを格納する
 const errorMessage = ref('');
@@ -104,53 +112,198 @@ const awayScore = computed(() => {
     }
 });
 
+/**
+ * 結果入力対象の試合情報を取得する
+ */
+const getTargetMatchInfo = async () => {
+    isLoading.value = true
+    errorMessage.value = '' // エラーメッセージをリセット
+
+    // 試合情報取得用のURLを作成
+    // 試合を絞り込むために年度とIDをクエリパラメータに含める
+    const queryUrl = new URL(`${MATCH_API_URL}/target-match`);
+    queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
+    queryUrl.searchParams.append('championshipId', championshipId);
+    queryUrl.searchParams.append('matchId', matchId);
+
+    try {
+        const response = await fetch(queryUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        // レスポンスのステータスを確認
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        targetMatchInfo.value = data;
+        championshipName.value = data['championship_name'];
+        isLeague.value = data['is_league'];
+        round.value = data['round'];
+        match.value = data['match'];
+
+        venue.value = data['match_detail']['venue'];
+        isResultRegistered.value = data['match_detail']['is_result_registered'];
+        hasExtraHalves.value = data['match_detail']['has_extra_halves'];
+        hasPk.value = data['match_detail']['has_pk'];
+        matchDate.value = data['match_detail']['match_date'];
+        scheduledMatchStartTime.value = data['match_detail']['scheduled_match_start_time'];
+        gameStatus.value = data['match_detail']['game_status'];
+
+        homeClubName.value = data['match_detail']['home_club']['club_name'];
+        homeClubFirstHalfScore.value = data['match_detail']['home_club']['first_half_score'];
+        homeClubSecondHalfScore.value = data['match_detail']['home_club']['second_half_score'];
+        homeClubExtraFirstHalfScore.value = data['match_detail']['home_club']['extra_first_half_score'];
+        homeClubExtraSecondHalfScore.value = data['match_detail']['home_club']['extra_second_half_score'];
+        homeClubFinalScore.value = data['match_detail']['home_club']['final_score'];
+        homeClubPkScore.value = data['match_detail']['home_club']['pk_score'];
+        homeClubPkScoreList.value = data['match_detail']['home_club']['pk_score_list'];
+        awayClubName.value = data['match_detail']['away_club']['club_name'];
+        awayClubFirstHalfScore.value = data['match_detail']['away_club']['first_half_score'];
+        awayClubSecondHalfScore.value = data['match_detail']['away_club']['second_half_score'];
+        awayClubExtraFirstHalfScore.value = data['match_detail']['away_club']['extra_first_half_score'];
+        awayClubExtraSecondHalfScore.value = data['match_detail']['away_club']['extra_second_half_score'];
+        awayClubFinalScore.value = data['match_detail']['away_club']['final_score'];
+        awayClubPkScore.value = data['match_detail']['away_club']['pk_score'];
+        awayClubPkScoreList.value = data['match_detail']['away_club']['pk_score_list'];
+    } catch (error) {
+        console.error('Error details:', error);
+        errorMessage.value = '試合データの取得に失敗しました。';
+    } finally {
+        isLoading.value = false;
+    }
+};
+
 // ユーザーが時間を変更したときに selectedTime を更新
 const setActualMatchStartTime = (event) => {
     actualMatchStartTime.value = event.target.value;
 };
 
-// ゲームステータスの遷移を定義する関数
-const getGameStatusTransitions = computed(() => {
-    // 基本的な試合の流れ（前進方向）
-    const nextTransitions = {
-        '試合前': '前半',
-        '前半': '後半'
-    };
-
-    // リーグ戦の場合
-    if (isLeague.value) {
-        nextTransitions['後半'] = '試合終了';
+/**
+ * 得点追加のバリデーション
+ * 試合前や試合終了の状態では得点を追加できない
+ */
+const plusScoreValidation = (homeOrAway) => {
+    if (gameStatus.value !== '前半' && gameStatus.value !== '後半' && gameStatus.value !== '延長前半' && gameStatus.value !== '延長後半') {
+        alert('試合状態が前半・後半・延長前半・延長後半の場合のみ、得点を追加できます。');
+        return;
     }
 
-    if (!isLeague.value) {
-        // 延長戦戦の有無で遷移を変える
-        if (hasExtraHalves.value) {
-            nextTransitions['後半'] = '延長前半';
-            nextTransitions['延長前半'] = '延長後半';
-            nextTransitions['延長後半'] = hasPk.value ? 'PK戦' : '試合終了';
+    if (homeOrAway === 'home') {
+        showHomeClubPlusModal.value = true;
+    } else if (homeOrAway === 'away') {
+        showAwayClubPlusModal.value = true;
+    }
+}
+
+/**
+ * 得点を追加
+ */
+const plusScore = async (homeOrAway) => {
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/plus-score`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            homeOrAway: homeOrAway,
+            gameStatus: gameStatus.value
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        location.reload();
+    } catch (error) {
+        console.error('Error details:', error)
+    }
+}
+
+/**
+ * 得点取り消しのバリデーション
+ * 得点取り消ししようとする試合進行状況の得点が0の場合はモーダルを表示しない
+ */
+const minusScoreValidation = (homeOrAway) => {
+    if (gameStatus.value !== '前半' && gameStatus.value !== '後半' && gameStatus.value !== '延長前半' && gameStatus.value !== '延長後半') {
+        alert('試合状態が前半・後半・延長前半・延長後半の場合のみ、得点を取り消すことができます。');
+        return;
+    }
+
+    if (homeOrAway === 'home') {
+        if ((gameStatus.value === '前半' && homeClubFirstHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '後半' && homeClubSecondHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '延長前半' && homeClubExtraFirstHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '延長後半' && homeClubExtraSecondHalfScore.value < LEAST_SCORE)
+        ) {
+            alert(`${gameStatus.value}に取り消す得点がありません。`);
+            return;
         } else {
-            nextTransitions['後半'] = hasPk.value ? 'PK戦' : '試合終了';
+            showHomeClubMinusModal.value = true;
         }
-
-        // PK戦の有無で遷移を変える
-        if (hasPk.value) {
-            nextTransitions['PK戦'] = '試合終了';
+    } else if (homeOrAway === 'away') {
+        if ((gameStatus.value === '前半' && awayClubFirstHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '後半' && awayClubSecondHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '延長前半' && awayClubExtraFirstHalfScore.value < LEAST_SCORE) ||
+            (gameStatus.value === '延長後半' && awayClubExtraSecondHalfScore.value < LEAST_SCORE)
+        ) {
+            alert(`${gameStatus.value}に取り消す得点がありません。`);
+            return;
+        } else {
+            showAwayClubMinusModal.value = true;
         }
     }
+}
 
-    // 逆方向の遷移を作成
-    const prevTransitions = {};
-    Object.entries(nextTransitions).forEach(([from, to]) => {
-        prevTransitions[to] = from;
-    });
+/**
+ * 得点を取り消し
+ */
+const minusScore = async (homeOrAway) => {
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/minus-score`);
 
-    return {
-        next: nextTransitions,
-        prev: prevTransitions
-    };
-});
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            homeOrAway: homeOrAway,
+            gameStatus: gameStatus.value
+        }
 
-// 次のキック番号を取得する関数
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        location.reload();
+    } catch (error) {
+        console.error('Error details:', error)
+    }
+}
+
+/**
+ * 次のキック番号を取得
+ */
 const getNextKickIndex = (homeOrAway) => {
     const pkList = homeOrAway === 'home' ? homeClubPkScoreList.value : awayClubPkScoreList.value;
     // 最初の未登録（nullまたはundefined）のインデックスを探す
@@ -266,420 +419,6 @@ const cancelLastKick = async (homeOrAway) => {
     }
 };
 
-/**
- * 結果入力対象の試合情報を取得する
- */
-const getTargetMatchInfo = async () => {
-    isLoading.value = true
-    errorMessage.value = '' // エラーメッセージをリセット
-
-    // 試合情報取得用のURLを作成
-    // 試合を絞り込むために年度とIDをクエリパラメータに含める
-    const queryUrl = new URL(`${MATCH_API_URL}/target-match`);
-    queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
-    queryUrl.searchParams.append('championshipId', championshipId);
-    queryUrl.searchParams.append('matchId', matchId);
-
-    try {
-        const response = await fetch(queryUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        // レスポンスのステータスを確認
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        targetMatchInfo.value = data;
-        championshipName.value = data['championship_name'];
-        isLeague.value = data['is_league'];
-        round.value = data['round'];
-        match.value = data['match'];
-
-        venue.value = data['match_detail']['venue'];
-        isResultRegistered.value = data['match_detail']['is_result_registered'];
-        hasExtraHalves.value = data['match_detail']['has_extra_halves'];
-        hasPk.value = data['match_detail']['has_pk'];
-        matchDate.value = data['match_detail']['match_date'];
-        scheduledMatchStartTime.value = data['match_detail']['scheduled_match_start_time'];
-        gameStatus.value = data['match_detail']['game_status'];
-
-        homeClubName.value = data['match_detail']['home_club']['club_name'];
-        homeClubFirstHalfScore.value = data['match_detail']['home_club']['first_half_score'];
-        homeClubSecondHalfScore.value = data['match_detail']['home_club']['second_half_score'];
-        homeClubExtraFirstHalfScore.value = data['match_detail']['home_club']['extra_first_half_score'];
-        homeClubExtraSecondHalfScore.value = data['match_detail']['home_club']['extra_second_half_score'];
-        homeClubFinalScore.value = data['match_detail']['home_club']['final_score'];
-        homeClubPkScore.value = data['match_detail']['home_club']['pk_score'];
-        homeClubPkScoreList.value = data['match_detail']['home_club']['pk_score_list'];
-        awayClubName.value = data['match_detail']['away_club']['club_name'];
-        awayClubFirstHalfScore.value = data['match_detail']['away_club']['first_half_score'];
-        awayClubSecondHalfScore.value = data['match_detail']['away_club']['second_half_score'];
-        awayClubExtraFirstHalfScore.value = data['match_detail']['away_club']['extra_first_half_score'];
-        awayClubExtraSecondHalfScore.value = data['match_detail']['away_club']['extra_second_half_score'];
-        awayClubFinalScore.value = data['match_detail']['away_club']['final_score'];
-        awayClubPkScore.value = data['match_detail']['away_club']['pk_score'];
-        awayClubPkScoreList.value = data['match_detail']['away_club']['pk_score_list'];
-    } catch (error) {
-        console.error('Error details:', error);
-        errorMessage.value = '試合データの取得に失敗しました。';
-    } finally {
-        isLoading.value = false;
-    }
-};
-
-/**
- * 得点追加のバリデーション
- * 試合前や試合終了の状態では得点を追加できない
- */
-const plusScoreValidation = (homeOrAway) => {
-    if (gameStatus.value === '試合前' || gameStatus.value === '試合終了' || gameStatus.value === 'PK戦') {
-        alert('PK戦・試合前・試合終了の状態では得点を追加することはできません。');
-        return;
-    }
-
-    if (homeOrAway === 'home') {
-        showHomeClubPlusModal.value = true;
-    } else if (homeOrAway === 'away') {
-        showAwayClubPlusModal.value = true;
-    }
-}
-
-/**
- * 得点を追加
- */
-const plusScore = async (homeOrAway) => {
-    try {
-        const putUrl = new URL(`${MATCH_API_URL}/plus-score`);
-
-        const requestBody = {
-            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
-            championshipId: championshipId, // パラメタで渡された大会ID
-            matchId: matchId, // パラメタで渡された試合ID
-            homeOrAway: homeOrAway,
-            gameStatus: gameStatus.value
-        }
-
-        const response = await fetch(putUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        location.reload();
-    } catch (error) {
-        console.error('Error details:', error)
-    }
-}
-
-/**
- * 得点取り消しのバリデーション
- * 得点取り消ししようとする試合進行状況の得点が0の場合はモーダルを表示しない
- */
-const minusScoreValidation = (homeOrAway) => {
-    if (gameStatus.value === '試合前' || gameStatus.value === '試合終了') {
-        alert('試合前や試合終了の状態では得点を取り消すことはできません。');
-        return;
-    }
-
-    if (homeOrAway === 'home') {
-        if ((gameStatus.value === '前半' && homeClubFirstHalfScore.value < LEAST_SCORE) ||
-            (gameStatus.value === '後半' && homeClubSecondHalfScore.value < LEAST_SCORE) ||
-            (gameStatus.value === '延長前半' && homeClubExtraFirstHalfScore.value < LEAST_SCORE) ||
-            (gameStatus.value === '延長後半' && homeClubExtraSecondHalfScore.value < LEAST_SCORE)
-        ) {
-            alert(`${gameStatus.value}に取り消す得点がありません。`);
-            return;
-        } else {
-            showHomeClubMinusModal.value = true;
-        }
-    } else if (homeOrAway === 'away') {
-        if ((gameStatus.value === '前半' && awayClubFirstHalfScore.value < LEAST_SCORE) ||
-            (gameStatus.value === '後半' && awayClubSecondHalfScore.value < LEAST_SCORE) ||
-            (gameStatus.value === '延長前半' && awayClubExtraFirstHalfScore.value < LEAST_SCORE) ||
-            (gameStatus.value === '延長後半' && awayClubExtraSecondHalfScore.value < LEAST_SCORE)
-        ) {
-            alert(`${gameStatus.value}に取り消す得点がありません。`);
-            return;
-        } else {
-            showAwayClubMinusModal.value = true;
-        }
-    }
-}
-
-/**
- * 得点を取り消し
- */
-const minusScore = async (homeOrAway) => {
-    try {
-        const putUrl = new URL(`${MATCH_API_URL}/minus-score`);
-
-        const requestBody = {
-            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
-            championshipId: championshipId, // パラメタで渡された大会ID
-            matchId: matchId, // パラメタで渡された試合ID
-            homeOrAway: homeOrAway,
-            gameStatus: gameStatus.value
-        }
-
-        const response = await fetch(putUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        location.reload();
-    } catch (error) {
-        console.error('Error details:', error)
-    }
-}
-
-/**
- * 試合状況進行・後退
- */
-const handleGameStatus = async (direction) => {
-    try {
-        const transitions = getGameStatusTransitions.value;
-        const changingGameStatus = direction === 'next'
-            ? transitions.next[gameStatus.value]
-            : transitions.prev[gameStatus.value]; // directionがprevの場合は逆方向の遷移
-
-        if (!changingGameStatus) {
-            throw new Error('次の試合進行状況が見つかりません');
-        }
-
-        const putUrl = new URL(`${MATCH_API_URL}/handle-game-status`);
-
-        const requestBody = {
-            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
-            championshipId: championshipId, // パラメタで渡された大会ID
-            matchId: matchId, // パラメタで渡された試合ID
-            changingGameStatus: changingGameStatus, // 変更後の試合進行状況
-            direction: direction, // 引数で文字列nextかprevが入ってくる
-        }
-
-        const response = await fetch(putUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        location.reload();
-    } catch (error) {
-        console.error('Error details:', error)
-    }
-}
-
-/**
- * 延長戦登録
- */
-const registerExtraHalves = async (action) => {
-    // バリデーション
-    if (action === 'apply') {
-        if (gameStatus.value !== '後半') {
-            alert('試合進行状況が後半の時のみ延長戦に進行できるようになります。');
-            return;
-        }
-        if (!confirm('延長戦に移動しますか？')) {
-            return;
-        }
-    } else if (action === 'cancel') {
-        if (!confirm('延長戦を取り消しますか？試合進行状況は後半に変わり、延長戦の得点が取り消されます。PK戦およびPK戦の得点も取り消されます。')) {
-            return;
-        }
-    }
-
-    // 延長戦登録・取り消し処理
-    try {
-        const putUrl = new URL(`${MATCH_API_URL}/register-extra-halves`);
-
-        const requestBody = {
-            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
-            championshipId: championshipId, // パラメタで渡された大会ID
-            matchId: matchId, // パラメタで渡された試合ID
-            action: action
-        }
-
-        const response = await fetch(putUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // 成功時の処理を追加
-        window.location.reload();
-    } catch (error) {
-        console.error('Error details:', error)
-        errorMessage.value = '延長戦の登録に失敗しました。'
-    }
-}
-
-/**
- * PK戦登録
- */
-const registerPk = async (action) => {
-    // バリデーション
-    if (action === 'apply') {
-        if (gameStatus.value !== '後半' && gameStatus.value !== '延長後半') {
-            alert('試合進行状況が後半か延長後半の時のみPK戦に移動できます。');
-            return;
-        }
-        if (!confirm('PK戦に移動しますか？')) {
-            return;
-        }
-    } else if (action === 'cancel') {
-        if (!confirm('PK戦を取り消しますか？試合進行状況は後半に戻り、PK戦の得点が取り消されます。延長戦があった場合、延長戦の得点も取り消します。')) {
-            return;
-        }
-    }
-
-    // PK戦登録・取り消し処理
-    try {
-        const putUrl = new URL(`${MATCH_API_URL}/register-pk`);
-
-        const requestBody = {
-            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
-            championshipId: championshipId, // パラメタで渡された大会ID
-            matchId: matchId, // パラメタで渡された試合ID
-            action: action
-        }
-
-        const response = await fetch(putUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // 成功時の処理を追加
-        location.reload();
-    } catch (error) {
-        console.error('Error details:', error)
-        errorMessage.value = 'PK戦の登録に失敗しました。'
-    }
-}
-
-/**
- * 試合結果登録のバリデーション
- */
-const registerMatchResultValidation = () => {
-    // 試合結果登録のバリデーション
-    if (!actualMatchStartTime.value) {
-        alert('実際の試合開始時刻を入力してください。');
-        return;
-    }
-
-    if (gameStatus.value !== '試合終了') {
-        alert('試合結果を登録するには試合終了の状態でなければなりません。');
-        return;
-    }
-
-    showMatchResultModal.value = true;
-}
-
-/**
- * 試合結果登録
- */
-const registerMatchResult = async () => {
-    try {
-        const putUrl = new URL(`${MATCH_API_URL}/register-match-result`);
-
-        const requestBody = {
-            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
-            championshipId: championshipId, // パラメタで渡された大会ID
-            matchId: matchId, // パラメタで渡された試合ID
-            actualMatchStartTime: actualMatchStartTime.value,
-            comment: comment.value
-        }
-
-        const response = await fetch(putUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // 成功時の処理を追加
-        alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
-        router.push('/connecter/select-match-to-report');
-    } catch (error) {
-        console.error('Error details:', error)
-        errorMessage.value = '試合結果の登録に失敗しました。'
-    }
-};
-
-/**
- * 試合延期登録
- */
-const registerMatchDelay = async () => {
-    try {
-        const putUrl = new URL(`${MATCH_API_URL}/register-match-delay`);
-
-        const requestBody = {
-            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
-            championshipId: championshipId, // パラメタで渡された大会ID
-            matchId: matchId, // パラメタで渡された試合ID
-        };
-
-        const response = await fetch(putUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // 成功時の処理を追加
-        alert('試合延期を正常に登録しました。試合検索画面に戻ります。');
-        router.push('/connecter/select-match-to-report');
-    } catch (error) {
-        console.error('Error details:', error);
-        errorMessage.value = '試合延期の登録に失敗しました。';
-    }
-}
-
 // PK戦の追加ラウンド数を計算する計算プロパティを修正
 const extraPkRounds = computed(() => {
     // 両方のPKリストの長さを取得
@@ -729,9 +468,360 @@ const extraPkRounds = computed(() => {
     return 0; // 基本の5回以内ならサドンデスなし
 });
 
+// 試合状態の遷移定義
+const getGameStatusTransitions = computed(() => {
+    if (isLeague.value) {
+        // リーグ戦の場合の遷移
+        return {
+            next: {
+                '試合前': { next: '前半', label: '前半開始' },
+                '前半': { next: 'ハーフタイム', label: '前半終了' },
+                'ハーフタイム': { next: '後半', label: '後半開始' },
+                '後半': { next: '後半終了', label: '後半終了' },
+                '後半終了': { next: '試合終了', label: '試合終了' },
+                '試合終了': { next: null, label: null }
+            },
+            prev: {
+                '試合前': null,
+                '前半': '試合前',
+                'ハーフタイム': '前半',
+                '後半': 'ハーフタイム',
+                '後半終了': '後半',
+                '試合終了': '後半終了'
+            }
+        };
+    } else {
+        // リーグ戦以外の場合の遷移
+        return {
+            next: {
+                '試合前': { next: '前半', label: '前半開始' },
+                '前半': { next: 'ハーフタイム', label: '前半終了' },
+                'ハーフタイム': { next: '後半', label: '後半開始' },
+                '後半': { next: '後半終了', label: '後半終了' }, // 特殊処理
+                '後半終了': { next: '選択', label: '選択' }, // 特殊処理
+                '延長前半': { next: '延長後半', label: '延長後半開始' },
+                '延長後半': { next: '延長後半終了', label: '延長後半終了' },
+                '延長後半終了': { next: '選択', label: '選択' }, // PK戦・試合終了を選択
+                'PK戦': { next: '試合終了', label: '試合終了' },
+            },
+            prev: {
+                '試合前': null,
+                '前半': '試合前',
+                'ハーフタイム': '前半',
+                '後半': 'ハーフタイム',
+                '後半終了': '後半',
+                '延長前半': '後半終了',
+                '延長後半': '延長前半',
+                '延長後半終了': '延長後半',
+                'PK戦': hasExtraHalves.value ? '延長後半終了' : '後半終了',
+                '試合終了': hasPk.value ? 'PK戦' : (hasExtraHalves.value ? '延長後半終了' : '後半終了')
+            }
+        };
+    }
+});
+
+// 次へボタンのラベルを取得
+const getNextButtonLabel = computed(() => {
+    const transitions = getGameStatusTransitions.value;
+    if (transitions.next[gameStatus.value]) {
+        return transitions.next[gameStatus.value].label;
+    }
+    return '';
+});
+
+// 前へボタンのラベルを取得（戻る場合は前の状態に対応する「次へ」ボタンのラベル）
+const getPrevButtonLabel = computed(() => {
+    const transitions = getGameStatusTransitions.value;
+    const prevStatus = transitions.prev[gameStatus.value];
+
+    if (!prevStatus) return '';
+
+    // 試合終了状態の場合は、戻り先に合わせてラベルを設定
+    if (gameStatus.value === '試合終了') {
+        if (hasPk.value) return 'PK戦';
+        if (hasExtraHalves.value) return '延長後半終了';
+        return '後半終了';
+    }
+
+    // 通常のケース
+    if (prevStatus === '試合前') return '試合前';
+    if (prevStatus === '前半') return '前半';
+    if (prevStatus === 'ハーフタイム') return 'ハーフタイム';
+    if (prevStatus === '後半') return '後半';
+    if (prevStatus === '後半終了') return '後半終了';
+    if (prevStatus === '延長前半') return '延長前半';
+    if (prevStatus === '延長後半') return '延長後半';
+    if (prevStatus === '延長後半終了') return '延長後半終了';
+    if (prevStatus === 'PK戦') return 'PK戦';
+
+    return '戻る';
+});
+
+// 次の状態へ進むボタンのクリックハンドラ
+const handleNextGameStatus = () => {
+    const transitions = getGameStatusTransitions.value;
+    const nextInfo = transitions.next[gameStatus.value];
+
+    if (nextInfo && nextInfo.next === '選択') {
+        // 選択モーダルを表示（延長前半・PK戦・試合終了を選択）
+        showSelectExtraHalvesPkModal.value = true;
+    } else {
+        // 通常の遷移
+        handleGameStatus('next');
+    }
+};
+
+/**
+ * 試合状況進行・後退
+ */
+const handleGameStatus = async (direction) => {
+    if (direction === 'prev' && gameStatus.value === '延長前半') {
+        registerExtraHalvesValidation('cancel');
+        return;
+    }
+
+    if (direction === 'prev' && gameStatus.value === 'PK戦') {
+        registerPkValidation('cancel');
+        return;
+    }
+
+    try {
+        const transitions = getGameStatusTransitions.value;
+        let changingGameStatus;
+        
+        if (direction === 'end') {
+            changingGameStatus = '試合終了';
+        } else {
+            changingGameStatus = direction === 'next'
+                ? transitions.next[gameStatus.value].next
+                : transitions.prev[gameStatus.value]; // directionがprevの場合は逆方向の遷移
+        }
+
+        if (!changingGameStatus) {
+            throw new Error('次の試合進行状況が見つかりません');
+        }
+
+        const putUrl = new URL(`${MATCH_API_URL}/handle-game-status`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            changingGameStatus: changingGameStatus, // 変更後の試合進行状況
+            direction: direction, // 引数で文字列nextかprevが入る
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        location.reload();
+    } catch (error) {
+        console.error('Error details:', error)
+    }
+}
+
+/**
+ * 延長戦登録のバリデーション
+ */
+const registerExtraHalvesValidation = (action) => {
+    if (action === 'apply' && !(gameStatus.value === '後半終了')) {
+        alert('試合状態が後半終了の場合のみ、延長戦を開始できます。');
+        return;
+    }
+
+    if (action === 'cancel' && !(gameStatus.value === '延長前半' || gameStatus.value === '延長前半終了' || gameStatus.value === '延長後半' || gameStatus.value === '延長後半終了' || gameStatus.value === '試合終了')) {
+        alert('試合状態が延長前半・延長前半終了・延長後半・延長後半終了・試合終了の場合のみ、延長戦を取り消すことができます。');
+        return;
+    }
+
+    if (action === 'apply') {
+        showExtraHalvesApplyModal.value = true;
+    } else if (action === 'cancel') {
+        showExtraHalvesCancelModal.value = true;
+    }
+}
+
+/**
+ * 延長戦登録
+ */
+const registerExtraHalves = async (action) => {
+    // 延長戦登録・取り消し処理
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/register-extra-halves`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            action: action
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // 成功時の処理を追加
+        window.location.reload();
+    } catch (error) {
+        console.error('Error details:', error)
+        errorMessage.value = '延長戦の登録に失敗しました。'
+    }
+}
+
+/**
+ * PK戦登録のバリデーション
+ */
+const registerPkValidation = (action) => {
+    if (action === 'apply' && !(gameStatus.value === '後半終了' || gameStatus.value === '延長後半終了')) {
+        alert('試合状態が後半終了か延長後半終了の場合のみ、PK戦を開始できます。');
+        return;
+    }
+
+    if (action === 'cancel' && !(gameStatus.value === 'PK戦' || gameStatus.value === 'PK戦終了' || gameStatus.value === '試合終了')) {
+        alert('試合状態がPK戦・PK戦終了・試合終了の場合のみ、PK戦を取り消すことができます。');
+        return;
+    }
+
+    if (action === 'apply') {
+        showPkApplyModal.value = true;
+    } else if (action === 'cancel') {
+        showPkCancelModal.value = true;
+    }
+}
+
+/**
+ * PK戦登録
+ */
+const registerPk = async (action) => {
+    // PK戦登録・取り消し処理
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/register-pk`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            action: action
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // 成功時の処理を追加
+        location.reload();
+    } catch (error) {
+        console.error('Error details:', error)
+        errorMessage.value = 'PK戦の登録に失敗しました。'
+    }
+}
+
+/**
+ * 試合結果登録
+ */
+const registerMatchResult = async () => {
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/register-match-result`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+            actualMatchStartTime: actualMatchStartTime.value,
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // 成功時の処理を追加
+        alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
+        router.push('/connecter/select-reporting-match');
+    } catch (error) {
+        console.error('Error details:', error)
+        errorMessage.value = '試合結果の登録に失敗しました。'
+    }
+};
+
+/**
+ * 試合延期登録
+ */
+const registerMatchDelay = async () => {
+    try {
+        const putUrl = new URL(`${MATCH_API_URL}/register-match-delay`);
+
+        const requestBody = {
+            fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
+            championshipId: championshipId, // パラメタで渡された大会ID
+            matchId: matchId, // パラメタで渡された試合ID
+        };
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // 成功時の処理を追加
+        alert('試合延期を正常に登録しました。試合検索画面に戻ります。');
+        router.push('/connecter/select-match-to-report');
+    } catch (error) {
+        console.error('Error details:', error);
+        errorMessage.value = '試合延期の登録に失敗しました。';
+    }
+}
+
 onMounted(async () => {
     // 結果入力対象試合のデータを取得する
     await getTargetMatchInfo();
+
+    // 「試合終了・結果登録ボタン」を押すように促す
+    if (isLeague.value && gameStatus.value === '試合終了') {
+        showRegisterMatchResultModal.value = true;
+    }
+    if (!isLeague.value && gameStatus.value === '試合終了') {
+        showRegisterMatchResultModal.value = true;
+    }
+
 });
 
 // CSS クラスの共通化
@@ -739,13 +829,13 @@ const textClubName = 'text-xl border-1 border-gray-200 py-2';
 const scoreInputBg = 'p-4 border-b-1 border-black';
 const scoringOpenModal = 'text-4xl';
 const scoringBtn = 'w-12 h-10';
-const minusScoring = 'mt-10 mb-2';
+const minusScoring = 'my-10';
 const gameStatusBtn = 'w-full px-3 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
 const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
 
 // PK表示用の共通クラス
 const pkCellBase = 'flex items-center justify-center min-w-[40px] h-[30px]';
-const pkCellWithBorder = `${pkCellBase} border border-slate-200 h-[50px]`;
+const pkCellWithBorder = `${pkCellBase} border border-slate-300 h-[50px]`;
 const pkCellHeader = `${pkCellWithBorder} font-bold`;
 
 // フレックスレイアウト用の共通クラス
@@ -759,7 +849,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
 </script>
 
 <template>
-    <div>
+    <div class="mb-50">
         <div class="mt-8">
             <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
         </div>
@@ -785,39 +875,37 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                 </div>
                 <div class="mt-5">
                     <p class="py-1 font-bold text-xl" :class="borderTopBottom">試合速報入力</p>
-                    <div :class="flexRow" class="justify-center items-center gap-3 py-3 bg-green-100">
-                        <div class="text-right w-[90px]">
-                            <button type="button"
-                                v-if="gameStatus !== '試合前' && getGameStatusTransitions.prev[gameStatus]"
-                                @click="handleGameStatus('prev')" :class="gameStatusBtn">
-                                {{ getGameStatusTransitions.prev[gameStatus] }}
+                    <div :class="flexRow" class="justify-around items-center py-3 bg-green-100 border-b-1 border-black">
+                        <div class="text-right w-[120px]">
+                            <button v-if="gameStatus !== '試合前'"
+                                type="button" @click="handleGameStatus('prev')" :class="gameStatusBtn">
+                                {{ getPrevButtonLabel }}
                             </button>
                         </div>
-                        <!-- レイアウト用のダミーブロック -->
+                        <!-- 矢印（左向き） -->
                         <div v-if="gameStatus === '試合前'" class="w-[10px]"></div>
                         <div v-else
                             class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-red-400 bg-green-100">
                         </div>
-                        <div class="w-[90px]">
+                        <!-- 現在の試合状態 -->
+                        <div class="w-[120px]">
                             <span class="text-lg font-bold italic">{{ gameStatus }}</span>
                         </div>
-                        <!-- レイアウト用のダミーブロック -->
+                        <!-- 矢印（右向き） -->
                         <div v-if="gameStatus === '試合終了'" class="w-[10px]"></div>
                         <div v-else
                             class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-red-400 bg-green-100">
                         </div>
-
                         <!-- 次の状態へ進むボタン -->
-                        <div class="text-right w-[90px]">
-                            <button type="button"
-                                v-if="gameStatus !== '試合終了' && getGameStatusTransitions.next[gameStatus]"
-                                @click="handleGameStatus('next')" :class="gameStatusBtn">
-                                {{ getGameStatusTransitions.next[gameStatus] }}
+                        <div class="text-left w-[120px]">
+                            <button v-if="gameStatus !== '試合終了'" type="button" @click="handleNextGameStatus"
+                                :class="gameStatusBtn">
+                                {{ getNextButtonLabel }}
                             </button>
                         </div>
                     </div>
-                    <!-- Homeクラブ得点入力 -->
                     <div :class="flexRow">
+                        <!-- Homeクラブ得点入力 -->
                         <div class="w-1/2">
                             <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
                             <div :class="scoreInputBg" class="bg-blue-50">
@@ -825,33 +913,11 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                                     class="bg-[#FAFAFC] h-[50px] border-3 border-red-400 rounded-md">
                                     <span :class="scoringOpenModal">{{ homeScore }}</span>
                                 </button>
-                                <Teleport to="body">
-                                    <!-- use the modal component, pass in the prop -->
-                                    <register-score-modal :show="showHomeClubPlusModal" :is-home="isHome"
-                                        :is-plus-score="isPlusScore" @close="showHomeClubPlusModal = false"
-                                        @plus-score="plusScore">
-                                        <template v-slot:body>
-                                            <p><span class="text-red-500 font-bold">{{ homeClubName
-                                            }}</span>に１点を追加します。<br />よろしいですか？</p>
-                                        </template>
-                                    </register-score-modal>
-                                </Teleport>
                             </div>
                             <!-- Homeクラブ得点取り消し -->
                             <div v-if="gameStatus !== 'PK戦'" :class="minusScoring">
                                 <button type="button" @click="minusScoreValidation('home')"
                                     class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
-                                <Teleport to="body">
-                                    <!-- use the modal component, pass in the prop -->
-                                    <register-score-modal :show="showHomeClubMinusModal" :is-home="isHome"
-                                        :is-minus-score="isMinusScore" @close="showHomeClubMinusModal = false"
-                                        @minus-score="minusScore">
-                                        <template v-slot:body>
-                                            <p><span class="text-red-500 font-bold">{{ homeClubName
-                                            }}</span>の１点を取り消します。<br />よろしいですか？</p>
-                                        </template>
-                                    </register-score-modal>
-                                </Teleport>
                             </div>
                         </div>
                         <!-- Awayクラブ得点入力 -->
@@ -862,38 +928,17 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                                     class="bg-[#FAFAFC] h-[50px] border-3 border-red-400 rounded-md">
                                     <span :class="scoringOpenModal">{{ awayScore }}</span>
                                 </button>
-                                <Teleport to="body">
-                                    <register-score-modal :show="showAwayClubPlusModal" :is-away="isAway"
-                                        :is-plus-score="isPlusScore" @close="showAwayClubPlusModal = false"
-                                        @plus-score="plusScore">
-                                        <template v-slot:body>
-                                            <p><span class="text-red-500 font-bold">{{ awayClubName
-                                            }}</span>に１点を追加します。<br />よろしいですか？</p>
-                                        </template>
-                                    </register-score-modal>
-                                </Teleport>
                             </div>
                             <!-- Awayクラブ得点取り消し -->
                             <div v-if="gameStatus !== 'PK戦'" :class="minusScoring">
                                 <button type="button" @click="minusScoreValidation('away')"
                                     class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
-                                <Teleport to="body">
-                                    <register-score-modal :show="showAwayClubMinusModal" :is-away="isAway"
-                                        :is-minus-score="isMinusScore" @close="showAwayClubMinusModal = false"
-                                        @minus-score="minusScore">
-                                        <template v-slot:body>
-                                            <p><span class="text-red-500 font-bold">{{ awayClubName
-                                            }}</span>の１点を取り消します。<br />よろしいですか？</p>
-                                        </template>
-                                    </register-score-modal>
-                                </Teleport>
                             </div>
                         </div>
                     </div>
                     <!-- PK戦のスコア登録 -->
                     <div v-if="gameStatus === 'PK戦' && hasPk" :class="[flexCol, borderTopBottom, 'py-3']">
                         <h3 class="font-bold mb-2">PK戦スコア登録</h3>
-
                         <!-- 操作ボタン -->
                         <div :class="[flexCenterGap, 'mb-4']">
                             <div :class="[flexCol, 'items-center']">
@@ -934,7 +979,9 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                         </div>
 
                         <!-- PK結果表示テーブル -->
-                        <div class="w-full overflow-x-auto">
+                        <div class="w-full overflow-x-auto flex flex-col items-center">
+                            <h3 class="text-center text-red-500 font-bold">※
+                                キック順と表中のクラブ名の上下は、<br />一致しないことがあります。ご注意ください。</h3>
                             <div :class="[flexRow, 'items-baseline', 'min-w-max', 'pb-[5px]']">
                                 <div :class="flexCol" class="w-[180px] sticky left-0 z-10">
                                     <div :class="pkCellHeader" class="bg-white">クラブ名</div>
@@ -985,7 +1032,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     </div>
                     <!-- 得点表示 -->
                     <div>
-                        <div class="text-xl mt-2">
+                        <div class="text-xl">
                             <p>{{ homeClubFirstHalfScore }}　前半　{{ awayClubFirstHalfScore }}</p>
                             <p>{{ homeClubSecondHalfScore }}　後半　{{ awayClubSecondHalfScore }}</p>
                             <div v-if="hasExtraHalves">
@@ -998,57 +1045,43 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                             <p>{{ homeScore }}　合計　{{ awayScore }}</p>
                         </div>
                     </div>
-                    <div v-if="!isLeague" :class="[flexRow, 'justify-center', 'items-center', 'my-8']">
-                        <div v-if="gameStatus === '後半'" class="w-1/2 flex flex-col gap-8 items-center">
-                            <button v-if="!hasExtraHalves" type="button" @click="registerExtraHalves('apply')"
-                                class="w-2/3 py-1 bg-amber-600 text-white rounded-sm">延長戦</button>
-                            <button v-else type="button" @click="registerExtraHalves('cancel')"
-                                class="w-2/3 py-1 bg-amber-600 text-white rounded-sm">延長戦取り消し</button>
+                    <!-- <div v-if="!isLeague" :class="[flexRow, 'justify-center', 'items-center', 'my-10']">
+                        <div class="w-1/2 flex flex-col gap-8 items-center">
+                            <button
+                                v-if="hasExtraHalves && (gameStatus === '延長前半' || gameStatus === '延長前半終了' || gameStatus === '延長後半' || gameStatus === '延長後半終了')"
+                                type="button" @click="registerExtraHalvesValidation('cancel')"
+                                class="w-2/3 py-1 bg-gray-400 text-white rounded-sm">延長戦取り消し</button>
+                            <button v-if="!hasExtraHalves && gameStatus === '後半終了'" type="button"
+                                @click="registerExtraHalvesValidation('apply')"
+                                class="w-2/3 py-1 bg-amber-600 text-white rounded-sm">延長前半開始</button>
                         </div>
-                        <div v-if="gameStatus === '後半' || gameStatus === '延長後半'"
-                            class="w-1/2 flex flex-col gap-8 items-center">
-                            <button v-if="!hasPk" type="button" @click="registerPk('apply')"
-                                class="w-2/3 py-1 bg-purple-600 text-white rounded-sm">PK戦</button>
-                            <button v-else type="button" @click="registerPk('cancel')"
-                                class="w-2/3 py-1 bg-purple-600 text-white rounded-sm">PK戦取り消し</button>
+                        <div class="w-1/2 flex flex-col gap-8 items-center">
+                            <button v-if="hasPk && (gameStatus === 'PK戦' || gameStatus === 'PK戦終了')" type="button"
+                                @click="registerPkValidation('cancel')"
+                                class="w-2/3 py-1 bg-gray-400 text-white rounded-sm">PK戦取り消し</button>
+                            <button v-if="!hasPk && (gameStatus === '後半終了' || gameStatus === '延長後半終了')" type="button"
+                                @click="registerPkValidation('apply')"
+                                class="w-2/3 py-1 bg-purple-500 text-white rounded-sm">PK戦開始</button>
                         </div>
-                    </div>
-                    <!-- 実際の試合時間登録 -->
-                    <div :class="borderTopBottom" class="mt-5">
-                        <label for="match-time">
-                            <p class="bg-gray-200">実際の試合開始時刻</p>
-                        </label>
-                        <div :class="flexCenter" class="h-10">
-                            <input type="time" id="match-time" :value="scheduledMatchStartTime"
-                                @input="setActualMatchStartTime" />
-                        </div>
-                    </div>
-                    <!-- コメント入力 -->
-                    <div>
-                        <label for="match-time">
-                            <p class="bg-gray-200">コメント（必要な場合のみ）</p>
-                        </label>
-                        <div class="p-y">
-                            <textarea id="comment" v-model="comment" class="w-full h-full border-b-1 border-black"
-                                placeholder="コメントを入力してください。"></textarea>
-                        </div>
-                    </div>
+                    </div> -->
                     <!-- 試合結果登録 -->
-                    <div class="py-5">
-                        <button type="button" @click="registerMatchResultValidation" :class="registerBtnBase"
-                            class="bg-blue-600"><span class="text-xl bg-blue-600 text-white">試合結果登録</span></button>
-                        <Teleport to="body">
-                            <!-- use the modal component, pass in the prop -->
-                            <register-match-result-modal :show="showMatchResultModal"
-                                @close="showMatchResultModal = false" @register-match-result="registerMatchResult">
-                                <template v-slot:body>
-                                    <p>試合結果を登録します。<br />よろしいですか？</p>
-                                </template>
-                            </register-match-result-modal>
-                        </Teleport>
+                    <div v-if="gameStatus === '試合終了'" class="mt-10" id="register-match-result">
+                        <!-- 実際の試合開始時刻登録 -->
+                        <div class="border-t-1 border-b-1 border-black my-5">
+                            <label for="match-time">
+                                <p class="bg-gray-200">実際の試合開始時刻</p>
+                            </label>
+                            <div class="flex items-center justify-center h-10">
+                                <input type="time" id="match-time" :value="scheduledMatchStartTime"
+                                    @input="setActualMatchStartTime" />
+                            </div>
+                        </div>
+                        <button type="button" @click="registerMatchResult"
+                            class="bg-blue-600 px-6 py-2 rounded-md"><span
+                                class="text-lg bg-blue-600 text-white">試合結果登録</span></button>
                     </div>
                 </div>
-                <div class="py-10">
+                <div v-if="gameStatus === '試合前'" class="mt-40 mb-10">
                     <p>または、この試合の延期を登録します。</p>
                     <div :class="flexRow" class="justify-center mt-2">
                         <div class="mx-4">
@@ -1065,21 +1098,115 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                             :class="[registerBtnBase, isDelayed ? 'bg-amber-600' : 'bg-gray-300 cursor-not-allowed']"><span
                                 class="text-xl text-white"
                                 :class="isDelayed ? 'bg-amber-600' : 'bg-gray-300 '">延期登録</span></button>
-                        <Teleport to="body">
-                            <register-match-delay-modal :show="showMatchDelayModal" @close="showMatchDelayModal = false"
-                                @register-match-delay="registerMatchDelay">
-                                <template v-slot:body>
-                                    <p>試合の延期を登録します。<br />よろしいですか？</p>
-                                </template>
-                            </register-match-delay-modal>
-                        </Teleport>
                     </div>
                 </div>
             </div>
-            <a href="/connecter/select-match-to-report"
-                class="block text-center text-blue-600 underline mt-10">速報対象試合検索画面に戻る</a>
+            <a href="/connecter/select-reporting-match"
+                class="block text-center text-blue-600 underline mt-50">速報対象試合検索画面に戻る</a>
         </div>
         <CopyrightComp />
+
+        <Teleport to="body">
+            <select-extra-halves-pk-modal :show="showSelectExtraHalvesPkModal" :game-status="gameStatus"
+                :is-after-second-half="gameStatus === '後半終了'" :is-after-extra-second-half="gameStatus === '延長後半終了'"
+                @close="showSelectExtraHalvesPkModal = false" @register-extra-halves="registerExtraHalves"
+                @register-pk="registerPk" @handle-game-status="handleGameStatus">
+            </select-extra-halves-pk-modal>
+        </Teleport>
+        <Teleport to=" body">
+            <register-score-modal :show="showHomeClubPlusModal" :is-home="isHome" :is-plus-score="isPlusScore"
+                @close="showHomeClubPlusModal = false" @plus-score="plusScore">
+                <template v-slot:body>
+                    <p><span class="text-red-500 font-bold">{{ homeClubName
+                    }}</span>に１点を追加します。<br />よろしいですか？</p>
+                </template>
+            </register-score-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-score-modal :show="showHomeClubMinusModal" :is-home="isHome" :is-minus-score="isMinusScore"
+                @close="showHomeClubMinusModal = false" @minus-score="minusScore">
+                <template v-slot:body>
+                    <p><span class="text-red-500 font-bold">{{ homeClubName
+                            }}</span>の１点を取り消します。<br />よろしいですか？</p>
+                </template>
+            </register-score-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-score-modal :show="showAwayClubPlusModal" :is-away="isAway" :is-plus-score="isPlusScore"
+                @close="showAwayClubPlusModal = false" @plus-score="plusScore">
+                <template v-slot:body>
+                    <p><span class="text-red-500 font-bold">{{ awayClubName
+                            }}</span>に１点を追加します。<br />よろしいですか？</p>
+                </template>
+            </register-score-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-score-modal :show="showAwayClubMinusModal" :is-away="isAway" :is-minus-score="isMinusScore"
+                @close="showAwayClubMinusModal = false" @minus-score="minusScore">
+                <template v-slot:body>
+                    <p><span class="text-red-500 font-bold">{{ awayClubName
+                            }}</span>の１点を取り消します。<br />よろしいですか？</p>
+                </template>
+            </register-score-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-extra-halves-modal :show="showExtraHalvesCancelModal" :is-cancel="true"
+                @close="showExtraHalvesCancelModal = false" @register-extra-halves="registerExtraHalves">
+                <template v-slot:body>
+                    <p>延長戦を取り消します。延長戦の得点がすべて取り消されます。<br />試合状態は後半終了に変わります。<br />よろしいですか？
+                    </p>
+                </template>
+            </register-extra-halves-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-extra-halves-modal :show="showExtraHalvesApplyModal" :is-apply="true"
+                @close="showExtraHalvesApplyModal = false" @register-extra-halves="registerExtraHalves">
+                <template v-slot:body>
+                    <p>延長前半を開始します。よろしいですか？</p>
+                </template>
+            </register-extra-halves-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-pk-modal :show="showPkCancelModal" :is-cancel="true" @close="showPkCancelModal = false"
+                @register-pk="registerPk">
+                <template v-slot:body>
+                    <p v-if="hasExtraHalves">PK戦を取り消します。PK戦の得点がすべて取り消されます。<br />試合状態は延長後半終了に変わります。<br />よろしいですか？</p>
+                    <p v-if="!hasExtraHalves">PK戦を取り消します。PK戦の得点がすべて取り消されます。<br />試合状態は後半終了に変わります。<br />よろしいですか？</p>
+                </template>
+            </register-pk-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-pk-modal :show="showPkApplyModal" :is-apply="true" @close="showPkApplyModal = false"
+                @register-pk="registerPk">
+                <template v-slot:body>
+                    <p>PK戦を開始します。よろしいですか？</p>
+                </template>
+            </register-pk-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-match-result-modal :show="showMatchResultModal" @close="showMatchResultModal = false"
+                @register-match-result="registerMatchResult">
+                <template v-slot:body>
+                    <p>試合結果を登録します。<br />よろしいですか？</p>
+                </template>
+            </register-match-result-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-match-result-modal :show="showRegisterMatchResultModal"
+                @close="showRegisterMatchResultModal = false">
+                <template v-slot:body>
+                    <p>速報内容を確認して、試合終了・結果登録ボタンを押してください。</p>
+                </template>
+            </register-match-result-modal>
+        </Teleport>
+        <Teleport to="body">
+            <register-match-delay-modal :show="showMatchDelayModal" @close="showMatchDelayModal = false"
+                @register-match-delay="registerMatchDelay">
+                <template v-slot:body>
+                    <p>試合の延期を登録します。<br />よろしいですか？</p>
+                </template>
+            </register-match-delay-modal>
+        </Teleport>
     </div>
 </template>
 
