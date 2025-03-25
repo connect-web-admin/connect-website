@@ -81,15 +81,6 @@ const formattedMatchDate = computed(() => {
     return formattedDate;
 });
 
-// 共通のクラススタイル定義
-const flexRow = 'flex flex-row'
-const flexCol = 'flex flex-col'
-const flexCenterGap = 'flex justify-center gap-10'
-const borderTopBottom = 'border-t-1 border-b-1 border-black'
-const pkCellHeader = 'w-[40px] text-center py-1'
-const pkCellWithBorder = 'w-[40px] text-center py-1 border-x-[1px] border-gray-300'
-const halfScoreContainer = 'w-1/2 pb-2'
-
 /**
  * 結果入力対象の試合情報を取得する
  */
@@ -161,7 +152,7 @@ const setActualMatchStartTime = (event) => {
     actualMatchStartTime.value = event.target.value;
 };
 
-const registerEditedMatchResult = async() => {
+const registerEditedMatchResult = async () => {
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-edited-match-result`);
 
@@ -211,10 +202,20 @@ onMounted(async () => {
     // 結果入力対象試合のデータを取得する
     await getTargetMatchInfo();
 });
+
+
+// 共通のクラススタイル定義
+const flexRow = 'flex flex-row'
+const flexCol = 'flex flex-col'
+const flexCenterGap = 'flex justify-center gap-10'
+const borderTopBottom = 'border-t-1 border-b-1 border-black'
+const pkCellHeader = 'w-[40px] text-center py-1'
+const pkCellWithBorder = 'w-[40px] text-center py-1 border-x-[1px] border-gray-300'
+const arrowDownwardIcon = 'w-5 my-2 mx-auto';
 </script>
 
 <template>
-    <div class="mb-50">
+    <div class="mb-50 max-w-screen-sm mx-auto">
         <div class="mt-8">
             <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
         </div>
@@ -245,69 +246,113 @@ onMounted(async () => {
                             <p class="w-1/2 bg-blue-100 text-xl">{{ homeClubName }}</p>
                             <p class="w-1/2 bg-amber-100 text-xl">{{ awayClubName }}</p>
                         </div>
-                        <div class="flex flex-row">
-                            <div :class="[halfScoreContainer, 'bg-blue-50']">
-                                <p>前半得点</p>
-                                <!-- <select v-model="homeClubFirstHalfScoreEdit">
-                                    <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
-                                </select> -->
-                                旧：{{ homeClubFirstHalfScore }}&nbsp;&nbsp;→&nbsp;
-                                新：<input type="number" v-model="homeClubFirstHalfScoreEdit" class="border-2 border-red-500 rounded-md text-center bg-white w-1/4" min="0" />
-                                <p class="mt-4">後半得点</p>
-                                旧：{{ homeClubSecondHalfScore }}&nbsp;&nbsp;→&nbsp;
-                                新：<input type="number" v-model="homeClubSecondHalfScoreEdit" class="border-2 border-red-500 rounded-md text-center bg-white w-1/4" min="0" />
+                        <div class="flex flex-row border-b-1 border-black">
+                            <div class="flex flex-col w-1/2">
+                                <div class="flex flex-row py-2 bg-blue-50">
+                                    <p class="w-1/2">前半得点</p>
+                                    <div class="w-1/2">
+                                        <select v-model="homeClubFirstHalfScoreEdit"
+                                            class=" bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row py-2 bg-blue-50">
+                                    <p class="w-1/2">後半得点</p>
+                                    <div class="w-1/2">
+                                        <select v-model="homeClubSecondHalfScoreEdit"
+                                            class=" bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div :class="[halfScoreContainer, 'bg-amber-50']">
-                                <p>前半得点</p>
-                                旧：{{ awayClubFirstHalfScore }}&nbsp;&nbsp;→&nbsp;
-                                新：<input type="number" v-model="awayClubFirstHalfScoreEdit" class="border-2 border-red-500 rounded-md text-center bg-white w-1/4" min="0" />
-                                <p class="mt-4">後半得点</p>
-                                旧：{{ awayClubSecondHalfScore }}&nbsp;&nbsp;→&nbsp;
-                                新：<input type="number" v-model="awayClubSecondHalfScoreEdit" class="border-2 border-red-500 rounded-md text-center bg-white w-1/4" min="0" />
+                            <div class="flex flex-col w-1/2">
+                                <div class="flex flex-row py-2 bg-amber-50">
+                                    <p class="w-1/2">前半得点</p>
+                                    <div class="w-1/2">
+                                        <select v-model="awayClubFirstHalfScoreEdit"
+                                            class=" bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row py-2 bg-amber-50">
+                                    <p class="w-1/2">後半得点</p>
+                                    <div class="w-1/2">
+                                        <select v-model="awayClubSecondHalfScoreEdit"
+                                            class=" bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <!-- 前半得点入力 --> 
                         </div>
                     </div>
-                    <div :class="borderTopBottom">
-                        <div class="bg-amber-200">
-                            <h2>延長戦の有無</h2>
-                            <p class="text-sm">（得点入力欄が表示されます）</p>
-                        </div>
-                        <div :class="[flexRow, 'justify-center gap-10 py-2']">
+                    <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                    <div :class="[borderTopBottom, 'bg-amber-300 flex flex-row justify-center gap-10 py-2']">
+                        <h2>延長戦の有無</h2>
+                        <!-- <p class="text-sm">（得点入力欄が表示されます）</p> -->
+                        <div class="flex flex-row gap-5">
                             <div>
-                                <input type="radio" id="hasExtraHalvesEditRadio1" v-model="hasExtraHalvesEdit" :value="true" />
+                                <input type="radio" id="hasExtraHalvesEditRadio1" v-model="hasExtraHalvesEdit"
+                                    :value="true" />
                                 <label for="hasExtraHalvesEditRadio1">あり</label>
                             </div>
                             <div>
-                                <input type="radio" id="hasExtraHalvesEditRadio2" v-model="hasExtraHalvesEdit" selected :value="false" />
+                                <input type="radio" id="hasExtraHalvesEditRadio2" v-model="hasExtraHalvesEdit" selected
+                                    :value="false" />
                                 <label for="hasExtraHalvesEditRadio2">なし</label>
                             </div>
                         </div>
                     </div>
-                    <div v-if="hasExtraHalvesEdit" :class="flexRow">
-                        <div :class="[halfScoreContainer, 'bg-blue-50']">
-                            <p>延長前半得点</p>
-                            旧：{{ homeClubExtraFirstHalfScore }}&nbsp;&nbsp;→&nbsp;
-                            新：<input type="number" v-model="homeClubExtraFirstHalfScoreEdit" class="border-2 border-red-500 rounded-md text-center bg-white w-1/4" min="0" />
-                            <p class="mt-4">延長後半得点</p>
-                            旧：{{ homeClubExtraSecondHalfScore }}&nbsp;&nbsp;→&nbsp;
-                            新：<input type="number" v-model="homeClubExtraSecondHalfScoreEdit" class="border-2 border-red-500 rounded-md text-center bg-white w-1/4" min="0" />
+                    <div v-if="hasExtraHalvesEdit" class="flex flex-row border-b-1 border-black">
+                        <div class="flex flex-col w-1/2">
+                            <div class="flex flex-row py-2 bg-blue-50">
+                                <p class="w-1/2">延長前半得点</p>
+                                <div class="w-1/2">
+                                    <select v-model="homeClubExtraFirstHalfScoreEdit"
+                                        class=" bg-white border-2 border-red-500 rounded-md">
+                                        <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex flex-row py-2 bg-blue-50">
+                                <p class="w-1/2">延長後半得点</p>
+                                <div class="w-1/2">
+                                    <select v-model="homeClubExtraSecondHalfScoreEdit"
+                                        class=" bg-white border-2 border-red-500 rounded-md">
+                                        <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div :class="[halfScoreContainer, 'bg-amber-50']">
-                            <p>延長前半得点</p>
-                            旧：{{ awayClubExtraFirstHalfScore }}&nbsp;&nbsp;→&nbsp;
-                            新：<input type="number" v-model="awayClubExtraFirstHalfScoreEdit" class="border-2 border-red-500 rounded-md text-center bg-white w-1/4" min="0" />
-                            <p class="mt-4">延長後半得点</p>
-                            旧：{{ awayClubExtraSecondHalfScore }}&nbsp;&nbsp;→&nbsp;
-                            新：<input type="number" v-model="awayClubExtraSecondHalfScoreEdit" class="border-2 border-red-500 rounded-md text-center bg-white w-1/4" min="0" />
+                        <div class="flex flex-col w-1/2">
+                            <div class="flex flex-row py-2 bg-amber-50">
+                                <p class="w-1/2">延長前半得点</p>
+                                <div class="w-1/2">
+                                    <select v-model="awayClubExtraFirstHalfScoreEdit"
+                                        class=" bg-white border-2 border-red-500 rounded-md">
+                                        <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex flex-row py-2 bg-amber-50">
+                                <p class="w-1/2">延長後半得点</p>
+                                <div class="w-1/2">
+                                    <select v-model="awayClubExtraSecondHalfScoreEdit"
+                                        class=" bg-white border-2 border-red-500 rounded-md">
+                                        <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div :class="borderTopBottom">
-                        <div class="bg-purple-200">
-                            <h2>PK戦の有無</h2>
-                            <p class="text-sm">（得点入力欄が表示されます）</p>
-                        </div>
-                        <div :class="[flexRow, 'justify-center gap-10 py-2']">
+                    <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                    <div :class="[borderTopBottom, 'bg-purple-200 flex flex-row justify-center gap-10 py-2']">
+                        <h2>PK戦の有無</h2>
+                        <!-- <p class="text-sm">（得点入力欄が表示されます）</p> -->
+                        <div class="flex flex-row gap-5">
                             <div>
                                 <input type="radio" id="hasPkEditRadio1" v-model="hasPkEdit" :value="true" />
                                 <label for="hasPkEditRadio1">あり</label>
@@ -413,21 +458,20 @@ onMounted(async () => {
                             </div>
                         </div>
                     </div>
-                    <!-- 試合結果登録 -->
-                    <div class="mt-10">
-                        <!-- 実際の試合開始時刻登録 -->
-                        <div class="border-t-1 border-b-1 border-black my-5">
-                            <label for="match-time">
-                                <p class="bg-gray-200">実際の試合開始時刻</p>
-                            </label>
-                            <div class="flex items-center justify-center h-10">
-                                <input type="time" id="match-time" :value="scheduledMatchStartTime"
-                                    @input="setActualMatchStartTime" />
-                            </div>
+                    <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                    <div class="border-t-1 border-b-1 border-black my-5">
+                        <label for="match-time">
+                            <p class="bg-gray-200">実際の試合開始時刻</p>
+                        </label>
+                        <div class="flex items-center justify-center h-10">
+                            <input type="time" id="match-time" :value="scheduledMatchStartTime"
+                                @input="setActualMatchStartTime" />
                         </div>
-                        <button type="button" @click="registerMatchResult"
-                            class="bg-blue-600 px-3 py-1 rounded-md"><span
-                                class="text-md bg-blue-600 text-white">修正登録</span></button>
+                    </div>
+                    <div class="mt-20">
+                        <button type="button" @click="registerMatchResult" class="bg-blue-600 px-3 py-1 rounded-md">
+                            <span class="text-md bg-blue-600 text-white">修正登録</span>
+                        </button>
                     </div>
                 </div>
             </div>
