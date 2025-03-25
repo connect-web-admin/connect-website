@@ -70,7 +70,7 @@ const getCurrentMatches = async () => {
  * 選択された試合の速報画面に遷移
  * 大会IDと試合IDをパラメーターとして渡す
  */
-const moveToRegisterMatchResult = async (matchId, isResultAlreadyRegistered) => {
+const moveToRegisterMatchResult = async (matchId) => {
     if (selectedCategory.value && selectedChampionshipName.value && selectedVenue.value) {
         // 選択されたカテゴリーから大会英を抽出
         const filteredByCategory = matchInfo.value.filter(match => match['category'] === selectedCategory.value);
@@ -79,34 +79,56 @@ const moveToRegisterMatchResult = async (matchId, isResultAlreadyRegistered) => 
         // 選択された大会情報から大会IDを抽出
         const championshipId = filteredByChampionship['championship_id'];
 
-        // 大会IDと試合IDから当該試合の情報を抽出
-        // 試合結果が登録済みの試合の結果を再度入力しようとした場合、確認させる
-        if (isResultAlreadyRegistered) {
-            router.push({
-                name: 'RegisterMatchResult', // TODO:修正用ページに遷移するように書き換えること
-                params: {
-                    championshipId: championshipId,
-                    matchId: matchId
-                }
-            });
-        } else {
-            // 速報登録後に戻ってきた時に、前回選択時の項目を復元するためにローカルストレージ情報を保存            
-            localStorage.setItem('selectedCategory', selectedCategory.value); // カテゴリー
-            localStorage.setItem('selectedChampionshipName', selectedChampionshipName.value); // 大会名 
-            localStorage.setItem('selectedVenue', selectedVenue.value); // 試合会場
-            // 上記で設定したローカルストレージの有効期限をひとまとめにして定める。
-            const todayEnd = dayjs().hour(23).minute(59).second(59).format('YYYY-MM-DDTHH:mm:ss');
-            localStorage.setItem('selectedItemsExpiration', todayEnd); // 有効期限
+        // 速報登録後に戻ってきた時に、前回選択時の項目を復元するためにローカルストレージ情報を保存            
+        localStorage.setItem('selectedCategory', selectedCategory.value); // カテゴリー
+        localStorage.setItem('selectedChampionshipName', selectedChampionshipName.value); // 大会名 
+        localStorage.setItem('selectedVenue', selectedVenue.value); // 試合会場
+        // 上記で設定したローカルストレージの有効期限をひとまとめにして定める。
+        const todayEnd = dayjs().hour(23).minute(59).second(59).format('YYYY-MM-DDTHH:mm:ss');
+        localStorage.setItem('selectedItemsExpiration', todayEnd); // 有効期限
 
-            // 大会IDと試合IDをパラメーターとして渡す
-            router.push({
-                name: 'RegisterMatchResult',
-                params: {
-                    championshipId: championshipId,
-                    matchId: matchId
-                }
-            });
-        }
+        // 大会IDと試合IDをパラメーターとして渡す
+        router.push({
+            name: 'RegisterMatchResult',
+            params: {
+                championshipId: championshipId,
+                matchId: matchId
+            }
+        });
+    } else {
+        alert('試合が正しく選択されていません。ブラウザを更新してから、もう一度お試しください。改善しない場合は、コネクトまでご連絡ください。');
+    }
+}
+
+/**
+ * 選択された試合の修正画面に遷移
+ * 大会IDと試合IDをパラメーターとして渡す
+ */
+const moveToEditMatchResult = async (matchId) => {
+    if (selectedCategory.value && selectedChampionshipName.value && selectedVenue.value) {
+        // 選択されたカテゴリーから大会英を抽出
+        const filteredByCategory = matchInfo.value.filter(match => match['category'] === selectedCategory.value);
+        // 選択された大会名から大会情報を抽出
+        const filteredByChampionship = filteredByCategory.find(match => match['championship_name'] === selectedChampionshipName.value);
+        // 選択された大会情報から大会IDを抽出
+        const championshipId = filteredByChampionship['championship_id'];
+
+        // 速報登録後に戻ってきた時に、前回選択時の項目を復元するためにローカルストレージ情報を保存            
+        localStorage.setItem('selectedCategory', selectedCategory.value); // カテゴリー
+        localStorage.setItem('selectedChampionshipName', selectedChampionshipName.value); // 大会名 
+        localStorage.setItem('selectedVenue', selectedVenue.value); // 試合会場
+        // 上記で設定したローカルストレージの有効期限をひとまとめにして定める。
+        const todayEnd = dayjs().hour(23).minute(59).second(59).format('YYYY-MM-DDTHH:mm:ss');
+        localStorage.setItem('selectedItemsExpiration', todayEnd); // 有効期限
+
+        // 大会IDと試合IDをパラメーターとして渡す
+        router.push({
+            name: 'EditMatchResult',
+            params: {
+                championshipId: championshipId,
+                matchId: matchId
+            }
+        });
     } else {
         alert('試合が正しく選択されていません。ブラウザを更新してから、もう一度お試しください。改善しない場合は、コネクトまでご連絡ください。');
     }
@@ -376,9 +398,9 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                                 class="not-last:border-b-1 not-last:border-gray-300">
                                 <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200">
                                     <button type="button"
-                                        @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
+                                        @click="moveToEditMatchResult(match.matchId)"
                                         :class="selectBtn" class="bg-gray-200 border-1 border-black rounded-xl">修正</button>
-                                    <div class="w-full pl-2">
+                                    <div class="w-full pl-2 bg-white">
                                         <p class="block">開催日：{{ match.matchDate }}
                                             <span class="text-left text-red-600 ml-5">速報終了済み</span>
                                         </p>
@@ -393,7 +415,7 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                                 <div v-else class="px-2 py-1">
                                     <div class="flex items-center">
                                         <button type="button"
-                                            @click="moveToRegisterMatchResult(match.matchId, match.isResultRegistered)"
+                                            @click="moveToRegisterMatchResult(match.matchId)"
                                             :class="selectBtn" class="bg-green-200 border-1 border-black rounded-xl">選択</button>
                                         <div class="w-full pl-2">
                                             <div class="text-left">
