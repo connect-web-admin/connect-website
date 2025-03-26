@@ -407,7 +407,7 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                                         <p>{{ match.homeClubName }}&nbsp;vs&nbsp;{{ match.awayClubName }}</p>
                                         <p class="text-red-600 font-bold">{{ match.homeClubFinalScore }}&nbsp;-&nbsp;{{ match.awayClubFinalScore }}
                                             <span v-if="match.hasPk">
-                                                <p>(PK {{ match.homeClubPkScore }}&nbsp;vs&nbsp;{{ match.awayClubPkScore }})</p>
+                                                <p>(PK {{ match.homeClubPkScore }}&nbsp;-&nbsp;{{ match.awayClubPkScore }})</p>
                                             </span>
                                         </p>
                                     </div>
