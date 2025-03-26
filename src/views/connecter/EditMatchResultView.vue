@@ -31,8 +31,7 @@ const matchId = route.params.matchId; // 試合ID ルーティング時にパラ
 const hasExtraHalves = ref(false); // 延長戦有無
 const hasPk = ref(false); // PK戦有無
 const actualMatchStartTime = ref(''); // 実際の試合開始時刻
-
-
+const actualMatchStartTimeEdit = ref(''); // 実際の試合開始時刻
 const homeClubFirstHalfScore = ref(0); // ホームクラブの前半得点
 const homeClubSecondHalfScore = ref(0); // ホームクラブの後半得点
 const homeClubExtraFirstHalfScore = ref(0); // ホームクラブの延長前半得点
@@ -48,21 +47,20 @@ const awayClubFinalScore = ref(0); // アウェイクラブの得点
 const awayClubPkScore = ref(0); // アウェイクラブのPK戦スコア
 const awayClubPkScoreList = ref([]); // アウェイクラブのPK戦スコアリスト
 
-
 const hasExtraHalvesEdit = ref(false); // 延長戦有無
 const hasPkEdit = ref(false); // PK戦有無
-const homeClubFirstHalfScoreEdit = ref(0); // ホームクラブの前半得点
-const homeClubSecondHalfScoreEdit = ref(0); // ホームクラブの後半得点
-const homeClubExtraFirstHalfScoreEdit = ref(0); // ホームクラブの延長前半得点
-const homeClubExtraSecondHalfScoreEdit = ref(0); // ホームクラブの延長後半得点
-const homeClubPkScoreEdit = ref(0); // ホームクラブのPK戦スコア
-const homeClubPkScoreListEdit = ref([]); // ホームクラブのPK戦スコアリスト
-const awayClubFirstHalfScoreEdit = ref(0); // アウェイクラブの前半得点
-const awayClubSecondHalfScoreEdit = ref(0); // アウェイクラブの後半得点
-const awayClubExtraFirstHalfScoreEdit = ref(0); // アウェイクラブの延長前半得点
-const awayClubExtraSecondHalfScoreEdit = ref(0); // アウェイクラブの延長後半得点
-const awayClubPkScoreEdit = ref(0); // アウェイクラブのPK戦スコア
-const awayClubPkScoreListEdit = ref([]); // アウェイクラブのPK戦スコアリスト
+const homeClubFirstHalfScoreEdit = ref(0); // 初期値を設定
+const homeClubSecondHalfScoreEdit = ref(0); // 初期値を設定
+const homeClubExtraFirstHalfScoreEdit = ref(0); // 初期値を設定
+const homeClubExtraSecondHalfScoreEdit = ref(0); // 初期値を設定
+const homeClubPkScoreEdit = ref(0); // 初期値を設定
+const homeClubPkScoreListEdit = ref([]); // 初期値を設定
+const awayClubFirstHalfScoreEdit = ref(0); // 初期値を設定
+const awayClubSecondHalfScoreEdit = ref(0); // 初期値を設定
+const awayClubExtraFirstHalfScoreEdit = ref(0); // 初期値を設定
+const awayClubExtraSecondHalfScoreEdit = ref(0); // 初期値を設定
+const awayClubPkScoreEdit = ref(0); // 初期値を設定
+const awayClubPkScoreListEdit = ref([]); // 初期値を設定
 
 // エラーメッセージを格納する
 const errorMessage = ref('');
@@ -122,6 +120,7 @@ const getTargetMatchInfo = async () => {
         matchDate.value = data['match_detail']['match_date'];
         scheduledMatchStartTime.value = data['match_detail']['scheduled_match_start_time'];
         gameStatus.value = data['match_detail']['game_status'];
+        actualMatchStartTime.value = data['match_detail']['actual_match_start_time'];
 
         homeClubName.value = data['match_detail']['home_club']['club_name'];
         homeClubFirstHalfScore.value = data['match_detail']['home_club']['first_half_score'];
@@ -139,6 +138,23 @@ const getTargetMatchInfo = async () => {
         awayClubFinalScore.value = data['match_detail']['away_club']['final_score'];
         awayClubPkScore.value = data['match_detail']['away_club']['pk_score'];
         awayClubPkScoreList.value = data['match_detail']['away_club']['pk_score_list'];
+
+        // 編集用の変数を現在の値で初期化
+        homeClubFirstHalfScoreEdit.value = homeClubFirstHalfScore.value;
+        homeClubSecondHalfScoreEdit.value = homeClubSecondHalfScore.value;
+        homeClubExtraFirstHalfScoreEdit.value = homeClubExtraFirstHalfScore.value;
+        homeClubExtraSecondHalfScoreEdit.value = homeClubExtraSecondHalfScore.value;
+        homeClubPkScoreEdit.value = homeClubPkScore.value;
+        homeClubPkScoreListEdit.value = [...homeClubPkScoreList.value];
+        awayClubFirstHalfScoreEdit.value = awayClubFirstHalfScore.value;
+        awayClubSecondHalfScoreEdit.value = awayClubSecondHalfScore.value;
+        awayClubExtraFirstHalfScoreEdit.value = awayClubExtraFirstHalfScore.value;
+        awayClubExtraSecondHalfScoreEdit.value = awayClubExtraSecondHalfScore.value;
+        awayClubPkScoreEdit.value = awayClubPkScore.value;
+        awayClubPkScoreListEdit.value = [...awayClubPkScoreList.value];
+        hasExtraHalvesEdit.value = hasExtraHalves.value;
+        hasPkEdit.value = hasPk.value;
+        actualMatchStartTimeEdit.value = actualMatchStartTime.value;
     } catch (error) {
         console.error('Error details:', error);
         errorMessage.value = '試合データの取得に失敗しました。';
@@ -149,9 +165,34 @@ const getTargetMatchInfo = async () => {
 
 // ユーザーが時間を変更したときに selectedTime を更新
 const setActualMatchStartTime = (event) => {
-    actualMatchStartTime.value = event.target.value;
+    actualMatchStartTimeEdit.value = event.target.value;
 };
 
+/**
+ * ホームクラブの合計得点を計算する
+ */
+const homeClubFinalScoreEdit = computed(() => {
+    if (hasExtraHalvesEdit.value) {
+        return homeClubFirstHalfScoreEdit.value + homeClubSecondHalfScoreEdit.value + homeClubExtraFirstHalfScoreEdit.value + homeClubExtraSecondHalfScoreEdit.value;
+    } else {
+        return homeClubFirstHalfScoreEdit.value + homeClubSecondHalfScoreEdit.value;
+    }
+});
+
+/**
+ * アウェイクラブの合計得点を計算する
+ */
+const awayClubFinalScoreEdit = computed(() => {
+    if (hasExtraHalvesEdit.value) {
+        return awayClubFirstHalfScoreEdit.value + awayClubSecondHalfScoreEdit.value + awayClubExtraFirstHalfScoreEdit.value + awayClubExtraSecondHalfScoreEdit.value;
+    } else {
+        return awayClubFirstHalfScoreEdit.value + awayClubSecondHalfScoreEdit.value;
+    }
+});
+
+/**
+ * 試合結果を修正する 
+ */
 const registerEditedMatchResult = async () => {
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-edited-match-result`);
@@ -162,17 +203,19 @@ const registerEditedMatchResult = async () => {
             matchId: matchId, // パラメタで渡された試合ID
             hasExtraHalvesEdit: hasExtraHalvesEdit.value,
             hasPkEdit: hasPkEdit.value,
-            actualMatchStartTime: actualMatchStartTime.value,
+            actualMatchStartTimeEdit: actualMatchStartTimeEdit.value,
             homeClubFirstHalfScoreEdit: homeClubFirstHalfScoreEdit.value,
             homeClubSecondHalfScoreEdit: homeClubSecondHalfScoreEdit.value,
             homeClubExtraFirstHalfScoreEdit: homeClubExtraFirstHalfScoreEdit.value,
             homeClubExtraSecondHalfScoreEdit: homeClubExtraSecondHalfScoreEdit.value,
+            homeClubFinalScoreEdit: homeClubFinalScoreEdit.value,
             homeClubPkScoreEdit: homeClubPkScoreEdit.value,
             homeClubPkScoreListEdit: homeClubPkScoreListEdit.value,
             awayClubFirstHalfScoreEdit: awayClubFirstHalfScoreEdit.value,
             awayClubSecondHalfScoreEdit: awayClubSecondHalfScoreEdit.value,
             awayClubExtraFirstHalfScoreEdit: awayClubExtraFirstHalfScoreEdit.value,
             awayClubExtraSecondHalfScoreEdit: awayClubExtraSecondHalfScoreEdit.value,
+            awayClubFinalScoreEdit: awayClubFinalScoreEdit.value,
             awayClubPkScoreEdit: awayClubPkScoreEdit.value,
             awayClubPkScoreListEdit: awayClubPkScoreListEdit.value,
         }
@@ -190,7 +233,7 @@ const registerEditedMatchResult = async () => {
         }
 
         // 成功時の処理を追加
-        alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
+        alert('試合結果を正常に修正しました。試合検索画面に戻ります。');
         router.push('/connecter/select-reporting-match');
     } catch (error) {
         console.error('Error details:', error)
@@ -198,11 +241,83 @@ const registerEditedMatchResult = async () => {
     }
 }
 
+// PK戦の追加ラウンド数を計算
+const extraPkRounds = computed(() => {
+    // 基本の5回までは常に表示
+    const baseRounds = 5;
+    const currentHomeLen = homeClubPkScoreListEdit.value.length;
+    const currentAwayLen = awayClubPkScoreListEdit.value.length;
+    
+    // 両チームが5回終わっていない場合は追加ラウンドなし
+    if (currentHomeLen < baseRounds || currentAwayLen < baseRounds) {
+        return 0;
+    }
+
+    // 5回終了時点での両チームの得点を計算
+    const homeScoreAtBase = homeClubPkScoreListEdit.value
+        .slice(0, baseRounds)
+        .filter(r => r === 'success')
+        .length;
+    const awayScoreAtBase = awayClubPkScoreListEdit.value
+        .slice(0, baseRounds)
+        .filter(r => r === 'success')
+        .length;
+
+    // 5回終了時点で得点が同じ場合、サドンデスに移行
+    if (homeScoreAtBase === awayScoreAtBase) {
+        // 現在のラウンド数（両チームの短い方に合わせる）
+        const currentRound = Math.min(currentHomeLen, currentAwayLen);
+        
+        // 両チームが同じラウンドを蹴り終わった時点で判定
+        if (currentHomeLen === currentAwayLen && currentRound > baseRounds) {
+            const homeScore = homeClubPkScoreListEdit.value
+                .filter(r => r === 'success')
+                .length;
+            const awayScore = awayClubPkScoreListEdit.value
+                .filter(r => r === 'success')
+                .length;
+            
+            // 得点差がついている場合は、次のラウンドのマスを表示しない
+            if (homeScore !== awayScore) {
+                return currentRound - baseRounds;
+            }
+        }
+        
+        // 両チームが蹴り終わっていないか、得点差がついていない場合は次のラウンドのマスを用意
+        return Math.max(currentRound - baseRounds + 1, 1);
+    }
+
+    return 0;
+});
+
+// PKスコア管理関数
+const managePkScore = (team, result) => {
+    if (team === 'home') {
+        homeClubPkScoreListEdit.value.push(result);
+        homeClubPkScoreEdit.value = homeClubPkScoreListEdit.value.filter(r => r === 'success').length;
+    } 
+    if (team === 'away') {
+        awayClubPkScoreListEdit.value.push(result);
+        awayClubPkScoreEdit.value = awayClubPkScoreListEdit.value.filter(r => r === 'success').length;
+    }
+};
+
+// 最後のキックをキャンセル
+const cancelLastKick = (team) => {
+    if (team === 'home' && homeClubPkScoreListEdit.value.length > 0) {
+        homeClubPkScoreListEdit.value.pop();
+        homeClubPkScoreEdit.value = homeClubPkScoreListEdit.value.filter(r => r === 'success').length;
+    }    
+    if (team === 'away' && awayClubPkScoreListEdit.value.length > 0) {
+        awayClubPkScoreListEdit.value.pop();
+        awayClubPkScoreEdit.value = awayClubPkScoreListEdit.value.filter(r => r === 'success').length;
+    }
+};
+
 onMounted(async () => {
     // 結果入力対象試合のデータを取得する
     await getTargetMatchInfo();
 });
-
 
 // 共通のクラススタイル定義
 const flexRow = 'flex flex-row'
@@ -215,7 +330,7 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
 </script>
 
 <template>
-    <div class="mb-50 max-w-screen-sm mx-auto">
+    <div class="max-w-screen-sm mx-auto">
         <div class="mt-8">
             <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
         </div>
@@ -234,55 +349,70 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
                     <p>試合日時：{{ formattedMatchDate }} - {{ scheduledMatchStartTime }}</p>
                     <p>会場：{{ venue }}</p>
                     <div class="flex flex-row justify-center">
-                        <p class="w-48 break-words text-right">{{ homeClubName }}</p>
-                        <p class="w-4 mx-2">vs</p>
-                        <p class="w-48 break-words text-left">{{ awayClubName }}</p>
+                        <p class="w-full break-words text-right">{{ homeClubName }}</p>
+                        <p class="mx-2">vs</p>
+                        <p class="w-full break-words text-left">{{ awayClubName }}</p>
+                    </div>
+                    <div class="mt-2">
+                        <h2>＜修正前結果＞　</h2>
+                        <p>{{ homeClubFirstHalfScore }}<span class="mx-2">前半</span>{{ awayClubFirstHalfScore }}</p>
+                        <p>{{ homeClubSecondHalfScore }}<span class="mx-2">後半</span>{{ awayClubSecondHalfScore }}</p>
+                        <div v-if="hasExtraHalves">
+                            <p>{{ homeClubExtraFirstHalfScore }}<span class="mx-2">延長前半</span>{{
+                                awayClubExtraFirstHalfScore }}</p>
+                            <p>{{ homeClubExtraSecondHalfScore }}<span class="mx-2">延長後半</span>{{
+                                awayClubExtraSecondHalfScore }}</p>
+                        </div>
+                        <p>{{ homeClubFinalScore }}<span class="mx-2">合計</span>{{ awayClubFinalScore }}</p>
+                        <div v-if="hasPk">
+                            <p>{{ homeClubPkScore }}<span class="mx-2">PK</span>{{ awayClubPkScore }}</p>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-5">
                     <h2 class="py-1 font-bold text-xl border-t-1 border-b-1 border-black">速報内容修正</h2>
                     <div>
                         <div class="flex flex-row border-b-1 border-black">
-                            <p class="w-1/2 bg-blue-100 text-xl">{{ homeClubName }}</p>
-                            <p class="w-1/2 bg-amber-100 text-xl">{{ awayClubName }}</p>
+                            <p class="w-1/2 bg-blue-100">{{ homeClubName }}</p>
+                            <p class="w-1/2 bg-amber-100">{{ awayClubName }}</p>
                         </div>
                         <div class="flex flex-row border-b-1 border-black">
                             <div class="flex flex-col w-1/2">
                                 <div class="flex flex-row py-2 bg-blue-50">
-                                    <p class="w-1/2">前半得点</p>
-                                    <div class="w-1/2">
+                                    <p class="w-3/5">前半得点</p>
+                                    <div class="w-2/5">
                                         <select v-model="homeClubFirstHalfScoreEdit"
-                                            class=" bg-white border-2 border-red-500 rounded-md">
-                                            <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                            class="bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 31" :key="i - 1" :value="i - 1">{{ i - 1 }}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="flex flex-row py-2 bg-blue-50">
-                                    <p class="w-1/2">後半得点</p>
-                                    <div class="w-1/2">
+                                    <p class="w-3/5">後半得点</p>
+                                    <div class="w-2/5">
                                         <select v-model="homeClubSecondHalfScoreEdit"
                                             class=" bg-white border-2 border-red-500 rounded-md">
-                                            <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                            <option v-for="i in 31" :key="i - 1" :value="i - 1">{{ i - 1 }}</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex flex-col w-1/2">
                                 <div class="flex flex-row py-2 bg-amber-50">
-                                    <p class="w-1/2">前半得点</p>
-                                    <div class="w-1/2">
+                                    <p class="w-3/5">前半得点</p>
+                                    <div class="w-2/5">
                                         <select v-model="awayClubFirstHalfScoreEdit"
                                             class=" bg-white border-2 border-red-500 rounded-md">
-                                            <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                            <option v-for="i in 31" :key="i - 1" :value="i - 1">{{ i - 1 }}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="flex flex-row py-2 bg-amber-50">
-                                    <p class="w-1/2">後半得点</p>
-                                    <div class="w-1/2">
+                                    <p class="w-3/5">後半得点</p>
+                                    <div class="w-2/5">
                                         <select v-model="awayClubSecondHalfScoreEdit"
                                             class=" bg-white border-2 border-red-500 rounded-md">
-                                            <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
+                                            <option v-for="i in 31" :key="i - 1" :value="i - 1">{{ i - 1 }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -292,184 +422,233 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
                     <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
                     <div :class="[borderTopBottom, 'bg-amber-300 flex flex-row justify-center gap-10 py-2']">
                         <h2>延長戦の有無</h2>
-                        <!-- <p class="text-sm">（得点入力欄が表示されます）</p> -->
                         <div class="flex flex-row gap-5">
                             <div>
                                 <input type="radio" id="hasExtraHalvesEditRadio1" v-model="hasExtraHalvesEdit"
-                                    :value="true" />
+                                    :value="true" name="hasExtraHalvesEdit" />
                                 <label for="hasExtraHalvesEditRadio1">あり</label>
                             </div>
                             <div>
-                                <input type="radio" id="hasExtraHalvesEditRadio2" v-model="hasExtraHalvesEdit" selected
-                                    :value="false" />
+                                <input type="radio" id="hasExtraHalvesEditRadio2" v-model="hasExtraHalvesEdit"
+                                    :value="false" name="hasExtraHalvesEdit" />
                                 <label for="hasExtraHalvesEditRadio2">なし</label>
                             </div>
                         </div>
                     </div>
-                    <div v-if="hasExtraHalvesEdit" class="flex flex-row border-b-1 border-black">
-                        <div class="flex flex-col w-1/2">
-                            <div class="flex flex-row py-2 bg-blue-50">
-                                <p class="w-1/2">延長前半得点</p>
-                                <div class="w-1/2">
-                                    <select v-model="homeClubExtraFirstHalfScoreEdit"
-                                        class=" bg-white border-2 border-red-500 rounded-md">
-                                        <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
-                                    </select>
+                    <Transition enter-active-class="transition-opacity duration-300 ease-in"
+                        leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
+                        leave-to-class="opacity-0">
+                        <div v-if="hasExtraHalvesEdit" class="flex flex-row border-b-1 border-black">
+                            <div class="flex flex-col w-1/2">
+                                <div class="flex flex-row py-2 bg-blue-50">
+                                    <p class="w-3/5">延長前半得点</p>
+                                    <div class="w-2/5">
+                                        <select v-model="homeClubExtraFirstHalfScoreEdit"
+                                            class=" bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 31" :key="i - 1" :value="i - 1">{{ i - 1 }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row py-2 bg-blue-50">
+                                    <p class="w-3/5">延長後半得点</p>
+                                    <div class="w-2/5">
+                                        <select v-model="homeClubExtraSecondHalfScoreEdit"
+                                            class=" bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 31" :key="i - 1" :value="i - 1">{{ i - 1 }}</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex flex-row py-2 bg-blue-50">
-                                <p class="w-1/2">延長後半得点</p>
-                                <div class="w-1/2">
-                                    <select v-model="homeClubExtraSecondHalfScoreEdit"
-                                        class=" bg-white border-2 border-red-500 rounded-md">
-                                        <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
-                                    </select>
+                            <div class="flex flex-col w-1/2">
+                                <div class="flex flex-row py-2 bg-amber-50">
+                                    <p class="w-3/5">延長前半得点</p>
+                                    <div class="w-2/5">
+                                        <select v-model="awayClubExtraFirstHalfScoreEdit"
+                                            class=" bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 31" :key="i - 1" :value="i - 1">{{ i - 1 }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row py-2 bg-amber-50">
+                                    <p class="w-3/5">延長後半得点</p>
+                                    <div class="w-2/5">
+                                        <select v-model="awayClubExtraSecondHalfScoreEdit"
+                                            class=" bg-white border-2 border-red-500 rounded-md">
+                                            <option v-for="i in 31" :key="i - 1" :value="i - 1">{{ i - 1 }}</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-col w-1/2">
-                            <div class="flex flex-row py-2 bg-amber-50">
-                                <p class="w-1/2">延長前半得点</p>
-                                <div class="w-1/2">
-                                    <select v-model="awayClubExtraFirstHalfScoreEdit"
-                                        class=" bg-white border-2 border-red-500 rounded-md">
-                                        <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="flex flex-row py-2 bg-amber-50">
-                                <p class="w-1/2">延長後半得点</p>
-                                <div class="w-1/2">
-                                    <select v-model="awayClubExtraSecondHalfScoreEdit"
-                                        class=" bg-white border-2 border-red-500 rounded-md">
-                                        <option v-for="i in 30" :key="i" :value="i">{{ i }}</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </Transition>
                     <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
                     <div :class="[borderTopBottom, 'bg-purple-200 flex flex-row justify-center gap-10 py-2']">
                         <h2>PK戦の有無</h2>
-                        <!-- <p class="text-sm">（得点入力欄が表示されます）</p> -->
                         <div class="flex flex-row gap-5">
                             <div>
-                                <input type="radio" id="hasPkEditRadio1" v-model="hasPkEdit" :value="true" />
+                                <input type="radio" id="hasPkEditRadio1" v-model="hasPkEdit" :value="true"
+                                    name="hasPkEdit" />
                                 <label for="hasPkEditRadio1">あり</label>
                             </div>
                             <div>
-                                <input type="radio" id="hasPkEditRadio2" v-model="hasPkEdit" selected :value="false" />
+                                <input type="radio" id="hasPkEditRadio2" v-model="hasPkEdit" :value="false"
+                                    name="hasPkEdit" />
                                 <label for="hasPkEditRadio2">なし</label>
                             </div>
                         </div>
                     </div>
-
                     <!-- PK戦のスコア登録 -->
-                    <div v-if="gameStatus === 'PK戦' && hasPk" :class="[flexCol, borderTopBottom, 'py-3']">
-                        <h3 class="font-bold mb-2">PK戦スコア登録</h3>
-                        <!-- 操作ボタン -->
-                        <div :class="[flexCenterGap, 'mb-4']">
-                            <div :class="[flexCol, 'items-center']">
-                                <p class="text-md mb-1">{{ homeClubName }}</p>
-                                <div class="flex gap-3">
-                                    <button @click="managePkScore('home', 'success')"
-                                        class="bg-green-500 text-white px-3 py-1 rounded">
-                                        ○
-                                    </button>
-                                    <button @click="managePkScore('home', 'failure')"
-                                        class="bg-red-500 text-white px-3 py-1 rounded">
-                                        ×
-                                    </button>
-                                    <button @click="cancelLastKick('home')"
-                                        class="bg-gray-500 text-white px-2 py-1 rounded text-sm">
-                                        取消
-                                    </button>
+                    <Transition enter-active-class="transition-opacity duration-300 ease-in"
+                        leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
+                        leave-to-class="opacity-0">
+                        <div v-if="hasPkEdit" class="border-b-1 border-black py-2">
+                            <!-- 操作ボタン -->
+                            <div :class="[flexCenterGap, 'mb-4']">
+                                <div :class="[flexCol, 'items-center']">
+                                    <p class="text-md mb-1">{{ homeClubName }}</p>
+                                    <div class="flex gap-3">
+                                        <button @click="managePkScore('home', 'success')"
+                                            class="bg-green-500 text-white px-3 py-1 rounded">
+                                            ○
+                                        </button>
+                                        <button @click="managePkScore('home', 'failure')"
+                                            class="bg-red-500 text-white px-3 py-1 rounded">
+                                            ×
+                                        </button>
+                                        <button @click="cancelLastKick('home')"
+                                            class="bg-gray-500 text-white px-2 py-1 rounded text-sm">
+                                            取消
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div :class="[flexCol, 'items-center']">
+                                    <p class="text-md mb-1">{{ awayClubName }}</p>
+                                    <div class="flex gap-3">
+                                        <button @click="managePkScore('away', 'success')"
+                                            class="bg-green-500 text-white px-3 py-1 rounded">
+                                            ○
+                                        </button>
+                                        <button @click="managePkScore('away', 'failure')"
+                                            class="bg-red-500 text-white px-3 py-1 rounded">
+                                            ×
+                                        </button>
+                                        <button @click="cancelLastKick('away')"
+                                            class="bg-gray-500 text-white px-2 py-1 rounded text-sm">
+                                            取消
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div :class="[flexCol, 'items-center']">
-                                <p class="text-md mb-1">{{ awayClubName }}</p>
-                                <div class="flex gap-3">
-                                    <button @click="managePkScore('away', 'success')"
-                                        class="bg-green-500 text-white px-3 py-1 rounded">
-                                        ○
-                                    </button>
-                                    <button @click="managePkScore('away', 'failure')"
-                                        class="bg-red-500 text-white px-3 py-1 rounded">
-                                        ×
-                                    </button>
-                                    <button @click="cancelLastKick('away')"
-                                        class="bg-gray-500 text-white px-2 py-1 rounded text-sm">
-                                        取消
-                                    </button>
+                            <!-- PK結果表示テーブル -->
+                            <div v-if="hasPkEdit" class="w-full flex flex-col items-center mt-5">
+                                <div class="w-full overflow-x-auto">
+                                    <table class="min-w-max pb-[5px] border-collapse mx-auto">
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    class="w-[120px] sticky left-0 z-10 bg-white border border-slate-300 h-[50px] font-bold text-center">
+                                                    クラブ名</th>
+                                                <!-- 基本の5キック -->
+                                                <th v-for="i in 5" :key="i"
+                                                    class="min-w-[40px] h-[50px] border border-slate-300 font-bold text-center">
+                                                    {{ i }}</th>
+                                                <!-- 追加キック（サドンデス）用の列 -->
+                                                <th v-for="i in extraPkRounds" :key="i + 5"
+                                                    class="min-w-[40px] h-[50px] border border-slate-300 font-bold text-center">
+                                                    {{ i + 5 }}</th>
+                                                <th
+                                                    class="min-w-[40px] sticky right-0 z-10 bg-white border border-slate-300 h-[50px] font-bold text-center">
+                                                    合計</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- ホームクラブの行 -->
+                                            <tr>
+                                                <td
+                                                    class="w-[120px] sticky left-0 z-10 bg-blue-100 border border-slate-300 h-[50px] text-center">
+                                                    {{ homeClubName }}</td>
+                                                <!-- 基本の5キック -->
+                                                <td v-for="i in 5" :key="i"
+                                                    class="min-w-[40px] h-[50px] border border-slate-300 text-center align-middle">
+                                                    <span v-if="homeClubPkScoreListEdit[i - 1] === 'success'"
+                                                        class="text-green-600 font-bold">○</span>
+                                                    <span v-else-if="homeClubPkScoreListEdit[i - 1] === 'failure'"
+                                                        class="text-red-600 font-bold text-[1.25rem]">×</span>
+                                                </td>
+                                                <!-- 追加キック（サドンデス）用の列 -->
+                                                <td v-for="i in extraPkRounds" :key="i + 5"
+                                                    class="min-w-[40px] h-[50px] border border-slate-300 text-center align-middle">
+                                                    <span v-if="homeClubPkScoreListEdit[i + 4] === 'success'"
+                                                        class="text-green-600 font-bold">○</span>
+                                                    <span v-else-if="homeClubPkScoreListEdit[i + 4] === 'failure'"
+                                                        class="text-red-600 font-bold">×</span>
+                                                </td>
+                                                <td
+                                                    class="min-w-[40px] sticky right-0 z-10 bg-white border border-slate-300 h-[50px] text-center">
+                                                    {{ homeClubPkScoreEdit }}</td>
+                                            </tr>
+                                            <!-- アウェイクラブの行 -->
+                                            <tr>
+                                                <td
+                                                    class="w-[120px] sticky left-0 z-10 bg-amber-100 border border-slate-300 h-[50px] text-center">
+                                                    {{ awayClubName }}</td>
+                                                <!-- 基本の5キック -->
+                                                <td v-for="i in 5" :key="i"
+                                                    class="min-w-[40px] h-[50px] border border-slate-300 text-center align-middle">
+                                                    <span v-if="awayClubPkScoreListEdit[i - 1] === 'success'"
+                                                        class="text-green-600 font-bold">○</span>
+                                                    <span v-else-if="awayClubPkScoreListEdit[i - 1] === 'failure'"
+                                                        class="text-red-600 font-bold text-[1.25rem]">×</span>
+                                                </td>
+                                                <!-- 追加キック（サドンデス）用の列 -->
+                                                <td v-for="i in extraPkRounds" :key="i + 5"
+                                                    class="min-w-[40px] h-[50px] border border-slate-300 text-center align-middle">
+                                                    <span v-if="awayClubPkScoreListEdit[i + 4] === 'success'"
+                                                        class="text-green-600 font-bold">○</span>
+                                                    <span v-else-if="awayClubPkScoreListEdit[i + 4] === 'failure'"
+                                                        class="text-red-600 font-bold">×</span>
+                                                </td>
+                                                <td
+                                                    class="min-w-[40px] sticky right-0 z-10 bg-white border border-slate-300 h-[50px] text-center">
+                                                    {{ awayClubPkScoreEdit }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- PK結果表示テーブル -->
-                        <div class="w-full overflow-x-auto flex flex-col items-center">
-                            <h3 class="text-center text-red-500 font-bold">※
-                                キック順と表中のクラブ名の上下は、<br />一致しないことがあります。ご注意ください。</h3>
-                            <div :class="[flexRow, 'items-baseline', 'min-w-max', 'pb-[5px]']">
-                                <div :class="flexCol" class="w-[150px] sticky left-0 z-10">
-                                    <div :class="pkCellHeader" class="bg-white">クラブ名</div>
-                                    <div :class="[pkCellWithBorder, 'bg-blue-100']">{{ homeClubName }}</div>
-                                    <div :class="[pkCellWithBorder, 'bg-amber-100']">{{ awayClubName }}</div>
-                                </div>
-                                <div :class="flexRow">
-                                    <!-- 基本の5キック -->
-                                    <div v-for="i in 5" :key="i" :class="flexCol">
-                                        <div :class="pkCellHeader">{{ i }}</div>
-                                        <div :class="pkCellWithBorder">
-                                            <span v-if="homeClubPkScoreList[i - 1] === 'success'"
-                                                class="text-green-600 font-bold">○</span>
-                                            <span v-else-if="homeClubPkScoreList[i - 1] === 'failure'"
-                                                class="text-red-600 font-bold text-[1.25rem]">×</span>
-                                        </div>
-                                        <div :class="pkCellWithBorder">
-                                            <span v-if="awayClubPkScoreList[i - 1] === 'success'"
-                                                class="text-green-600 font-bold">○</span>
-                                            <span v-else-if="awayClubPkScoreList[i - 1] === 'failure'"
-                                                class="text-red-600 font-bold text-[1.25rem]">×</span>
-                                        </div>
-                                    </div>
-                                    <!-- 追加キック（サドンデス）用の列 -->
-                                    <div v-for="i in extraPkRounds" :key="i + 5" :class="flexCol">
-                                        <div :class="pkCellHeader">{{ i + 5 }}</div>
-                                        <div :class="pkCellWithBorder">
-                                            <span v-if="homeClubPkScoreList[i + 4] === 'success'"
-                                                class="text-green-600 font-bold">○</span>
-                                            <span v-else-if="homeClubPkScoreList[i + 4] === 'failure'"
-                                                class="text-red-600 font-bold">×</span>
-                                        </div>
-                                        <div :class="pkCellWithBorder">
-                                            <span v-if="awayClubPkScoreList[i + 4] === 'success'"
-                                                class="text-green-600 font-bold">○</span>
-                                            <span v-else-if="awayClubPkScoreList[i + 4] === 'failure'"
-                                                class="text-red-600 font-bold">×</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div :class="flexCol" class="sticky right-0 z-10">
-                                    <div :class="pkCellHeader" class="bg-white">合計</div>
-                                    <div :class="pkCellWithBorder" class="bg-white">{{ homeClubPkScore }}</div>
-                                    <div :class="pkCellWithBorder" class="bg-white">{{ awayClubPkScore }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </Transition>
                     <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-                    <div class="border-t-1 border-b-1 border-black my-5">
+                    <div class="border-t-1 border-b-1 border-black">
                         <label for="match-time">
                             <p class="bg-gray-200">実際の試合開始時刻</p>
                         </label>
                         <div class="flex items-center justify-center h-10">
-                            <input type="time" id="match-time" :value="scheduledMatchStartTime"
+                            <input type="time" id="match-time" :value="actualMatchStartTime"
                                 @input="setActualMatchStartTime" />
                         </div>
                     </div>
-                    <div class="mt-20">
-                        <button type="button" @click="registerMatchResult" class="bg-blue-600 px-3 py-1 rounded-md">
+                    <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
+                    <div class="my-2">
+                        <h2>＜修正後結果＞　</h2>
+                        <p>{{ homeClubFirstHalfScoreEdit }}<span class="mx-2">前半</span>{{ awayClubFirstHalfScoreEdit }}</p>
+                        <p>{{ homeClubSecondHalfScoreEdit }}<span class="mx-2">後半</span>{{ awayClubSecondHalfScoreEdit }}</p>
+                        <div v-if="hasExtraHalvesEdit">
+                            <p>{{ homeClubExtraFirstHalfScoreEdit }}<span class="mx-2">延長前半</span>{{
+                                awayClubExtraFirstHalfScoreEdit }}</p>
+                            <p>{{ homeClubExtraSecondHalfScoreEdit }}<span class="mx-2">延長後半</span>{{
+                                awayClubExtraSecondHalfScoreEdit }}</p>
+                        </div>
+                        <p>{{ homeClubFinalScoreEdit }}<span class="mx-2">合計</span>{{ awayClubFinalScoreEdit }}</p>
+                        <div v-if="hasPkEdit">
+                            <p>{{ homeClubPkScoreEdit }}<span class="mx-2">PK</span>{{ awayClubPkScoreEdit }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" @click="registerEditedMatchResult"
+                            class="bg-blue-600 px-3 py-1 rounded-md">
                             <span class="text-md bg-blue-600 text-white">修正登録</span>
                         </button>
                     </div>
