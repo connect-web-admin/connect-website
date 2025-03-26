@@ -330,7 +330,8 @@ const managePkScore = async (homeOrAway, result) => {
                 homeClubPkScoreList.value = [...homeClubPkScoreList.value, ...Array(index - homeClubPkScoreList.value.length + 1).fill(null)];
             }
             homeClubPkScoreList.value[index] = result;
-        } else if (homeOrAway === 'away') {
+        }
+        if (homeOrAway === 'away') {
             if (index >= awayClubPkScoreList.value.length) {
                 awayClubPkScoreList.value = [...awayClubPkScoreList.value, ...Array(index - awayClubPkScoreList.value.length + 1).fill(null)];
             }
@@ -830,7 +831,7 @@ const scoreInputBg = 'p-4';
 const scoringOpenModal = 'text-4xl';
 const scoringBtn = 'w-12 h-10';
 const minusScoring = 'my-10';
-const gameStatusBtn = 'w-full px-3 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
+const gameStatusBtn = 'w-full px-2 py-1 bg-gray-100 border-1 border-gray-400 rounded-md';
 const registerBtnBase = 'w-[150px] h-[40px] text-white rounded-md';
 
 // PK表示用の共通クラス
@@ -849,7 +850,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
 </script>
 
 <template>
-    <div class="mb-50">
+    <div>
         <div class="mt-8">
             <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
         </div>
@@ -868,18 +869,18 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     <p>試合日時：{{ formattedMatchDate }} - {{ scheduledMatchStartTime }}</p>
                     <p>会場：{{ venue }}</p>
                     <div :class="flexRow" class="justify-center">
-                        <p class="w-48 break-words text-right">{{ homeClubName }}</p>
-                        <p class="w-4 mx-2">vs</p>
-                        <p class="w-48 break-words text-left">{{ awayClubName }}</p>
+                        <p class="w-full break-words text-right">{{ homeClubName }}</p>
+                        <p class="mx-2">vs</p>
+                        <p class="w-full break-words text-left">{{ awayClubName }}</p>
                     </div>
                 </div>
                 <div class="mt-5">
                     <p class="py-1 font-bold text-xl" :class="borderTopBottom">試合速報入力</p>
                     <div :class="flexRow" class="justify-around items-center py-3 bg-green-100 border-b-1 border-black">
-                        <div class="text-right w-[120px]  bg-green-100">
+                        <div class="text-right w-[110px]  bg-green-100 mx-1">
                             <button v-if="gameStatus !== '試合前'"
                                 type="button" @click="handleGameStatus('prev')" :class="gameStatusBtn">
-                                {{ getPrevButtonLabel }}
+                                <span class="text-sm">{{ getPrevButtonLabel }}</span>
                             </button>
                         </div>
                         <!-- 矢印（左向き） -->
@@ -888,8 +889,8 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                             class="w-0 h-0 border-y-8 border-r-8 border-y-transparent border-r-red-400 bg-green-100">
                         </div>
                         <!-- 現在の試合状態 -->
-                        <div class="w-[120px]">
-                            <span class="text-lg font-bold italic">{{ gameStatus }}</span>
+                        <div class="w-[100px] mx-1 bg-white">
+                            <span class="font-bold italic text-md">{{ gameStatus }}</span>
                         </div>
                         <!-- 矢印（右向き） -->
                         <div v-if="gameStatus === '試合終了'" class="w-[10px]"></div>
@@ -897,47 +898,51 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                             class="w-0 h-0 border-y-8 border-l-8 border-y-transparent border-l-red-400 bg-green-100">
                         </div>
                         <!-- 次の状態へ進むボタン -->
-                        <div class="text-left w-[120px] bg-green-100">
-                            <button v-if="gameStatus !== '試合終了'" type="button" @click="handleNextGameStatus"
+                        <div class="text-left w-[110px] bg-green-100 mx-1">
+                            <button v-if="gameStatus !== '試合終了' && getNextButtonLabel === '選択'" type="button" @click="handleNextGameStatus"
+                                :class="gameStatusBtn" class='border-2 border-red-500 bg-red-50'>
+                                <span class="text-lgfont-bold">{{ getNextButtonLabel }}</span>
+                            </button>
+                            <button v-if="gameStatus !== '試合終了' && getNextButtonLabel !== '選択'" type="button" @click="handleNextGameStatus"
                                 :class="gameStatusBtn">
-                                {{ getNextButtonLabel }}
+                                <span class="text-sm">{{ getNextButtonLabel }}</span>
                             </button>
                         </div>
                     </div>
                     <div :class="flexRow">
                         <!-- Homeクラブ得点入力 -->
                         <div class="w-1/2">
-                            <p :class="textClubName" class="bg-blue-100 border-r-1">{{ homeClubName }}</p>
-                            <div :class="scoreInputBg" class="bg-blue-50 border-r-1 border-b-1">
+                            <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
+                            <div :class="scoreInputBg" class="bg-blue-50 border-b-1">
                                 <button type="button" @click="plusScoreValidation('home')" :class="scoringBtn"
-                                    class="h-[50px] border-3 border-red-400 rounded-md">
+                                    class="h-[50px] border-3 border-red-400 rounded-md bg-white">
                                     <span :class="scoringOpenModal">{{ homeScore }}</span>
                                 </button>
                             </div>
                             <!-- Homeクラブ得点取り消し -->
-                            <div v-if="gameStatus !== 'PK戦'" :class="minusScoring">
+                            <div v-if="gameStatus !== 'PK戦' && gameStatus !== '試合終了'" :class="minusScoring">
                                 <button type="button" @click="minusScoreValidation('home')"
                                     class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
                             </div>
                         </div>
                         <!-- Awayクラブ得点入力 -->
                         <div class="w-1/2">
-                            <p :class="textClubName" class="bg-amber-100 border-l-1">{{ awayClubName }}</p>
-                            <div :class="scoreInputBg" class="bg-amber-50 border-l-1 border-b-1">
+                            <p :class="textClubName" class="bg-amber-100">{{ awayClubName }}</p>
+                            <div :class="scoreInputBg" class="bg-amber-50 border-b-1">
                                 <button type="button" @click="plusScoreValidation('away')" :class="scoringBtn"
-                                    class="h-[50px] border-3 border-red-400 rounded-md">
+                                    class="h-[50px] border-3 border-red-400 rounded-md bg-white">
                                     <span :class="scoringOpenModal">{{ awayScore }}</span>
                                 </button>
                             </div>
                             <!-- Awayクラブ得点取り消し -->
-                            <div v-if="gameStatus !== 'PK戦'" :class="minusScoring">
+                            <div v-if="gameStatus !== 'PK戦' && gameStatus !== '試合終了'" :class="minusScoring">
                                 <button type="button" @click="minusScoreValidation('away')"
                                     class="px-2 bg-gray-400 text-white rounded-sm">得点取り消し</button>
                             </div>
                         </div>
                     </div>
                     <!-- PK戦のスコア登録 -->
-                    <div v-if="gameStatus === 'PK戦' && hasPk" :class="[flexCol, borderTopBottom, 'py-3']">
+                    <div v-if="hasPk && gameStatus === 'PK戦'" :class="[flexCol, 'border-t-1py-3']">
                         <h3 class="font-bold mb-2">PK戦スコア登録</h3>
                         <!-- 操作ボタン -->
                         <div :class="[flexCenterGap, 'mb-4']">
@@ -977,73 +982,70 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                                 </div>
                             </div>
                         </div>
-
-                        <!-- PK結果表示テーブル -->
-                        <div class="w-full overflow-x-auto flex flex-col items-center">
-                            <h3 class="text-center text-red-500 font-bold">※
-                                キック順と表中のクラブ名の上下は、<br />一致しないことがあります。ご注意ください。</h3>
-                            <div :class="[flexRow, 'items-baseline', 'min-w-max', 'pb-[5px]']">
-                                <div :class="flexCol" class="w-[150px] sticky left-0 z-10">
-                                    <div :class="pkCellHeader" class="bg-white">クラブ名</div>
-                                    <div :class="[pkCellWithBorder, 'bg-blue-100']">{{ homeClubName }}</div>
-                                    <div :class="[pkCellWithBorder, 'bg-amber-100']">{{ awayClubName }}</div>
-                                </div>
-                                <div :class="flexRow">
-                                    <!-- 基本の5キック -->
-                                    <div v-for="i in 5" :key="i" :class="flexCol">
-                                        <div :class="pkCellHeader">{{ i }}</div>
-                                        <div :class="pkCellWithBorder">
-                                            <span v-if="homeClubPkScoreList[i - 1] === 'success'"
-                                                class="text-green-600 font-bold">○</span>
-                                            <span v-else-if="homeClubPkScoreList[i - 1] === 'failure'"
-                                                class="text-red-600 font-bold text-[1.25rem]">×</span>
-                                        </div>
-                                        <div :class="pkCellWithBorder">
-                                            <span v-if="awayClubPkScoreList[i - 1] === 'success'"
-                                                class="text-green-600 font-bold">○</span>
-                                            <span v-else-if="awayClubPkScoreList[i - 1] === 'failure'"
-                                                class="text-red-600 font-bold text-[1.25rem]">×</span>
-                                        </div>
-                                    </div>
-                                    <!-- 追加キック（サドンデス）用の列 -->
-                                    <div v-for="i in extraPkRounds" :key="i + 5" :class="flexCol">
-                                        <div :class="pkCellHeader">{{ i + 5 }}</div>
-                                        <div :class="pkCellWithBorder">
-                                            <span v-if="homeClubPkScoreList[i + 4] === 'success'"
-                                                class="text-green-600 font-bold">○</span>
-                                            <span v-else-if="homeClubPkScoreList[i + 4] === 'failure'"
-                                                class="text-red-600 font-bold">×</span>
-                                        </div>
-                                        <div :class="pkCellWithBorder">
-                                            <span v-if="awayClubPkScoreList[i + 4] === 'success'"
-                                                class="text-green-600 font-bold">○</span>
-                                            <span v-else-if="awayClubPkScoreList[i + 4] === 'failure'"
-                                                class="text-red-600 font-bold">×</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div :class="flexCol" class="sticky right-0 z-10">
-                                    <div :class="pkCellHeader" class="bg-white">合計</div>
-                                    <div :class="pkCellWithBorder" class="bg-white">{{ homeClubPkScore }}</div>
-                                    <div :class="pkCellWithBorder" class="bg-white">{{ awayClubPkScore }}</div>
-                                </div>
-                            </div>
+                    </div>
+                    <!-- PK結果表示テーブル -->
+                    <div v-if="hasPk && (gameStatus === 'PK戦' || gameStatus === '試合終了')" class="w-full flex flex-col items-center py-5 border-b-1 border-black">
+                        <h3 v-if="gameStatus === 'PK戦'" class="text-center text-red-500 font-bold">※
+                            キック順と表中のクラブ名の上下は、<br />一致しないことがあります。ご注意ください。</h3>
+                        <div class="w-full overflow-x-auto">
+                            <table class="min-w-max pb-[5px] border-collapse mx-auto">
+                                <thead>
+                                    <tr>
+                                        <th class="w-[120px] sticky left-0 z-10 bg-white border border-slate-300 h-[50px] font-bold text-center">クラブ名</th>
+                                        <!-- 基本の5キック -->
+                                        <th v-for="i in 5" :key="i" class="min-w-[40px] h-[50px] border border-slate-300 font-bold text-center">{{ i }}</th>
+                                        <!-- 追加キック（サドンデス）用の列 -->
+                                        <th v-for="i in extraPkRounds" :key="i + 5" class="min-w-[40px] h-[50px] border border-slate-300 font-bold text-center">{{ i + 5 }}</th>
+                                        <th class="min-w-[40px] sticky right-0 z-10 bg-white border border-slate-300 h-[50px] font-bold text-center">合計</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- ホームクラブの行 -->
+                                    <tr>
+                                        <td class="w-[120px] sticky left-0 z-10 bg-blue-100 border border-slate-300 h-[50px] text-center">{{ homeClubName }}</td>
+                                        <!-- 基本の5キック -->
+                                        <td v-for="i in 5" :key="i" class="min-w-[40px] h-[50px] border border-slate-300 text-center align-middle">
+                                            <span v-if="homeClubPkScoreList[i - 1] === 'success'" class="text-green-600 font-bold">○</span>
+                                            <span v-else-if="homeClubPkScoreList[i - 1] === 'failure'" class="text-red-600 font-bold text-[1.25rem]">×</span>
+                                        </td>
+                                        <!-- 追加キック（サドンデス）用の列 -->
+                                        <td v-for="i in extraPkRounds" :key="i + 5" class="min-w-[40px] h-[50px] border border-slate-300 text-center align-middle">
+                                            <span v-if="homeClubPkScoreList[i + 4] === 'success'" class="text-green-600 font-bold">○</span>
+                                            <span v-else-if="homeClubPkScoreList[i + 4] === 'failure'" class="text-red-600 font-bold">×</span>
+                                        </td>
+                                        <td class="min-w-[40px] sticky right-0 z-10 bg-white border border-slate-300 h-[50px] text-center">{{ homeClubPkScore }}</td>
+                                    </tr>
+                                    <!-- アウェイクラブの行 -->
+                                    <tr>
+                                        <td class="w-[120px] sticky left-0 z-10 bg-amber-100 border border-slate-300 h-[50px] text-center">{{ awayClubName }}</td>
+                                        <!-- 基本の5キック -->
+                                        <td v-for="i in 5" :key="i" class="min-w-[40px] h-[50px] border border-slate-300 text-center align-middle">
+                                            <span v-if="awayClubPkScoreList[i - 1] === 'success'" class="text-green-600 font-bold">○</span>
+                                            <span v-else-if="awayClubPkScoreList[i - 1] === 'failure'" class="text-red-600 font-bold text-[1.25rem]">×</span>
+                                        </td>
+                                        <!-- 追加キック（サドンデス）用の列 -->
+                                        <td v-for="i in extraPkRounds" :key="i + 5" class="min-w-[40px] h-[50px] border border-slate-300 text-center align-middle">
+                                            <span v-if="awayClubPkScoreList[i + 4] === 'success'" class="text-green-600 font-bold">○</span>
+                                            <span v-else-if="awayClubPkScoreList[i + 4] === 'failure'" class="text-red-600 font-bold">×</span>
+                                        </td>
+                                        <td class="min-w-[40px] sticky right-0 z-10 bg-white border border-slate-300 h-[50px] text-center">{{ awayClubPkScore }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <!-- 得点表示 -->
-                    <div>
-                        <div class="text-xl">
-                            <p>{{ homeClubFirstHalfScore }}　前半　{{ awayClubFirstHalfScore }}</p>
-                            <p>{{ homeClubSecondHalfScore }}　後半　{{ awayClubSecondHalfScore }}</p>
-                            <div v-if="hasExtraHalves">
-                                <p>{{ homeClubExtraFirstHalfScore }}　延長前半　{{ awayClubExtraFirstHalfScore }}</p>
-                                <p>{{ homeClubExtraSecondHalfScore }}　延長後半　{{ awayClubExtraSecondHalfScore }}</p>
-                            </div>
-                            <div v-if="hasPk">
-                                <p>{{ homeClubPkScore }}　PK戦　{{ awayClubPkScore }}</p>
-                            </div>
-                            <p>{{ homeScore }}　合計　{{ awayScore }}</p>
+                    <div class="text-xl mt-5">
+                        <p>{{ homeClubFirstHalfScore }}　前半　{{ awayClubFirstHalfScore }}</p>
+                        <p>{{ homeClubSecondHalfScore }}　後半　{{ awayClubSecondHalfScore }}</p>
+                        <div v-if="hasExtraHalves">
+                            <p>{{ homeClubExtraFirstHalfScore }}　延長前半　{{ awayClubExtraFirstHalfScore }}</p>
+                            <p>{{ homeClubExtraSecondHalfScore }}　延長後半　{{ awayClubExtraSecondHalfScore }}</p>
                         </div>
+                        <div v-if="hasPk">
+                            <p>{{ homeClubPkScore }}　PK戦　{{ awayClubPkScore }}</p>
+                        </div>
+                        <p>{{ homeScore }}　合計　{{ awayScore }}</p>
                     </div>
                     <!-- <div v-if="!isLeague" :class="[flexRow, 'justify-center', 'items-center', 'my-10']">
                         <div class="w-1/2 flex flex-col gap-8 items-center">
