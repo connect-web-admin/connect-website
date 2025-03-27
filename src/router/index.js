@@ -29,7 +29,7 @@ import LatestResultsView from '@/views/LatestResultsView.vue';
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
 import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue';
-import MatchResultListForLeaderView from '@/views/connecter/MatchResultListForLeaderView.vue';
+import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
 
 // 404ルート
 import NotFoundView from '@/views/NotFoundView.vue';
@@ -179,9 +179,9 @@ const router = createRouter({
 		},
 
 		{
-			path: '/connecter/match-result-list-for-leader',
-			name: 'MatchResultListForLeader',
-			component: MatchResultListForLeaderView,
+			path: '/connecter/select-reporting-match-u18',
+			name: 'SelectReportingMatchU18',
+			component: SelectReportingMatchU18View,
 		},
 
 		{
