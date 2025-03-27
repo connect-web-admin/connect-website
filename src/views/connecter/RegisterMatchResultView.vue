@@ -542,10 +542,10 @@ const getPrevButtonLabel = computed(() => {
     if (!prevStatus) return '';
 
     // 試合終了状態の場合は、戻り先に合わせてラベルを設定
-    if (isLeague && gameStatus.value === '試合終了') {
+    if (isLeague.value && gameStatus.value === '試合終了') {
         return '後半';
     }
-    if (!isLeague && gameStatus.value === '試合終了') {
+    if (!isLeague.value && gameStatus.value === '試合終了') {
         if (hasPk.value) return 'PK戦';
         if (hasExtraHalves.value) return '延長後半終了';
         return '後半終了';
@@ -950,7 +950,9 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     </div>
                     <!-- PK戦のスコア登録 -->
                     <div v-if="hasPk && gameStatus === 'PK戦'" :class="[flexCol, 'border-t-1py-3']">
-                        <h3 class="font-bold mb-2">PK戦スコア登録</h3>
+                        <h3 class="font-bold mt-2">PK戦スコア登録</h3>
+                        <h3 v-if="gameStatus === 'PK戦'" class="text-center text-red-500 font-bold my-2">※
+                        表記下チームからの先行入力も可能です。</h3>
                         <!-- 操作ボタン -->
                         <div :class="[flexCenterGap, 'mb-4']">
                             <div :class="[flexCol, 'items-center']">
@@ -992,8 +994,6 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     </div>
                     <!-- PK結果表示テーブル -->
                     <div v-if="hasPk && (gameStatus === 'PK戦' || gameStatus === '試合終了')" class="w-full flex flex-col items-center py-5 border-b-1 border-black">
-                        <h3 v-if="gameStatus === 'PK戦'" class="text-center text-red-500 font-bold">※
-                            キック順と表中のクラブ名の上下は、<br />一致しないことがあります。ご注意ください。</h3>
                         <div class="w-full overflow-x-auto">
                             <table class="min-w-max pb-[5px] border-collapse mx-auto">
                                 <thead>
