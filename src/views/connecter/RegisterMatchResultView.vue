@@ -478,17 +478,21 @@ const getGameStatusTransitions = computed(() => {
                 '試合前': { next: '前半', label: '前半開始' },
                 '前半': { next: 'ハーフタイム', label: '前半終了' },
                 'ハーフタイム': { next: '後半', label: '後半開始' },
-                '後半': { next: '後半終了', label: '後半終了' },
-                '後半終了': { next: '試合終了', label: '試合終了' },
+                // '後半': { next: '後半終了', label: '後半終了' },
+                // '後半終了': { next: '試合終了', label: '試合終了' },
+                // '試合終了': { next: null, label: null }
+                '後半': { next: '試合終了', label: '試合終了' },
                 '試合終了': { next: null, label: null }
             },
             prev: {
                 '試合前': null,
                 '前半': '試合前',
                 'ハーフタイム': '前半',
+                // '後半': 'ハーフタイム',
+                // '後半終了': '後半',
+                // '試合終了': '後半終了'
                 '後半': 'ハーフタイム',
-                '後半終了': '後半',
-                '試合終了': '後半終了'
+                '試合終了': '後半'
             }
         };
     } else {
@@ -538,7 +542,10 @@ const getPrevButtonLabel = computed(() => {
     if (!prevStatus) return '';
 
     // 試合終了状態の場合は、戻り先に合わせてラベルを設定
-    if (gameStatus.value === '試合終了') {
+    if (isLeague && gameStatus.value === '試合終了') {
+        return '後半';
+    }
+    if (!isLeague && gameStatus.value === '試合終了') {
         if (hasPk.value) return 'PK戦';
         if (hasExtraHalves.value) return '延長後半終了';
         return '後半終了';
