@@ -1204,7 +1204,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
             <register-match-result-modal :show="showRegisterMatchResultModal"
                 @close="showRegisterMatchResultModal = false">
                 <template v-slot:body>
-                    <p>速報内容を確認して、結果登録ボタンを押してください。</p>
+                    <p>得点を確認して、結果登録ボタンを押してください。</p>
                 </template>
             </register-match-result-modal>
         </Teleport>
