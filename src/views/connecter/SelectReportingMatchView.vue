@@ -210,6 +210,7 @@ const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
             const data = {
                 matchId: match['match_id'],
                 matchDate: matchDateToDisplay,
+                scheduledMatchStartTime: match['scheduled_match_start_time'],
                 hasPk: match['has_pk'],
                 homeClubName: match['home_club']['club_name'],
                 awayClubName: match['away_club']['club_name'],
@@ -223,15 +224,15 @@ const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
             displayDataOfMatches.push(data);
         });
 
-        // 日付の降順でソート
+        // 時間の昇順でソート
         displayDataOfMatches.sort((a, b) => {
-            const [aMonth, aDay] = a.matchDate.split('/').map(Number);
-            const [bMonth, bDay] = b.matchDate.split('/').map(Number);
+            const [aHour, aMinute] = a.scheduledMatchStartTime.split(':').map(Number);
+            const [bHour, bMinute] = b.scheduledMatchStartTime.split(':').map(Number);
 
-            if (aMonth !== bMonth) {
-                return bMonth - aMonth;  // 月で比較
+            if (aHour !== bHour) {
+                return aHour - bHour;  // 時で比較
             }
-            return bDay - aDay;  // 日で比較
+            return aMinute - bMinute;  // 分で比較
         });
 
         return displayDataOfMatches;
@@ -386,7 +387,7 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                 </div>
                 <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
                 <div :class="eachMenuContainer">
-                    <h2 :class="menuHeading">試合一覧（本日と前日の開催分）</h2>
+                    <h2 :class="menuHeading">試合一覧（本日開催分）</h2>
                     <div v-if="!selectedVenue">
                         （試合が表示されます）
                     </div>
@@ -396,30 +397,15 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                         <div v-if="selectedVenue">
                             <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx"
                                 class="not-last:border-b-1 not-last:border-gray-300">
-                                <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200">
-                                    <button type="button"
-                                        @click="moveToEditMatchResult(match.matchId)"
-                                        :class="selectBtn" class="bg-gray-200 border-1 border-black rounded-xl">修正</button>
-                                    <div class="w-full pl-2 bg-white">
-                                        <p class="block">開催日：{{ match.matchDate }}
-                                            <span class="text-left text-red-600 ml-5">速報終了済み</span>
-                                        </p>
-                                        <p>{{ match.homeClubName }}&nbsp;vs&nbsp;{{ match.awayClubName }}</p>
-                                        <p class="text-red-600 font-bold">{{ match.homeClubFinalScore }}&nbsp;-&nbsp;{{ match.awayClubFinalScore }}
-                                            <span v-if="match.hasPk">
-                                                <p>(PK {{ match.homeClubPkScore }}&nbsp;-&nbsp;{{ match.awayClubPkScore }})</p>
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div v-else class="px-2 py-1">
+                                <!-- 速報がまだ終わっていない試合情報を先にループ。速報r終了済みの試合を下段に表示するため -->
+                                <div v-if="!(match.isResultRegistered)" class="px-2 py-1">
                                     <div class="flex items-center">
                                         <button type="button"
                                             @click="moveToRegisterMatchResult(match.matchId)"
                                             :class="selectBtn" class="bg-green-200 border-1 border-black rounded-xl">選択</button>
                                         <div class="w-full pl-2">
                                             <div class="text-left">
-                                                開催日：{{ match.matchDate }}
+                                                開催日時：{{ match.matchDate }}&nbsp;-&nbsp;{{ match.scheduledMatchStartTime }}
                                             </div>
                                             <div>
                                                 {{ match.homeClubName }}
@@ -427,6 +413,25 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                                                 {{ match.awayClubName }}
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx"
+                                >
+                                <div v-if="match.isResultRegistered" class="flex items-center px-2 py-1 bg-gray-200">
+                                    <button type="button"
+                                        @click="moveToEditMatchResult(match.matchId)"
+                                        :class="selectBtn" class="bg-gray-200 border-1 border-black rounded-xl">修正</button>
+                                    <div class="w-full pl-2 bg-white">
+                                        <p class="block">開催日時：{{ match.matchDate }}&nbsp;-&nbsp;{{ match.scheduledMatchStartTime }}
+                                            <span class="text-left text-red-600 ml-5">速報終了</span>
+                                        </p>
+                                        <p>{{ match.homeClubName }}&nbsp;vs&nbsp;{{ match.awayClubName }}</p>
+                                        <p class="text-red-600 font-bold">{{ match.homeClubFinalScore }}&nbsp;-&nbsp;{{ match.awayClubFinalScore }}
+                                            <span v-if="match.hasPk">
+                                                <p>(PK {{ match.homeClubPkScore }}&nbsp;-&nbsp;{{ match.awayClubPkScore }})</p>
+                                            </span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
