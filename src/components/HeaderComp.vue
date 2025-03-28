@@ -141,24 +141,24 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                         enter-from-class="translate-x-full" leave-to-class="translate-x-full"
                         leave-active-class="transition-transform duration-300 ease-in-out" mode="out-in">
                         <div class="absolute top-0 right-0 w-full z-9998 max-h-screen overflow-y-auto pb-50 bg-white">
-                            <div class="flex justify-between items-centerpx-3 pt-10 pb-6 border-b-1">
+                            <div class="flex justify-between items-center h-15">
                                 <div class="w-[33px] h-[33px]"></div>
-                                <div class="text-center w-fit">メニュー</div>
+                                <div class="text-center">メニュー</div>
                                 <!-- ハンバーガーメニューを閉じるためのアイコン -->
-                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer pr-4.5">
+                                <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer pr-7">
                                     <div class="w-[20px] h-0.5 my-2.5 bg-gray-400 mb-2 rotate-45"></div>
                                     <div class="w-[20px] h-0.5 -my-2.5 bg-gray-400 mb-2 -rotate-45"></div>
                                 </div>
                             </div>
                             <div class="h-[43px] bg-[#090A0A]"></div>
                             <ul>
-                                <li @click="isMenuOpen = !isMenuOpen" class="pt-2 pl-4">
+                                <li @click="isMenuOpen = !isMenuOpen" class="flex items-center h-10 pl-4">
                                     <router-link to="/login" class="flex items-center">
-                                        <img src="@/assets/icons/person-portrait.svg" alt="ログイン" class="h-[16px]">
+                                        <img src="@/assets/icons/person-shadow-portrait.svg" alt="ログイン" class="h-[16px]">
                                         ログイン
                                     </router-link>
                                 </li>
-                                <li class="flex items-end pl-4 h-[63px] bg-[#F1F2F4]">
+                                <li class="flex items-end pl-4 h-10 bg-[#F1F2F4]">
                                     コンテンツ
                                 </li>
                                 <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
@@ -289,7 +289,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
         </div>
         <!-- スライダー直下の横スクロールメニュー -->
         <div class="overflow-x-auto">
-            <ul class="flex flex-row justify-center items-end whitespace-nowrap bg-black pt-2 text-white min-w-max px-4">
+            <ul class="flex flex-row justify-center items-end whitespace-nowrap bg-black pt-1 text-white min-w-max px-4">
                 <li v-for="(menu, index) in menuList" :key="index" @click="navigateTo(menu.path, index)" :class="[
                     'pb-1',
                     index === 0 ? 'ml-2 mr-4' : index === 6 ? 'ml-4 mr-2' : 'mx-4',
