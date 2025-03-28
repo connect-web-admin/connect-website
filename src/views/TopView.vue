@@ -13,12 +13,11 @@ onMounted(async () => {
 
 <template>
 <div class="px-2 pt-8">
-    <div>
+    <div >
         <h1 class="text-xl">今週の試合</h1>
         <div class="bg-black text-white w-fit px-1 mb-1">2025.2.22(Sat)</div>
         <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/club-logo-1.svg" alt="発寒南FC" class="w-1/7 h-full">
-            <div class="text-center w-5/7 px-2">
+            <div class="text-center px-2 mx-auto">
                 <div>
                     <p>{{ sampleChampionshipName }}</p>
                     <p>{{ sampleRound }}</p>
@@ -33,89 +32,10 @@ onMounted(async () => {
                     <span class="text-[#F24D11] font-bold">2 PK 3</span>
                 </div>
             </div>
-            <img src="@/assets/top-sample/club-logo-2.svg" alt="清田FC" class="w-1/7 h-full">
-        </div>
-
-        <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/club-logo-3.svg" alt="苗穂FC" class="w-1/7 h-full">
-            <div class="text-center w-5/7 px-2">
-                <div>
-                    <p>{{ sampleChampionshipName }}</p>
-                    <p>{{ sampleRound }}</p>
-                    <p>{{ sampleRoundName }}第二試合</p>
-                </div>
-                <div class="flex justify-between">
-                    <div class="w-2/5 ">発寒南FC</div>
-                    <div class="w-1/5 text-xl text-[#231815]">4 - 0</div>
-                    <div class="w-2/5 ">清田FC</div>
-                </div>
-                <div>
-                </div>
-            </div>
-            <img src="@/assets/top-sample/club-logo-4.svg" alt="厚別西FC" class="w-1/7 h-full">
-        </div>
-
-        <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/club-logo-5.svg" alt="苗穂FC" class="w-1/7 h-full">
-            <div class="text-center w-5/7 px-2">
-                <div>
-                    <p>{{ sampleChampionshipName }}</p>
-                    <p>{{ sampleRound }}</p>
-                    <p>{{ sampleRoundName }}第三試合</p>
-                </div>
-                <div class="flex justify-between">
-                    <div class="w-2/5 ">発寒南FC</div>
-                    <div class="w-1/5 text-xl text-[#231815]">1 - 2</div>
-                    <div class="w-2/5 ">清田FC</div>
-                </div>
-            </div>
-            <img src="@/assets/top-sample/club-logo-6.svg" alt="厚別西FC" class="w-1/7 h-full">
         </div>
     </div>
 
-    <div class="mt-4 mb-15">
-        <div class="bg-black text-white w-fit px-1 mb-1">2025.2.23(Sun)</div>
-        <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/club-logo-7.svg" alt="新琴似FC" class="w-1/7 h-full">
-            <div class="text-center w-5/7 px-2">
-                <div>
-                    <p>{{ sampleChampionshipName }}</p>
-                    <p>{{ sampleRound }}</p>
-                    <p>Bブロック第一試合</p>
-                </div>
-                <div class="flex justify-between">
-                    <div class="w-2/5 ">発寒南FC</div>
-                    <div class="w-1/5 text-xl text-[#231815]">2 - 11</div>
-                    <div class="w-2/5 ">清田FC</div>
-                </div>
-                <div>
-                </div>
-            </div>
-            <img src="@/assets/top-sample/club-logo-8.svg" alt="白石FC" class="w-1/7 h-full">
-        </div>
-
-        <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <img src="@/assets/top-sample/club-logo-1.svg" alt="発寒南FC" class="w-1/7 h-full">
-            <div class="text-center w-5/7 px-2">
-                <div>
-                    <p>{{ sampleChampionshipName }}</p>
-                    <p>{{ sampleRound }}</p>
-                    <p>Bブロック第二試合</p>
-                </div>
-                <div class="flex justify-between">
-                    <div class="w-2/5 ">発寒南FC</div>
-                    <div class="w-1/5 text-xl text-[#231815]">0 - 0</div>
-                    <div class="w-2/5 ">清田FC</div>
-                </div>
-                <div>
-                    <span class="text-[#F24D11] font-bold">2 PK 3</span>
-                </div>
-            </div>
-            <img src="@/assets/top-sample/club-logo-3.svg" alt="清田FC" class="w-1/7 h-full">
-        </div>
-    </div>
-
-    <div class="mb-15">
+    <div class="my-15">
         <h1 class="text-xl text-[#090A0A] border-b-1 border-gray-200">ピックアップニュース</h1>
         <PickupNewsCompForTop />
         <router-link to="/pickup-news" class="flex justify-end mt-5">
