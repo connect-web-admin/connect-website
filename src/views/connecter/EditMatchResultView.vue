@@ -349,9 +349,9 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
                     <p>試合日時：{{ formattedMatchDate }} - {{ scheduledMatchStartTime }}</p>
                     <p>会場：{{ venue }}</p>
                     <div class="flex flex-row justify-center">
-                        <p class="w-full break-words text-right">{{ homeClubName }}</p>
+                        <p class="w-[150px] break-words text-right">{{ homeClubName }}</p>
                         <p class="mx-2">vs</p>
-                        <p class="w-full break-words text-left">{{ awayClubName }}</p>
+                        <p class="w-[150px] break-words text-left">{{ awayClubName }}</p>
                     </div>
                     <div class="mt-2">
                         <h2>＜修正前結果＞　</h2>
