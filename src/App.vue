@@ -66,11 +66,7 @@ onMounted(() => {
             // // ユーザー情報の詳細をDynamoDBから取得
             // fetchUserInfoFromDDB()
 
-            if (userAttrMembershipType.value === CONNECTER) {
-                router.push('/connecter/home');
-            } else {
-                router.push('/event_view');
-            }
+            router.push('/top');            
         }
     })
 })
@@ -107,4 +103,4 @@ onMounted(() => {
 </div>
 </template>
 
-<style scoped></style>
+<style></style>
