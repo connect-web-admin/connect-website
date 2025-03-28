@@ -116,7 +116,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
 
 <template>
     <div class="bg-white">
-        <div class="flex justify-between items-end pt-20 px-4 pb-4 h-20 border-b-1">
+        <div class="flex justify-center gap-x-22 items-end py-2 border-b-1">
             <div>
                 <img src="@/assets/icons/user-info.svg" alt="会員情報">
             </div>
@@ -279,7 +279,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
         </div>
         <!-- スライダー -->
         <div v-show="!hideSlider"
-            class="flex items-center justify-center overflow-hidden w-full h-27 bg-black relative">
+            class="flex items-center justify-center overflow-hidden w-full h-20 bg-black relative">
             <Transition enter-active-class="transition-transform duration-500 ease-in-out"
                 enter-from-class="translate-x-full" leave-to-class="-translate-x-full"
                 leave-active-class="transition-transform duration-500 ease-in-out" mode="out-in">
@@ -289,7 +289,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
         </div>
         <!-- スライダー直下の横スクロールメニュー -->
         <div class="overflow-x-auto">
-            <ul class="flex justify-start items-end whitespace-nowrap bg-black text-white h-11 min-w-max px-4">
+            <ul class="flex flex-row justify-center items-end whitespace-nowrap bg-black pt-2 text-white min-w-max px-4">
                 <li v-for="(menu, index) in menuList" :key="index" @click="navigateTo(menu.path, index)" :class="[
                     'pb-1',
                     index === 0 ? 'ml-2 mr-4' : index === 6 ? 'ml-4 mr-2' : 'mx-4',
