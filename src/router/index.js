@@ -178,11 +178,12 @@ const router = createRouter({
 			component: SelectReportingMatchView,
 		},
 
-		{
-			path: '/connecter/select-reporting-match-u18',
-			name: 'SelectReportingMatchU18',
-			component: SelectReportingMatchU18View,
-		},
+		// {
+		// 	path: '/connecter/select-reporting-match-u18',
+		// 	name: 'SelectReportingMatchU18',
+		// 	component: SelectReportingMatchU18View,
+		// 	props: (route) => ({ accessToken: route.query.access_token })
+		// },
 
 		{
 			path: '/connecter/edit-match-result/:championshipId/:matchId',
