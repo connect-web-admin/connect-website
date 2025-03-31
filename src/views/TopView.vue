@@ -12,7 +12,7 @@ onMounted(async () => {
 </script>
 
 <template>
-<div class="px-2 pt-8">
+<div class="px-2 pt-2">
     <div >
         <h1 class="text-xl">今週の試合</h1>
         <div class="bg-black text-white w-fit px-1 mb-1">2025.2.22(Sat)</div>
@@ -35,7 +35,7 @@ onMounted(async () => {
         </div>
     </div>
 
-    <div class="my-15">
+    <div class="my-8">
         <h1 class="text-xl text-[#090A0A] border-b-1 border-gray-200">ピックアップニュース</h1>
         <PickupNewsCompForTop />
         <router-link to="/pickup-news" class="flex justify-end mt-5">
@@ -43,7 +43,7 @@ onMounted(async () => {
         </router-link>
     </div>
 
-    <div class="mb-15">
+    <div class="mb-8">
         <h1 class="text-xl text-[#090A0A] border-b-1 border-gray-200">メディア</h1>
         <MediaCompForTop />
         <router-link to="/media" class="flex justify-end mt-5">
