@@ -1,37 +1,70 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import PickupNewsCompForTop from '@/components/PickupNewsCompForTop.vue';
 import MediaCompForTop from '@/components/MediaCompForTop.vue';
+import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, CATEGORIES } from '@/utils/constants';
+
 const sampleChampionshipName = '第102回 全国高校サッカー選手権大会'
 const sampleRound = '札幌地区予選会';
 const sampleRoundName = 'Aブロック';
 
+const matchInfo = ref([]);
+const noThisWeekMatchesMsg = ref('');
+
+/**
+ * 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
+ */
+const getMatchesInThisWeek = async () => {
+    const queryUrl = new URL(`${MATCH_API_URL}/matches-in-this-week`);
+    queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
+
+    try {
+        const response = await fetch(queryUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        matchInfo.value = await response.json();
+        console.log(matchInfo.value);
+        if (matchInfo.value.length > 0) {
+            matchInfo.value = matchInfo.value;
+            return true;
+        } else {
+            noThisWeekMatchesMsg.value = '今週開催予定の試合はありません。';
+            return false;
+        }
+    } catch (error) {
+        console.error('速報対象試合の取得に失敗しました。');
+    }
+}
+
 
 onMounted(async () => {
+    await getMatchesInThisWeek();
 });
 </script>
 
 <template>
 <div class="px-2 pt-2">
-    <div >
+    <div>
         <h1 class="text-xl">今週の試合</h1>
         <div class="bg-black text-white w-fit px-1 mb-1">2025.2.22(Sat)</div>
-        <div class="flex justify-between items-center border-t-1 border-gray-300 py-2">
-            <div class="text-center px-2 mx-auto">
+        <div class="border-t-1 border-gray-300 py-2">
+            <!-- <div v-for="match in matchInfo" :key="match.id" class="text-center px-2 mx-auto">
                 <div>
-                    <p>{{ sampleChampionshipName }}</p>
-                    <p>{{ sampleRound }}</p>
-                    <p>{{ sampleRoundName }}第一試合</p>
+                    <p>{{ match['championship_name'] }}</p>
+                    <div v-for="round in match['matches']" :key="round.id">
+                        {{ round }}
+                    </div>
                 </div>
-                <div class="flex justify-between">
-                    <div class="w-2/5 ">発寒南FC</div>
-                    <div class="w-1/5 text-xl text-[#231815]">2 - 2</div>
-                    <div class="w-2/5 ">清田FC</div>
-                </div>
-                <div>
-                    <span class="text-[#F24D11] font-bold">2 PK 3</span>
-                </div>
-            </div>
+            </div> -->
+            （速報表示開発中）
         </div>
     </div>
 
