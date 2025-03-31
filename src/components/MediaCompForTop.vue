@@ -20,7 +20,7 @@ const isNew = (publishedDate) => {
  * 最新の4件のメディア記事を取得する
  */
 const getLatestFourArticles = async () => {
-    const queryUrl = new URL(`${MEDIA_API_URL}/get-latest-four-articles`);
+    const queryUrl = new URL(`${MEDIA_API_URL}/latest-four-articles`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
     try {
