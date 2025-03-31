@@ -29,7 +29,7 @@ dayjs.extend(timezone);
 dayjs.tz.setDefault('Asia/Tokyo');
 
 /**
- * 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
+ * 速報対象試合検索　アクセス日に開催予定の試合を取得
  */
 const getCurrentMatches = async () => {
     isLoading.value = true
@@ -49,8 +49,6 @@ const getCurrentMatches = async () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // アクセスする日が、「ある試合の当日から見て前日の午前8時から翌日の23時59分まで」に含まれる場合、アクセス許可とする
-        // そういう試合が一つでもあればアクセス許可、なければアクセス拒否
         const allMatchDates = await response.json();
         if (allMatchDates.length > 0) {
             matchInfo.value = allMatchDates;
