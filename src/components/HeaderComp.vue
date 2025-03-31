@@ -121,7 +121,9 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                 <img src="@/assets/icons/user-info.svg" alt="会員情報">
             </div>
             <div>
-                <img src="@/assets/connect-title-logo.svg" alt="connectロゴ">
+                <router-link to="/top">
+                    <img src="@/assets/connect-title-logo.svg" alt="connectロゴ">
+                </router-link>
             </div>
             <div>
                 <div @click="isMenuOpen = !isMenuOpen" class="cursor-pointer flex flex-col items-center">
