@@ -20,7 +20,7 @@ const content = ref('');
  */
 const getSingleNews = async () => {
     isLoading.value = true;
-    const queryUrl = new URL(`${PICKUP_NEWS_API_URL}/dependent/${THIS_FISCAL_YEAR}/${newsId}`);
+    const queryUrl = new URL(`${PICKUP_NEWS_API_URL}/article/${THIS_FISCAL_YEAR}/${newsId}`);
 
     try {
         const response = await fetch(queryUrl, {
@@ -53,7 +53,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-    <div>
+    <div class="p-5">
         <div v-if="isLoading" class="mt-20">
             <img src="../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
             <p class="text-center">読み込み中</p>
