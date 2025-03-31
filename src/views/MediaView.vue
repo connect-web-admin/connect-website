@@ -2,21 +2,11 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
-// import { marked } from 'marked';
-// import DOMPurify from 'dompurify';
 import { MEDIA_API_URL, THIS_FISCAL_YEAR } from '@/utils/constants';
-
-// ルーティングで渡されたパラメータを取得
-const route = useRoute();
-const router = useRouter();
-const articleId = route.params.articleId;
 
 const failedMsg = ref('');
 const isLoading = ref(false);
-
 const allArticles = ref([]);
-const content = ref('');
-
 
 /**
  * dayjsを使用して日付が14日以内かどうかを判定する関数
@@ -48,7 +38,6 @@ const getallArticles = async () => {
         }
 
         allArticles.value = await response.json();
-        console.log(allArticles.value);
     } catch (error) {
         failedMsg.value = '記事の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。';
         console.error('記事の取得に失敗しました。');
