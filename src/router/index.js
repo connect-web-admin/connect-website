@@ -7,7 +7,8 @@ import TopView from '@/views/TopView.vue';
 import LiveReportForUserView from '@/views/LiveReportForUserView.vue';
 import MediaView from '@/views/MediaView.vue';
 import PickupNewsView from '@/views/PickupNewsView.vue';
-import PickupNewsDependentView from '@/views/PickupNewsDependentView.vue';
+import PickupNewsArticleView from '@/views/PickupNewsArticleView.vue';
+import MediaArticleView from '@/views/MediaArticleView.vue';
 import ArchiveView from '@/views/ArchiveView.vue';
 import ClubListView from '@/views/ClubListView.vue';
 import ClubIntroductionView from '@/views/ClubIntroductionView.vue';
@@ -70,15 +71,22 @@ const router = createRouter({
 		},
 
 		{
-			path: '/pickup-news/',
+			path: '/media/article/:fiscalYear/:articleId',
+			name: 'MediaArticle',
+			component: MediaArticleView,
+			props: true
+		},
+
+		{
+			path: '/pickup-news',
 			name: 'PickupNews',
 			component: PickupNewsView
 		},
 
 		{
-			path: '/pickup-news/dependent/:fiscalYear/:newsId',
-			name: 'PickupNewsDependent',
-			component: PickupNewsDependentView,
+			path: '/pickup-news/article/:fiscalYear/:newsId',
+			name: 'PickupNewsArticle',
+			component: PickupNewsArticleView,
 			props: true
 		},
 
