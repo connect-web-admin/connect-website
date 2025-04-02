@@ -8,6 +8,7 @@ import { PICKUP_NEWS_API_URL, THIS_FISCAL_YEAR } from '@/utils/constants';
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
 const router = useRouter();
+const fiscalYear = route.params.fiscalYear;
 const newsId = route.params.newsId;
 
 const failedMsg = ref('');
@@ -20,7 +21,7 @@ const content = ref('');
  */
 const getSingleNews = async () => {
     isLoading.value = true;
-    const queryUrl = new URL(`${PICKUP_NEWS_API_URL}/article/${THIS_FISCAL_YEAR}/${newsId}`);
+    const queryUrl = new URL(`${PICKUP_NEWS_API_URL}/article/${fiscalYear}/${newsId}`);
 
     try {
         const response = await fetch(queryUrl, {
