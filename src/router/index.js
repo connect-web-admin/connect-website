@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
 
 // レギュラー会員用のページ
+import SignUpView from '@/views/SignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
 import TopView from '@/views/TopView.vue';
 import LiveReportForUserView from '@/views/LiveReportForUserView.vue';
@@ -39,6 +40,13 @@ import NotFoundView from '@/views/NotFoundView.vue';
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
+		{
+			path: '/signup',
+			name: 'SignUp',
+			component: SignUpView,
+			props: true
+		},
+
 		{
 			path: '/login',
 			name: 'Login',
@@ -208,7 +216,7 @@ const router = createRouter({
 			props: true
 		},
 
-		// 404ルート - 最後に配置することが重要
+		// 404ルート この記載場所は最下部から動かさないこと
 		{
 			path: '/:pathMatch(.*)*',
 			name: 'NotFound',
