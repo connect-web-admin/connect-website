@@ -66,7 +66,7 @@ onMounted(async () => {
                     </div>
                     <div class="flex items-center">
                         <!-- 40文字超過分は省略 -->
-                        <router-link :to="`/media/article/${THIS_FISCAL_YEAR}/${article.article_id}`">
+                        <router-link :to="`/media/article/${article.fiscal_year}/${article.article_id}`">
                             <p class="pl-4">{{ article['title'].length > 40 ? article['title'].substring(0, 40) + '……' : article['title'] }}</p>
                         </router-link>
                     </div>

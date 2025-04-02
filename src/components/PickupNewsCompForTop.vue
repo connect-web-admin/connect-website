@@ -62,7 +62,7 @@ onMounted(async () => {
                 </div>
                 <div>
                     <!-- 40文字超過分は省略 -->
-                    <router-link :to="`/pickup-news/article/${THIS_FISCAL_YEAR}/${news.news_id}`" class="flex flex-row justify-between items-center">
+                    <router-link :to="`/pickup-news/article/${news.fiscal_year}/${news.news_id}`" class="flex flex-row justify-between items-center">
                         <p class="pl-4">{{ news['title'].length > 40 ? news['title'].substring(0, 40) + '……' : news['title'] }}</p>
                         <img src="@/assets/icons/arrow-right.png" alt="new" class="w-4 h-4 ml-2" />
                     </router-link>
