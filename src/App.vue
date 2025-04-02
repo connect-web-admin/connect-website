@@ -74,6 +74,7 @@ onMounted(() => {
 
 <template>
 <div class="min-h-screen flex flex-col">
+    <!-- connecterパス以外の場合のみヘッダーを表示 -->
     <header v-if="!isConnecterPath()" class="sticky top-0 z-100">
         <HeaderComp 
             :user="authState.user"
@@ -82,7 +83,7 @@ onMounted(() => {
     </header>          
 
     <main class="flex-1 pb-20">
-        <!-- <Authenticator :hide-sign-up="true" :login-mechanisms="['email']">
+        <!-- <Authenticator :hideSignUp="true" :login-mechanisms="['email']">
             <template v-slot="{ user }">
                 <RouterView />
             </template>
@@ -93,7 +94,10 @@ onMounted(() => {
                 </div>
             </template>
         </Authenticator> -->
-        <router-view />
+        <RouterView />
+        <!-- <button v-if="authState.authStatus !== 'authenticated'" class="text-center bg-lime-600 text-white px-4 py-2 mt-10 rounded-sm mx-auto block">
+            新規会員登録
+        </button> -->
     </main>
         
     <!-- connecterパス以外の場合のみフッターを表示 -->
@@ -103,4 +107,15 @@ onMounted(() => {
 </div>
 </template>
 
-<style></style>
+<style>
+:root {
+    --amplify-components-authenticator-router-border-color: transparent;
+    --amplify-colors-shadow-primary: transparent;
+    --amplify-colors-shadow-secondary: transparent;
+    --amplify-colors-shadow-tertiary: transparent;
+    --amplify-components-authenticator-form-padding: 0;
+}
+.amplify-button--primary {
+    background: #0056cd;
+}
+</style>
