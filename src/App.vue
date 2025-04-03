@@ -92,8 +92,8 @@ onMounted(() => {
     </header>          
 
     <main class="flex-1 pb-20">
-        <!-- <template v-if="!isSignUpPath()">
-            <Authenticator :hideSignUp="true" :login-mechanisms="['email']">
+        <template v-if="!isSignUpPath()">
+            <!-- <Authenticator :hideSignUp="true" :login-mechanisms="['email']">
                 <template v-slot="{ user }">
                     <RouterView />
                 </template>
@@ -108,9 +108,12 @@ onMounted(() => {
                 <router-link to="/signup" class="text-center bg-lime-600 text-white px-4 py-2 rounded-sm">
                     新規会員登録
                 </router-link>
-            </div>
+            </div> -->
+            <RouterView />
+        </template>
+        <!-- <template v-else>
+            <RouterView />
         </template> -->
-        <RouterView />
     </main>
         
     <!-- connecterパス以外の場合のみフッターを表示 -->
