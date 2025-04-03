@@ -38,6 +38,9 @@ const getallArticles = async () => {
         }
 
         allArticles.value = await response.json();
+
+        // article_idで降順ソート（新しい記事を上に表示）
+        allArticles.value.sort((a, b) => b.article_id.localeCompare(a.article_id));
     } catch (error) {
         failedMsg.value = '記事の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。';
         console.error('記事の取得に失敗しました。');
@@ -58,7 +61,6 @@ onMounted(async () => {
     <div class="p-5">
         <div v-if="isLoading" class="mt-20">
             <img src="../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
-            <p class="text-center">読み込み中</p>
         </div>
         <div v-else-if="failedMsg">
             <p>{{ failedMsg }}</p>
@@ -84,7 +86,7 @@ onMounted(async () => {
                     </div>
                 </div>
             </div>
-            <div class="mt-20">ページネーション未実装</div>
+            <div class="mt-20"></div>
         </div>
     </div>
 </template>
