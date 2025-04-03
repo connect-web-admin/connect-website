@@ -36,6 +36,8 @@ const getLatestFourArticles = async () => {
         }
 
         latestFourArticles.value = await response.json();
+        // article_idで降順ソート（新しい記事を上に表示）
+        latestFourArticles.value.sort((a, b) => b.article_id.localeCompare(a.article_id));
     } catch (error) {
         failedMsg.value = 'メディア記事の取得に失敗しました。';
         console.error('メディア記事の取得に失敗しました。');

@@ -36,11 +36,15 @@ const getLatestFourNews = async () => {
         }
 
         latestFourNews.value = await response.json();
+        // news_idで降順ソート（新しい記事を上に表示）
+        latestFourNews.value.sort((a, b) => a.news_id.localeCompare(b.news_id));
     } catch (error) {
         failedMsg.value = 'ピックアップニュースの取得に失敗しました。';
         console.error('ピックアップニュースの取得に失敗しました。');
     }
 }
+
+
 
 onMounted(async () => {
     // 最新の4件のピックアップニュースを取得する
