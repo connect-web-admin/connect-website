@@ -2,10 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
 
 // レギュラー会員用のページ
-import SignUpView from '@/views/SignUpView.vue';
+import SignupView from '@/views/SignupView.vue';
 import LoginView from '@/views/LoginView.vue';
 import TopView from '@/views/TopView.vue';
-import LiveReportForUserView from '@/views/LiveReportForUserView.vue';
 import MediaView from '@/views/MediaView.vue';
 import PickupNewsView from '@/views/PickupNewsView.vue';
 import PickupNewsArticleView from '@/views/PickupNewsArticleView.vue';
@@ -42,8 +41,8 @@ const router = createRouter({
 	routes: [
 		{
 			path: '/signup',
-			name: 'SignUp',
-			component: SignUpView,
+			name: 'Signup',
+			component: SignupView,
 			props: true
 		},
 
@@ -63,12 +62,6 @@ const router = createRouter({
 			path: '/top',
 			name: 'Top',
 			component: TopView
-		},
-
-		{
-			path: '/live-report-for-user',
-			name: 'LiveReportForUser',
-			component: LiveReportForUserView
 		},
 
 		{
