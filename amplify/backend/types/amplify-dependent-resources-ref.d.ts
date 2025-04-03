@@ -20,6 +20,11 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
+    "memberApi": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
     "pickupNewsApi": {
       "ApiId": "string",
       "ApiName": "string",
@@ -70,6 +75,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "mediaLambda": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "memberLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
@@ -128,6 +140,16 @@ export type AmplifyDependentResourcesAttributes = {
       "StreamArn": "string"
     },
     "MediaDDB": {
+      "Arn": "string",
+      "Name": "string",
+      "PartitionKeyName": "string",
+      "PartitionKeyType": "string",
+      "Region": "string",
+      "SortKeyName": "string",
+      "SortKeyType": "string",
+      "StreamArn": "string"
+    },
+    "MemberDDB": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",

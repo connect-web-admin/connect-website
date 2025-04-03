@@ -44,6 +44,10 @@
         "mediaLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/mediaLambda-70464f526643457a394a-build.zip"
+        },
+        "memberLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/memberLambda-4a763868642f4c524935-build.zip"
         }
       },
       "storage": {
@@ -52,7 +56,8 @@
         "ClubDDB": {},
         "UserDDB": {},
         "PickupNewsDDB": {},
-        "MediaDDB": {}
+        "MediaDDB": {},
+        "MemberDDB": {}
       },
       "api": {
         "connecterApi": {},
@@ -61,7 +66,8 @@
         "sendInquiryViaSESApi": {},
         "userApi": {},
         "pickupNewsApi": {},
-        "mediaApi": {}
+        "mediaApi": {},
+        "memberApi": {}
       }
     }
   }

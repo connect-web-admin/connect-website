@@ -1,0 +1,22 @@
+{
+  "resourceName": "MemberDDB",
+  "tableName": "MemberDDB",
+  "partitionKey": {
+    "fieldName": "member_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "membership_type",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "gsiByMembershipType",
+      "partitionKey": {
+        "fieldName": "membership_type",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}
