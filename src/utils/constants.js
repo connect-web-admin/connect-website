@@ -45,7 +45,7 @@ export const CLUB_API_URL = "https://tpkjy2xfx1.execute-api.ap-northeast-1.amazo
 // 試合情報のAPIGatewayのエンドポイント
 export const MATCH_API_URL = "https://dvk11mi4fh.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // メンバー情報のAPIGatewayのエンドポイント
-export const MEMBER_API_URL = ""
+export const MEMBER_API_URL = "https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items"
 // コネクターのAPIGatewayのエンドポイント
 export const CONNECTER_API_URL = "https://x9etjju7dd.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 
