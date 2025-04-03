@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, CATEGORIES } from '@/utils/constants';
 import CopyrightComp from '@/components/CopyrightComp.vue';
@@ -162,17 +162,22 @@ const venuesFilteredByCategoryAndChampionship = computed(() => {
         // 試合会場だけを取得
         const originalVenues = [];
         for (const round in mathchesInTheChampionship) {
+            // round_idを除外
+            if (round === 'round_id') continue;
+            
             for (const match in mathchesInTheChampionship[round]) {
-                originalVenues.push(mathchesInTheChampionship[round][match]['venue']);
+                const venue = mathchesInTheChampionship[round][match]['venue'];
+                if (venue) {  // venueがnullでない場合のみ追加
+                    originalVenues.push(venue);
+                }
             }
         }
 
         // 重複を除いた試合会場を取得
         const uniqueVenues = [...new Set(originalVenues)];
-
         return uniqueVenues;
     } else {
-        return '';
+        return [];
     }
 });
 
@@ -188,6 +193,9 @@ const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
         const filteredMatchesByVenue = []
         const matches = filteredByChampionship['matches'];
         for (const round in matches) {
+            // round_idを除外
+            if (round === 'round_id') continue;
+            
             for (const match in matches[round]) {
                 if (matches[round][match]['venue'] === selectedVenue.value) {
                     filteredMatchesByVenue.push(matches[round][match]);
@@ -235,7 +243,7 @@ const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
 
         return displayDataOfMatches;
     } else {
-        return '';
+        return [];
     }
 });
 
@@ -296,7 +304,7 @@ const checkExpiration = () => {
 };
 
 // ページ表示前にConnecterDDBから試合情報抽出
-onBeforeMount(async () => {
+onMounted(async () => {
     // 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
     isAccessible.value = await getCurrentMatches();
 
