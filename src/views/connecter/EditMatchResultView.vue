@@ -336,7 +336,6 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
         </div>
         <div v-if="isLoading" class="mt-20">
             <img src="../../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
-            <p class="text-center">読み込み中……</p>
         </div>
         <div v-else>
             <div v-if="errorMessage">

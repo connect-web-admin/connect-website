@@ -57,7 +57,6 @@ onMounted(async () => {
     <div class="p-5">
         <div v-if="isLoading" class="mt-20">
             <img src="../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
-            <p class="text-center">読み込み中</p>
         </div>
         <div v-else-if="failedMsg">
             <p>{{ failedMsg }}</p>
