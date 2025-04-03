@@ -850,6 +850,10 @@ onMounted(async () => {
         showRegisterMatchResultModal.value = true;
     }
 
+    if (gameStatus.value === 'PK戦') {
+        const pkScoreRegistration = document.getElementById('pk-score-registration');
+        pkScoreRegistration.scrollIntoView({ behavior: 'smooth' });
+    }
 });
 
 // CSS クラスの共通化
@@ -974,7 +978,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                         </div>
                     </div>
                     <!-- PK戦のスコア登録 -->
-                    <div v-if="hasPk && gameStatus === 'PK戦'" :class="[flexCol, 'border-t-1py-3']">
+                    <div v-if="hasPk && gameStatus === 'PK戦'" :class="[flexCol, 'border-t-1py-3']" id="pk-score-registration">
                         <h3 class="font-bold mt-2">PK戦スコア登録</h3>
                         <h3 v-if="gameStatus === 'PK戦'" class="text-center text-red-500 font-bold my-2">※
                         表記下チームからの先行入力も可能です。</h3>
@@ -1117,7 +1121,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                 </div>
             </div>
             <a href="/connecter/select-reporting-match"
-                class="block text-center text-blue-600 underline mt-50">速報対象試合検索画面に戻る</a>
+                class="block text-center text-blue-600 underline mt-20">速報対象試合検索画面に戻る</a>
         </div>
         <CopyrightComp />
 
