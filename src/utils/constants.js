@@ -12,8 +12,8 @@ export const THIS_FISCAL_YEAR = "2025"; // 年度切り替え。通常、4月始
 // 大会カテゴリー
 export const CATEGORIES = [
     "U-12（ジュニア）",
-    "U-15（ジュニアユース）",
-    "U-18（ユース）",
+    // "U-15（ジュニアユース）",
+    // "U-18（ユース）",
     "WOMAN",
 ]
 
