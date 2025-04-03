@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
 
 // レギュラー会員用のページ
-import SignupView from '@/views/SignupView.vue';
+import SignUpView from '@/views/SignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
 import TopView from '@/views/TopView.vue';
 import MediaView from '@/views/MediaView.vue';
@@ -42,7 +42,7 @@ const router = createRouter({
 		{
 			path: '/signup',
 			name: 'Signup',
-			component: SignupView,
+			component: SignUpView,
 			props: true
 		},
 
