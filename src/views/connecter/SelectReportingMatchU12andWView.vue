@@ -41,6 +41,7 @@ const getCurrentMatches = async () => {
 
     const queryUrl = new URL(`${MATCH_API_URL}/current-matches`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
+    queryUrl.searchParams.append('category', CATEGORIES);
     
     try {
         const response = await fetch(queryUrl, {
@@ -55,8 +56,9 @@ const getCurrentMatches = async () => {
         }
 
         const allMatchDates = await response.json();
-        if (allMatchDates.length > 0) {
-            matchInfo.value = allMatchDates;
+        const flatMatchDates = allMatchDates.flat();
+        if (flatMatchDates.length > 0) {
+            matchInfo.value = flatMatchDates;
             return true;
         } else {
             inaccessibleMsg.value = 'アクセス可能期間外です。';
