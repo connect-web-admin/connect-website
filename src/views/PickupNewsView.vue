@@ -38,7 +38,7 @@ const getAllNews = async () => {
         }
 
         allNews.value = await response.json();
-        console.log(allNews.value);
+        
         // news_idで降順ソート（新しい記事を上に表示）
         allNews.value.sort((a, b) => a.news_id.localeCompare(b.news_id));
     } catch (error) {
