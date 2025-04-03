@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import PickupNewsCompForTop from '@/components/PickupNewsCompForTop.vue';
 import MediaCompForTop from '@/components/MediaCompForTop.vue';
-import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, CATEGORIES } from '@/utils/constants';
+import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
 import MatchesInThisWeekComp from '@/components/MatchesInThisWeekComp.vue';
 
 const matchInfo = ref([]);
