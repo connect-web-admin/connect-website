@@ -234,7 +234,7 @@ const registerEditedMatchResult = async () => {
 
         // 成功時の処理を追加
         alert('試合結果を正常に修正しました。試合検索画面に戻ります。');
-        router.push('/connecter/select-reporting-match');
+        router.push(`/connecter/select-reporting-match-${localStorage.getItem('path')}`);
     } catch (error) {
         console.error('Error details:', error)
         errorMessage.value = '試合結果の登録に失敗しました。'
@@ -419,7 +419,7 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
                         </div>
                     </div>
                     <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-                    <div :class="[borderTopBottom, 'bg-amber-300 flex flex-row justify-center gap-10 py-2']">
+                    <div :class="[borderTopBottom, 'bg-amber-500 flex flex-row justify-center gap-10 py-2']">
                         <h2>延長戦の有無</h2>
                         <div class="flex flex-row gap-5">
                             <div>
@@ -481,7 +481,7 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
                         </div>
                     </Transition>
                     <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-                    <div :class="[borderTopBottom, 'bg-purple-200 flex flex-row justify-center gap-10 py-2']">
+                    <div :class="[borderTopBottom, 'bg-amber-300 text- flex flex-row justify-center gap-10 py-2']">
                         <h2>PK戦の有無</h2>
                         <div class="flex flex-row gap-5">
                             <div>
