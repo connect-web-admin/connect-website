@@ -48,7 +48,7 @@ const nextImage = () => {
  */
 const menuList = [
     { name: 'TOP', path: '/top' },
-    { name: '結果速報', path: '/live-report-for-user' },
+    { name: '結果速報', path: '/latest-results' },
     { name: 'お知らせ', path: '/pickup-news' },
     { name: 'メディア', path: '/media' },
     { name: '大会日程', path: '/archive' },
