@@ -97,20 +97,6 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
-    },
-    "userApi": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "userLambda"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
     }
   },
   "auth": {
@@ -260,25 +246,6 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
-    },
-    "userLambda": {
-      "build": true,
-      "dependsOn": [
-        {
-          "attributeEnvMap": {
-            "Arn": "TABLE_ARN",
-            "Name": "TABLE_NAME"
-          },
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "storage",
-          "resourceName": "UserDDB"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
     }
   },
   "parameters": {
@@ -393,22 +360,6 @@
           "resourceName": "sendInquiryViaSESLambda"
         }
       ]
-    },
-    "AMPLIFY_function_userLambda_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "userLambda"
-        }
-      ]
-    },
-    "AMPLIFY_function_userLambda_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "userLambda"
-        }
-      ]
     }
   },
   "storage": {
@@ -433,10 +384,6 @@
       "service": "DynamoDB"
     },
     "PickupNewsDDB": {
-      "providerPlugin": "awscloudformation",
-      "service": "DynamoDB"
-    },
-    "UserDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }
