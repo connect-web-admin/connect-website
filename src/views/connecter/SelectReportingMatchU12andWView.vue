@@ -84,7 +84,8 @@ const moveToRegisterMatchResult = async (matchId) => {
         // 選択された大会情報から大会IDを抽出
         const championshipId = filteredByChampionship['championship_id'];
 
-        // 速報登録後に戻ってきた時に、前回選択時の項目を復元するためにローカルストレージ情報を保存            
+        // 速報登録後に戻ってきた時に、前回選択時の項目を復元するためにローカルストレージ情報を保存  
+        localStorage.setItem('path', 'u12andw'); // select-reporting-match-u12andwに戻るためのパスを用意          
         localStorage.setItem('selectedCategory', selectedCategory.value); // カテゴリー
         localStorage.setItem('selectedChampionshipName', selectedChampionshipName.value); // 大会名 
         localStorage.setItem('selectedVenue', selectedVenue.value); // 試合会場
