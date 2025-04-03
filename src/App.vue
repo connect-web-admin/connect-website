@@ -53,6 +53,15 @@ const isConnecterPath = () => {
     return router.currentRoute.value.path.startsWith('/connecter');
 }
 
+/**
+ * connecterのパスかどうかを判定する関数
+ * connecterのパスは、試合を速報する時にしか使わず、ヘッダーとフッターは邪魔になるため表示しないようにする
+ */
+const isSignUpPath = () => {
+    return router.currentRoute.value.path.startsWith('/signup');
+}
+
+
 onMounted(() => {
     /**
      * 認証イベントを監視
@@ -83,21 +92,25 @@ onMounted(() => {
     </header>          
 
     <main class="flex-1 pb-20">
-        <!-- <Authenticator :hideSignUp="true" :login-mechanisms="['email']">
-            <template v-slot="{ user }">
-                <RouterView />
-            </template>
+        <!-- <template v-if="!isSignUpPath()">
+            <Authenticator :hideSignUp="true" :login-mechanisms="['email']">
+                <template v-slot="{ user }">
+                    <RouterView />
+                </template>
 
-            <template v-slot:unauthenticated>
-                <div class="login-container">
-                    <h2>Please Log In</h2>
-                </div>
-            </template>
-        </Authenticator> -->
+                <template v-slot:unauthenticated>
+                    <div class="login-container">
+                        <h2>Please Log In</h2>
+                    </div>
+                </template>
+            </Authenticator>
+            <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10">
+                <router-link to="/signup" class="text-center bg-lime-600 text-white px-4 py-2 rounded-sm">
+                    新規会員登録
+                </router-link>
+            </div>
+        </template> -->
         <RouterView />
-        <!-- <button v-if="authState.authStatus !== 'authenticated'" class="text-center bg-lime-600 text-white px-4 py-2 mt-10 rounded-sm mx-auto block">
-            新規会員登録
-        </button> -->
     </main>
         
     <!-- connecterパス以外の場合のみフッターを表示 -->
