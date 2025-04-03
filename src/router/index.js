@@ -30,7 +30,7 @@ import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 import LatestResultsView from '@/views/LatestResultsView.vue';
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
-import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue';
+// import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue';
 import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMatchU12andWView.vue';
 import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
@@ -191,11 +191,11 @@ const router = createRouter({
 			props: true
 		},
 
-		{
-			path: '/connecter/select-reporting-match',
-			name: 'SelectReportingMatch',
-			component: SelectReportingMatchView,
-		},
+		// {
+		// 	path: '/connecter/select-reporting-match',
+		// 	name: 'SelectReportingMatch',
+		// 	component: SelectReportingMatchView,
+		// },
 
 		{
 			path: '/connecter/select-reporting-match-u12andw',
