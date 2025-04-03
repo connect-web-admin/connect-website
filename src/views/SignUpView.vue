@@ -54,15 +54,6 @@ const handleSubmit = async () => {
         return
     }
 
-    console.log({
-        email: email.value,
-        inputPassword: inputPassword.value,
-        ageGroup: ageGroup.value,
-        gender: gender.value,
-        favoriteTeam: favoriteTeam.value,
-        membershipType: membershipType.value
-    })
-
     isProcessing.value = true;
     const postUrl = new URL(`${MEMBER_API_URL}/signup`);
 
@@ -70,27 +61,30 @@ const handleSubmit = async () => {
         const response = await fetch(postUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
-            body: {
+            body: JSON.stringify({
                 email: email.value,
                 input_password: inputPassword.value,
                 age_group: ageGroup.value,
                 gender: gender.value,
                 favorite_team: favoriteTeam.value,
                 membership_type: membershipType.value
-            }
+            })
         });
 
+        const result = await response.json();
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(result.error || `HTTP error! status: ${response.status}`);
         }
 
-        const result = await response.json();
-        console.log(result);
+        console.log('登録成功:', result);
+        //TODO: 成功時の処理を追加（例：リダイレクトや成功メッセージの表示）
     } catch (error) {
-        failedMsg.value = '登録に失敗しました。時間を置いてから再度お試しください。それでも改善されない場合は、Connectまでお問い合わせください。';
-        console.error('登録に失敗しました。');
+        console.error('登録エラー:', error);
+        failedMsg.value = `登録に失敗しました: ${error.message}`;
     } finally {
         isProcessing.value = false;
     }
@@ -99,10 +93,10 @@ const handleSubmit = async () => {
 
 <template>
     <div class="max-w-2xl mx-auto p-8">
-        <div v-if="isProcessing" class="flex justify-center items-center h-screen">
+        <div v-if="isProcessing" class="flex justify-center items-center">
             <img src="../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
         </div>
-        <div v-else-if="failedMsg" class="flex justify-center items-center h-screen">
+        <div v-else-if="failedMsg" class="flex justify-center items-center">
             <p>{{ failedMsg }}</p>
         </div>
         <div v-else>
