@@ -31,6 +31,8 @@ import LatestResultsView from '@/views/LatestResultsView.vue';
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
 import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue';
+import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMatchU12andWView.vue';
+import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
 
 // 404ルート
@@ -195,12 +197,24 @@ const router = createRouter({
 			component: SelectReportingMatchView,
 		},
 
-		// {
-		// 	path: '/connecter/select-reporting-match-u18',
-		// 	name: 'SelectReportingMatchU18',
-		// 	component: SelectReportingMatchU18View,
-		// 	props: (route) => ({ accessToken: route.query.access_token })
-		// },
+		{
+			path: '/connecter/select-reporting-match-u12andw',
+			name: 'SelectReportingMatchU12andW',
+			component: SelectReportingMatchU12andWView,
+		},
+
+		{
+			path: '/connecter/select-reporting-match-u15',
+			name: 'SelectReportingMatchU15',
+			component: SelectReportingMatchU15View,
+		},
+
+		{
+			path: '/connecter/select-reporting-match-u18',
+			name: 'SelectReportingMatchU18',
+			component: SelectReportingMatchU18View
+			// props: (route) => ({ accessToken: route.query.access_token })
+		},
 
 		{
 			path: '/connecter/edit-match-result/:championshipId/:matchId',

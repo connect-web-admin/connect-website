@@ -1,11 +1,18 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, CATEGORIES } from '@/utils/constants';
+import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
 import CopyrightComp from '@/components/CopyrightComp.vue';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+
+const CATEGORIES = [
+    "U-12（ジュニア）",
+    "U-15（ジュニアユース）",
+    "U-18（ユース）",
+    "WOMAN",
+]
 
 const router = useRouter();
 const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);

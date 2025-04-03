@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
-const CATEGORY = 'U-18（ユース）';
+const CATEGORY = 'U-15（ジュニアユース）';
 
 const router = useRouter();
 const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);

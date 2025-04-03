@@ -7,7 +7,10 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
-const CATEGORY = 'U-18（ユース）';
+const CATEGORIES = [
+    "U-12（ジュニア）",
+    "WOMAN",
+]
 
 const router = useRouter();
 const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
@@ -38,8 +41,7 @@ const getCurrentMatches = async () => {
 
     const queryUrl = new URL(`${MATCH_API_URL}/current-matches`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
-    queryUrl.searchParams.append('category', CATEGORY);
-
+    
     try {
         const response = await fetch(queryUrl, {
             method: 'GET',
@@ -272,10 +274,12 @@ watch(selectedChampionshipName, () => {
  * ローカルストレージに保存された選択項目を復元
  */
 const setSelectedItems = () => {
-    // カテゴリーを設定（U-18固定）
-    selectedCategory.value = CATEGORY;
+    // カテゴリーを復元
+    if (localStorage.getItem('selectedCategory')) {
+        selectedCategory.value = localStorage.getItem('selectedCategory');
+    }
 
-    // 少し遅延させて大会名を復元（カテゴリー設定後にcomputedが更新されるのを待つ）
+    // 少し遅延させて大会名を復元（カテゴリー選択後にcomputedが更新されるのを待つ）
     setTimeout(() => {
         if (localStorage.getItem('selectedChampionshipName') &&
             championshipsFilteredByCategory.value.includes(localStorage.getItem('selectedChampionshipName'))) {
@@ -345,15 +349,14 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                 <h2 class="text-center my-2 text-sm">処理に時間がかかる場合がありますので、ボタンを押しても表示が切り替わらない場合は少々お待ちください。</h2>
                 <div :class="eachMenuContainer">
                     <h2 :class="menuHeading">カテゴリー</h2>
-                    <p class="px-4 py-1 bg-amber-100">{{ CATEGORY }}</p>
-                    <!-- <div v-for="(category, idx) in CATEGORIES" :key="idx"
+                    <div v-for="(category, idx) in CATEGORIES" :key="idx"
                         :class="[eachSelect, { 'bg-amber-100': selectedCategory === category }]">
                         <label :for="'category-selector-' + idx" class="block w-full cursor-pointer">
                             <input type="radio" :value="category" v-model="selectedCategory"
                                 :id="'category-selector-' + idx" class="appearance-none" />
                             {{ category }}
                         </label>
-                    </div> -->
+                    </div>
                 </div>
                 <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
                 <div :class="eachMenuContainer">
@@ -364,7 +367,7 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
                         leave-to-class="opacity-0">
-                        <div v-if="true">
+                        <div v-if="selectedCategory">
                             <div v-for="(championship, idx) in championshipsFilteredByCategory" :key="idx"
                                 :class="[eachSelect, { 'bg-amber-100': selectedChampionshipName === championship }]">
                                 <label :for="'championship-selector-' + idx" class="block w-full cursor-pointer">
