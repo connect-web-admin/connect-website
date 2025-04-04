@@ -9,6 +9,13 @@ import timezone from 'dayjs/plugin/timezone';
 
 const CATEGORY = 'U-15（ジュニアユース）';
 
+const props = defineProps({
+    accessToken: {
+        type: String,
+        required: true
+    }
+});
+
 const router = useRouter();
 const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
 const isLoading = ref(false);
@@ -39,6 +46,7 @@ const getCurrentMatches = async () => {
     const queryUrl = new URL(`${MATCH_API_URL}/current-matches`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
     queryUrl.searchParams.append('category', CATEGORY);
+    queryUrl.searchParams.append('accessToken', props.accessToken);
 
     try {
         const response = await fetch(queryUrl, {
@@ -57,7 +65,7 @@ const getCurrentMatches = async () => {
             matchInfo.value = allMatchDates;
             return true;
         } else {
-            inaccessibleMsg.value = 'アクセス可能期間外です。';
+            inaccessibleMsg.value = 'アクセスを許可されていません。';
             return false;
         }
     } catch (error) {

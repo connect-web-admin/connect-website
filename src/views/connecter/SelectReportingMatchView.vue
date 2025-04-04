@@ -61,7 +61,7 @@ const getCurrentMatches = async () => {
             matchInfo.value = allMatchDates;
             return true;
         } else {
-            inaccessibleMsg.value = 'アクセス可能期間外です。';
+            inaccessibleMsg.value = 'アクセスを許可されていません。';
             return false;
         }
     } catch (error) {
