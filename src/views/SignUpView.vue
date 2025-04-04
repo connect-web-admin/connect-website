@@ -66,11 +66,11 @@ const handleSubmit = async () => {
             },
             body: JSON.stringify({
                 email: email.value,
-                input_password: inputPassword.value,
-                age_group: ageGroup.value,
+                inputPassword: inputPassword.value,
+                ageGroup: ageGroup.value,
                 gender: gender.value,
-                favorite_team: favoriteTeam.value,
-                membership_type: membershipType.value
+                favoriteTeam: favoriteTeam.value,
+                membershipType: membershipType.value
             })
         });
 
@@ -100,7 +100,7 @@ const handleSubmit = async () => {
             <p>{{ failedMsg }}</p>
         </div>
         <div v-else>
-            <h1 class="text-2xl font-bold mb-6">新規会員登録</h1>
+            <h1 class="text-xl font-bold mb-6">新規会員登録</h1>
             <form @submit.prevent="handleSubmit" class="space-y-6">
                 <div class="space-y-2">
                     <label for="email" class="block text-sm font-medium text-gray-700">メールアドレス <span
