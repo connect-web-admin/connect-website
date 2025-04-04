@@ -3,6 +3,7 @@ import App from '@/App.vue';
 
 // レギュラー会員用のページ
 import SignUpView from '@/views/SignUpView.vue';
+import ConfirmSignUpView from '@/views/ConfirmSignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
 import TopView from '@/views/TopView.vue';
 import MediaView from '@/views/MediaView.vue';
@@ -46,6 +47,13 @@ const router = createRouter({
 			name: 'Signup',
 			component: SignUpView,
 			props: true
+		},
+
+		{
+			path: '/confirm-signup',
+			name: 'ConfirmSignup',
+			component: ConfirmSignUpView,
+			props: (route) => ({ email: route.query.email })
 		},
 
 		{
