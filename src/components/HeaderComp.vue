@@ -189,7 +189,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                 <div class="h-[43px] bg-[#090A0A]"></div>
                                 <ul>
                                     <li @click="isMenuOpen = !isMenuOpen" class="flex items-center h-10 pl-4">
-                                        <router-link to="/login" class="flex items-center">
+                                        <router-link to="/" class="flex items-center">
                                             <img src="@/assets/icons/person-shadow-portrait.svg" alt="ログイン"
                                                 class="h-[16px]">
                                             ログイン
