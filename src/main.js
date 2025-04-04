@@ -18,10 +18,16 @@ I18n.setLanguage('ja');
 
 I18n.putVocabularies({
     ja: {
-        'Sign In': 'ログイン',
-        'Sign Up': '新規登録',
+        'Sign in': 'ログイン',
+        'Sign up': '新規登録',
         'Enter your email': 'メールアドレス',
         'Forgot your password?': 'パスワードをお忘れの場合',
+        'User does not exist.': 'ユーザーが存在しません。',
+        'Incorrect username or password.': 'メールアドレスまたはパスワードが間違っています。',
+        'Your passwords must match': 'パスワードが一致しません。',
+        'Password must be at least 8 characters.': 'パスワードは8文字以上で入力してください。',
+        'Password must contain at least one uppercase letter, one lowercase letter, and one number.': 'パスワードは大文字と小文字のうち少なくとも1つ、数字のうち少なくとも1つを含めてください。',
+        'Cannot resend codes. Auto verification not turned on.': '自動検証がオフのため、コードを再送信できません。'
     },
 });
 Amplify.configure(amplifyconfig)
