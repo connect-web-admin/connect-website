@@ -20,6 +20,7 @@ const router = useRouter();
 // 読み込み中・処理中の画面切り替え用フラグ
 const isLoading = ref(false);
 const isProcessing = ref(false);
+const RETURN_PATH = localStorage.getItem('path');
 
 // モーダル表示用のフラグ
 const showHomeClubPlusModal = ref(false);
@@ -791,9 +792,8 @@ const registerMatchResult = async () => {
         }
 
         // 成功時の処理を追加
-        const returnPath = localStorage.getItem('path');
         alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
-        router.push(`/connecter/select-reporting-match-${returnPath}`);
+        router.push(`/connecter/select-reporting-match-${RETURN_PATH}`);
     } catch (error) {
         console.error('Error details:', error)
         alert('試合結果の登録に失敗しました。時間をおいて再度お試しください。');
@@ -829,9 +829,8 @@ const registerMatchDelay = async () => {
         }
 
         // 成功時の処理を追加
-        const returnPath = localStorage.getItem('path');
         alert('試合延期を正常に登録しました。試合検索画面に戻ります。');
-        router.push(`/connecter/select-reporting-match-${returnPath}`);
+        router.push(`/connecter/select-reporting-match-${RETURN_PATH}`);
     } catch (error) {
         console.error('Error details:', error);
         alert('試合延期の登録に失敗しました。時間をおいて再度お試しください。');
@@ -1120,8 +1119,8 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     </div>
                 </div>
             </div>
-            <a href="/connecter/select-reporting-match"
-                class="block text-center text-blue-600 underline mt-20">速報対象試合検索画面に戻る</a>
+            <router-link :to="`/connecter/select-reporting-match-${RETURN_PATH}`"
+                class="block text-center text-blue-600 underline mt-20">速報対象試合検索画面に戻る</router-link>
         </div>
         <CopyrightComp />
 
