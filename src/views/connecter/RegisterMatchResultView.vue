@@ -791,8 +791,9 @@ const registerMatchResult = async () => {
         }
 
         // 成功時の処理を追加
+        const returnPath = localStorage.getItem('path');
         alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
-        router.push(`/connecter/select-reporting-match-${localStorage.getItem('path')}`);
+        router.push(`/connecter/select-reporting-match-${returnPath}`);
     } catch (error) {
         console.error('Error details:', error)
         alert('試合結果の登録に失敗しました。時間をおいて再度お試しください。');
