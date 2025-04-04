@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { MEMBER_API_URL } from '../utils/constants';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 // フォームの入力値
 const email = ref('');
@@ -48,7 +51,7 @@ const inputPasswordValidation = computed(() => {
     return { isValid: true, message: '' }
 });
 
-const handleSubmit = async () => {
+const registerNewAccount = async () => {
     if (!inputPasswordValidation.value.isValid) {
         alert(inputPasswordValidation.value.message)
         return
@@ -80,11 +83,13 @@ const handleSubmit = async () => {
             throw new Error(result.error || `HTTP error! status: ${response.status}`);
         }
 
-        console.log('登録成功:', result);
-        //TODO: 成功時の処理を追加（例：リダイレクトや成功メッセージの表示）
+        router.push({
+            path: '/confirm-signup',
+            query: { email: email.value }
+        });
     } catch (error) {
         console.error('登録エラー:', error);
-        failedMsg.value = `登録に失敗しました: ${error.message}`;
+        failedMsg.value = `登録に失敗しました。メールアドレスを変えるか、時間を空けて再度お試しください。解消されない場合は運営までお問い合わせください。`;
     } finally {
         isProcessing.value = false;
     }
@@ -101,7 +106,7 @@ const handleSubmit = async () => {
         </div>
         <div v-else>
             <h1 class="text-xl font-bold mb-6">新規会員登録</h1>
-            <form @submit.prevent="handleSubmit" class="space-y-6">
+            <form @submit.prevent="registerNewAccount" class="space-y-6">
                 <div class="space-y-2">
                     <label for="email" class="block text-sm font-medium text-gray-700">メールアドレス <span
                             class="text-red-500">*必須</span></label>
