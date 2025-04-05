@@ -318,6 +318,10 @@ const checkExpiration = () => {
 
 // ページ表示前にConnecterDDBから試合情報抽出
 onMounted(async () => {
+    // 速報対象試合検索画面に戻るためのアクセストークンをローカルストレージに保存
+    const accessToken = props.accessToken;
+    localStorage.setItem('accessToken', accessToken);
+
     // 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
     isAccessible.value = await getCurrentMatches();
 
