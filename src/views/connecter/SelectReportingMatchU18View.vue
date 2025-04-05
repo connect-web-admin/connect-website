@@ -308,6 +308,8 @@ const checkExpiration = () => {
     if (localStorage.getItem('selectedItemsExpiration')) {
         const expiration = localStorage.getItem('selectedItemsExpiration');
         if (dayjs().isAfter(dayjs(expiration))) {
+            localStorage.removeItem('path');
+            localStorage.removeItem('accessToken');
             localStorage.removeItem('selectedCategory');
             localStorage.removeItem('selectedChampionshipName');
             localStorage.removeItem('selectedVenue');
