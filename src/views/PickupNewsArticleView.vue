@@ -1,26 +1,29 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { marked } from 'marked';
+import { useRoute } from 'vue-router';
 import DOMPurify from 'dompurify';
-import { PICKUP_NEWS_API_URL, THIS_FISCAL_YEAR } from '@/utils/constants';
+import { PICKUP_NEWS_API_URL } from '@/utils/constants';
 
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
-const router = useRouter();
 const fiscalYear = route.params.fiscalYear;
 const newsId = route.params.newsId;
 
-const failedMsg = ref('');
+// 記事取得中のローディング
 const isLoading = ref(false);
 
+// 記事取得失敗時のエラーメッセージ
+const failedMsg = ref('');
+
+// 記事の内容
 const singleNews = ref([]);
-const content = ref('');
+
 /**
- * 最新の4件のピックアップニュースを取得する
+ * 一覧でクリックされたピックアップニュースを取得
  */
 const getSingleNews = async () => {
     isLoading.value = true;
+
     const queryUrl = new URL(`${PICKUP_NEWS_API_URL}/article/${fiscalYear}/${newsId}`);
 
     try {
@@ -36,7 +39,6 @@ const getSingleNews = async () => {
         }
 
         singleNews.value = await response.json();
-        content.value = singleNews.value.content;
     } catch (error) {
         failedMsg.value = '記事の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。';
         console.error('記事の取得に失敗しました。');
@@ -45,11 +47,15 @@ const getSingleNews = async () => {
     }
 }
 
-const sanitizedMarkdown = () => {
-    return DOMPurify.sanitize(marked(content.value));
+/**
+ * ピックアップニュースの内容をHTMLに変換　念のためサニタイズ
+ */
+const sanitizedHtml = (content) => {
+    return DOMPurify.sanitize(content);
 };
 
 onMounted(async () => {
+    // 一覧でクリックされたピックアップニュースを取得
     await getSingleNews();
 });
 </script>
@@ -63,7 +69,7 @@ onMounted(async () => {
         </div>
         <div v-else>
             <h1 class="text-xl font-bold mb-5">{{ singleNews.title }}</h1>
-            <div v-html="sanitizedMarkdown()"></div>
+            <div v-html="sanitizedHtml(singleNews.content)"></div>
         </div>
     </div>
 </template>
