@@ -17,6 +17,7 @@ const LEAST_SCORE = 1;
 const route = useRoute();
 const router = useRouter();
 const accessToken = localStorage.getItem('accessToken');
+
 // 読み込み中・処理中の画面切り替え用フラグ
 const isLoading = ref(false);
 const RETURN_PATH = localStorage.getItem('path');
@@ -210,6 +211,8 @@ const plusScore = async (homeOrAway) => {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
             championshipId: championshipId, // パラメタで渡された大会ID
             matchId: matchId, // パラメタで渡された試合ID
+            match: match.value,
+            round: round.value,
             homeOrAway: homeOrAway,
             gameStatus: gameStatus.value
         }
@@ -282,6 +285,8 @@ const minusScore = async (homeOrAway) => {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
             championshipId: championshipId, // パラメタで渡された大会ID
             matchId: matchId, // パラメタで渡された試合ID
+            match: match.value,
+            round: round.value,
             homeOrAway: homeOrAway,
             gameStatus: gameStatus.value
         }
@@ -352,6 +357,8 @@ const managePkScore = async (homeOrAway, result) => {
             fiscalYear: THIS_FISCAL_YEAR,
             championshipId: championshipId,
             matchId: matchId,
+            match: match.value,
+            round: round.value,
             homeOrAway: homeOrAway,
             index: index,
             result: result
@@ -406,6 +413,8 @@ const cancelLastKick = async (homeOrAway) => {
             fiscalYear: THIS_FISCAL_YEAR,
             championshipId: championshipId,
             matchId: matchId,
+            match: match.value,
+            round: round.value,
             homeOrAway: homeOrAway,
             index: lastIndex,
             result: 'cancel'
@@ -622,6 +631,8 @@ const handleGameStatus = async (direction) => {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
             championshipId: championshipId, // パラメタで渡された大会ID
             matchId: matchId, // パラメタで渡された試合ID
+            match: match.value,
+            round: round.value,
             changingGameStatus: changingGameStatus, // 変更後の試合進行状況
             direction: direction, // 引数で文字列nextかprevが入る
         }
@@ -775,6 +786,8 @@ const registerMatchResult = async () => {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
             championshipId: championshipId, // パラメタで渡された大会ID
             matchId: matchId, // パラメタで渡された試合ID
+            match: match.value,
+            round: round.value,
             actualMatchStartTime: actualMatchStartTime.value,
         }
 
@@ -792,7 +805,11 @@ const registerMatchResult = async () => {
 
         // 成功時の処理を追加
         alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
-        router.push(`/connecter/select-reporting-match-${RETURN_PATH}`);
+        if (accessToken) {
+            router.push(`/connecter/select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`);
+        } else {
+            router.push(`/connecter/select-reporting-match-${RETURN_PATH}`);
+        }
     } catch (error) {
         console.error('Error details:', error)
         alert('試合結果の登録に失敗しました。時間をおいて再度お試しください。');
@@ -829,7 +846,11 @@ const registerMatchDelay = async () => {
 
         // 成功時の処理を追加
         alert('試合延期を正常に登録しました。試合検索画面に戻ります。');
-        router.push(`/connecter/select-reporting-match-${RETURN_PATH}`);
+        if (accessToken) {
+            router.push(`/connecter/select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`);
+        } else {
+            router.push(`/connecter/select-reporting-match-${RETURN_PATH}`);
+        }
     } catch (error) {
         console.error('Error details:', error);
         alert('試合延期の登録に失敗しました。時間をおいて再度お試しください。');
@@ -882,7 +903,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
 
 <template>
     <div>
-        <div class="mt-8">
+        <div class="mt-5">
             <img src="@/assets/connect-title-logo.svg" alt="コネクト" class="mx-auto">
         </div>
         <div v-if="isLoading" class="mt-20">
