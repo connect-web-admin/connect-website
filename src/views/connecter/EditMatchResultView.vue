@@ -7,6 +7,8 @@ import CopyrightComp from '@/components/CopyrightComp.vue';
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
 const router = useRouter();
+const accessToken = localStorage.getItem('accessToken');
+const returnPath = localStorage.getItem('path');
 
 // 読み込み中・処理中の画面切り替え用フラグ
 const isLoading = ref(false);
@@ -233,9 +235,12 @@ const registerEditedMatchResult = async () => {
         }
 
         // 成功時の処理を追加
-        const returnPath = localStorage.getItem('path');
         alert('試合結果を正常に修正しました。試合検索画面に戻ります。');
-        router.push(`/connecter/select-reporting-match-${returnPath}`);
+        if (accessToken) {
+            router.push(`/connecter/select-reporting-match-${returnPath}?access_token=${accessToken}`);
+        } else {
+            router.push(`/connecter/select-reporting-match-${returnPath}`);
+        }
     } catch (error) {
         console.error('Error details:', error)
         errorMessage.value = '試合結果の登録に失敗しました。'
@@ -654,8 +659,10 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
                     </div>
                 </div>
             </div>
-            <a href="/connecter/select-reporting-match"
-                class="block text-center text-blue-600 underline mt-50">速報対象試合検索画面に戻る</a>
+            <router-link v-if="accessToken" :to="`/connecter/select-reporting-match-${returnPath}?access_token=${accessToken}`"
+                class="block text-center text-blue-600 underline mt-50">速報対象試合検索画面に戻る</router-link>
+            <router-link v-else :to="`/connecter/select-reporting-match-${returnPath}`"
+                class="block text-center text-blue-600 underline mt-50">速報対象試合検索画面に戻る</router-link>
         </div>
         <CopyrightComp />
     </div>
