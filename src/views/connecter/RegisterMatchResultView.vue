@@ -16,10 +16,9 @@ const LEAST_SCORE = 1;
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
 const router = useRouter();
-
+const accessToken = localStorage.getItem('accessToken');
 // 読み込み中・処理中の画面切り替え用フラグ
 const isLoading = ref(false);
-const isProcessing = ref(false);
 const RETURN_PATH = localStorage.getItem('path');
 
 // モーダル表示用のフラグ
@@ -202,7 +201,7 @@ const plusScoreValidation = (homeOrAway) => {
  * 得点を追加
  */
 const plusScore = async (homeOrAway) => {
-    isProcessing.value = true;
+    isLoading.value = true;
 
     try {
         const putUrl = new URL(`${MATCH_API_URL}/plus-score`);
@@ -231,7 +230,7 @@ const plusScore = async (homeOrAway) => {
     } catch (error) {
         console.error('Error details:', error);
         alert('得点の追加に失敗しました。時間をおいて再度お試しください。');
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 }
 
@@ -274,7 +273,7 @@ const minusScoreValidation = (homeOrAway) => {
  * 得点を取り消し
  */
 const minusScore = async (homeOrAway) => {
-    isProcessing.value = true;
+    isLoading.value = true;
 
     try {
         const putUrl = new URL(`${MATCH_API_URL}/minus-score`);
@@ -303,7 +302,7 @@ const minusScore = async (homeOrAway) => {
     } catch (error) {
         console.error('Error details:', error);
         alert('得点の取り消しに失敗しました。時間をおいて再度お試しください。');
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 }
 
@@ -326,7 +325,7 @@ const getNextKickIndex = (homeOrAway) => {
  * PK戦のスコアを追加・取り消し
  */
 const managePkScore = async (homeOrAway, result) => {
-    isProcessing.value = true;
+    isLoading.value = true;
 
     try {
         // 次のキック番号を取得
@@ -374,13 +373,13 @@ const managePkScore = async (homeOrAway, result) => {
     } catch (error) {
         console.error('Error details:', error);
         alert('PK戦スコアの操作に失敗しました。時間をおいて再度お試しください。');
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 };
 
 // 最後のキックを取り消す関数
 const cancelLastKick = async (homeOrAway) => {
-    isProcessing.value = true;
+    isLoading.value = true;
 
     try {
         const pkList = homeOrAway === 'home' ? homeClubPkScoreList.value : awayClubPkScoreList.value;
@@ -428,7 +427,7 @@ const cancelLastKick = async (homeOrAway) => {
     } catch (error) {
         console.error('Error details:', error);
         alert('PK戦スコアの取り消しに失敗しました。時間をおいて再度お試しください。');
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 };
 
@@ -589,7 +588,7 @@ const handleNextGameStatus = () => {
  * 試合状況進行・後退
  */
 const handleGameStatus = async (direction) => {
-    isProcessing.value = true;
+    isLoading.value = true;
 
     if (direction === 'prev' && gameStatus.value === '延長前半') {
         registerExtraHalvesValidation('cancel');
@@ -643,7 +642,7 @@ const handleGameStatus = async (direction) => {
     } catch (error) {
         console.error('Error details:', error)
         alert('試合状態の変更に失敗しました。時間をおいて再度お試しください。');
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 }
 
@@ -672,7 +671,7 @@ const registerExtraHalvesValidation = (action) => {
  * 延長戦登録
  */
 const registerExtraHalves = async (action) => {
-    isProcessing.value = true;
+    isLoading.value = true;
     // 延長戦登録・取り消し処理
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-extra-halves`);
@@ -701,7 +700,7 @@ const registerExtraHalves = async (action) => {
     } catch (error) {
         console.error('Error details:', error)
         alert('延長戦の登録に失敗しました。時間をおいて再度お試しください。');
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 }
 
@@ -730,7 +729,7 @@ const registerPkValidation = (action) => {
  * PK戦登録
  */
 const registerPk = async (action) => {
-    isProcessing.value = true;
+    isLoading.value = true;
     // PK戦登録・取り消し処理
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-pk`);
@@ -759,7 +758,7 @@ const registerPk = async (action) => {
     } catch (error) {
         console.error('Error details:', error)
         alert('PK戦の登録に失敗しました。時間をおいて再度お試しください。');
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 }
 
@@ -767,7 +766,7 @@ const registerPk = async (action) => {
  * 試合結果登録
  */
 const registerMatchResult = async () => {
-    isProcessing.value = true;
+    isLoading.value = true;
 
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-match-result`);
@@ -797,7 +796,7 @@ const registerMatchResult = async () => {
     } catch (error) {
         console.error('Error details:', error)
         alert('試合結果の登録に失敗しました。時間をおいて再度お試しください。');
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 };
 
@@ -805,7 +804,7 @@ const registerMatchResult = async () => {
  * 試合延期登録
  */
 const registerMatchDelay = async () => {
-    isProcessing.value = true;
+    isLoading.value = true;
 
     try {
         const putUrl = new URL(`${MATCH_API_URL}/register-match-delay`);
@@ -835,7 +834,7 @@ const registerMatchDelay = async () => {
         console.error('Error details:', error);
         alert('試合延期の登録に失敗しました。時間をおいて再度お試しください。');
     } finally {
-        isProcessing.value = false;
+        isLoading.value = false;
     }
 }
 
@@ -888,9 +887,6 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
         </div>
         <div v-if="isLoading" class="mt-20">
             <img src="../../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
-        </div>
-        <div v-else-if="isProcessing" class="mt-20">
-            <img src="../../assets/icons/loading.gif" alt="処理中" class="w-10 h-10 mx-auto">
         </div>
         <div v-else>
             <div class="text-center">
@@ -1119,7 +1115,9 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     </div>
                 </div>
             </div>
-            <router-link :to="`/connecter/select-reporting-match-${RETURN_PATH}`"
+            <router-link v-if="accessToken" :to="`/connecter/select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`"
+                class="block text-center text-blue-600 underline mt-20">速報対象試合検索画面に戻る</router-link>
+            <router-link v-else :to="`/connecter/select-reporting-match-${RETURN_PATH}`"
                 class="block text-center text-blue-600 underline mt-20">速報対象試合検索画面に戻る</router-link>
         </div>
         <CopyrightComp />
@@ -1127,13 +1125,13 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
         <Teleport to="body">
             <select-extra-halves-pk-modal :show="showSelectExtraHalvesPkModal" :game-status="gameStatus"
                 :is-after-second-half="gameStatus === '後半終了'" :is-after-extra-second-half="gameStatus === '延長後半終了'"
-                @close="showSelectExtraHalvesPkModal = false; isProcessing = false;" @register-extra-halves="registerExtraHalves"
+                @close="showSelectExtraHalvesPkModal = false; isLoading = false;" @register-extra-halves="registerExtraHalves"
                 @register-pk="registerPk" @handle-game-status="handleGameStatus">
             </select-extra-halves-pk-modal>
         </Teleport>
         <Teleport to=" body">
             <register-score-modal :show="showHomeClubPlusModal" :is-home="isHome" :is-plus-score="isPlusScore"
-                @close="showHomeClubPlusModal = false; isProcessing = false;" @plus-score="plusScore">
+                @close="showHomeClubPlusModal = false; isLoading = false;" @plus-score="plusScore">
                 <template v-slot:body>
                     <p><span class="text-red-500 font-bold">{{ homeClubName
                     }}</span>に１点を追加します。<br />よろしいですか？</p>
@@ -1142,7 +1140,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
         </Teleport>
         <Teleport to="body">
             <register-score-modal :show="showHomeClubMinusModal" :is-home="isHome" :is-minus-score="isMinusScore"
-                @close="showHomeClubMinusModal = false; isProcessing = false;" @minus-score="minusScore">
+                @close="showHomeClubMinusModal = false; isLoading = false;" @minus-score="minusScore">
                 <template v-slot:body>
                     <p><span class="text-red-500 font-bold">{{ homeClubName
                             }}</span>の１点を取り消します。<br />よろしいですか？</p>
@@ -1151,7 +1149,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
         </Teleport>
         <Teleport to="body">
             <register-score-modal :show="showAwayClubPlusModal" :is-away="isAway" :is-plus-score="isPlusScore"
-                @close="showAwayClubPlusModal = false; isProcessing = false;" @plus-score="plusScore">
+                @close="showAwayClubPlusModal = false; isLoading = false;" @plus-score="plusScore">
                 <template v-slot:body>
                     <p><span class="text-red-500 font-bold">{{ awayClubName
                             }}</span>に１点を追加します。<br />よろしいですか？</p>
@@ -1160,7 +1158,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
         </Teleport>
         <Teleport to="body">
             <register-score-modal :show="showAwayClubMinusModal" :is-away="isAway" :is-minus-score="isMinusScore"
-                @close="showAwayClubMinusModal = false; isProcessing = false;" @minus-score="minusScore">
+                @close="showAwayClubMinusModal = false; isLoading = false;" @minus-score="minusScore">
                 <template v-slot:body>
                     <p><span class="text-red-500 font-bold">{{ awayClubName
                             }}</span>の１点を取り消します。<br />よろしいですか？</p>
@@ -1169,7 +1167,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
         </Teleport>
         <Teleport to="body">
             <register-extra-halves-modal :show="showExtraHalvesCancelModal" :is-cancel="true"
-                @close="showExtraHalvesCancelModal = false; isProcessing = false;" @register-extra-halves="registerExtraHalves">
+                @close="showExtraHalvesCancelModal = false; isLoading = false;" @register-extra-halves="registerExtraHalves">
                 <template v-slot:body>
                     <p>延長戦を取り消します。延長戦の得点がすべて取り消されます。<br />試合状態は後半終了に変わります。<br />よろしいですか？
                     </p>
@@ -1178,14 +1176,14 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
         </Teleport>
         <Teleport to="body">
             <register-extra-halves-modal :show="showExtraHalvesApplyModal" :is-apply="true"
-                @close="showExtraHalvesApplyModal = false; isProcessing = false;" @register-extra-halves="registerExtraHalves">
+                @close="showExtraHalvesApplyModal = false; isLoading = false;" @register-extra-halves="registerExtraHalves">
                 <template v-slot:body>
                     <p>延長前半を開始します。よろしいですか？</p>
                 </template>
             </register-extra-halves-modal>
         </Teleport>
         <Teleport to="body">
-            <register-pk-modal :show="showPkCancelModal" :is-cancel="true" @close="showPkCancelModal = false; isProcessing = false;"
+            <register-pk-modal :show="showPkCancelModal" :is-cancel="true" @close="showPkCancelModal = false; isLoading = false;"
                 @register-pk="registerPk">
                 <template v-slot:body>
                     <p v-if="hasExtraHalves">PK戦を取り消します。PK戦の得点がすべて取り消されます。<br />試合状態は延長後半終了に変わります。<br />よろしいですか？</p>
@@ -1194,7 +1192,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
             </register-pk-modal>
         </Teleport>
         <Teleport to="body">
-            <register-pk-modal :show="showPkApplyModal" :is-apply="true" @close="showPkApplyModal = false; isProcessing = false;"
+            <register-pk-modal :show="showPkApplyModal" :is-apply="true" @close="showPkApplyModal = false; isLoading = false;"
                 @register-pk="registerPk">
                 <template v-slot:body>
                     <p>PK戦を開始します。よろしいですか？</p>
@@ -1202,7 +1200,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
             </register-pk-modal>
         </Teleport>
         <Teleport to="body">
-            <register-match-result-modal :show="showMatchResultModal" @close="showMatchResultModal = false; isProcessing = false;"
+            <register-match-result-modal :show="showMatchResultModal" @close="showMatchResultModal = false; isLoading = false;"
                 @register-match-result="registerMatchResult">
                 <template v-slot:body>
                     <p>試合結果を登録します。<br />よろしいですか？</p>
@@ -1211,14 +1209,14 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
         </Teleport>
         <Teleport to="body">
             <register-match-result-modal :show="showRegisterMatchResultModal"
-                @close="showRegisterMatchResultModal = false; isProcessing = false;">
+                @close="showRegisterMatchResultModal = false; isLoading = false;">
                 <template v-slot:body>
                     <p>得点を確認して、結果登録ボタンを押してください。</p>
                 </template>
             </register-match-result-modal>
         </Teleport>
         <Teleport to="body">
-            <register-match-delay-modal :show="showMatchDelayModal" @close="showMatchDelayModal = false; isProcessing = false;"
+            <register-match-delay-modal :show="showMatchDelayModal" @close="showMatchDelayModal = false; isLoading = false;"
                 @register-match-delay="registerMatchDelay">
                 <template v-slot:body>
                     <p>試合の延期を登録します。<br />よろしいですか？</p>
