@@ -39,8 +39,30 @@ const getMatchesInThisWeek = async () => {
     }
 }
 
+const scrollToTodayMatch = () => {
+    // 日本時間で今日の日付を取得（YYYY-MM-DD形式）
+    const today = new Date().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' }).split('/').map((num, index) => {
+        if (index === 0) return num;
+        return num.padStart(2, '0');
+    }).join('-');
+    
+    // 今日の日付の要素を探す
+    const todayElement = document.querySelector(`[data-date="${today}"]`);
+    
+    // 要素が見つかった場合、その要素の50ピクセル上までスクロール
+    if (todayElement) {
+        const elementPosition = todayElement.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+            top: elementPosition - 110,
+            behavior: 'smooth'
+        });
+    }
+}
+
 onMounted(async () => {
     await getMatchesInThisWeek();
+    // データが読み込まれた後に少し待ってからスクロール
+    setTimeout(scrollToTodayMatch, 500);
 });
 </script>
 

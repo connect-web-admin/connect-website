@@ -78,7 +78,7 @@ const formatDate = (dateString) => {
 </script>
 <template>
     <div>
-        <div v-for="(championships, date) in sortedFormattedData" :key="date">
+        <div v-for="(championships, date) in sortedFormattedData" :key="date" :data-date="date">
             <div class="border-b-1 border-black mt-4">
                 <h3 class="bg-black text-white w-fit px-2">{{ formatDate(date) }}</h3>
             </div>
