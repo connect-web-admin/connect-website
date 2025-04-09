@@ -67,7 +67,7 @@ onMounted(async () => {
         </div>
         <div v-else>
             <h1 class="text-xl font-bold mb-5 border-b-1 border-gray-200 pb-2">メディア</h1>
-            <div v-for="article in allArticles" :key="article.id" class="border-b-1 border-gray-200 pb-2 flex flex-row justify-between items-center gap-2">
+            <div v-for="article in allArticles" :key="article.id" class="border-b-1 border-gray-200 py-1 flex flex-row justify-between items-center gap-2">
                 <div class="w-1/5 h-auto">
                     <img :src="article['thumbnail']" alt="サムネイル" class="w-full h-full object-cover" />
                 </div>
