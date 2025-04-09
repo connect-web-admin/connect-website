@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 // フォームの入力値
-const email = ref('');
+const inputEmail = ref('');
 const inputPassword = ref('');
 const ageGroup = ref('');
 const gender = ref('');
@@ -33,6 +33,11 @@ const genders = [
     { value: 'female', label: '女' }
 ];
 
+/**
+ * パスワードの入力チェックをリアルタイムで行う
+ * 半角英数字8〜20字。大文字、小文字、数字をそれぞれ1文字以上含める
+ * 要件を満たさない場合はリアルタイムでエラーメッセージがせいせいされる
+ */
 const inputPasswordValidation = computed(() => {
     if (!inputPassword.value) return { isValid: false, message: 'パスワードを入力してください' }
 
@@ -51,6 +56,33 @@ const inputPasswordValidation = computed(() => {
     return { isValid: true, message: '' }
 });
 
+const checkUserStatus = async (email) => {
+    try {
+        const response = await fetch(`${MEMBER_API_URL}/check-user-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ inputEmail: email })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            if (result.status === 'ALREADY_REGISTERED') {
+                throw new Error('登録済みのメールアドレスです');
+            }
+            throw new Error(result.error || `HTTP error! status: ${response.status}`);
+        }
+
+        return result;
+    } catch (error) {
+        console.error('ユーザー状態確認エラー:', error);
+        throw error;
+    }
+};
+
 const registerNewAccount = async () => {
     if (!inputPasswordValidation.value.isValid) {
         alert(inputPasswordValidation.value.message)
@@ -58,9 +90,22 @@ const registerNewAccount = async () => {
     }
 
     isProcessing.value = true;
-    const postUrl = new URL(`${MEMBER_API_URL}/signup`);
 
     try {
+        // まずユーザーの状態を確認
+        const userStatus = await checkUserStatus(inputEmail.value);
+        
+        // 認証待ち状態の場合は、認証コード確認画面にリダイレクト
+        if (userStatus.status === 'PENDING_CONFIRMATION') {
+            router.push({
+                path: '/confirm-signup',
+                query: { inputEmail: inputEmail.value }
+            });
+            return;
+        }
+
+        // 通常の新規登録処理
+        const postUrl = new URL(`${MEMBER_API_URL}/signup`);
         const response = await fetch(postUrl, {
             method: 'POST',
             headers: {
@@ -68,7 +113,7 @@ const registerNewAccount = async () => {
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                email: email.value,
+                inputEmail: inputEmail.value,
                 inputPassword: inputPassword.value,
                 ageGroup: ageGroup.value,
                 gender: gender.value,
@@ -80,16 +125,20 @@ const registerNewAccount = async () => {
         const result = await response.json();
 
         if (!response.ok) {
+            if (result.status === 'ALREADY_REGISTERED') {
+                throw new Error('登録済みのメールアドレスです');
+            }
             throw new Error(result.error || `HTTP error! status: ${response.status}`);
         }
 
+        // 新規登録成功後、認証コード確認画面にリダイレクト
         router.push({
             path: '/confirm-signup',
-            query: { email: email.value }
+            query: { inputEmail: inputEmail.value }
         });
     } catch (error) {
         console.error('登録エラー:', error);
-        failedMsg.value = `登録に失敗しました。メールアドレスを変えるか、時間を空けて再度お試しください。解消されない場合は運営までお問い合わせください。`;
+        failedMsg.value = error.message || `登録に失敗しました。メールアドレスを変えるか、時間を空けて再度お試しください。解消されない場合は運営までお問い合わせください。`;
     } finally {
         isProcessing.value = false;
     }
@@ -108,9 +157,9 @@ const registerNewAccount = async () => {
             <h1 class="text-xl font-bold mb-6">新規会員登録</h1>
             <form @submit.prevent="registerNewAccount" class="space-y-6">
                 <div class="space-y-2">
-                    <label for="email" class="block text-sm font-medium text-gray-700">メールアドレス <span
+                    <label for="inputEmail" class="block text-sm font-medium text-gray-700">メールアドレス <span
                             class="text-red-500">*必須</span></label>
-                    <input type="email" id="email" v-model="email" required
+                    <input type="inputEmail" id="inputEmail" v-model="inputEmail" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
