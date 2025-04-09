@@ -7,7 +7,7 @@ const router = useRouter();
 const route = useRoute();
 
 const verificationCode = ref('');
-const email = ref(route.query.email || '');
+const inputEmail = ref(route.query.inputEmail || '');
 const isProcessing = ref(false);
 const errorMessage = ref('');
 const isConfirmSuccess = ref(false);
@@ -23,6 +23,11 @@ const confirmSignUp = async () => {
     errorMessage.value = '';
 
     try {
+        console.log('認証コード確認リクエスト送信:', {
+            inputEmail: inputEmail.value,
+            verificationCode: verificationCode.value
+        });
+        
         const response = await fetch(`${MEMBER_API_URL}/confirm-signup`, {
             method: 'POST',
             headers: {
@@ -30,12 +35,13 @@ const confirmSignUp = async () => {
                 'accept': 'application/json'
             },
             body: JSON.stringify({
-                email: email.value,
+                inputEmail: inputEmail.value,
                 verificationCode: verificationCode.value
             })
         });
 
         const data = await response.json();
+        console.log('認証コード確認レスポンス:', data);
 
         if (!response.ok) {
             throw new Error(data.message || '認証に失敗しました');
@@ -46,6 +52,7 @@ const confirmSignUp = async () => {
             router.push('/');
         }, 20000);
     } catch (error) {
+        console.error('認証エラー:', error);
         errorMessage.value = error.message || '認証に失敗しました。時間をおいて再度お試しください。';
     } finally {
         isProcessing.value = false;
@@ -53,7 +60,7 @@ const confirmSignUp = async () => {
 };
 
 const resendCode = async () => {
-    if (!email.value) {
+    if (!inputEmail.value) {
         errorMessage.value = 'メールアドレスが見つかりません';
         return;
     }
@@ -62,6 +69,10 @@ const resendCode = async () => {
     errorMessage.value = '';
 
     try {
+        console.log('認証コード再送信リクエスト送信:', {
+            inputEmail: inputEmail.value
+        });
+        
         const response = await fetch(`${MEMBER_API_URL}/resend-code`, {
             method: 'POST',
             headers: {
@@ -69,11 +80,12 @@ const resendCode = async () => {
                 'accept': 'application/json'
             },
             body: JSON.stringify({
-                email: email.value
+                inputEmail: inputEmail.value
             })
         });
 
         const data = await response.json();
+        console.log('認証コード再送信レスポンス:', data);
 
         if (!response.ok) {
             throw new Error(data.message || '認証コードの再送信に失敗しました');
@@ -81,6 +93,7 @@ const resendCode = async () => {
 
         isResendSuccess.value = true;
     } catch (error) {
+        console.error('認証コード再送信エラー:', error);
         errorMessage.value = error.message || '認証コードの再送信に失敗しました';
     } finally {
         isProcessing.value = false;
@@ -105,7 +118,7 @@ const resendCode = async () => {
             </div>
             <div v-else>
                 <p class="mb-4">
-                    {{ email }} 宛に送信された６ケタの認証コードを入力してください。<br>
+                    {{ inputEmail }} 宛に送信された６ケタの認証コードを入力してください。<br>
                     認証コードが届くまで１分以上かかることがあります。
                 </p>
 
