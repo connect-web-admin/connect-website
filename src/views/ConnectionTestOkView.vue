@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import { ref } from 'vue';
 import CryptoJS from 'crypto-js';
 
@@ -117,4 +117,21 @@ const handleSubmit = (event) => {
         <input type="hidden" name="sps_hashcode" :value="spsHashcode">
         <input type="submit" value="submit">
     </form>
+</template> -->
+<!-- PageB.vue -->
+<template>
+    <form ref="formRef" action="https://stbfep.sps-system.com/Extra/BuyRequestAction.do" method="POST" style="display: none">
+        <input type="hidden" name="status" value="OK" />
+    </form>
 </template>
+
+<script setup>
+import { onMounted, ref } from 'vue'
+
+const formRef = ref(null)
+
+onMounted(() => {
+    // レスポンス関係なく、常に"OK"を送信
+    formRef.value.submit()
+})
+</script>

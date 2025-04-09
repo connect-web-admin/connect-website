@@ -40,10 +40,10 @@ const formData = {
     amount: '1',
     pay_type: '0',
     service_type: '0',
-    success_url: 'https://sample.domain/finish.aspx',
-    cancel_url: 'https://sample.domain/cancel.aspx',
-    error_url: 'https://sample.domain/error.aspx',
-    pagecon_url: 'https://sample.domain/result.aspx'
+    success_url: 'https://connect-goals.com/connection-test-ok',
+    cancel_url: 'https://connect-goals.com/connection-test-ok',
+    error_url: 'https://connect-goals.com/connection-test-ok',
+    pagecon_url: 'https://connect-goals.com/connection-test-ok'
 }
 // const formData = {
 //     pay_method: 'credit',
@@ -103,9 +103,12 @@ const handleSubmit = (event) => {
         <input type="hidden" name="merchant_id" :value="formData.merchant_id">
         <input type="hidden" name="service_id" :value="formData.service_id">
         <input type="hidden" name="cust_code" :value="formData.cust_code">
+        <input type="hidden" name="sps_cust_no" value="">
+        <input type="hidden" name="sps_payment_no" value="">
         <input type="hidden" name="order_id" :value="formData.order_id">
         <input type="hidden" name="item_id" :value="formData.item_id">
         <input type="hidden" name="item_name" :value="formData.item_name">
+        <input type="hidden" name="tax" value="">
         <input type="hidden" name="amount" :value="formData.amount">
         <input type="hidden" name="pay_type" :value="formData.pay_type">
         <input type="hidden" name="service_type" :value="formData.service_type">
@@ -113,7 +116,12 @@ const handleSubmit = (event) => {
         <input type="hidden" name="cancel_url" :value="formData.cancel_url">
         <input type="hidden" name="error_url" :value="formData.error_url">
         <input type="hidden" name="pagecon_url" :value="formData.pagecon_url">
+        <input type="hidden" name="free1" value="">
+        <input type="hidden" name="free2" value="">
+        <input type="hidden" name="free3" value="">
+        <input type="hidden" name="free_csv" value="">
         <input type="hidden" name="request_date" :value="requestDate">
+        <input type="hidden" name="limit_second" value="">
         <input type="hidden" name="sps_hashcode" :value="spsHashcode">
         <input type="submit" value="submit">
     </form>
