@@ -16,6 +16,13 @@
         "fieldName": "membership_type",
         "fieldType": "string"
       }
+    },
+    {
+      "name": "gsiByEmail",
+      "partitionKey": {
+        "fieldName": "email",
+        "fieldType": "string"
+      }
     }
   ],
   "triggerFunctions": []
