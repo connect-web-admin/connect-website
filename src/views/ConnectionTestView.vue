@@ -29,25 +29,9 @@ const generateRequestDate = () => {
 }
 
 // 購入要求
-const formData = {
-    pay_method: 'credit',
-    merchant_id: '19788',
-    service_id: '001',
-    cust_code: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
-    order_id: 'YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY',
-    item_id: '1',
-    item_name: 'テスト商品名',
-    amount: '1',
-    pay_type: '0',
-    service_type: '0',
-    success_url: 'https://connect-goals.com/public/connectionTestOk.html',
-    cancel_url: 'https://connect-goals.com/public/connectionTestOk.html',
-    error_url: 'https://connect-goals.com/public/connectionTestOk.html',
-    pagecon_url: 'https://connect-goals.com/public/connectionTestOk.html'
-}
 // const formData = {
 //     pay_method: 'credit',
-//     merchant_id: '58913',
+//     merchant_id: '19788',
 //     service_id: '001',
 //     cust_code: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
 //     order_id: 'YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY',
@@ -56,12 +40,27 @@ const formData = {
 //     amount: '1',
 //     pay_type: '0',
 //     service_type: '0',
-//     success_url: 'https://sample.domain/finish.aspx',
-//     cancel_url: 'https://sample.domain/cancel.aspx',
-//     error_url: 'https://sample.domain/error.aspx',
-//     pagecon_url: 'https://sample.domain/result.aspx',
-//     request_date: generateRequestDate()
+//     success_url: 'https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url',
+//     cancel_url: 'https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url',
+//     error_url: 'https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url',
+//     pagecon_url: 'https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url'
 // }
+const formData = {
+    pay_method: 'credit',
+    merchant_id: '58913',
+    service_id: '001',
+    cust_code: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
+    order_id: 'YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY',
+    item_id: '1',
+    item_name: 'テスト商品名',
+    amount: '1',
+    pay_type: '0',
+    service_type: '0',
+    success_url: 'https://connect-goals.com/archive',
+    cancel_url: 'https://connect-goals.com/media',
+    error_url: 'https://connect-goals.com/pickup-news',
+    pagecon_url: 'https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url'
+}
 
 /**
  * ハッシュコードを生成
@@ -69,8 +68,8 @@ const formData = {
  */
 const generateHash = () => {
     // ハッシュキー
-    // const hashKey = '628779fb3044932486354ca601169f2bbab32660';
-    const hashKey = '398a58952baf329cac5efbae97ea84ba17028d02';
+    const hashKey = '628779fb3044932486354ca601169f2bbab32660';
+    // const hashKey = '398a58952baf329cac5efbae97ea84ba17028d02';
     // 全ての値を連結（値の前後のスペースを削除）
     const concatenatedValues = Object.values(formData)
         .map(value => String(value).trim())
@@ -97,7 +96,7 @@ const handleSubmit = (event) => {
 </script>
 
 <template>
-    <form method="POST" action="https://stbfep.sps-system.com/Extra/BuyRequestAction.do" accept-charset="Shift_JIS"
+    <form method="POST" action="https://stbfep.sps-system.com/f01/FepBuyInfoReceive.do" accept-charset="Shift_JIS"
         @submit="handleSubmit">
         <input type="hidden" name="pay_method" :value="formData.pay_method">
         <input type="hidden" name="merchant_id" :value="formData.merchant_id">
