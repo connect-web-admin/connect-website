@@ -395,7 +395,7 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                 <div :class="eachMenuContainer">
                     <h2 :class="menuHeading">試合会場</h2>
                     <div v-if="!selectedChampionshipName">
-                        （会場が表示されます）
+                        （大会を選ぶと会場が表示されます）
                     </div>
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
@@ -416,7 +416,7 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                 <div :class="eachMenuContainer">
                     <h2 :class="menuHeading">試合一覧（本日開催分）</h2>
                     <div v-if="!selectedVenue">
-                        （試合が表示されます）
+                        （会場を選ぶと試合が表示されます）
                     </div>
                     <Transition enter-active-class="transition-opacity duration-300 ease-in"
                         leave-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
