@@ -89,18 +89,19 @@ const formatDate = (dateString) => {
                         <div v-if="matchKey !== 'round_id'">
                             <p class="text-sm">
                                 {{ championship.championship_name }}<br />
-                                {{ matchesKey }}&nbsp;&nbsp;{{ matchKey }}
+                                {{ matchesKey }}&nbsp;&nbsp;{{ matchKey }}<br />
+                                会場：{{ match.venue }}
                             </p>
                             <div>
                                 <div v-if="match['game_status'] === '試合前'"
                                     class="flex flex-row justify-center items-center text-lg">
-                                    <div class="w-2/5 text-right">
+                                    <div class="w-36/100 text-right">
                                         {{ match['home_club']['club_name'] }}
                                     </div>
-                                    <div v class="w-1/5 text-2xl">
+                                    <div v class="w-28/100 text-2xl">
                                         {{ match['scheduled_match_start_time'] }}
                                     </div>
-                                    <div class="w-2/5 text-left">
+                                    <div class="w-36/100 text-left">
                                         {{ match['away_club']['club_name'] }}
                                     </div>
                                 </div>
