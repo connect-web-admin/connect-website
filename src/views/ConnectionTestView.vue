@@ -40,10 +40,10 @@ const formData = {
     amount: '1',
     pay_type: '0',
     service_type: '0',
-    success_url: 'https://connect-goals.com/connection-test-ok',
-    cancel_url: 'https://connect-goals.com/connection-test-ok',
-    error_url: 'https://connect-goals.com/connection-test-ok',
-    pagecon_url: 'https://connect-goals.com/connection-test-ok'
+    success_url: 'https://connect-goals.com/public/connectionTestOk.html',
+    cancel_url: 'https://connect-goals.com/public/connectionTestOk.html',
+    error_url: 'https://connect-goals.com/public/connectionTestOk.html',
+    pagecon_url: 'https://connect-goals.com/public/connectionTestOk.html'
 }
 // const formData = {
 //     pay_method: 'credit',
