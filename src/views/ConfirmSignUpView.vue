@@ -48,9 +48,12 @@ const confirmSignUp = async () => {
         }
 
         isConfirmSuccess.value = true;
-        setTimeout(() => {
-            router.push('/');
-        }, 20000);
+
+        alert('認証に成功しました。TOPページへ移動します。移動しない場合は、TOPページをタップしてください。');
+        router.push('/');
+        // setTimeout(() => {
+        //     router.push('/');
+        // }, 20000);
     } catch (error) {
         console.error('認証エラー:', error);
         errorMessage.value = error.message || '認証に失敗しました。時間をおいて再度お試しください。';

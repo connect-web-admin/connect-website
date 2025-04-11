@@ -104,7 +104,7 @@ const confirmPasswordValidation = computed(() => {
     return { isValid: true, message: '' };
 });
 
-const checkForDuplicateEmailInDatabase = async (email) => {
+const checkForDuplicateEmailInDatabase = async () => {
     try {
         const response = await fetch(`${MEMBER_API_URL}/check-for-duplicate-email-in-database`, {
             method: 'POST',
@@ -112,11 +112,76 @@ const checkForDuplicateEmailInDatabase = async (email) => {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ inputEmail: email })
+            body: JSON.stringify({ inputEmail: inputEmail.value })
         });
 
         const result = await response.json();
-        return result;
+        if (result.status === 'ALREADY_REGISTERED_IN_DATABASE') {
+            return true;
+        } else if (result.status === 'NEW_USER') {
+            return false;
+        } else {
+            throw new Error(result.error || `HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('ユーザー状態確認エラー:', error);
+        throw error;
+    }
+};
+
+const registerUserToDatabase = async () => {
+    try {
+        const response = await fetch(`${MEMBER_API_URL}/register-user-to-database`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                lastName: lastName.value,
+                firstName: firstName.value,
+                lastNameKana: lastNameKana.value,
+                firstNameKana: firstNameKana.value,
+                phoneNumber: phoneNumber.value,
+                postalCode: postalCode.value,
+                address: address.value,
+                inputEmail: inputEmail.value,
+                membershipType: 'regular'
+            })
+        });
+
+        const result = await response.json();
+        if (result.status === 'USER_SUCCESSFULLY_REGISTERED_TO_DATABASE') {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error('ユーザー状態確認エラー:', error);
+        throw error;
+    }
+};
+
+const registerUserToCognito = async () => {
+    try {
+        const response = await fetch(`${MEMBER_API_URL}/register-user-to-cognito`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                inputEmail: inputEmail.value,
+                inputPassword: inputPassword.value
+            })
+        });
+
+        const result = await response.json();
+        if (result.status === 'SUCCESSFULLY_REGISTERED_TO_COGNITO_AND_PENDING_CONFIRMATION') {
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
         console.error('ユーザー状態確認エラー:', error);
         throw error;
@@ -134,42 +199,27 @@ const registerNewAccount = async () => {
 
     try {
         // まずユーザーの状態を確認
-        const isDuplicateEmail = await checkForDuplicateEmailInDatabase(inputEmail.value);
-        
+        const isDuplicateEmail = await checkForDuplicateEmailInDatabase();
         if (isDuplicateEmail) {
             alert('すでに登録されているメールアドレスです。別のメールアドレスでお試しください。');
             return;
         }
 
-        // 通常の新規登録処理
-        const postUrl = new URL(`${MEMBER_API_URL}/signup`);
-        const response = await fetch(postUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                lastName: lastName.value,
-                firstName: firstName.value,
-                lastNameKana: lastNameKana.value,
-                firstNameKana: firstNameKana.value,
-                phoneNumber: phoneNumber.value,
-                postalCode: postalCode.value,
-                address: address.value,
-                inputEmail: inputEmail.value,
-                inputPassword: inputPassword.value
-            })
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            if (result.status === 'ALREADY_REGISTERED') {
-                throw new Error('登録済みのメールアドレスです');
-            }
-            throw new Error(result.error || `HTTP error! status: ${response.status}`);
+        // 通常の新規登録処理１　DynamoDBにユーザーを作成
+        const isSuccessFullyRegisteredToDatabase = await registerUserToDatabase();
+        if (!isSuccessFullyRegisteredToDatabase) {
+            alert('ユーザー登録に失敗しました。時間を空けて再度お試しください。解消されない場合は運営までお問い合わせください。');
+            return;
         }
+
+        // 通常の新規登録処理２　Cognitoにユーザーを作成
+        const isSuccessFullyRegisteredToCognito = await registerUserToCognito();
+        if (!isSuccessFullyRegisteredToCognito) {
+            alert('ユーザー登録に失敗しました。時間を空けて再度お試しください。解消されない場合は運営までお問い合わせください。');
+            return;
+        }
+
+        alert('ユーザー登録に成功しました。メールアドレスに確認コードを送信しました。確認コードを入力してください。');
 
         router.push({
             path: '/confirm-signup',
@@ -235,7 +285,7 @@ const registerNewAccount = async () => {
 
                 <!-- 電話番号 -->
                 <div class="space-y-2">
-                    <label for="phoneNumber" class="block text-sm font-medium text-gray-700">電話番号</label>
+                    <label for="phoneNumber" class="block text-sm font-medium text-gray-700">電話番号（半角数字　ハイフンなし）</label>
                     <input type="tel" id="phoneNumber" v-model="phoneNumber" required
                         autocomplete="tel"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
