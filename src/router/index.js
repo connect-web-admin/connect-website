@@ -20,6 +20,7 @@ import FaqView from '@/views/FaqView.vue';
 import ContactView from '@/views/ContactView.vue';
 import PremiumView from '@/views/PremiumView.vue';
 import ConnectionTestView from '@/views/ConnectionTestView.vue';
+import ConnectionTestCustInfoView from '@/views/ConnectionTestCustInfoView.vue';
 // import ConnectionTestOkView from '../../ConnectionTestOkView.vue';
 // 会社概要や利用規約などの目立たせないようにするページ
 import CompanyInfoView from '@/views/site-info/CompanyInfoView.vue';
@@ -69,11 +70,11 @@ const router = createRouter({
 			component: ConnectionTestView
 		},
 
-		// {
-		// 	path: '/connection-test-ok',
-		// 	name: 'ConnectionTestOk',
-		// 	component: ConnectionTestOkView
-		// },
+		{
+			path: '/connection-test-cust-info',
+			name: 'ConnectionTestCustInfo',
+			component: ConnectionTestCustInfoView
+		},
 
 		{
 			path: '/',
