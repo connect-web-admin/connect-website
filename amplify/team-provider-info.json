@@ -52,7 +52,8 @@
         "ClubDDB": {},
         "PickupNewsDDB": {},
         "MediaDDB": {},
-        "MemberDDB": {}
+        "MemberDDB": {},
+        "ConnectWebsiteBucket": {}
       },
       "api": {
         "connecterApi": {},

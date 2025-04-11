@@ -367,6 +367,11 @@
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },
+    "ConnectWebsiteBucket": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    },
     "ConnecterDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"

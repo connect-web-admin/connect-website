@@ -109,6 +109,10 @@ export type AmplifyDependentResourcesAttributes = {
       "SortKeyType": "string",
       "StreamArn": "string"
     },
+    "ConnectWebsiteBucket": {
+      "BucketName": "string",
+      "Region": "string"
+    },
     "ConnecterDDB": {
       "Arn": "string",
       "Name": "string",

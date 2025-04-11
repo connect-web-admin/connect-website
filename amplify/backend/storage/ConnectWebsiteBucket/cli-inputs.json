@@ -1,0 +1,12 @@
+{
+  "resourceName": "ConnectWebsiteBucket",
+  "policyUUID": "04342d95",
+  "bucketName": "connect-website-bucket",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "groupAccess": {}
+}
