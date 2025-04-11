@@ -85,7 +85,7 @@ app.post(path + '/check-user-status', async function (req, res) {
 
 		// メールアドレスが存在し、アクティブな場合
 		if (data.Items && data.Items.length > 0 && data.Items[0].isActive === true) {
-			return res.status(400).json({ 
+			return res.status(400).json({
 				status: 'ALREADY_REGISTERED',
 				message: '登録済みのメールアドレスです'
 			});
@@ -101,10 +101,10 @@ app.post(path + '/check-user-status', async function (req, res) {
 				});
 
 				const userData = await cognitoClient.send(getUserCommand);
-				
+
 				// ユーザーが存在し、認証済みの場合
 				if (userData.UserStatus === 'CONFIRMED') {
-					return res.status(400).json({ 
+					return res.status(400).json({
 						status: 'ALREADY_REGISTERED',
 						message: '登録済みのメールアドレスです'
 					});
@@ -119,7 +119,7 @@ app.post(path + '/check-user-status', async function (req, res) {
 					});
 					await cognitoClient.send(resendCommand);
 
-					return res.status(200).json({ 
+					return res.status(200).json({
 						status: 'PENDING_CONFIRMATION',
 						message: '認証コードを再送信しました'
 					});
@@ -127,7 +127,7 @@ app.post(path + '/check-user-status', async function (req, res) {
 			} catch (error) {
 				// ユーザーが存在しない場合は、新規登録可能
 				if (error.name === 'UserNotFoundException' || error.name === 'ResourceNotFoundException') {
-					return res.status(200).json({ 
+					return res.status(200).json({
 						status: 'NEW_USER',
 						message: '新規登録可能です'
 					});
@@ -137,7 +137,7 @@ app.post(path + '/check-user-status', async function (req, res) {
 		}
 
 		// メールアドレスが存在しない場合は、新規登録可能
-		return res.status(200).json({ 
+		return res.status(200).json({
 			status: 'NEW_USER',
 			message: '新規登録可能です'
 		});
@@ -171,10 +171,10 @@ app.post(path + '/signup', async function (req, res) {
 		};
 
 		const existingUser = await ddbDocClient.send(new QueryCommand(queryParams));
-		
+
 		// メールアドレスが存在し、アクティブな場合
 		if (existingUser.Items && existingUser.Items.length > 0 && existingUser.Items[0].isActive === true) {
-			return res.status(400).json({ 
+			return res.status(400).json({
 				status: 'ALREADY_REGISTERED',
 				message: '登録済みのメールアドレスです'
 			});
@@ -205,13 +205,13 @@ app.post(path + '/signup', async function (req, res) {
 				ProjectionExpression: 'member_id'
 			};
 			const scanResult = await ddbDocClient.send(new ScanCommand(scanParams));
-			
+
 			// member_idの最大値を取得
 			let maxMemberId = 0;
 			if (scanResult.Items && scanResult.Items.length > 0) {
 				maxMemberId = Math.max(...scanResult.Items.map(item => parseInt(item.member_id)));
 			}
-			
+
 			// 新しいmember_idを生成（10桁の文字列）
 			const newMemberId = (maxMemberId + 1).toString().padStart(10, '0');
 
@@ -253,7 +253,7 @@ app.post(path + '/signup', async function (req, res) {
 			});
 			await cognitoClient.send(resendCommand);
 
-			res.status(200).json({ 
+			res.status(200).json({
 				status: 'PENDING_CONFIRMATION',
 				message: '認証コードを送信しました'
 			});
@@ -268,10 +268,10 @@ app.post(path + '/signup', async function (req, res) {
 					});
 
 					const userData = await cognitoClient.send(getUserCommand);
-					
+
 					// ユーザーが存在し、認証済みの場合
 					if (userData.UserStatus === 'CONFIRMED') {
-						return res.status(400).json({ 
+						return res.status(400).json({
 							status: 'ALREADY_REGISTERED',
 							message: '登録済みのメールアドレスです'
 						});
@@ -286,7 +286,7 @@ app.post(path + '/signup', async function (req, res) {
 						});
 						await cognitoClient.send(resendCommand);
 
-						return res.status(200).json({ 
+						return res.status(200).json({
 							status: 'PENDING_CONFIRMATION',
 							message: '認証コードを再送信しました'
 						});
@@ -343,7 +343,7 @@ app.post(path + '/confirm-signup', async (req, res) => {
 
 		const userData = await ddbDocClient.send(new QueryCommand(queryParams));
 		console.log(`DynamoDBユーザー情報取得: ${JSON.stringify(userData)}`);
-		
+
 		if (!userData.Items || userData.Items.length === 0) {
 			console.error(`ユーザー情報が見つかりません: ${inputEmail}`);
 			return res.status(404).json({
@@ -438,6 +438,59 @@ app.post(path + '/resend-code', async (req, res) => {
 		});
 	}
 });
+
+/************************************
+* HTTP post method for  *
+*************************************/
+app.post(path + '/success_url', async (req, res) => {
+	console.log('success_url 受け取ったデータ:', req.body);
+
+	// ここでデータの精査処理をしてもOK（今回は何もせず）
+
+	// 結果にかかわらず「OK,」を返す
+	res.set('Content-Type', 'text/plain');
+	res.status(200).send('OK,');
+});
+
+/************************************
+* HTTP post method for  *
+*************************************/
+app.post(path + '/cancel_url', async (req, res) => {
+	console.log('cancel_url 受け取ったデータ:', req.body);
+
+	// ここでデータの精査処理をしてもOK（今回は何もせず）
+
+	// 結果にかかわらず「OK,」を返す
+	res.set('Content-Type', 'text/plain');
+	res.status(200).send('OK,');
+});
+
+/************************************
+* HTTP post method for  *
+*************************************/
+app.post(path + '/error_url', async (req, res) => {
+	console.log('error_url 受け取ったデータ:', req.body);
+
+	// ここでデータの精査処理をしてもOK（今回は何もせず）
+
+	// 結果にかかわらず「NG,」を返す
+	res.set('Content-Type', 'text/plain');
+	res.status(500).send('NG,');
+});
+
+/************************************
+* HTTP post method for  *
+*************************************/
+app.post(path + '/pagecon_url', async (req, res) => {
+	console.log('pagecon_url 受け取ったデータ:', req.body);
+
+	// ここでデータの精査処理をしてもOK（今回は何もせず）
+
+	// 結果にかかわらず「OK,」を返す
+	res.set('Content-Type', 'text/plain');
+	res.status(200).send('OK,');
+});
+
 
 app.listen(3000, function () {
 	console.log("App started")
