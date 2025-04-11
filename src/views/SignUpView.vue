@@ -1,43 +1,81 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { MEMBER_API_URL } from '../utils/constants';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
 // フォームの入力値
+const lastName = ref('');
+const firstName = ref('');
+const lastNameKana = ref('');
+const firstNameKana = ref('');
+const phoneNumber = ref('');
+const postalCode = ref('');
+const address = ref('');
 const inputEmail = ref('');
 const inputPassword = ref('');
-const ageGroup = ref('');
-const gender = ref('');
-const favoriteTeam = ref('');
-const membershipType = ref('regular');
+const confirmPassword = ref('');
+
+// パスワードの表示状態
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
 
 const isProcessing = ref(false);
 const failedMsg = ref('');
 
-const ageGroups = [
-    { value: '', label: '非回答' },
-    { value: '10s', label: '10代' },
-    { value: '20s', label: '20代' },
-    { value: '30s', label: '30代' },
-    { value: '40s', label: '40代' },
-    { value: '50s', label: '50代' },
-    { value: '60s', label: '60代' },
-    { value: '70s', label: '70代以上' }
-];
+// バリデーションエラーメッセージ
+const lastNameError = ref('');
+const firstNameError = ref('');
+const lastNameKanaError = ref('');
+const firstNameKanaError = ref('');
+const phoneNumberError = ref('');
+const postalCodeError = ref('');
 
-const genders = [
-    { value: '', label: '非回答' },
-    { value: 'male', label: '男' },
-    { value: 'female', label: '女' }
-];
+// バリデーション関数
+const validatePhoneNumber = (value) => {
+    if (!value) return '電話番号を入力してください';
+    if (!/^[0-9-]+$/.test(value)) return '電話番号は数字とハイフンのみ使用できます';
+    return '';
+};
 
-/**
- * パスワードの入力チェックをリアルタイムで行う
- * 半角英数字8〜20字。大文字、小文字、数字をそれぞれ1文字以上含める
- * 要件を満たさない場合はリアルタイムでエラーメッセージがせいせいされる
- */
+const validatePostalCode = (value) => {
+    if (!value) return '郵便番号を入力してください';
+    if (!/^\d{7}$/.test(value)) return '郵便番号は7桁の数字で入力してください';
+    return '';
+};
+
+const validateName = (value, fieldName) => {
+    if (!value) return `${fieldName}を入力してください`;
+    if (value.length > 50) return `${fieldName}は50文字以内で入力してください`;
+    return '';
+};
+
+// 入力値の監視
+watch(lastName, (newValue) => {
+    lastNameError.value = validateName(newValue, '姓');
+});
+
+watch(firstName, (newValue) => {
+    firstNameError.value = validateName(newValue, '名');
+});
+
+watch(lastNameKana, (newValue) => {
+    lastNameKanaError.value = validateName(newValue, '姓（カナ）');
+});
+
+watch(firstNameKana, (newValue) => {
+    firstNameKanaError.value = validateName(newValue, '名（カナ）');
+});
+
+watch(phoneNumber, (newValue) => {
+    phoneNumberError.value = validatePhoneNumber(newValue);
+});
+
+watch(postalCode, (newValue) => {
+    postalCodeError.value = validatePostalCode(newValue);
+});
+
 const inputPasswordValidation = computed(() => {
     if (!inputPassword.value) return { isValid: false, message: 'パスワードを入力してください' }
 
@@ -56,9 +94,19 @@ const inputPasswordValidation = computed(() => {
     return { isValid: true, message: '' }
 });
 
-const checkUserStatus = async (email) => {
+const confirmPasswordValidation = computed(() => {
+    if (!confirmPassword.value) {
+        return { isValid: false, message: '確認用パスワードを入力してください' };
+    }
+    if (confirmPassword.value !== inputPassword.value) {
+        return { isValid: false, message: 'パスワードが一致しません' };
+    }
+    return { isValid: true, message: '' };
+});
+
+const checkForDuplicateEmailInDatabase = async (email) => {
     try {
-        const response = await fetch(`${MEMBER_API_URL}/check-user-status`, {
+        const response = await fetch(`${MEMBER_API_URL}/check-for-duplicate-email-in-database`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,14 +116,6 @@ const checkUserStatus = async (email) => {
         });
 
         const result = await response.json();
-
-        if (!response.ok) {
-            if (result.status === 'ALREADY_REGISTERED') {
-                throw new Error('登録済みのメールアドレスです');
-            }
-            throw new Error(result.error || `HTTP error! status: ${response.status}`);
-        }
-
         return result;
     } catch (error) {
         console.error('ユーザー状態確認エラー:', error);
@@ -84,23 +124,20 @@ const checkUserStatus = async (email) => {
 };
 
 const registerNewAccount = async () => {
-    if (!inputPasswordValidation.value.isValid) {
-        alert(inputPasswordValidation.value.message)
-        return
+    // バリデーションチェック
+    if (!inputPasswordValidation.value.isValid || !confirmPasswordValidation.value.isValid) {
+        alert('パスワードの入力内容に誤りがあります。確認してください。');
+        return;
     }
 
     isProcessing.value = true;
 
     try {
         // まずユーザーの状態を確認
-        const userStatus = await checkUserStatus(inputEmail.value);
+        const isDuplicateEmail = await checkForDuplicateEmailInDatabase(inputEmail.value);
         
-        // 認証待ち状態の場合は、認証コード確認画面にリダイレクト
-        if (userStatus.status === 'PENDING_CONFIRMATION') {
-            router.push({
-                path: '/confirm-signup',
-                query: { inputEmail: inputEmail.value }
-            });
+        if (isDuplicateEmail) {
+            alert('すでに登録されているメールアドレスです。別のメールアドレスでお試しください。');
             return;
         }
 
@@ -113,12 +150,15 @@ const registerNewAccount = async () => {
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
+                lastName: lastName.value,
+                firstName: firstName.value,
+                lastNameKana: lastNameKana.value,
+                firstNameKana: firstNameKana.value,
+                phoneNumber: phoneNumber.value,
+                postalCode: postalCode.value,
+                address: address.value,
                 inputEmail: inputEmail.value,
-                inputPassword: inputPassword.value,
-                ageGroup: ageGroup.value,
-                gender: gender.value,
-                favoriteTeam: favoriteTeam.value,
-                membershipType: membershipType.value
+                inputPassword: inputPassword.value
             })
         });
 
@@ -131,7 +171,6 @@ const registerNewAccount = async () => {
             throw new Error(result.error || `HTTP error! status: ${response.status}`);
         }
 
-        // 新規登録成功後、認証コード確認画面にリダイレクト
         router.push({
             path: '/confirm-signup',
             query: { inputEmail: inputEmail.value }
@@ -154,55 +193,109 @@ const registerNewAccount = async () => {
             <p>{{ failedMsg }}</p>
         </div>
         <div v-else>
-            <h1 class="text-xl font-bold mb-6">新規会員登録</h1>
+            <h1 class="text-xl font-bold">新規会員登録</h1>
+            <p class="text-red-600 text-sm mb-6">すべての項目を入力してください。</p>
+
             <form @submit.prevent="registerNewAccount" class="space-y-6">
+                <!-- 氏名 -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="lastName" class="block text-sm font-medium text-gray-700">姓</label>
+                        <input type="text" id="lastName" v-model="lastName" required
+                            autocomplete="family-name"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p v-if="lastNameError" class="text-sm text-red-600 mt-1">{{ lastNameError }}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="firstName" class="block text-sm font-medium text-gray-700">名</label>
+                        <input type="text" id="firstName" v-model="firstName" required
+                            autocomplete="given-name"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p v-if="firstNameError" class="text-sm text-red-600 mt-1">{{ firstNameError }}</p>
+                    </div>
+                </div>
+
+                <!-- フリガナ -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="lastNameKana" class="block text-sm font-medium text-gray-700">姓（カナ）</label>
+                        <input type="text" id="lastNameKana" v-model="lastNameKana" required
+                            autocomplete="off"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p v-if="lastNameKanaError" class="text-sm text-red-600 mt-1">{{ lastNameKanaError }}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="firstNameKana" class="block text-sm font-medium text-gray-700">名（カナ）</label>
+                        <input type="text" id="firstNameKana" v-model="firstNameKana" required
+                            autocomplete="off"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p v-if="firstNameKanaError" class="text-sm text-red-600 mt-1">{{ firstNameKanaError }}</p>
+                    </div>
+                </div>
+
+                <!-- 電話番号 -->
                 <div class="space-y-2">
-                    <label for="inputEmail" class="block text-sm font-medium text-gray-700">メールアドレス <span
-                            class="text-red-500">*必須</span></label>
-                    <input type="inputEmail" id="inputEmail" v-model="inputEmail" required
+                    <label for="phoneNumber" class="block text-sm font-medium text-gray-700">電話番号</label>
+                    <input type="tel" id="phoneNumber" v-model="phoneNumber" required
+                        autocomplete="tel"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p v-if="phoneNumberError" class="text-sm text-red-600 mt-1">{{ phoneNumberError }}</p>
+                </div>
+
+                <!-- 郵便番号 -->
+                <div class="space-y-2">
+                    <label for="postalCode" class="block text-sm font-medium text-gray-700">郵便番号（ハイフンなし）</label>
+                    <input type="text" id="postalCode" v-model="postalCode" required
+                        autocomplete="postal-code"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p v-if="postalCodeError" class="text-sm text-red-600 mt-1">{{ postalCodeError }}</p>
+                </div>
+
+                <!-- 住所 -->
+                <div class="space-y-2">
+                    <label for="address" class="block text-sm font-medium text-gray-700">住所（都道府県から入力）</label>
+                    <input type="text" id="address" v-model="address" required
+                        autocomplete="street-address"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
+                <!-- メールアドレス -->
                 <div class="space-y-2">
-                    <label for="inputPassword" class="block text-sm font-medium text-gray-700">パスワード <span
-                            class="text-red-500">*必須</span><p class="text-black text-xs">（半角英数字8〜20字。大文字、小文字、数字をそれぞれ1文字以上）</p></label>
-                    <input type="inputPassword" id="inputPassword" v-model="inputPassword" required
+                    <label for="inputEmail" class="block text-sm font-medium text-gray-700">メールアドレス</label>
+                    <input type="email" id="inputEmail" v-model="inputEmail" required
+                        autocomplete="email"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- パスワード -->
+                <div class="space-y-2">
+                    <label for="inputPassword" class="block text-sm font-medium text-gray-700">パスワード</label>
+                    <p class="text-black text-xs">（半角英数字8〜20字。大文字、小文字、数字をそれぞれ1文字以上）</p>
+                    <input :type="showPassword ? 'text' : 'password'" id="inputPassword" v-model="inputPassword" required
+                        autocomplete="new-password"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div class="flex items-center mt-2">
+                        <input type="checkbox" id="showPasswordCheckbox" v-model="showPassword" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="showPasswordCheckbox" class="ml-2 block text-sm text-gray-700">パスワードを表示する</label>
+                    </div>
                     <p v-if="!inputPasswordValidation.isValid" class="text-sm text-red-600 mt-1">
                         {{ inputPasswordValidation.message }}
                     </p>
                 </div>
 
+                <!-- パスワード（確認） -->
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">年代</label>
-                    <div class="flex flex-wrap gap-4">
-                        <div v-for="group in ageGroups" :key="group.value" class="flex items-center">
-                            <input type="radio" :id="'age-' + group.value" :value="group.value" v-model="ageGroup"
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                            <label :for="'age-' + group.value" class="ml-2 text-sm text-gray-700">
-                                {{ group.label }}
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">性別</label>
-                    <div class="flex flex-wrap gap-4">
-                        <div v-for="genderOption in genders" :key="genderOption.value" class="flex items-center">
-                            <input type="radio" :id="'gender-' + genderOption.value" :value="genderOption.value"
-                                v-model="gender" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                            <label :for="'gender-' + genderOption.value" class="ml-2 text-sm text-gray-700">
-                                {{ genderOption.label }}
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label for="favoriteTeam" class="block text-sm font-medium text-gray-700">推しチーム（50字以内）</label>
-                    <input type="text" id="favoriteTeam" v-model="favoriteTeam" maxlength="50"
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">パスワード（確認）</label>
+                    <input :type="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" v-model="confirmPassword" required
+                        autocomplete="new-password"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div class="flex items-center mt-2">
+                        <input type="checkbox" id="showConfirmPasswordCheckbox" v-model="showConfirmPassword" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="showConfirmPasswordCheckbox" class="ml-2 block text-sm text-gray-700">パスワードを表示する</label>
+                    </div>
+                    <p v-if="!confirmPasswordValidation.isValid" class="text-sm text-red-600 mt-1">
+                        {{ confirmPasswordValidation.message }}
+                    </p>
                 </div>
 
                 <button type="submit"
@@ -214,4 +307,5 @@ const registerNewAccount = async () => {
     </div>
 </template>
 
-<style></style>
+<style>
+</style>
