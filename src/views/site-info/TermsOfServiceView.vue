@@ -23,6 +23,7 @@ const scrollToPaymentLink = () => {
 <template>
     <div class="my-4 px-4">
         <h1 class="text-2xl font-bold mb-4">利用規約</h1>
+        <p class="mb-4 text-red-600">試合会場の状況等により、速報内容の更新に時間がかかる場合がございます。あらかじめご了承ください。</p>
         <ol class="list-decimal ml-5 space-y-2">
             <li>利用者は、本規約を誠実に遵守し、本サービスを利用してください。</li>
             <li>当社は、利用者への事前の通知なく本規約の内容を変更できるものとします。</li>
