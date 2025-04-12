@@ -23,10 +23,10 @@ const confirmSignUp = async () => {
     errorMessage.value = '';
 
     try {
-        console.log('認証コード確認リクエスト送信:', {
-            inputEmail: inputEmail.value,
-            verificationCode: verificationCode.value
-        });
+        // console.log('認証コード確認リクエスト送信:', {
+        //     inputEmail: inputEmail.value,
+        //     verificationCode: verificationCode.value
+        // });
         
         const response = await fetch(`${MEMBER_API_URL}/confirm-signup`, {
             method: 'POST',
@@ -41,7 +41,7 @@ const confirmSignUp = async () => {
         });
 
         const data = await response.json();
-        console.log('認証コード確認レスポンス:', data);
+        // console.log('認証コード確認レスポンス:', data);
 
         if (!response.ok) {
             throw new Error(data.message || '認証に失敗しました');
@@ -49,8 +49,8 @@ const confirmSignUp = async () => {
 
         isConfirmSuccess.value = true;
 
-        alert('認証に成功しました。TOPページへ移動します。移動しない場合は、TOPページをタップしてください。');
-        router.push('/');
+        alert('認証に成功しました。決済情報入力ページへ移動します。');
+        router.push('/register-card-info');
         // setTimeout(() => {
         //     router.push('/');
         // }, 20000);
