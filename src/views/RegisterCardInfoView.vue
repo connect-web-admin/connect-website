@@ -119,164 +119,120 @@ onMounted(() => {
     </form>
 </template> -->
 
-
-<template>
-  <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">クレジットカード情報の入力</h2>
-      <form @submit.prevent="handleSubmit" class="space-y-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">カード番号</label>
-          <input 
-            v-model="card.card_number" 
-            type="text" 
-            required 
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="1234 5678 9012 3456"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">有効期限（YYMM）</label>
-          <input 
-            v-model="card.card_valid_term" 
-            type="text" 
-            maxlength="4" 
-            required 
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="2405"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">セキュリティコード</label>
-          <input 
-            v-model="card.security_code" 
-            type="text" 
-            maxlength="4" 
-            required 
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="123"
-          />
-        </div>
-        <button 
-          type="submit" 
-          :disabled="!isTokenLibReady"
-          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          支払う
-        </button>
-      </form>
-      <p v-if="message" class="mt-4 text-sm text-red-600 text-center">{{ message }}</p>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
 const card = ref({
-  card_number: '',
-  card_valid_term: '',
-  security_code: ''
-})
+    card_number: '',
+    card_valid_term: '',
+    security_code: ''
+});
 
-const message = ref('')
-const isTokenLibReady = ref(false)
+const message = ref('');
 
-const loadSbpsToken = () => {
-  return new Promise((resolve, reject) => {
-    // すでに読み込まれている場合
-    if (window.SbpsToken) {
-      resolve(window.SbpsToken)
-      return
+// SBPSのトークンJSを動的に読み込む
+onMounted(() => {
+    if (!window.SbpsToken) {
+        const script = document.createElement('script');
+        script.src = 'https://stbtoken.sps-system.com/sbpstoken/com_sbps_system_tds2infotoken.js';
+        script.async = true;
+        document.body.appendChild(script);
     }
-
-    // moduleオブジェクトを事前に定義
-    window.module = { exports: {} }
-    
-    const script = document.createElement('script')
-    script.src = 'https://stbtoken.sps-system.com/sbpstoken/com_sbps_system_tds2infotoken.js'
-    script.async = true
-    script.type = 'text/javascript'
-    
-    script.onload = () => {
-      // ライブラリの初期化を待つ
-      const checkSbpsToken = setInterval(() => {
-        if (window.SbpsToken) {
-          clearInterval(checkSbpsToken)
-          resolve(window.SbpsToken)
-        }
-      }, 100)
-
-      // 10秒後にタイムアウト
-      setTimeout(() => {
-        clearInterval(checkSbpsToken)
-        reject(new Error('トークンライブラリの初期化がタイムアウトしました'))
-      }, 10000)
-    }
-
-    script.onerror = () => {
-      reject(new Error('トークンライブラリの読み込みに失敗しました'))
-    }
-
-    document.head.appendChild(script)
-  })
-}
-
-onMounted(async () => {
-  try {
-    await loadSbpsToken()
-    isTokenLibReady.value = true
-  } catch (error) {
-    message.value = error.message
-    console.error('SbpsToken初期化エラー:', error)
-  }
 })
 
 const handleSubmit = () => {
-  if (!window.SbpsToken || !isTokenLibReady.value) {
-    message.value = 'トークンライブラリが読み込まれていません。ページを再読み込みしてください。'
-    return
-  }
-
-  window.SbpsToken.getToken(card.value, async (res) => {
-    if (res.result === 'OK') {
-      const token = res.token
-      const payload = {
-        token: token,
-        cardValidTerm: card.value.card_valid_term,
-        amount: 1000,
-        currency: 'JPY',
-        orderId: 'order_2025040001'
-      }
-
-      try {
-        const response = await fetch('/api/start-3ds', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          if (data.acs_url) {
-            window.location.href = data.acs_url
-          } else {
-            message.value = '認証URLの取得に失敗しました。'
-          }
-        } else {
-          message.value = 'サーバーエラーが発生しました。'
-        }
-      } catch (error) {
-        message.value = '通信エラーが発生しました。'
-      }
-    } else {
-      message.value = `トークン発行エラー: ${res.error_message}`
+    if (!window.SbpsToken) {
+        message.value = 'トークンライブラリが読み込まれていません。';
+        return;
     }
-  })
+
+    window.SbpsToken.getToken(card.value, async (res) => {
+        if (res.result === 'OK') {
+            const token = res.token;
+            const payload = {
+                token: token,
+                cardValidTerm: card.value.card_valid_term,
+                amount: 440, // 課金額
+                currency: 'JPY',
+                orderId: 'order_2025040001' // 購入ID
+            };
+
+            try {
+                const response = await fetch('/start-3ds', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.acs_url) {
+                        // 3Dセキュア認証画面にリダイレクト
+                        window.location.href = data.acs_url;
+                    } else {
+                        message.value = '認証URLの取得に失敗しました。';
+                    }
+                } else {
+                    message.value = 'サーバーエラーが発生しました。';
+                }
+            } catch (error) {
+                message.value = '通信エラーが発生しました。';
+            }
+        } else {
+            message.value = `トークン発行エラー: ${res.error_message}`;
+        }
+    })
 }
 </script>
 
-<style scoped>
-/* 既存のスタイルを削除 */
-</style>
-  
+
+<template>
+    <div class="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">クレジットカード情報の入力</h2>
+        <form @submit.prevent="handleSubmit" class="space-y-4">
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">カード番号</label>
+                <input 
+                    v-model="card.card_number" 
+                    type="text" 
+                    required 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="1234 5678 9012 3456"
+                />
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">有効期限（YYMM）</label>
+                <input 
+                    v-model="card.card_valid_term" 
+                    type="text" 
+                    maxlength="4" 
+                    required 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="2405"
+                />
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">セキュリティコード</label>
+                <input 
+                    v-model="card.security_code" 
+                    type="text" 
+                    maxlength="4" 
+                    required 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="123"
+                />
+            </div>
+            <button 
+                type="submit" 
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+            >
+                支払う
+            </button>
+        </form>
+        <p v-if="message" class="mt-4 text-sm text-red-600">{{ message }}</p>
+    </div>
+</template>
+
+<style></style>
