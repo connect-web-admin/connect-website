@@ -59,7 +59,7 @@ const isConnecterPath = () => {
  */
 const isSignUpPath = () => {
     const path = router.currentRoute.value.path;
-    return path.startsWith('/signup') || path.startsWith('/confirm-signup');
+    return path.startsWith('/signup') || path.startsWith('/confirm-signup') || path.startsWith('/connecter');
 }
 
 
