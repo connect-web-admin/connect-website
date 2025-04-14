@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <title>確認画面</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script
+            type="text/javascript"
+            src="https://token.sps-system.com/sbpstoken/com_sbps_system_tds2infotoken.js"
+        ></script>
+        <style>
+            body {
+                font-family: sans-serif;
+                padding: 2em;
+            }
+
+            .error {
+                color: red;
+                font-weight: bold;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            #registerBtn {
+                margin-top: 2em;
+                padding: 0.7em 1.5em;
+                font-size: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>確認画面</h1>
+
+        <div id="loading">トークンを取得中です...</div>
+        <div id="error" class="error hidden"></div>
+        <div id="confirmContent" class="hidden"></div>
+
+        <button onclick="window.location.href='signup.html'">戻る</button>
+        <button id="registerBtn" class="hidden">登録</button>
+
+        <script>
+            const MEMBER_API_URL = "https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items"; // ← あなたの環境に置き換えてください
+
+            const data = JSON.parse(sessionStorage.getItem("registrationData"));
+
+            window.addEventListener("DOMContentLoaded", () => {
+                if (!data) {
+                    document.getElementById("loading").classList.add("hidden");
+                    const errorBox = document.getElementById("error");
+                    errorBox.textContent = "入力データが存在しません。";
+                    errorBox.classList.remove("hidden");
+                    return;
+                }
+
+                const tokenRequest = {
+                    merchantId: "58913",
+                    serviceId: "001",
+                };
+
+                const callback = function (result) {
+                    document.getElementById("loading").classList.add("hidden");
+
+                    // 「トークン取得成功は[B01-1]機能を起動するのに必要な要素
+                    //  トークンが要求され正常にエンドユーザー側に届いていることが重要であり、
+                    // このトークン自体の検証等は開発者側では行わず、何かに利用することもない。
+                    if (result.result === "OK") {
+                        const content =
+                            document.getElementById("confirmContent");
+                        content.classList.remove("hidden");
+                        content.innerHTML = `
+                            <p>姓: ${data.lastName}</p>
+                            <p>名: ${data.firstName}</p>
+                            <p>フリガナ: ${data.lastNameKana} ${data.firstNameKana}</p>
+                            <p>電話番号: ${data.phonePart1}-${data.phonePart2}-${
+                                            data.phonePart3
+                                        }</p>
+                            <p>郵便番号: ${data.postalPart1}-${data.postalPart2}</p>
+                            <p>住所: ${data.address}</p>
+                            <p>メールアドレス: ${data.inputEmail}</p>
+                            <p>プラン: ${
+                                data.paymentPlan === "oneYear" ? "年払い" : "毎月払い"
+                            }</p>
+                        `;
+                        document
+                            .getElementById("registerBtn")
+                            .classList.remove("hidden");
+                    } else {
+                        const errorBox = document.getElementById("error");
+                        errorBox.textContent = `トークン取得エラーです。戻るボタンでもどり、時間を空けてから再度お試しください。`;
+                        errorBox.classList.remove("hidden");
+                    }
+                };
+
+                com_sbps_system_tds2.generateToken(tokenRequest, callback);
+            });
+
+            // ▼ 登録ボタン処理 ▼
+            document
+                .getElementById("registerBtn")
+                .addEventListener("click", async () => {
+                    try {
+                        const inputEmail = data.inputEmail;
+                        const inputPassword = data.inputPassword;
+
+                        const phoneNumber = `${data.phonePart1}${data.phonePart2}${data.phonePart3}`;
+                        const postalCode = `${data.postalPart1}${data.postalPart2}`;
+
+                        const isDuplicate =
+                            await checkForDuplicateEmailInDatabase(inputEmail);
+                        if (isDuplicate) {
+                            alert("すでに登録されているメールアドレスです。");
+                            return;
+                        }
+
+                        const dbSuccess = await registerUserToDatabase(
+                            data,
+                            phoneNumber,
+                            postalCode
+                        );
+                        if (!dbSuccess) {
+                            alert("データベース登録に失敗しました。");
+                            return;
+                        }
+
+                        const cognitoSuccess = await registerUserToCognito(
+                            inputEmail,
+                            inputPassword
+                        );
+                        if (!cognitoSuccess) {
+                            alert("Cognito登録に失敗しました。");
+                            return;
+                        }
+
+                        alert(
+                            "登録が完了しました。登録されたメールアドレス宛に認証コードをお送りしましたので、次の画面で入力してください。"
+                        );
+                        location.href = "/confirm-signup.html";
+                    } catch (e) {
+                        console.error(e);
+                        alert(
+                            "登録中にエラーが発生しました。再度お試しください。"
+                        );
+                    }
+                });
+
+            // ▼ 各登録関数 ▼
+            async function checkForDuplicateEmailInDatabase(inputEmail) {
+                const res = await fetch(
+                    `${MEMBER_API_URL}/check-for-duplicate-email-in-database`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ inputEmail }),
+                    }
+                );
+                const result = await res.json();
+                return result.status === "ALREADY_REGISTERED_IN_DATABASE";
+            }
+
+            async function registerUserToDatabase(
+                data,
+                phoneNumber,
+                postalCode
+            ) {
+                const res = await fetch(
+                    `${MEMBER_API_URL}/register-user-to-database`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            lastName: data.lastName,
+                            firstName: data.firstName,
+                            lastNameKana: data.lastNameKana,
+                            firstNameKana: data.firstNameKana,
+                            phoneNumber,
+                            postalCode,
+                            address: data.address,
+                            inputEmail: data.inputEmail,
+                            paymentPlan: data.paymentPlan,
+                            isTermsAgreed: true,
+                            membershipType: "regular",
+                        }),
+                    }
+                );
+                const result = await res.json();
+                return (
+                    result.status === "USER_SUCCESSFULLY_REGISTERED_TO_DATABASE"
+                );
+            }
+
+            async function registerUserToCognito(inputEmail, inputPassword) {
+                const res = await fetch(
+                    `${MEMBER_API_URL}/register-user-to-cognito`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ inputEmail, inputPassword }),
+                    }
+                );
+                const result = await res.json();
+                return (
+                    result.status ===
+                    "SUCCESSFULLY_REGISTERED_TO_COGNITO_AND_PENDING_CONFIRMATION"
+                );
+            }
+        </script>
+    </body>
+</html>

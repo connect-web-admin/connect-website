@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>新規会員登録</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .notice {
+            color: #dc2626;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .flex-inputs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .helper-text {
+            font-size: 0.8em;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background-color: #1e40af;
+        }
+
+        a {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            margin-top: 4px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>新規会員登録</h1>
+        <p class="notice">すべての項目を入力してください。</p>
+        <form id="registrationForm">
+            <!-- 氏名 -->
+            <div class="two-columns">
+                <div class="form-group">
+                    <label for="lastName">姓</label>
+                    <input type="text" id="lastName" name="lastName" required />
+                </div>
+                <div class="form-group">
+                    <label for="firstName">名</label>
+                    <input type="text" id="firstName" name="firstName" required />
+                </div>
+            </div>
+
+            <!-- フリガナ -->
+            <div class="two-columns">
+                <div class="form-group">
+                    <label for="lastNameKana">姓（カナ）</label>
+                    <input type="text" id="lastNameKana" name="lastNameKana" required />
+                </div>
+                <div class="form-group">
+                    <label for="firstNameKana">名（カナ）</label>
+                    <input type="text" id="firstNameKana" name="firstNameKana" required />
+                </div>
+            </div>
+
+            <!-- 電話番号 -->
+            <div class="form-group">
+                <label>電話番号（半角数字）</label>
+                <div class="flex-inputs">
+                    <input type="tel" name="phonePart1" maxlength="4" required />
+                    <span>-</span>
+                    <input type="tel" name="phonePart2" maxlength="4" required />
+                    <span>-</span>
+                    <input type="tel" name="phonePart3" maxlength="4" required />
+                </div>
+            </div>
+
+            <!-- 郵便番号 -->
+            <div class="form-group">
+                <label>郵便番号（半角数字）</label>
+                <div class="flex-inputs">
+                    <input type="text" name="postalPart1" maxlength="3" required />
+                    <span>-</span>
+                    <input type="text" name="postalPart2" maxlength="4" required />
+                </div>
+            </div>
+
+            <!-- 住所 -->
+            <div class="form-group">
+                <label for="address">住所（都道府県から入力）</label>
+                <input type="text" id="address" name="address" required />
+            </div>
+
+            <!-- メールアドレス -->
+            <div class="form-group">
+                <label for="inputEmail">メールアドレス</label>
+                <input type="email" id="inputEmail" name="inputEmail" required autocomplete="username" />
+            </div>
+
+            <!-- パスワード -->
+            <div class="form-group">
+                <label for="inputPassword">パスワード</label>
+                <p class="helper-text">（半角英数字8〜20字。大文字、小文字、数字をそれぞれ1文字以上）</p>
+                <input type="password" id="inputPassword" name="inputPassword" required autocomplete="new-password" />
+            </div>
+
+            <!-- パスワード確認 -->
+            <div class="form-group">
+                <label for="confirmPassword">パスワード（確認）</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password" />
+            </div>
+
+            <!-- 支払いプラン -->
+            <div class="form-group">
+                <p>お支払いプラン選択</p>
+                <label><input type="radio" id="monthly" name="paymentPlan" value="monthly" /> 毎月払い 440円（4・5月無料！）</label>
+                <label><input type="radio" id="oneYear" name="paymentPlan" value="oneYear" checked /> 年払い 3,960円（５月から4,840円。ご登録月から翌年の同じ月の末日までサービス利用可能。システムの仕様上、「※ご指定のお支払い情報にて、次回以降のご請求をさせていただきます。」という案内が表示される場合がありますが、継続課金はされません。）</label><br />
+            </div>
+
+            <!-- 利用規約確認 -->
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="termsAgreed" name="termsAgreed" required />
+                    <a href="/terms" target="_blank">利用規約</a>と
+                    <a href="/commercial-transaction" target="_blank">特定商取引法</a>を読み、内容を十分に理解しました。
+                </label>
+            </div>
+
+            <!-- 登録ボタン -->
+            <button type="submit" class="submit-button">入力内容確認</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('registrationForm');
+            const submitButton = form.querySelector('.submit-button');
+            const termsCheckbox = form.elements['termsAgreed'];
+
+            // チェックボックスの初期状態を未チェックに設定
+            termsCheckbox.checked = false;
+
+            // チェックボックスの状態に応じてボタンの有効/無効を制御
+            termsCheckbox.addEventListener('change', () => {
+                submitButton.disabled = !termsCheckbox.checked;
+                submitButton.style.opacity = termsCheckbox.checked ? '1' : '0.5';
+            });
+
+            // 初期状態でボタンを無効化
+            submitButton.disabled = true;
+            submitButton.style.opacity = '0.5';
+
+            // ---------------------
+            // 復元処理（戻ってきた時用）
+            // ---------------------
+            const savedData = sessionStorage.getItem('registrationData');
+            if (savedData) {
+                const obj = JSON.parse(savedData);
+                Object.keys(obj).forEach(key => {
+                    const field = form.elements[key];
+                    if (!field) return;
+
+                    if (field.type === 'radio' || field.type === 'checkbox') {
+                        if (field.value === obj[key]) {
+                            field.checked = true;
+                        }
+                        if (field.type === 'checkbox' && obj[key] === 'on') {
+                            field.checked = true;
+                        }
+                    } else {
+                        field.value = obj[key];
+                    }
+                });
+
+                // チェックボックスは復元されても未チェックに戻す
+                termsCheckbox.checked = false;
+                submitButton.disabled = true;
+                submitButton.style.opacity = '0.5';
+            }
+
+            // ---------------------
+            // 送信処理＋バリデーション
+            // ---------------------
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                document.querySelectorAll('.error-message').forEach(el => el.remove());
+                let isValid = true;
+
+                const phoneParts = ['phonePart1', 'phonePart2', 'phonePart3'];
+                phoneParts.forEach(part => {
+                    const input = form.elements[part];
+                    if (!/^\d+$/.test(input.value)) {
+                        showError(input, '半角数字で入力してください。');
+                        isValid = false;
+                    }
+                });
+
+                const postalParts = ['postalPart1', 'postalPart2'];
+                postalParts.forEach(part => {
+                    const input = form.elements[part];
+                    if (!/^\d+$/.test(input.value)) {
+                        showError(input, '半角数字で入力してください。');
+                        isValid = false;
+                    }
+                });
+
+                const kanaFields = ['lastNameKana', 'firstNameKana'];
+                kanaFields.forEach(field => {
+                    const input = form.elements[field];
+                    if (!/^[\u30A0-\u30FFー]+$/.test(input.value)) {
+                        showError(input, '全角カタカナで入力してください。');
+                        isValid = false;
+                    }
+                });
+
+                const password = form.elements['inputPassword'].value;
+                const confirmPassword = form.elements['confirmPassword'].value;
+                const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,20}$/;
+
+                if (!passwordPattern.test(password)) {
+                    showError(form.elements['inputPassword'], '8〜20字の半角英数字で、大文字・小文字・数字を含めてください。');
+                    isValid = false;
+                }
+
+                if (password !== confirmPassword) {
+                    showError(form.elements['confirmPassword'], 'パスワードが一致しません。');
+                    isValid = false;
+                }
+
+                if (!form.elements['termsAgreed'].checked) {
+                    showError(form.elements['termsAgreed'], '利用規約に同意してください。');
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    const formData = new FormData(form);
+                    const obj = {};
+                    formData.forEach((value, key) => {
+                        obj[key] = value;
+                    });
+
+                    sessionStorage.setItem('registrationData', JSON.stringify(obj));
+                    window.location.href = 'confirm-entry.html';
+                }
+            });
+
+            function showError(input, message) {
+                const error = document.createElement('p');
+                error.className = 'error-message';
+                error.style.color = 'red';
+                error.style.fontSize = '0.8em';
+                error.textContent = message;
+
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    input.parentElement.appendChild(error);
+                } else {
+                    input.insertAdjacentElement('afterend', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
