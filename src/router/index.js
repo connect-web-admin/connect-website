@@ -20,7 +20,7 @@ import FaqView from '@/views/FaqView.vue';
 import ContactView from '@/views/ContactView.vue';
 import PremiumView from '@/views/PremiumView.vue';
 import ConnectionTestView from '@/views/ConnectionTestView.vue';
-import CardInfoCompleteView from '@/views/CardInfoCompleteView.vue';
+import RegisterCardInfoView from '@/views/RegisterCardInfoView.vue';
 // import ConnectionTestOkView from '../../ConnectionTestOkView.vue';
 // 会社概要や利用規約などの目立たせないようにするページ
 import CompanyInfoView from '@/views/site-info/CompanyInfoView.vue';
@@ -71,10 +71,16 @@ const router = createRouter({
 		},
 
 		{
-			path: '/card-token-complete',
-			name: 'CardTokenComplete',
-			component: CardInfoCompleteView
+			path: '/register-card-info',
+			name: 'RegisterCardInfo',
+			component: RegisterCardInfoView
 		},
+
+		// {
+		// 	path: '/card-token-complete',
+		// 	name: 'CardTokenComplete',
+		// 	component: CardInfoCompleteView
+		// },
 
 		{
 			path: '/',
