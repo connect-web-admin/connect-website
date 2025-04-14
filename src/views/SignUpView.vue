@@ -242,16 +242,6 @@ const registerNewAccount = async () => {
         return;
     }
 
-    // // 電話番号の各部分のバリデーション
-    // const part1Error = validatePhoneNumberPart(phoneNumberPart1.value, '市外局番');
-    // const part2Error = validatePhoneNumberPart(phoneNumberPart2.value, '市内局番');
-    // const part3Error = validatePhoneNumberPart(phoneNumberPart3.value, '加入者番号');
-
-    // if (part1Error || part2Error || part3Error) {
-    //     alert('電話番号の入力内容に誤りがあります。確認してください。');
-    //     return;
-    // }
-
     // 郵便番号の各部分のバリデーション
     const postalCodePart1Error = validatePostalCodePart(postalCodePart1.value, '郵便番号（上3桁）');
     const postalCodePart2Error = validatePostalCodePart(postalCodePart2.value, '郵便番号（下4桁）');
