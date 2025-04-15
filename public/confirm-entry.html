@@ -80,7 +80,7 @@
                             <p>住所: ${data.address}</p>
                             <p>メールアドレス: ${data.inputEmail}</p>
                             <p>プラン: ${
-                                data.paymentPlan === "oneYear" ? "年払い" : "毎月払い"
+                                data.paymentPlan === "yearly" ? "年払い" : "毎月払い"
                             }</p>
                         `;
                         document
@@ -181,6 +181,7 @@
                             paymentPlan: data.paymentPlan,
                             isTermsAgreed: true,
                             membershipType: "regular",
+                            custCode: data.custCode,
                         }),
                     }
                 );

@@ -178,7 +178,7 @@
             <div class="form-group">
                 <p>お支払いプラン選択</p>
                 <label><input type="radio" id="monthly" name="paymentPlan" value="monthly" /> 毎月払い 440円（4・5月無料！）</label>
-                <label><input type="radio" id="oneYear" name="paymentPlan" value="oneYear" checked /> 年払い 3,960円（５月から4,840円。ご登録月から翌年の同じ月の末日までサービス利用可能。システムの仕様上、「※ご指定のお支払い情報にて、次回以降のご請求をさせていただきます。」という案内が表示される場合がありますが、継続課金はされません。）</label><br />
+                <label><input type="radio" id="yearly" name="paymentPlan" value="yearly" checked /> 年払い 3,960円（５月から4,840円。ご登録月から翌年の同じ月の末日までサービス利用可能。システムの仕様上、「※ご指定のお支払い情報にて、次回以降のご請求をさせていただきます。」という案内が表示される場合がありますが、継続課金はされません。）</label><br />
             </div>
 
             <!-- 利用規約確認 -->
@@ -303,10 +303,35 @@
                         obj[key] = value;
                     });
 
+                    // paymentPlanを代入
+                    obj['free1'] = form.elements['paymentPlan'].value;
+
+                    // cust_codeを生成
+                    const custCode = generateCustCode();
+                    obj['custCode'] = custCode;
+
                     sessionStorage.setItem('registrationData', JSON.stringify(obj));
                     window.location.href = 'confirm-entry.html';
                 }
             });
+
+
+            function generateCustCode() {
+                const now = new Date();
+                const timestamp = now.getTime().toString(36);
+                const randomPart = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+                    .map(b => b.toString(36).padStart(2, '0'))
+                    .join('');
+                const dateStr = now.getFullYear().toString(36) +
+                    (now.getMonth() + 1).toString(36).padStart(2, '0') +
+                    now.getDate().toString(36).padStart(2, '0') +
+                    now.getHours().toString(36).padStart(2, '0') +
+                    now.getMinutes().toString(36).padStart(2, '0') +
+                    now.getSeconds().toString(36).padStart(2, '0');
+                
+                const combined = (timestamp + randomPart + dateStr).slice(0, 64);
+                return combined.padEnd(64, '0');
+            }
 
             function showError(input, message) {
                 const error = document.createElement('p');

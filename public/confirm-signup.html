@@ -55,17 +55,17 @@
     </div>
 
     <div id="confirmSuccess" class="hidden">
-        <!-- <form method="POST" action="https://stbfep.sps-system.com/Extra/PayRequestAction.do" accept-charset="Shift_JIS"> -->
-        <form method="POST" action="https://fep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS">
+        <!-- <form method="POST" action="https://stbfep.sps-system.com/Extra/PayRequestAction.do" accept-charset="Shift_JIS"> テスト（接続支援サイト）用データ -->
+        <form method="POST" action="https://stbfep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS">
             <input type="hidden" name="pay_method" value="credit3d2">
             <!-- <input type="hidden" name="merchant_id" value="19788"> -->
             <input type="hidden" name="merchant_id" value="58913">
             <input type="hidden" name="service_id" value="001">
-            <input type="hidden" name="cust_code" value="100-test-cust-code">
+            <input type="hidden" name="cust_code" value="">
             <input type="hidden" name="sps_cust_no" value="">
             <input type="hidden" name="sps_payment_no" value="">
             <input type="hidden" name="terminal_type" value="">
-            <input type="hidden" name="success_url" value="https://connect-goals.com/archive">
+            <input type="hidden" name="success_url" value="https://connect-goals.com/">
             <input type="hidden" name="cancel_url" value="https://connect-goals.com/pickup-news">
             <input type="hidden" name="error_url" value="https://connect-goals.com/media">
             <input type="hidden" name="pagecon_url" value="https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url">
@@ -130,7 +130,7 @@
 
         function generateHash() {
             const hashKey = '628779fb3044932486354ca601169f2bbab32660';
-            // const hashKey = '398a58952baf329cac5efbae97ea84ba17028d02'; // テスト用データ
+            // const hashKey = '398a58952baf329cac5efbae97ea84ba17028d02'; // テスト用（接続支援サイト）データ
             const inputs = document.querySelectorAll('#confirmSuccess form input[type="hidden"], #confirmSuccess form input[type="submit"]');
 
             const concatenatedValues = Array.from(inputs)
@@ -191,8 +191,22 @@
                 }
 
                 alert('認証に成功しました。決済情報入力ページへ移動します。');
+                
+                // request_date生成
                 const requestDateValue = generateRequestDate();
                 document.querySelector('input[name="request_date"]').value = requestDateValue;
+                
+                // cust_codeを代入
+                const registrationDataJson = sessionStorage.getItem('registrationData');
+                const registrationData = registrationDataJson ? JSON.parse(registrationDataJson) : null;
+                if (registrationData && registrationData.custCode) {
+                    const inputCustCode = registrationData.custCode;
+                    document.querySelector('input[name="cust_code"]').value = inputCustCode;
+
+                    // free1を代入
+                    const inputFree1 = registrationData.free1;
+                    document.querySelector('input[name="free1"]').value = inputFree1;
+                }
 
                 // sps_hashcode生成
                 const hashcode = generateHash();
