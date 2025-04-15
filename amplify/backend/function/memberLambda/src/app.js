@@ -528,7 +528,7 @@ app.post(path + '/pagecon_url', async (req, res) => {
 
 		// 最初の一致アイテムのみ処理（通常はユニークemailの前提）
 		queryFetchedItem = queryResult.Items[0];
-		console.log('qwueryfet', queryFetchedItem)
+		console.log('queryFetchedItem', queryFetchedItem)
 		const order_id = queryFetchedItem.member_id;
 		const { member_id, membership_type } = queryFetchedItem;
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -554,8 +554,8 @@ app.post(path + '/pagecon_url', async (req, res) => {
 		const encrypted_flg = '0'; // 暗号化しない
 
 		// チェックサム
-		const elementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amount, free1, encrypted_flg, request_date];
-		const sbps_hashcode = generateHash(elementsForHash);
+		const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amount, free1, encrypted_flg, request_date];
+		const sbps_hashcode = generateHash(paymentElementsForHash);
 
 		// 年払い用の決済要求をキック
 		if (paymentPlan === 'yearly') {
@@ -586,7 +586,7 @@ app.post(path + '/pagecon_url', async (req, res) => {
 
 			// 送信用XMLデータ整形
 			const xmlForPayment = `<?xml version="1.0" encoding="Shift_JIS"?>
-				<sps-api-request id="ST01-00101-101">
+				<sps-api-request id="ST01-00131-101">
 					<merchant_id>${merchant_id}</merchant_id>
 					<service_id>${service_id}</service_id>
 					<cust_code>${cust_code}</cust_code>
@@ -625,7 +625,7 @@ app.post(path + '/pagecon_url', async (req, res) => {
 					<sps_hashcode>${sbps_hashcode}</sps_hashcode>
 				</sps-api-request>`;
 
-			console.log('決済要求送信xml', xml)
+			console.log('決済要求送信xml', xmlForPayment)
 
 			// Shift_JISへ変換してからSBPSに送信
 			const encodedXml = iconv.encode(xmlForPayment, 'Shift_JIS');
@@ -643,66 +643,55 @@ app.post(path + '/pagecon_url', async (req, res) => {
 
 			// レスポンスを XML → JSON に変換
 			const resultJson = await parseStringPromise(decodedBody, { explicitArray: false });
-			console.log(decodedBody)
-			
-			
+
+			// 確定要求リクエスト
+			const resSpsTransactionId = resultJson['sps-api-response'].res_sps_transaction_id;
+			// const resTrackingId = resultJson['sps-api-response'].res_tracking_id;
+			const confirmElementsForHash = [merchant_id, service_id, resSpsTransactionId, request_date];
+			const res_sps_hashcode = generateHash(confirmElementsForHash);
+
 			// 送信用XMLデータ整形
-			const xml = `<?xml version="1.0" encoding="Shift_JIS"?>
-				<sps-api-request id="ST01-00101-101">
+			const xmlForConfirm = `<?xml version="1.0" encoding="Shift_JIS"?>
+				<sps-api-request id="ST02-00101-101">
 					<merchant_id>${merchant_id}</merchant_id>
 					<service_id>${service_id}</service_id>
-					<cust_code>${cust_code}</cust_code>
-					<order_id>${order_id}</order_id>
-					<item_id>${item_id}</item_id>
-					<item_name></item_name>
-					<tax></tax>
-					<amount>${amount}</amount>
-					<free1>${encodedPaymentPlan}</free1>
-					<free2></free2>
-					<free3></free3>
-					<order_rowno></order_rowno>
-					<sps_cust_info_return_flg></sps_cust_info_return_flg>
-					<dtls>
-						<dtl_rowno></dtl_rowno>
-						<dtl_item_id></dtl_item_id>
-						<dtl_item_name></dtl_item_name>
-						<dtl_item_count></dtl_item_count>
-						<dtl_item_tax></dtl_item_tax>
-						<dtl_item_amount></dtl_item_amount>
-					</dtls>
-					<pay_method_info>
-						<dealings_type></dealings_type>
-						<divide_times></divide_times>
-					</pay_method_info>
-					<pay_option_manage>
-						<token></token>
-						<token_key></token_key>
-						<cust_manage_flg></cust_manage_flg>
-						<cardbrand_return_flg></cardbrand_return_flg>
-					</pay_option_manage>
-
-					<encrypted_flg>${encrypted_flg}</encrypted_flg>
+					<sps_transaction_id>${resSpsTransactionId}</sps_transaction_id>
+					<tracking_id></tracking_id>
+					<processing_datetime></processing_datetime>
 					<request_date>${request_date}</request_date>
 					<limit_second></limit_second>
-					<sps_hashcode>${sbps_hashcode}</sps_hashcode>
+					<sps_hashcode>${res_sps_hashcode}</sps_hashcode>
 				</sps-api-request>`;
 
-			console.log('送信xml', xml)
+			console.log('送信確定要求xml', xmlForConfirm);
 
+			// Shift_JISへ変換してからSBPSに送信
+			const encodedXmlForConfirm = iconv.encode(xmlForConfirm, 'Shift_JIS');
+			const confirmReqResut = await fetch(sbpsApiEndPoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/xml; charset=Shift_JIS',
+					'Authorization': `Basic ${credentials}`
+				},
+				body: encodedXmlForConfirm
+			});
 
+			const confirmReqBuffer = await confirmReqResut.arrayBuffer();
+			const confirmReqDecodedBody = iconv.decode(Buffer.from(confirmReqBuffer), 'Shift_JIS');
 
-			// 確定要求をリクエストをここに書く
-
+			// レスポンスを XML → JSON に変換
+			const confirmResultJson = await parseStringPromise(confirmReqDecodedBody, { explicitArray: false });
+			console.log(confirmResultJson)
 
 			// 購入要求・確定要求が成功したら、DynamoDBのアトリビュート変更（GSI使用）
-			// canLoginをtrueに更新
+			// can_loginをtrueに更新
 			const updateParams = {
 				TableName: tableName,
 				Key: {
 					member_id,
 					membership_type
 				},
-				UpdateExpression: 'SET canLogin = :trueVal',
+				UpdateExpression: 'SET can_login = :trueVal',
 				ExpressionAttributeValues: {
 					':trueVal': true
 				}
