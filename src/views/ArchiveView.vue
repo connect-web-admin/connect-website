@@ -169,14 +169,29 @@ const imageNumberClass = 'inline-block px-1 mx-2 text-blue-500 border-b-1 cursor
 
 <template>
     <div class="p-5">
+        <h1 class="text-xl font-bold">大会日程／アーカイブ</h1>
         <div>
-            <h1 class="text-xl font-bold">高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌</h1>
-            <p>（成績表が作成され次第公開予定）</p>
-            <!-- <img src="" alt="高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 星取表" /> -->
+            <ul class="list-disc pl-4 text-blue-800 space-y-1">
+                <li>
+                    <h2 class="text-sm font-bold cursor-pointer hover:text-blue-500" @click="openModal('https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/00_%E9%AB%98%E5%86%86%E5%AE%AE%E6%9D%AF_%E6%9C%AD%E5%B9%8C%E3%83%95%E3%82%99%E3%83%AD%E3%83%83%E3%82%AF%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%992025+(1%E7%AF%80%E8%A9%A6%E5%90%88%E7%B5%90%E6%9E%9C).jpg', '高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌')">高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌</h2>
+                    <img class="hidden" src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/00_%E9%AB%98%E5%86%86%E5%AE%AE%E6%9D%AF_%E6%9C%AD%E5%B9%8C%E3%83%95%E3%82%99%E3%83%AD%E3%83%83%E3%82%AF%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%992025+(1%E7%AF%80%E8%A9%A6%E5%90%88%E7%B5%90%E6%9E%9C).jpg" alt="高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 星取表" />
+                </li>
+                <li>
+                    <h2 class="text-sm font-bold cursor-pointer hover:text-blue-500" @click="openModal('https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U13+2%E9%83%A8.jpg', '2025北海道カブスリーグ星取表 U13 ２部')">2025年度第17回北海道カブスリーグU-13 ２部</h2>
+                    <img class="hidden" src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%91%E9%83%A8.jpg" alt="2025北海道カブスリーグ星取表 U15１部" />
+                </li>
+                <li>
+                    <h2 class="text-sm font-bold cursor-pointer hover:text-blue-500" @click="openModal('https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%91%E9%83%A8.jpg', '2025北海道カブスリーグ星取表 U15１部')">第19回北海道カブスリーグU-15 兼 高円宮杯JFAサッカーリーグ2025北海道１部</h2>
+                    <img class="hidden" src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%91%E9%83%A8.jpg" alt="2025北海道カブスリーグ星取表 U15１部" />
+                </li>
+                <li>
+                    <h2 class="text-sm font-bold cursor-pointer hover:text-blue-500" @click="openModal('https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%92%E9%83%A8.jpg', '2025北海道カブスリーグ星取表 U15２部')">第19回北海道カブスリーグU-15 兼 高円宮杯JFAサッカーリーグ2025北海道２部</h2>
+                    <img class="hidden" src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%92%E9%83%A8.jpg" alt="2025北海道カブスリーグ星取表 U15２部" />
+                </li>
+            </ul>
         </div>
         <div class="mt-15">
-            <h1 class="text-xl font-bold">アーカイブ</h1>
-            <h2>2024年度</h2>
+            <h2 class="text-lg font-bold">2024年度</h2>
             <div :class="categorySectionClass">
                 <h3 class="text-xl font-semibold">２種</h3>
                 <ul>
@@ -222,8 +237,8 @@ const imageNumberClass = 'inline-block px-1 mx-2 text-blue-500 border-b-1 cursor
         </div>
 
         <!-- モーダル -->
-        <div v-if="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white p-4 rounded-lg max-w-4xl w-full mx-4">
+        <div v-if="isModalOpen" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" @click="closeModal">
+            <div class="bg-white p-4 rounded-lg max-w-4xl w-full mx-4" @click.stop>
                 <div class="flex justify-end">
                     <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
