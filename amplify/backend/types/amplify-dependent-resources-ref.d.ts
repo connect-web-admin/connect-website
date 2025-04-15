@@ -48,6 +48,13 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
+    "checkUserBeforeLoginLambda": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
     "clubLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
