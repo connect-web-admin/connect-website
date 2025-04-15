@@ -9,31 +9,119 @@
             src="https://token.sps-system.com/sbpstoken/com_sbps_system_tds2infotoken.js"
         ></script>
         <style>
+            :root {
+                --primary-color: #0015f7;
+                --error-color: #E74C3C;
+                --text-color: #2C3E50;
+                --background-color: #F8F9FA;
+                --border-radius: 8px;
+                --spacing: 1.5rem;
+            }
+
             body {
-                font-family: sans-serif;
-                padding: 2em;
+                font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+                padding: 2rem;
+                background-color: var(--background-color);
+                color: var(--text-color);
+                line-height: 1.6;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: var(--spacing);
+                color: var(--text-color);
+                font-weight: 600;
             }
 
             .error {
-                color: red;
-                font-weight: bold;
+                color: var(--error-color);
+                font-weight: 500;
+                padding: 1rem;
+                background-color: rgba(231, 76, 60, 0.1);
+                border-radius: var(--border-radius);
+                margin: 1rem 0;
             }
 
             .hidden {
                 display: none;
             }
 
+            #confirmContent {
+                background: white;
+                padding: 2rem;
+                border-radius: var(--border-radius);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                margin: 1.5rem 0;
+            }
+
+            #confirmContent p {
+                margin: 0.8rem 0;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #eee;
+            }
+
+            #confirmContent p:last-child {
+                border-bottom: none;
+            }
+
+            button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+                border: none;
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: 500;
+            }
+
+            button:first-of-type {
+                background-color: #6C757D;
+                color: white;
+            }
+
+            button:first-of-type:hover {
+                background-color: #5A6268;
+            }
+
             #registerBtn {
-                margin-top: 2em;
-                padding: 0.7em 1.5em;
-                font-size: 1em;
+                background-color: var(--primary-color);
+                color: white;
+                margin-top: 1.5rem;
+            }
+
+            #registerBtn:hover {
+                background-color: #357ABD;
+            }
+
+            #loading {
+                text-align: center;
+                padding: 2rem;
+                color: var(--text-color);
+                font-size: 1.1rem;
+            }
+
+            @media (max-width: 768px) {
+                body {
+                    padding: 1rem;
+                }
+
+                #confirmContent {
+                    padding: 1rem;
+                }
+
+                button {
+                    width: 100%;
+                    margin: 0.5rem 0;
+                }
             }
         </style>
     </head>
     <body>
-        <h1>確認画面</h1>
+        <h1>入力内容確認画面</h1>
 
-        <div id="loading">トークンを取得中です...</div>
+        <div id="loading">読み込み中</div>
         <div id="error" class="error hidden"></div>
         <div id="confirmContent" class="hidden"></div>
 
@@ -41,7 +129,7 @@
         <button id="registerBtn" class="hidden">登録</button>
 
         <script>
-            const MEMBER_API_URL = "https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items"; // ← あなたの環境に置き換えてください
+            const MEMBER_API_URL = "https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 
             const data = JSON.parse(sessionStorage.getItem("registrationData"));
 
