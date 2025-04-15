@@ -11,10 +11,13 @@ See the License for the specific language governing permissions and limitations 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminDeleteUserCommand, ConfirmSignUpCommand, ResendConfirmationCodeCommand, SignUpCommand, AdminGetUserCommand } = require('@aws-sdk/client-cognito-identity-provider');
 const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
-const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
-const bodyParser = require('body-parser')
-const express = require('express')
+const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+const bodyParser = require('body-parser');
 
+const express = require('express');
+const iconv = require('iconv-lite');
+const CryptoJS = require('crypto-js');
+const { parseStringPromise } = require('xml2js');
 const cognitoClient = new CognitoIdentityProviderClient({ region: 'ap-northeast-1' });
 const USER_POOL_ID = 'ap-northeast-1_nziYUPFda';
 const CLIENT_ID = '2l2tg8i2d5ncdo8sdmdtu1o4hn'; // CognitoのApp Client ID
@@ -37,11 +40,47 @@ const path = "/items";
 const UNAUTH = 'UNAUTH';
 const hashKeyPath = '/:' + partitionKeyName;
 const sortKeyPath = hasSortKey ? '/:' + sortKeyName : '';
+const gsiByEmail = 'gsiByEmail';
+const gsiByCustCode = 'gsiByCustCode';
 
 // declare a new express app
 const app = express()
 app.use(bodyParser.json())
+app.use(express.json());
 app.use(awsServerlessExpressMiddleware.eventContext())
+// カスタムURLエンコードパーサの設定
+app.use((req, res, next) => {
+	const contentType = req.headers['content-type'] || '';
+	const isUrlEncoded = /^application\/x-www-form-urlencoded/i.test(contentType);
+	const isShiftJIS = /charset\s*=\s*shift_jis/i.test(contentType);
+
+	if (isUrlEncoded && isShiftJIS) {
+		let rawData = [];
+
+		req.on('data', chunk => rawData.push(chunk));
+		req.on('end', () => {
+			try {
+				const buffer = Buffer.concat(rawData);
+				const decodedText = iconv.decode(buffer, 'shift_jis');
+				const parsedBody = Object.fromEntries(new URLSearchParams(decodedText));
+
+				req.body = parsedBody;
+				next();
+			} catch (err) {
+				console.error('Shift_JIS処理エラー:', err);
+				res.status(400).send('デコードに失敗しました');
+			}
+		});
+
+		req.on('error', err => {
+			console.error('データ受信エラー:', err);
+			res.status(500).send('システムエラー');
+		});
+	} else {
+		// Shift_JIS以外は標準パーサーを使用
+		express.urlencoded({ extended: true })(req, res, next);
+	}
+});
 
 // Enable CORS for all methods
 app.use(function (req, res, next) {
@@ -61,10 +100,12 @@ const convertUrlType = (param, type) => {
 }
 
 /************************************
-* HTTP post method for ユーザー状態確認 *
+* HTTP post method for DynamoDBにすでにメールアドレスが存在するか確認 *
 *************************************/
-app.post(path + '/check-user-status', async function (req, res) {
+app.post(path + '/check-for-duplicate-email-in-database', async function (req, res) {
 	const inputEmail = req.body.inputEmail;
+
+	console.log('登録試行メールアドレス', inputEmail);
 
 	if (!inputEmail) {
 		return res.status(400).json({ error: 'メールアドレスは必須です' });
@@ -72,70 +113,30 @@ app.post(path + '/check-user-status', async function (req, res) {
 
 	try {
 		// DynamoDBでメールアドレスの存在確認（GSI使用）
-		const params = {
+		const queryParams = {
 			TableName: tableName,
-			IndexName: 'gsiByEmail',
+			IndexName: gsiByEmail,
 			KeyConditionExpression: 'email = :email',
 			ExpressionAttributeValues: {
 				':email': inputEmail
 			}
 		};
 
-		const data = await ddbDocClient.send(new QueryCommand(params));
+		console.log('登録試行パラメータ', queryParams);
 
-		// メールアドレスが存在し、アクティブな場合
-		if (data.Items && data.Items.length > 0 && data.Items[0].isActive === true) {
+		const command = new QueryCommand(queryParams);
+		const data = await ddbDocClient.send(command);
+
+		// メールアドレスが存在する場合
+		if (data.Count !== 0) {
+			console.log('重複メールアドレス検出');
 			return res.status(400).json({
-				status: 'ALREADY_REGISTERED',
+				status: 'ALREADY_REGISTERED_IN_DATABASE',
 				message: '登録済みのメールアドレスです'
 			});
 		}
 
-		// メールアドレスが存在し、非アクティブな場合
-		if (data.Items && data.Items.length > 0 && data.Items[0].isActive === false) {
-			// Cognitoでユーザーの状態確認
-			try {
-				const getUserCommand = new AdminGetUserCommand({
-					UserPoolId: USER_POOL_ID,
-					Username: inputEmail
-				});
-
-				const userData = await cognitoClient.send(getUserCommand);
-
-				// ユーザーが存在し、認証済みの場合
-				if (userData.UserStatus === 'CONFIRMED') {
-					return res.status(400).json({
-						status: 'ALREADY_REGISTERED',
-						message: '登録済みのメールアドレスです'
-					});
-				}
-
-				// ユーザーが存在し、未認証または無効な場合
-				if (userData.UserStatus === 'UNCONFIRMED' || userData.UserStatus === 'FORCE_CHANGE_PASSWORD') {
-					// 認証コードを再送信
-					const resendCommand = new ResendConfirmationCodeCommand({
-						ClientId: CLIENT_ID,
-						Username: inputEmail
-					});
-					await cognitoClient.send(resendCommand);
-
-					return res.status(200).json({
-						status: 'PENDING_CONFIRMATION',
-						message: '認証コードを再送信しました'
-					});
-				}
-			} catch (error) {
-				// ユーザーが存在しない場合は、新規登録可能
-				if (error.name === 'UserNotFoundException' || error.name === 'ResourceNotFoundException') {
-					return res.status(200).json({
-						status: 'NEW_USER',
-						message: '新規登録可能です'
-					});
-				}
-				throw error;
-			}
-		}
-
+		console.log('重複メールアドレスなし、登録可能');
 		// メールアドレスが存在しない場合は、新規登録可能
 		return res.status(200).json({
 			status: 'NEW_USER',
@@ -143,163 +144,185 @@ app.post(path + '/check-user-status', async function (req, res) {
 		});
 	} catch (error) {
 		console.error("Error checking user status:", error);
-		return res.status(500).json({ error: 'ユーザー状態の確認に失敗しました' });
+		return res.status(500).json({ error: 'すでに同じメールアドレスが登録されています。ほかのメールアドレスでお試しください。' });
+	}
+});
+
+/************************************
+* HTTP post method for DynamoDBにユーザー登録 *
+*************************************/
+app.post(path + '/register-user-to-database', async function (req, res) {
+	const lastName = req.body.lastName;
+	const firstName = req.body.firstName;
+	const lastNameKana = req.body.lastNameKana;
+	const firstNameKana = req.body.firstNameKana;
+	const phoneNumber = req.body.phoneNumber;
+	const postalCode = req.body.postalCode;
+	const address = req.body.address;
+	const inputEmail = req.body.inputEmail;
+	const membershipType = req.body.membershipType;
+	const paymentPlan = req.body.paymentPlan;
+	const isTermsAgreed = req.body.isTermsAgreed;
+	const custCode = req.body.custCode;
+	console.log(req.body)
+	console.log('DynamoDB登録試行メールアドレス', inputEmail);
+
+	// 連番のmember_idを作成する
+	// 全アイテムをスキャンして最大のmember_idを取得
+	const scanParams = {
+		TableName: tableName,
+		ProjectionExpression: 'member_id'
+	};
+
+	const commandForScan = new ScanCommand(scanParams);
+	const scanResult = await ddbDocClient.send(commandForScan);
+
+	// member_idの最大値を取得
+	let maxMemberId = 0;
+	if (scanResult.Items && scanResult.Items.length > 0) {
+		maxMemberId = Math.max(...scanResult.Items.map(item => parseInt(item.member_id)));
+	}
+
+	// 新しいmember_idを生成（10桁の文字列）
+	const newMemberId = (maxMemberId + 1).toString().padStart(10, '0');
+
+	//　created_atとupdated_atのために登録日を作成
+	const today = new Date().toLocaleDateString("ja-JP", {
+		year: "numeric", month: "2-digit",
+		day: "2-digit"
+	}).replaceAll('/', '-')
+
+	// DynamoDBにユーザー情報を保存（isActive: false）
+	const putItemParams = {
+		TableName: tableName,
+		Item: {
+			'member_id': newMemberId,
+			'can_login': false,
+			'email': inputEmail,
+			'membership_type': membershipType,
+			'last_name': lastName,
+			'first_name': firstName,
+			'last_name_kana': lastNameKana,
+			'first_name_kana': firstNameKana,
+			'phone_number': phoneNumber,
+			'postal_code': postalCode,
+			'address': address,
+			'deleted_at': '',
+			'updated_at': today,
+			'update_reason': '新規登録',
+			'created_at': today,
+			'is_credit_card_valid': false,
+			'cust_code': custCode,
+			'payment_plan': paymentPlan, // yearly, monthly
+			'expires_at': '',
+			'payment_success_history': [],
+			'payment_failure_history': [],
+			'isTermsAgreed': isTermsAgreed
+		}
+	};
+
+	console.log('登録試行パラメータ', putItemParams);
+
+	try {
+		const commandForPuttingData = new PutCommand(putItemParams);
+		const data = await ddbDocClient.send(commandForPuttingData);
+
+		res.status(200).json({
+			status: 'USER_SUCCESSFULLY_REGISTERED_TO_DATABASE',
+			message: 'ユーザー情報を正常にデータベースに登録しました。'
+		});
+	} catch (error) {
+		console.error("Error in signup:", error);
+		return res.status(500).json({ error: 'ユーザー登録に失敗しました。登録内容を確認してもう一度ご登録いただくか、時間を空けてお試しください。' });
 	}
 });
 
 /************************************
 * HTTP post method for insert object *
 *************************************/
-app.post(path + '/signup', async function (req, res) {
-	// フロントエンドから渡されるリクエスト
+app.post(path + '/register-user-to-cognito', async function (req, res) {
 	const inputEmail = req.body.inputEmail;
 	const inputPassword = req.body.inputPassword;
-	const ageGroup = req.body.ageGroup;
-	const gender = req.body.gender;
-	const favoriteTeam = req.body.favoriteTeam;
-	const membershipType = req.body.membershipType;
+
+	console.log('Cognito登録試行メールアドレス', inputEmail);
 
 	try {
-		// まずDynamoDBでメールアドレスの存在確認
-		const queryParams = {
-			TableName: tableName,
-			IndexName: 'gsiByEmail',
-			KeyConditionExpression: 'email = :email',
-			ExpressionAttributeValues: {
-				':email': inputEmail
-			}
-		};
-
-		const existingUser = await ddbDocClient.send(new QueryCommand(queryParams));
-
-		// メールアドレスが存在し、アクティブな場合
-		if (existingUser.Items && existingUser.Items.length > 0 && existingUser.Items[0].isActive === true) {
-			return res.status(400).json({
-				status: 'ALREADY_REGISTERED',
-				message: '登録済みのメールアドレスです'
-			});
+		const signUpParams = {
+			ClientId: CLIENT_ID,
+			Username: inputEmail,
+			Password: inputPassword,
+			UserAttributes: [
+				{ Name: 'email', Value: inputEmail }
+			]
 		}
+		console.log('sign up params for Cognito', signUpParams)
 
-		// メールアドレスが存在し、非アクティブな場合
-		if (existingUser.Items && existingUser.Items.length > 0 && existingUser.Items[0].isActive === false) {
-			// 既存のユーザー情報を更新
-			const updateItemParams = {
-				TableName: tableName,
-				Key: {
-					'member_id': existingUser.Items[0].member_id
-				},
-				UpdateExpression: 'SET age_group = :ageGroup, gender = :gender, favorite_team = :favoriteTeam, membership_type = :membershipType',
-				ExpressionAttributeValues: {
-					':ageGroup': ageGroup,
-					':gender': gender,
-					':favoriteTeam': favoriteTeam,
-					':membershipType': membershipType
-				}
-			};
+		const commandForSignUp = new SignUpCommand(signUpParams);
+		const signUpResponse = await cognitoClient.send(commandForSignUp);
 
-			await ddbDocClient.send(new UpdateCommand(updateItemParams));
-		} else {
-			// 全アイテムをスキャンして最大のmember_idを取得
-			const scanParams = {
-				TableName: tableName,
-				ProjectionExpression: 'member_id'
-			};
-			const scanResult = await ddbDocClient.send(new ScanCommand(scanParams));
+		console.log('Cognito登録レスポンス', signUpResponse);
 
-			// member_idの最大値を取得
-			let maxMemberId = 0;
-			if (scanResult.Items && scanResult.Items.length > 0) {
-				maxMemberId = Math.max(...scanResult.Items.map(item => parseInt(item.member_id)));
-			}
-
-			// 新しいmember_idを生成（10桁の文字列）
-			const newMemberId = (maxMemberId + 1).toString().padStart(10, '0');
-
-			// DynamoDBにユーザー情報を保存（isActive: false）
-			const putItemParams = {
-				TableName: tableName,
-				Item: {
-					'member_id': newMemberId,
-					'email': inputEmail,
-					'membership_type': membershipType,
-					'age_group': ageGroup,
-					'favorite_team': favoriteTeam,
-					'gender': gender,
-					'isActive': false,
-					'deleted_at': ''
-				}
-			};
-
-			await ddbDocClient.send(new PutCommand(putItemParams));
-		}
-
-		// Cognitoにユーザーを登録
-		try {
-			const signUpCommand = new SignUpCommand({
-				ClientId: CLIENT_ID,
-				Username: inputEmail,
-				Password: inputPassword,
-				UserAttributes: [
-					{ Name: 'email', Value: inputEmail }
-				]
-			});
-
-			await cognitoClient.send(signUpCommand);
-
-			// 認証コードを送信
-			const resendCommand = new ResendConfirmationCodeCommand({
-				ClientId: CLIENT_ID,
-				Username: inputEmail
-			});
-			await cognitoClient.send(resendCommand);
-
-			res.status(200).json({
-				status: 'PENDING_CONFIRMATION',
-				message: '認証コードを送信しました'
-			});
-		} catch (error) {
-			// Cognitoでユーザーが既に存在する場合
-			if (error.name === 'UsernameExistsException') {
-				// ユーザーの状態を確認
-				try {
-					const getUserCommand = new AdminGetUserCommand({
-						UserPoolId: USER_POOL_ID,
-						Username: inputEmail
-					});
-
-					const userData = await cognitoClient.send(getUserCommand);
-
-					// ユーザーが存在し、認証済みの場合
-					if (userData.UserStatus === 'CONFIRMED') {
-						return res.status(400).json({
-							status: 'ALREADY_REGISTERED',
-							message: '登録済みのメールアドレスです'
-						});
-					}
-
-					// ユーザーが存在し、未認証または無効な場合
-					if (userData.UserStatus === 'UNCONFIRMED' || userData.UserStatus === 'FORCE_CHANGE_PASSWORD') {
-						// 認証コードを再送信
-						const resendCommand = new ResendConfirmationCodeCommand({
-							ClientId: CLIENT_ID,
-							Username: inputEmail
-						});
-						await cognitoClient.send(resendCommand);
-
-						return res.status(200).json({
-							status: 'PENDING_CONFIRMATION',
-							message: '認証コードを再送信しました'
-						});
-					}
-				} catch (innerError) {
-					throw innerError;
-				}
-			}
-			throw error;
-		}
+		// ResendCommandは削除
+		res.status(200).json({
+			status: 'SUCCESSFULLY_REGISTERED_TO_COGNITO_AND_PENDING_CONFIRMATION',
+			message: '認証コードを送信しました（最初のコード）'
+		});
 	} catch (error) {
 		console.error("Error in signup:", error);
-		return res.status(500).json({ error: 'ユーザー登録に失敗しました' });
+		console.log('DynamoDBへの登録は成功しましたがCognitoへの登録は失敗しましたので、DynamoDBの当該メールアドレスのアイテムを削除します。')
+
+		try {
+			const queryParams = {
+				TableName: tableName,
+				IndexName: gsiByEmail,
+				KeyConditionExpression: 'email = :email',
+				ExpressionAttributeValues: {
+					':email': inputEmail
+				},
+				Limit: 1 // 重複を防ぐために1件だけ取得
+			};
+
+			console.log('DynamoDBのアイテム削除パラメタ', queryParams);
+
+			const commandForQuery = new QueryCommand(queryParams);
+			const queryResult = await ddbDocClient.send(commandForQuery);
+
+			if (!queryResult.Items || queryResult.Items.length === 0) {
+				return {
+					statusCode: 404,
+					body: JSON.stringify({ message: '対象のアイテムが見つかりませんでした' })
+				};
+			}
+
+			// 2. 取得したアイテムのパーティションキーとソートキー（ある場合）で削除
+			const itemToDelete = queryResult.Items[0];
+
+			const deleteParams = {
+				TableName: tableName,
+				Key: {
+					member_id: itemToDelete.member_id, // 実際のパーティションキー名に置き換えてください
+					...(itemToDelete.membership_type && {
+						membership_type: itemToDelete.membership_type // ソートキーがある場合
+					})
+				}
+			};
+
+			const commandForDeletion = new DeleteCommand(deleteParams);
+			await ddbDocClient.send(commandForDeletion);
+
+			return {
+				statusCode: 200,
+				body: JSON.stringify({ message: 'データベースへのユーザー登録に失敗しました。（エラー１）' })
+			};
+		} catch (err) {
+			console.error('削除エラー', err);
+			return {
+				statusCode: 500,
+				body: JSON.stringify({ error: 'データベースへのユーザー登録に失敗しました。（エラー２）' })
+			};
+		}
+
+		return res.status(500).json({ error: 'データベースへのユーザー登録に失敗しました。（エラー３）' });
 	}
 });
 
@@ -330,44 +353,6 @@ app.post(path + '/confirm-signup', async (req, res) => {
 		// 認証コードの検証
 		await cognitoClient.send(command);
 		console.log(`Cognito認証コード確認成功: ${inputEmail}`);
-
-		// GSIを使用してユーザー情報を取得
-		const queryParams = {
-			TableName: tableName,
-			IndexName: 'gsiByEmail',
-			KeyConditionExpression: 'email = :email',
-			ExpressionAttributeValues: {
-				':email': inputEmail
-			}
-		};
-
-		const userData = await ddbDocClient.send(new QueryCommand(queryParams));
-		console.log(`DynamoDBユーザー情報取得: ${JSON.stringify(userData)}`);
-
-		if (!userData.Items || userData.Items.length === 0) {
-			console.error(`ユーザー情報が見つかりません: ${inputEmail}`);
-			return res.status(404).json({
-				message: 'ユーザー情報が見つかりません'
-			});
-		}
-
-		const memberId = userData.Items[0].member_id;
-		console.log(`ユーザーID: ${memberId}`);
-
-		// DynamoDBのユーザー情報を更新（isActive: true）
-		const updateItemParams = {
-			TableName: tableName,
-			Key: {
-				'member_id': memberId
-			},
-			UpdateExpression: 'SET isActive = :isActive',
-			ExpressionAttributeValues: {
-				':isActive': true
-			}
-		};
-
-		await ddbDocClient.send(new UpdateCommand(updateItemParams));
-		console.log(`DynamoDB更新成功: ${memberId}`);
 
 		res.status(200).json({
 			message: 'メールアドレスの認証が完了しました'
@@ -442,6 +427,34 @@ app.post(path + '/resend-code', async (req, res) => {
 /************************************
 * HTTP post method for  *
 *************************************/
+app.post(path + '/pay-for-one-year', async (req, res) => {
+	console.log('success_url 受け取ったデータ:', req.body);
+
+	// ここでデータの精査処理をしてもOK（今回は何もせず）
+
+	// 結果にかかわらず「OK,」を返す
+	res.set('Content-Type', 'text/plain');
+	res.status(200).send('OK,');
+});
+
+
+
+/************************************
+* HTTP post method for  *
+*************************************/
+app.post(path + '/start-3ds', async (req, res) => {
+	console.log('success_url 受け取ったデータ:', req.body);
+
+	// ここでデータの精査処理をしてもOK（今回は何もせず）
+
+	// 結果にかかわらず「OK,」を返す
+	res.set('Content-Type', 'text/plain');
+	res.status(200).send('OK,');
+});
+
+/************************************
+* HTTP post method for  *
+*************************************/
 app.post(path + '/success_url', async (req, res) => {
 	console.log('success_url 受け取ったデータ:', req.body);
 
@@ -482,15 +495,246 @@ app.post(path + '/error_url', async (req, res) => {
 * HTTP post method for  *
 *************************************/
 app.post(path + '/pagecon_url', async (req, res) => {
-	console.log('pagecon_url 受け取ったデータ:', req.body);
+	const {
+		merchant_id,
+		service_id,
+		cust_code,
+		free1,
+		request_date
+	} = req.body;
+	const paymentPlan = req.body.free1;
+	const item_id = free1 === 'yearly' ? '1' : '2' // yearlyは1、monthlyは2
 
-	// ここでデータの精査処理をしてもOK（今回は何もせず）
+	let queryFetchedItem;
+	try {
+		// 取得した結果はupdateParamsでも使う
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// GSIで対象アイテムを取得
+		const queryParams = {
+			TableName: tableName,
+			IndexName: gsiByCustCode,
+			KeyConditionExpression: 'cust_code = :cust_code',
+			ExpressionAttributeValues: {
+				':cust_code': cust_code
+			}
+		};
 
-	// 結果にかかわらず「OK,」を返す
-	res.set('Content-Type', 'text/plain');
-	res.status(200).send('OK,');
+		const commandForQuery = new QueryCommand(queryParams);
+		const queryResult = await ddbDocClient.send(commandForQuery);
+
+		if (!queryResult.Items || queryResult.Items.length === 0) {
+			return res.status(404).json({ error: '指定されたemailのアイテムが見つかりませんでした' });
+		}
+
+		// 最初の一致アイテムのみ処理（通常はユニークemailの前提）
+		queryFetchedItem = queryResult.Items[0];
+		console.log('qwueryfet', queryFetchedItem)
+		const order_id = queryFetchedItem.member_id;
+		const { member_id, membership_type } = queryFetchedItem;
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		// 日本時間を取得
+		const nowJST = new Date(Date.now() + 9 * 60 * 60 * 1000); // UTC + 9時間
+		// 表示確認（例：2025-04-14 22:30:00）
+		const formatDate = (date) => {
+			const y = date.getFullYear();
+			const m = String(date.getMonth() + 1).padStart(2, '0');
+			const d = String(date.getDate()).padStart(2, '0');
+			const h = String(date.getHours()).padStart(2, '0');
+			const min = String(date.getMinutes()).padStart(2, '0');
+			const s = String(date.getSeconds()).padStart(2, '0');
+			return `${y}-${m}-${d} ${h}:${min}:${s}`;
+		};
+		// 比較対象の日付（日本時間として扱う）
+		const targetDate = new Date(Date.UTC(nowJST.getFullYear(), 4, 1)); // 月は0始まり（4 = 5月）
+		// 比較結果を出力
+		const amount = (nowJST < targetDate) ? '3960' : '4840';
+
+		// 暗号化フラグ
+		const encrypted_flg = '0'; // 暗号化しない
+
+		// チェックサム
+		const elementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amount, free1, encrypted_flg, request_date];
+		const sbps_hashcode = generateHash(elementsForHash);
+
+		// 年払い用の決済要求をキック
+		if (paymentPlan === 'yearly') {
+			// // トークンサービス接続先情報(ワンタイムトークン)接続先
+			// const sbpsTokenServiceEndPoint = 'https://stbtoken.sps-system.com/sbpstoken/com_sbps_system_token.js';
+
+			// // 接続先
+			const sbpsApiEndPoint = 'https://stbfep.sps-system.com/api/xmlapi.do';
+			// // ハッシュキー
+			const sbpsHashKey = '628779fb3044932486354ca601169f2bbab32660';
+			// // 3DES 暗号化キー
+			// const threeDesKey = '628779fb3044932486354ca6';
+			// // 3DES 初期化キー
+			// const threeDesInitKey = '01169f2b';
+			// 3DES Padding設定（※）
+			// NoPadding
+			// ※自動Paddingなしの為、最後の8バイトブロックに対し補完文字列が必要となります。Padding文字列：半角スペース
+
+			// Basic認証ID
+			const basicAuthId = '58913001';
+			// Basic認証パスワード
+			const basicAuthPwd = '628779fb3044932486354ca601169f2bbab32660';
+			// POST時のAuthorizationヘッダーに使用
+			const credentials = Buffer.from(`${basicAuthId}:${basicAuthPwd}`).toString('base64');
+
+			// free1項目はBase64にエンコードが必要
+			const encodedPaymentPlan = btoa(unescape(encodeURIComponent(paymentPlan)));
+
+			// 送信用XMLデータ整形
+			const xmlForPayment = `<?xml version="1.0" encoding="Shift_JIS"?>
+				<sps-api-request id="ST01-00101-101">
+					<merchant_id>${merchant_id}</merchant_id>
+					<service_id>${service_id}</service_id>
+					<cust_code>${cust_code}</cust_code>
+					<order_id>${order_id}</order_id>
+					<item_id>${item_id}</item_id>
+					<item_name></item_name>
+					<tax></tax>
+					<amount>${amount}</amount>
+					<free1>${encodedPaymentPlan}</free1>
+					<free2></free2>
+					<free3></free3>
+					<order_rowno></order_rowno>
+					<sps_cust_info_return_flg></sps_cust_info_return_flg>
+					<dtls>
+						<dtl_rowno></dtl_rowno>
+						<dtl_item_id></dtl_item_id>
+						<dtl_item_name></dtl_item_name>
+						<dtl_item_count></dtl_item_count>
+						<dtl_item_tax></dtl_item_tax>
+						<dtl_item_amount></dtl_item_amount>
+					</dtls>
+					<pay_method_info>
+						<dealings_type></dealings_type>
+						<divide_times></divide_times>
+					</pay_method_info>
+					<pay_option_manage>
+						<token></token>
+						<token_key></token_key>
+						<cust_manage_flg></cust_manage_flg>
+						<cardbrand_return_flg></cardbrand_return_flg>
+					</pay_option_manage>
+
+					<encrypted_flg>${encrypted_flg}</encrypted_flg>
+					<request_date>${request_date}</request_date>
+					<limit_second></limit_second>
+					<sps_hashcode>${sbps_hashcode}</sps_hashcode>
+				</sps-api-request>`;
+
+			console.log('決済要求送信xml', xml)
+
+			// Shift_JISへ変換してからSBPSに送信
+			const encodedXml = iconv.encode(xmlForPayment, 'Shift_JIS');
+			const response = await fetch(sbpsApiEndPoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/xml; charset=Shift_JIS',
+					'Authorization': `Basic ${credentials}`
+				},
+				body: encodedXml
+			});
+
+			const buffer = await response.arrayBuffer();
+			const decodedBody = iconv.decode(Buffer.from(buffer), 'Shift_JIS');
+
+			// レスポンスを XML → JSON に変換
+			const resultJson = await parseStringPromise(decodedBody, { explicitArray: false });
+			console.log(decodedBody)
+			
+			
+			// 送信用XMLデータ整形
+			const xml = `<?xml version="1.0" encoding="Shift_JIS"?>
+				<sps-api-request id="ST01-00101-101">
+					<merchant_id>${merchant_id}</merchant_id>
+					<service_id>${service_id}</service_id>
+					<cust_code>${cust_code}</cust_code>
+					<order_id>${order_id}</order_id>
+					<item_id>${item_id}</item_id>
+					<item_name></item_name>
+					<tax></tax>
+					<amount>${amount}</amount>
+					<free1>${encodedPaymentPlan}</free1>
+					<free2></free2>
+					<free3></free3>
+					<order_rowno></order_rowno>
+					<sps_cust_info_return_flg></sps_cust_info_return_flg>
+					<dtls>
+						<dtl_rowno></dtl_rowno>
+						<dtl_item_id></dtl_item_id>
+						<dtl_item_name></dtl_item_name>
+						<dtl_item_count></dtl_item_count>
+						<dtl_item_tax></dtl_item_tax>
+						<dtl_item_amount></dtl_item_amount>
+					</dtls>
+					<pay_method_info>
+						<dealings_type></dealings_type>
+						<divide_times></divide_times>
+					</pay_method_info>
+					<pay_option_manage>
+						<token></token>
+						<token_key></token_key>
+						<cust_manage_flg></cust_manage_flg>
+						<cardbrand_return_flg></cardbrand_return_flg>
+					</pay_option_manage>
+
+					<encrypted_flg>${encrypted_flg}</encrypted_flg>
+					<request_date>${request_date}</request_date>
+					<limit_second></limit_second>
+					<sps_hashcode>${sbps_hashcode}</sps_hashcode>
+				</sps-api-request>`;
+
+			console.log('送信xml', xml)
+
+
+
+			// 確定要求をリクエストをここに書く
+
+
+			// 購入要求・確定要求が成功したら、DynamoDBのアトリビュート変更（GSI使用）
+			// canLoginをtrueに更新
+			const updateParams = {
+				TableName: tableName,
+				Key: {
+					member_id,
+					membership_type
+				},
+				UpdateExpression: 'SET canLogin = :trueVal',
+				ExpressionAttributeValues: {
+					':trueVal': true
+				}
+			};
+
+			const commandForUpdate = new UpdateCommand(updateParams);
+			await ddbDocClient.send(commandForUpdate);
+
+			res.set('Content-Type', 'text/plain');
+			res.status(200).send('OK,');
+		} else if(paymentPlan === 'monthly') {
+
+		}
+	} catch (err) {
+		console.error('更新エラー:', err);
+		return res.status(500).json({ error: 'サーバーエラーが発生しました' });
+	}
+
+
+	/**
+	 * チェックサム（ハッシュコード）生成
+	 */
+	function generateHash(inputs) {
+		const hashKey = '628779fb3044932486354ca601169f2bbab32660';
+		// 各要素の前後のスペースを取り除いて結合
+		const concatenatedValues = inputs.map(input => input.trim()).join('');
+		const stringToHash = concatenatedValues + hashKey;
+		const hash = CryptoJS.SHA1(stringToHash).toString().toUpperCase();
+
+		return hash;
+	};
 });
-
 
 app.listen(3000, function () {
 	console.log("App started")

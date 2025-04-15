@@ -23,6 +23,13 @@
         "fieldName": "email",
         "fieldType": "string"
       }
+    },
+    {
+      "name": "gsiByCustCode",
+      "partitionKey": {
+        "fieldName": "cust_code",
+        "fieldType": "string"
+      }
     }
   ],
   "triggerFunctions": []
