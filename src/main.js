@@ -27,7 +27,10 @@ I18n.putVocabularies({
         'Your passwords must match': 'パスワードが一致しません。',
         'Password must be at least 8 characters.': 'パスワードは8文字以上で入力してください。',
         'Password must contain at least one uppercase letter, one lowercase letter, and one number.': 'パスワードは大文字と小文字のうち少なくとも1つ、数字のうち少なくとも1つを含めてください。',
-        'Cannot resend codes. Auto verification not turned on.': '自動検証がオフのため、コードを再送信できません。'
+        'Cannot resend codes. Auto verification not turned on.': '自動検証がオフのため、コードを再送信できません。',
+        'PreAuthentication failed with error SyntaxError: Cannot use import statement outside a module.': '認証前チェックでエラーが発生しました。',
+        "PreAuthentication failed with error SyntaxError: Unexpected token 'export'.": '認証前チェックでエラーが発生しました。',
+        'PreAuthentication failed with error': 'エラー'
     },
 });
 Amplify.configure(amplifyconfig)
