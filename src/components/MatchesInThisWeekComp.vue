@@ -85,12 +85,14 @@ const formatDate = (dateString) => {
             <div v-for="(championship, index) in championships" :key="index">
                 <div v-for="(matches, matchesKey) in championship.matches" :key="matchesKey">
                     <div v-for="(match, matchKey) in matches" :key="matchKey"
-                        class="text-center border-b-1 border-gray-300 pt-1 pb-2">
+                        class="text-center border-b-1 border-gray-300 pt-1 pb-2"
+                        :data-match-category="match.match_category">
                         <div v-if="matchKey !== 'round_id'">
                             <p class="text-sm">
                                 {{ championship.championship_name }}<br />
                                 {{ matchesKey }}&nbsp;&nbsp;{{ matchKey }}<br />
                                 会場：{{ match.venue }}
+                                <span class="hidden">{{ match.match_category }}</span>
                             </p>
                             <div>
                                 <div v-if="match['game_status'] === '試合前'"
