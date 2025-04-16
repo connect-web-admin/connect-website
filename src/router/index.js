@@ -3,7 +3,6 @@ import App from '@/App.vue';
 
 // レギュラー会員用のページ
 import SignUpView from '@/views/SignUpView.vue';
-import ConfirmSignUpView from '@/views/ConfirmSignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
 import TopView from '@/views/TopView.vue';
 import MediaView from '@/views/MediaView.vue';
@@ -12,18 +11,14 @@ import PickupNewsArticleView from '@/views/PickupNewsArticleView.vue';
 import MediaArticleView from '@/views/MediaArticleView.vue';
 import ArchiveView from '@/views/ArchiveView.vue';
 import ClubListView from '@/views/ClubListView.vue';
-import ClubIntroductionView from '@/views/ClubIntroductionView.vue';
 import PicsView from '@/views/PicsView.vue';
 import PicsListView from '@/views/PicsListView.vue';
 import VideosView from '@/views/VideosView.vue';
 import FaqView from '@/views/FaqView.vue';
 import ContactView from '@/views/ContactView.vue';
-import PremiumView from '@/views/PremiumView.vue';
-import ConnectionTestView from '@/views/ConnectionTestView.vue';
-import RegisterCardInfoView from '@/views/RegisterCardInfoView.vue';
 import MemberInfoView from '@/views/MemberInfoView.vue';
 import CouponView from '@/views/CouponView.vue';
-// import ConnectionTestOkView from '../../ConnectionTestOkView.vue';
+
 // 会社概要や利用規約などの目立たせないようにするページ
 import CompanyInfoView from '@/views/site-info/CompanyInfoView.vue';
 import CopyrightInfoView from '@/views/site-info/CopyrightInfoView.vue';
@@ -35,7 +30,6 @@ import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 import LatestResultsView from '@/views/LatestResultsView.vue';
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
-// import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue';
 import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMatchU12andWView.vue';
 import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
@@ -54,28 +48,9 @@ const router = createRouter({
 		},
 
 		{
-			path: '/confirm-signup',
-			name: 'ConfirmSignup',
-			component: ConfirmSignUpView,
-			props: (route) => ({ email: route.query.email })
-		},
-
-		{
 			path: '/login',
 			name: 'Login',
 			component: LoginView
-		},
-
-		{
-			path: '/connection-test',
-			name: 'ConnectionTest',
-			component: ConnectionTestView
-		},
-
-		{
-			path: '/register-card-info',
-			name: 'RegisterCardInfo',
-			component: RegisterCardInfoView
 		},
 
 		{
@@ -136,12 +111,6 @@ const router = createRouter({
 		},
 
 		{
-			path: '/club-introduction',
-			name: 'ClubIntroduction',
-			component: ClubIntroductionView
-		},
-
-		{
 			path: '/pics',
 			name: 'Pics',
 			component: PicsView
@@ -169,12 +138,6 @@ const router = createRouter({
 			path:'/contact',
 			name: 'Contact',
 			component: ContactView
-		},
-
-		{
-			path:'/premium',
-			name: 'Premium',
-			component: PremiumView
 		},
 
 		{
@@ -226,12 +189,6 @@ const router = createRouter({
 			component: RegisterMatchResultView,
 			props: true
 		},
-
-		// {
-		// 	path: '/connecter/select-reporting-match',
-		// 	name: 'SelectReportingMatch',
-		// 	component: SelectReportingMatchView,
-		// },
 
 		{
 			path: '/connecter/select-reporting-match-u12andw',
