@@ -21,6 +21,8 @@ import ContactView from '@/views/ContactView.vue';
 import PremiumView from '@/views/PremiumView.vue';
 import ConnectionTestView from '@/views/ConnectionTestView.vue';
 import RegisterCardInfoView from '@/views/RegisterCardInfoView.vue';
+import MemberInfoView from '@/views/MemberInfoView.vue';
+import CouponView from '@/views/CouponView.vue';
 // import ConnectionTestOkView from '../../ConnectionTestOkView.vue';
 // 会社概要や利用規約などの目立たせないようにするページ
 import CompanyInfoView from '@/views/site-info/CompanyInfoView.vue';
@@ -76,12 +78,6 @@ const router = createRouter({
 			component: RegisterCardInfoView
 		},
 
-		// {
-		// 	path: '/card-token-complete',
-		// 	name: 'CardTokenComplete',
-		// 	component: CardInfoCompleteView
-		// },
-
 		{
 			path: '/',
 			name: 'Home',
@@ -92,6 +88,12 @@ const router = createRouter({
 			path: '/top',
 			name: 'Top',
 			component: TopView
+		},
+
+		{
+			path: '/member-info',
+			name: 'MemberInfo',
+			component: MemberInfoView
 		},
 
 		{
@@ -173,6 +175,12 @@ const router = createRouter({
 			path:'/premium',
 			name: 'Premium',
 			component: PremiumView
+		},
+
+		{
+			path:'/coupon',
+			name: 'Coupon',
+			component: CouponView
 		},
 
 		// 会社概要、特商法、利用規約、プライバシーポリシー、著作権情報へのルーティング

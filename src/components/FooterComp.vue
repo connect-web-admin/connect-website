@@ -8,7 +8,7 @@ const imgSize = 'w-[40px] h-auto';
     <router-link to="/archive"><img src="@/assets/icons/archive.svg" alt="大会日程" :class="imgSize"></router-link>
     <router-link to="/live-report-for-user"><img src="@/assets/icons/live-report.svg" alt="試合速報" :class="imgSize"></router-link>
     <router-link to="/contact"><img src="@/assets/icons/contact.svg" alt="コンタクト" :class="imgSize"></router-link>
-    <router-link to="/premium"><img src="@/assets/icons/coupon.svg" alt="クーポン" :class="imgSize"></router-link>
+    <router-link to="/coupon"><img src="@/assets/icons/coupon.svg" alt="クーポン" :class="imgSize"></router-link>
 </div>
 </template>
 
