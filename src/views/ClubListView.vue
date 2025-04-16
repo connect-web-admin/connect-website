@@ -1,4 +1,402 @@
-<script setup>
+<script setup></script>
+<template>
+    <div class="p-4">
+        <h1 class="text-2xl font-bold">チーム紹介</h1>
+        <ul class="mt-8 space-y-3">
+            ー２種ー
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>札幌第一高等学校サッカー部</p>
+                <a
+                    href="https://www.kibou.ac.jp/daiichi/schoollife/club/football/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.kibou.ac.jp/daiichi/schoollife/club/football/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>札幌大谷高等学校サッカー部</p>
+                <a
+                    href="https://www.sapporo-otani.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.sapporo-otani.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>北海高校サッカー部</p>
+                <a
+                    href="https://www.hokkai-soccer.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.hokkai-soccer.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>札幌創成高校サッカー部</p>
+                <a
+                    href="https://www.sosei.jp/club/%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E9%83%A8"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.sosei.jp/club/%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E9%83%A8</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>札幌光星高校サッカー部</p>
+                <a
+                    href="https://www.footballnavi.jp/s-kosei/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.footballnavi.jp/s-kosei/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>コンサドーレ札幌アカデミー U-18 札幌</p>
+                <a
+                    href="https://www.consadole-sapporo.jp/academy/team/u18/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.consadole-sapporo.jp/academy/team/u18/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>東海大札幌高校サッカー部</p>
+                <a
+                    href="https://www.sapporo.tokai.ed.jp/club/soccer/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.sapporo.tokai.ed.jp/club/soccer/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>北星学園大学附属高等学校サッカー部</p>
+                <a
+                    href="https://www.hokusei-s-h.ed.jp/club/soccer/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.hokusei-s-h.ed.jp/club/soccer/</a
+                >
+            </li>
+
+            ー３種ー
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>コンサドーレ札幌アカデミー U-15 札幌</p>
+                <a
+                    href="https://www.consadole-sapporo.jp/academy/team/u15-sapporo/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.consadole-sapporo.jp/academy/team/u15-sapporo/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>アンフィニ札幌</p>
+                <a
+                    href="https://www.sapporo-am-sc.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.sapporo-am-sc.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>札幌ジュニア FC</p>
+                <a
+                    href="https://www.sapporojrfc.net/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.sapporojrfc.net/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>SSS札幌サッカースクール</p>
+                <a
+                    href="https://sss-sports.org/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://sss-sports.org/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>札幌大谷中学校サッカー部</p>
+                <a
+                    href="https://www.s-ohtani.ed.jp/junior/schoollife/club/soccer"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.s-ohtani.ed.jp/junior/schoollife/club/soccer</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>ベアフット北海道</p>
+                <a
+                    href="https://www.barefoot-hokkaido.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.barefoot-hokkaido.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>CLUB FIELDS（クラブフィールズ）</p>
+                <a
+                    href="https://www.footballnavi.jp/clubfields/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.footballnavi.jp/clubfields/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>アプリーレ札幌</p>
+                <a
+                    href="https://www.footballnavi.jp/apriresapporo/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.footballnavi.jp/apriresapporo/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>DOHTO</p>
+                <a
+                    href="https://www.ksc-dohtojr.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.ksc-dohtojr.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>FC DENOVA</p>
+                <a
+                    href="https://www.fcdenova.net/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.fcdenova.net/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>HKD FOOTBALL CLUB</p>
+                <a
+                    href="https://hkd-fc.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://hkd-fc.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>ＦＣフォルテ</p>
+                <a
+                    href="https://www.sapporoforte.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.sapporoforte.com/</a
+                >
+            </li>
+
+            ー４種ー
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>SSS札幌サッカースクール</p>
+                <a
+                    href="https://sss-sports.org/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://sss-sports.org/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>HKD FOOTBALL CLUB</p>
+                <a
+                    href="https://hkd-fc.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://hkd-fc.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>ベアフット北海道</p>
+                <a
+                    href="https://www.barefoot-hokkaido.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.barefoot-hokkaido.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>コンサドーレ札幌アカデミー U-12 札幌</p>
+                <a
+                    href="https://www.consadole-sapporo.jp/academy/team/u12-sapporo/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.consadole-sapporo.jp/academy/team/u12-sapporo/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>CLUB FIELDS（クラブフィールズ）</p>
+                <a
+                    href="https://www.footballnavi.jp/clubfields/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.footballnavi.jp/clubfields/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>アプリーレ札幌</p>
+                <a
+                    href="https://www.footballnavi.jp/apriresapporo/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.footballnavi.jp/apriresapporo/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>DOHTO</p>
+                <a
+                    href="https://www.ksc-dohtojr.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.ksc-dohtojr.com/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>アンフィニ札幌</p>
+                <a
+                    href="https://www.sapporo-am-sc.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.sapporo-am-sc.com/</a
+                >
+            </li>
+
+            <!-- <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>ワンエイトFC</p>
+                <a
+                    href=""
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                ></a>
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>FC北郷</p>
+                <a
+                    href=""
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                ></a>
+            </li> -->
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>FC DENOVA</p>
+                <a
+                    href="https://www.fcdenova.net/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.fcdenova.net/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>札幌ジュニア FC</p>
+                <a
+                    href="https://www.sapporojrfc.net/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.sapporojrfc.net/</a
+                >
+            </li>
+
+            ー女子ー
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>CLUB FIELDS（クラブフィールズ）</p>
+                <a
+                    href="https://www.footballnavi.jp/clubfields/page.php?pno=1057"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.footballnavi.jp/clubfields/page.php?pno=1057</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>Habatake</p>
+                <a
+                    href="https://www.facebook.com/HABATAKE1975/?locale=ja_JP"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.facebook.com/HABATAKE1975/?locale=ja_JP</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>札幌大谷中学校女子サッカー部</p>
+                <a
+                    href="https://www.s-ohtani.ed.jp/high/schoollife/club/soccer_f"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.s-ohtani.ed.jp/high/schoollife/club/soccer_f</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>ノルディーア北海道</p>
+                <a
+                    href="https://www.norddea.jp/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://www.norddea.jp/</a
+                >
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>文教大学女子サッカー部</p>
+                <a
+                    href="https://bunkyo-girlsfc.jimdofree.com/"
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                    >https://bunkyo-girlsfc.jimdofree.com/</a
+                >
+            </li>
+
+            <!-- <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>リラコンサドーレ</p>
+                <a
+                    href=""
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                ></a>
+            </li>
+
+            <li class="border-1 border-gray-300 rounded-md p-4">
+                <p>東札幌商業</p>
+                <a
+                    href=""
+                    class="break-all text-blue-500 underline"
+                    target="_blank"
+                ></a>
+            </li> -->
+        </ul>
+    </div>
+</template>
+
+<!-- <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import ClubIntroductionComp from '@/views/ClubIntroductionView.vue';
@@ -83,4 +481,4 @@ const isClubSelected = ref(false);
 </div>
 </template>
 
-<style></style>
+<style></style> -->
