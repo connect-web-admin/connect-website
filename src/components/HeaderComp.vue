@@ -151,7 +151,9 @@ const routerLinkClass = 'flex justify-between items-center w-full';
     <div class="bg-white">
         <div class="flex justify-between items-end py-2 border-b-1">
             <div class="ml-4">
-                <img src="@/assets/icons/user-info.svg" alt="会員情報">
+                <router-link to="/member-info">
+                    <img src="@/assets/icons/user-info.svg" alt="会員情報">
+                </router-link>
             </div>
             <div>
                 <router-link to="/top">
