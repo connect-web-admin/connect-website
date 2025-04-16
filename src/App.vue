@@ -44,7 +44,6 @@ const fetchUserInfoFromCognito = async () => {
     }
 }
 
-
 /**
  * connecterのパスかどうかを判定する関数
  * connecterのパスは、試合を速報する時にしか使わず、ヘッダーとフッターは邪魔になるため表示しないようにする
@@ -110,9 +109,9 @@ onMounted(() => {
                 </template>
             </Authenticator>
             <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10">
-                <router-link to="/signup" class="text-center bg-lime-600 text-white px-4 py-2 rounded-sm">
+                <a href="/signup.html" class="text-center bg-lime-600 text-white px-4 py-2 rounded-sm">
                     新規会員登録
-                </router-link>
+                </a>
             </div>
         </template> -->
     </main>
