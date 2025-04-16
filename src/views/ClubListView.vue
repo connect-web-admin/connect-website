@@ -3,7 +3,7 @@
     <div class="p-4">
         <h1 class="text-2xl font-bold">チーム紹介</h1>
         <ul class="mt-8 space-y-3">
-            ー２種ー
+            <span class="text-lg font-bold">２種</span>
             <li class="border-1 border-gray-300 rounded-md p-4">
                 <p>札幌第一高等学校サッカー部</p>
                 <a
@@ -84,7 +84,7 @@
                 >
             </li>
 
-            ー３種ー
+            <span class="text-lg font-bold">３種</span>
             <li class="border-1 border-gray-300 rounded-md p-4">
                 <p>コンサドーレ札幌アカデミー U-15 札幌</p>
                 <a
@@ -205,7 +205,7 @@
                 >
             </li>
 
-            ー４種ー
+            <span class="text-lg font-bold">４種</span>
             <li class="border-1 border-gray-300 rounded-md p-4">
                 <p>SSS札幌サッカースクール</p>
                 <a
@@ -286,23 +286,23 @@
                 >
             </li>
 
-            <!-- <li class="border-1 border-gray-300 rounded-md p-4">
+            <li class="border-1 border-gray-300 rounded-md p-4">
                 <p>ワンエイトFC</p>
                 <a
-                    href=""
+                    href="https://one-eight-fc.jimdosite.com/"
                     class="break-all text-blue-500 underline"
                     target="_blank"
-                ></a>
+                >https://one-eight-fc.jimdosite.com/</a>
             </li>
 
             <li class="border-1 border-gray-300 rounded-md p-4">
                 <p>FC北郷</p>
                 <a
-                    href=""
+                    href="https://www.fc-kitago-pivo.net/"
                     class="break-all text-blue-500 underline"
                     target="_blank"
-                ></a>
-            </li> -->
+                >https://www.fc-kitago-pivo.net/</a>
+            </li>
 
             <li class="border-1 border-gray-300 rounded-md p-4">
                 <p>FC DENOVA</p>
@@ -375,23 +375,23 @@
                 >
             </li>
 
-            <!-- <li class="border-1 border-gray-300 rounded-md p-4">
+            <li class="border-1 border-gray-300 rounded-md p-4">
                 <p>リラコンサドーレ</p>
                 <a
-                    href=""
+                    href="https://chsc.jp/team/lilas/"
                     class="break-all text-blue-500 underline"
                     target="_blank"
-                ></a>
+                >https://chsc.jp/team/lilas/</a>
             </li>
 
             <li class="border-1 border-gray-300 rounded-md p-4">
                 <p>東札幌商業</p>
                 <a
-                    href=""
+                    href="https://www.instagram.com/sattosho_josaka/"
                     class="break-all text-blue-500 underline"
                     target="_blank"
-                ></a>
-            </li> -->
+                >https://www.instagram.com/sattosho_josaka/</a>
+            </li>
         </ul>
     </div>
 </template>
