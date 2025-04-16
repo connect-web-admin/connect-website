@@ -66,7 +66,12 @@ onMounted(async () => {
             <p>{{ failedMsg }}</p>
         </div>
         <div v-else>
-            <h1 class="text-xl font-bold mb-5 border-b-1 border-gray-200 pb-2">メディア</h1>
+            <div class="flex flex-row justify-between items-end mb-8 gap-10 border-b-1 border-gray-200 pb-2">
+                <h1 class="text-xl font-bold w-1/3">メディア</h1>
+                <a href="https://www.sponichi.co.jp" target="_blank" class="w-full">
+                    <img src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi-annex-banner.jpg" alt="スポニチアネックスバナー" class=" w-[200px] h-auto" />
+                </a>
+            </div>
             <div v-for="article in allArticles" :key="article.id" class="border-b-1 border-gray-200 py-1 flex flex-row justify-between items-center gap-2">
                 <div class="w-1/5 h-auto">
                     <img :src="article['thumbnail']" alt="サムネイル" class="w-full h-full object-cover" />
