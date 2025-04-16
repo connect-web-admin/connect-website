@@ -53,7 +53,7 @@ const menuList = [
     { name: 'メディア', path: '/media' },
     { name: '大会日程', path: '/archive' },
     { name: 'チーム紹介', path: '/club-list' },
-    { name: '写真', path: '/pics-category-list' }
+    { name: '写真', path: '/pics' }
 ];
 const activeMenu = ref(0);
 
