@@ -1,20 +1,64 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import mirai1 from '@/assets/top-sample/mirai-1.png';
-import mirai2 from '@/assets/top-sample/mirai-2.png';
-import mirai3 from '@/assets/top-sample/mirai-3.png';
-import mirai4 from '@/assets/top-sample/mirai-4.png';
 
 const router = useRouter();
 const selectedImage = ref(null);
 const showModal = ref(false);
 
 const images = [
-    { src: mirai1, caption: '札幌未来杯の様子1' },
-    { src: mirai2, caption: '札幌未来杯の様子2' },
-    { src: mirai3, caption: '札幌未来杯の様子3' },
-    { src: mirai4, caption: '札幌未来杯の様子4' }
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7881.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7884.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7886.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7892.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7893.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7895.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7898.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7903.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7904.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7909.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7913.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7916.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7920.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7922.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7924.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7925.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7926.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7927.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7930.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7933.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7934.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7935.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7936.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7937.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7939.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7944.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7945.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7947.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7954.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7955.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7957.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7961.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7970.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7975.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7980.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7984.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7988.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7990.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7992.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7993.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7994.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7997.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_7998.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8000.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8005.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8006.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8008.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8011.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8012.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8016.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8018.JPG' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/pic/TakamadonomiyaCup2025HokkaidoSapporoBlock/04-12/IMG_8023.JPG' }
 ];
 
 const openModal = (index) => {
@@ -26,18 +70,23 @@ const closeModal = () => {
     showModal.value = false;
     selectedImage.value = null;
 };
+
+// const getPics = async () => {
+//     const data = await response.json();
+// };
+
+// onMounted(async () => {
+//     await getPics();
+// });
 </script>
 
 <template>
-    <div>
-        <h1 class="text-2xl font-bold py-2">札幌未来杯</h1>
-        <div class="flex flex-wrap gap-4 justify-center">
-            <div v-for="(image, index) in images" :key="index" class="relative cursor-pointer"
+    <div class="p-4">
+        <h1 class="text-2xl font-bold py-2">高円宮杯 JFA U-18 サッカー2025北海道 ブロックリーグ札幌</h1>
+        <div class="grid grid-cols-3 gap-4">
+            <div v-for="(image, index) in images" :key="index" class="relative cursor-pointer aspect-square"
                 @click="openModal(index)">
-                <img :src="image.src" alt="札幌未来杯" class="object-cover">
-                <div class="absolute bottom-0 left-0 right-0 h-1/3 bg-black/50 p-2">
-                    <p class="text-white text-left bg-black/10">{{ image.caption }}</p>
-                </div>
+                <img :src="image.src" alt="高円宮杯 JFA U-18 サッカー2025北海道 ブロックリーグ札幌" class="w-full h-full object-cover">
             </div>
         </div>
 

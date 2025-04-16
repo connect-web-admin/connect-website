@@ -13,7 +13,7 @@ import MediaArticleView from '@/views/MediaArticleView.vue';
 import ArchiveView from '@/views/ArchiveView.vue';
 import ClubListView from '@/views/ClubListView.vue';
 import ClubIntroductionView from '@/views/ClubIntroductionView.vue';
-import PicsCategoryListView from '@/views/PicsCategoryListView.vue';
+import PicsView from '@/views/PicsView.vue';
 import PicsListView from '@/views/PicsListView.vue';
 import VideosView from '@/views/VideosView.vue';
 import FaqView from '@/views/FaqView.vue';
@@ -142,9 +142,9 @@ const router = createRouter({
 		},
 
 		{
-			path: '/pics-category-list',
-			name: 'PicsCategoryList',
-			component: PicsCategoryListView
+			path: '/pics',
+			name: 'Pics',
+			component: PicsView
 		},
 
 		{
