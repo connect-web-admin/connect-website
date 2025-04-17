@@ -100,6 +100,42 @@ const convertUrlType = (param, type) => {
 }
 
 /************************************
+ * HTTP Get method to 会員情報を取得 *
+ ************************************/
+app.get(path + '/member-info', async function (req, res) {
+	const inputEmail = req.query.email;
+
+	try {
+		const queryParams = {
+			TableName: tableName,
+			IndexName: gsiByEmail,
+			KeyConditionExpression: 'email = :email',
+			ExpressionAttributeValues: {
+				':email': inputEmail
+			},
+		};
+
+		console.log('会員情報取得パラメタ', queryParams);
+
+		const commandForQuery = new QueryCommand(queryParams);
+		const queryResult = await ddbDocClient.send(commandForQuery);
+
+		if (!queryResult.Items || queryResult.Items.length === 0) {
+			return {
+				statusCode: 404,
+				body: JSON.stringify({ message: '対象のアイテムが見つかりませんでした' })
+			};
+		}
+
+		res.status(200).json(queryResult.Items[0]);
+	} catch (err) {
+		res.statusCode = 500;
+		res.json({ error: 'Could not load items: ' + err.message })
+	}
+});
+
+
+/************************************
 * HTTP post method for DynamoDBにすでにメールアドレスが存在するか確認 *
 *************************************/
 app.post(path + '/check-for-duplicate-email-in-database', async function (req, res) {
@@ -217,7 +253,8 @@ app.post(path + '/register-user-to-database', async function (req, res) {
 			'expires_at': '',
 			'payment_success_history': [],
 			'payment_failure_history': [],
-			'isTermsAgreed': isTermsAgreed
+			'is_terms_agreed': isTermsAgreed,
+			'is_free_account': false
 		}
 	};
 

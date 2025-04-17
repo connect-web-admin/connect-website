@@ -9,7 +9,7 @@ See the License for the specific language governing permissions and limitations 
 
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
-const { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb')
+const { DynamoDBDocumentClient, QueryCommand } = require('@aws-sdk/lib-dynamodb')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')

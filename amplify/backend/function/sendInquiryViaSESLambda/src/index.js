@@ -1,9 +1,8 @@
-import { SendEmailCommand } from "@aws-sdk/client-ses"
-import { sesClient } from "./libs/sesClient.js"
-
+const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses")
 const senderEmail = "espina.soccer@gmail.com" // SESで確認済みの送信元メールアドレス
+const sesClient = new SESClient({ region: 'ap-northeast-1' })
 
-export const handler = async (event) => {
+exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body)
 
@@ -13,7 +12,7 @@ export const handler = async (event) => {
             if (!body[field]) {
                 return {
                     statusCode: 400,
-                    body: JSON.stringify({ error: `Missing required field: ${field}` }),
+                    body: JSON.stringify({ error: `必須の項目が送信されていません。: ${field}` }),
                 }
             }
         }
@@ -48,7 +47,11 @@ export const handler = async (event) => {
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ message: "お問い合わせを送信しました。" }),
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*"
+            },
+            body: JSON.stringify({ message: "お問い合わせを正常に送信しました。" }),
         }
     } catch (error) {
         console.error("SES送信エラー:", error)
@@ -58,19 +61,3 @@ export const handler = async (event) => {
         }
     }
 }
-
-// /**
-//  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
-//  */
-// exports.handler = async (event) => {
-//     console.log(`EVENT: ${JSON.stringify(event)}`);
-//     return {
-//         statusCode: 200,
-//     //  Uncomment below to enable CORS requests
-//     //  headers: {
-//     //      "Access-Control-Allow-Origin": "*",
-//     //      "Access-Control-Allow-Headers": "*"
-//     //  },
-//         body: JSON.stringify('Hello from Lambda!'),
-//     };
-// };
