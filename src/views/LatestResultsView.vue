@@ -5,11 +5,13 @@ import MatchesInThisWeekComp from '@/components/MatchesInThisWeekComp.vue';
 
 const matchInfo = ref([]);
 const noThisWeekMatchesMsg = ref('');
+const isLoading = ref(false);
 
 /**
- * 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
+ * アクセス日から次の日曜日までに開催予定の試合を取得
  */
 const getMatchesInThisWeek = async () => {
+    isLoading.value = true;
     const queryUrl = new URL(`${MATCH_API_URL}/matches-in-this-week`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
@@ -34,6 +36,8 @@ const getMatchesInThisWeek = async () => {
         }
     } catch (error) {
         console.error('速報対象試合の取得に失敗しました。');
+    } finally {
+        isLoading.value = false;
     }
 }
 
@@ -81,7 +85,7 @@ const scrollToCategory = (category) => {
 onMounted(async () => {
     await getMatchesInThisWeek();
     // データが読み込まれた後に少し待ってからスクロール
-    setTimeout(scrollToTodayMatch, 500);
+    setTimeout(scrollToTodayMatch, 400);
 });
 </script>
 
@@ -93,8 +97,13 @@ onMounted(async () => {
                 <p class="text-blue-500 underline cursor-pointer" @click="scrollToCategory('３種')">３種</p>
                 <p class="text-blue-500 underline cursor-pointer" @click="scrollToCategory('４種・女子')">４種・女子</p>
             </div>
-            <p class="text-sm mt-2">タップで当該種別のいちばん上の試合へ移動します。</p>
-            <MatchesInThisWeekComp :match-info="matchInfo" />
+            <p class="text-sm mt-2">タップで当該種別の最上部の試合へ移動します。</p>
+            <div v-if="isLoading" class="flex justify-center items-center mt-10">
+                <img src="../assets/icons/loading.gif" alt="loading" class="w-10 h-10">
+            </div>
+            <div v-else>
+                <MatchesInThisWeekComp :match-info="matchInfo" />
+            </div>
         </div>
     </div>
 </template>
