@@ -14,20 +14,6 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
-    "connecterApi": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "connecterLambda"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    },
     "matchApi": {
       "dependsOn": [
         {
@@ -152,25 +138,6 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "connecterLambda": {
-      "build": true,
-      "dependsOn": [
-        {
-          "attributeEnvMap": {
-            "Arn": "TABLE_ARN",
-            "Name": "TABLE_NAME"
-          },
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "storage",
-          "resourceName": "ConnecterDDB"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
     "matchLambda": {
       "build": true,
       "dependsOn": [
@@ -286,22 +253,6 @@
         }
       ]
     },
-    "AMPLIFY_function_connecterLambda_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "connecterLambda"
-        }
-      ]
-    },
-    "AMPLIFY_function_connecterLambda_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "connecterLambda"
-        }
-      ]
-    },
     "AMPLIFY_function_matchLambda_deploymentBucketName": {
       "usedBy": [
         {
@@ -392,10 +343,6 @@
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"
-    },
-    "ConnecterDDB": {
-      "providerPlugin": "awscloudformation",
-      "service": "DynamoDB"
     },
     "MatchDDB": {
       "providerPlugin": "awscloudformation",

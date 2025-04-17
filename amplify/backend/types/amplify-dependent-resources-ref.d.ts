@@ -5,11 +5,6 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
-    "connecterApi": {
-      "ApiId": "string",
-      "ApiName": "string",
-      "RootUrl": "string"
-    },
     "matchApi": {
       "ApiId": "string",
       "ApiName": "string",
@@ -56,13 +51,6 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "clubLambda": {
-      "Arn": "string",
-      "LambdaExecutionRole": "string",
-      "LambdaExecutionRoleArn": "string",
-      "Name": "string",
-      "Region": "string"
-    },
-    "connecterLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
@@ -119,14 +107,6 @@ export type AmplifyDependentResourcesAttributes = {
     "ConnectWebsiteBucket": {
       "BucketName": "string",
       "Region": "string"
-    },
-    "ConnecterDDB": {
-      "Arn": "string",
-      "Name": "string",
-      "PartitionKeyName": "string",
-      "PartitionKeyType": "string",
-      "Region": "string",
-      "StreamArn": "string"
     },
     "MatchDDB": {
       "Arn": "string",

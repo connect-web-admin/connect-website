@@ -17,10 +17,6 @@
         "connectwebsite1f393904": {}
       },
       "function": {
-        "connecterLambda": {
-          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/connecterLambda-6474762b4835335a7a64-build.zip"
-        },
         "matchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/matchLambda-6d6854396f4b6855367a-build.zip"
@@ -51,7 +47,6 @@
         }
       },
       "storage": {
-        "ConnecterDDB": {},
         "MatchDDB": {},
         "ClubDDB": {},
         "PickupNewsDDB": {},
@@ -60,7 +55,6 @@
         "ConnectWebsiteBucket": {}
       },
       "api": {
-        "connecterApi": {},
         "matchApi": {},
         "clubApi": {},
         "sendInquiryViaSESApi": {},
