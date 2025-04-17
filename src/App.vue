@@ -30,10 +30,10 @@ const fetchUserInfoFromCognito = async () => {
 
         // ユーザー属性を取得・ローカルストレージにセット
         localStorage.setItem(USER_ATTR_EMAIL, attributes[USER_ATTR_EMAIL]);
-        localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, attributes[USER_ATTR_MEMBERSHIP_TYPE]);
+        // localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, attributes[USER_ATTR_MEMBERSHIP_TYPE]);
 
         // ログイン後にユーザーの種別によりルーティングを変更するために格納
-        userAttrMembershipType.value = attributes[USER_ATTR_MEMBERSHIP_TYPE];
+        // userAttrMembershipType.value = attributes[USER_ATTR_MEMBERSHIP_TYPE];
 
         // API認可用のトークンを取得・ローカルストレージにセット
         const authSession = await fetchAuthSession();
