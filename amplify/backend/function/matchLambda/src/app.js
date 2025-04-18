@@ -360,6 +360,7 @@ app.get(path + '/target-match', async function (req, res) {
 		const data = fetchedData.Item;
 
 		if (data['item_type'] === 'championship') {
+			outerLoop:
 			for (const round in data['matches']) {
 				for (const match in data['matches'][round]) {
 					if (matchId === data['matches'][round][match]['match_id']) {
@@ -369,6 +370,7 @@ app.get(path + '/target-match', async function (req, res) {
 						passingData['match'] = match;
 						passingData['match_detail'] = data['matches'][round][match];
 					}
+					break outerLoop; // 即座にループ抜け
 				}
 			}
 		}
