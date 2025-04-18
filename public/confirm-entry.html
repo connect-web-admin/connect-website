@@ -4,6 +4,9 @@
         <meta charset="UTF-8" />
         <title>確認画面</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://token.sps-system.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com; form-action 'self';">
+        <meta http-equiv="X-Content-Type-Options" content="nosniff">
+        <meta http-equiv="X-XSS-Protection" content="1; mode=block">
         <script
             type="text/javascript"
             src="https://token.sps-system.com/sbpstoken/com_sbps_system_tds2infotoken.js"
@@ -18,6 +21,12 @@
                 --spacing: 1.5rem;
             }
 
+            * {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+
             body {
                 font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
                 padding: 2rem;
@@ -29,10 +38,9 @@
             }
 
             h1 {
-                font-size: 2rem;
-                margin-bottom: var(--spacing);
-                color: var(--text-color);
-                font-weight: 600;
+                font-size: 1.5em;
+                font-weight: bold;
+                margin-bottom: 10px;
             }
 
             .error {
@@ -48,17 +56,25 @@
                 display: none;
             }
 
-            #confirmContent {
+            .container {
                 background: white;
-                padding: 2rem;
                 border-radius: var(--border-radius);
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                padding: 1.5rem;
                 margin: 1.5rem 0;
             }
 
+            #confirmContent {
+                background: white;
+                border-radius: var(--border-radius);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                margin: 1.5rem 0;
+                padding: 1.5rem;
+            }
+
             #confirmContent p {
-                margin: 0.8rem 0;
-                padding: 0.5rem 0;
+                margin: 0.4rem 0;
+                padding: 0.2rem 0;
                 border-bottom: 1px solid #eee;
             }
 
@@ -74,11 +90,13 @@
                 cursor: pointer;
                 transition: all 0.3s ease;
                 font-weight: 500;
+                margin-bottom: 1rem;
             }
 
             button:first-of-type {
                 background-color: #6C757D;
                 color: white;
+                width: 100%;
             }
 
             button:first-of-type:hover {
@@ -89,6 +107,7 @@
                 background-color: var(--primary-color);
                 color: white;
                 margin-top: 1.5rem;
+                width: 100%;
             }
 
             #registerBtn:hover {
@@ -102,12 +121,23 @@
                 font-size: 1.1rem;
             }
 
+            #loadingImage {
+                display: none;
+                text-align: center;
+                margin: 1rem 0;
+            }
+
+            #loadingImage img {
+                width: 50px;
+                height: 50px;
+            }
+
             @media (max-width: 768px) {
                 body {
                     padding: 1rem;
                 }
 
-                #confirmContent {
+                .container, #confirmContent {
                     padding: 1rem;
                 }
 
@@ -119,19 +149,48 @@
         </style>
     </head>
     <body>
-        <h1>入力内容確認画面</h1>
+        <div class="container">
+            <h1>入力内容確認画面</h1>
 
-        <div id="loading">読み込み中</div>
-        <div id="error" class="error hidden"></div>
-        <div id="confirmContent" class="hidden"></div>
+            <div id="loading">読み込み中</div>
+            <div id="error" class="error hidden"></div>
+            <div id="confirmContent" class="hidden"></div>
+            <div id="loadingImage">
+                <img src="../src/assets/icons/loading.gif" alt="読み込み中">
+            </div>
 
-        <button onclick="window.location.href='signup.html'">戻る</button>
-        <button id="registerBtn" class="hidden">登録</button>
+            <button onclick="window.location.href='signup.html'">戻る</button>
+            <button id="registerBtn" class="hidden">登録</button>
+        </div>
 
         <script>
             const MEMBER_API_URL = "https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 
-            const data = JSON.parse(sessionStorage.getItem("registrationData"));
+            // 入力値のサニタイズ関数
+            function sanitizeInput(input) {
+                if (typeof input !== 'string') return input;
+                return input.replace(/[&<>"']/g, function(match) {
+                    const escape = {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    };
+                    return escape[match];
+                });
+            }
+
+            let data;
+            try {
+                const savedData = sessionStorage.getItem("registrationData");
+                if (savedData) {
+                    data = JSON.parse(savedData);
+                }
+            } catch (e) {
+                console.error('セッションストレージのデータ解析エラー:', e);
+                sessionStorage.removeItem('registrationData');
+            }
 
             window.addEventListener("DOMContentLoaded", () => {
                 if (!data) {
@@ -157,20 +216,45 @@
                         const content =
                             document.getElementById("confirmContent");
                         content.classList.remove("hidden");
-                        content.innerHTML = `
-                            <p>姓: ${data.lastName}</p>
-                            <p>名: ${data.firstName}</p>
-                            <p>フリガナ: ${data.lastNameKana} ${data.firstNameKana}</p>
-                            <p>電話番号: ${data.phonePart1}-${data.phonePart2}-${
-                                            data.phonePart3
-                                        }</p>
-                            <p>郵便番号: ${data.postalPart1}-${data.postalPart2}</p>
-                            <p>住所: ${data.address}</p>
-                            <p>メールアドレス: ${data.inputEmail}</p>
-                            <p>プラン: ${
-                                data.paymentPlan === "yearly" ? "年払い" : "毎月払い"
-                            }</p>
-                        `;
+                        
+                        // innerHTMLの代わりにcreateElementとtextContentを使用
+                        content.innerHTML = ''; // 既存の内容をクリア
+                        
+                        // お名前
+                        const nameP = document.createElement('p');
+                        nameP.textContent = `お名前: ${sanitizeInput(data.lastName)} ${sanitizeInput(data.firstName)}`;
+                        content.appendChild(nameP);
+                        
+                        // お名前(カナ)
+                        const kanaP = document.createElement('p');
+                        kanaP.textContent = `お名前(カナ): ${sanitizeInput(data.lastNameKana)} ${sanitizeInput(data.firstNameKana)}`;
+                        content.appendChild(kanaP);
+                        
+                        // 電話番号
+                        const phoneP = document.createElement('p');
+                        phoneP.textContent = `電話番号: ${sanitizeInput(data.phonePart1)}-${sanitizeInput(data.phonePart2)}-${sanitizeInput(data.phonePart3)}`;
+                        content.appendChild(phoneP);
+                        
+                        // 郵便番号
+                        const postalP = document.createElement('p');
+                        postalP.textContent = `郵便番号: ${sanitizeInput(data.postalPart1)}-${sanitizeInput(data.postalPart2)}`;
+                        content.appendChild(postalP);
+                        
+                        // 住所
+                        const addressP = document.createElement('p');
+                        addressP.textContent = `住所: ${sanitizeInput(data.address)}`;
+                        content.appendChild(addressP);
+                        
+                        // メールアドレス
+                        const emailP = document.createElement('p');
+                        emailP.textContent = `メールアドレス: ${sanitizeInput(data.inputEmail)}`;
+                        content.appendChild(emailP);
+                        
+                        // お支払いプラン
+                        const planP = document.createElement('p');
+                        planP.textContent = `お支払いプラン: ${data.paymentPlan === "yearly" ? "年払い" : "毎月払い"}`;
+                        content.appendChild(planP);
+
                         document
                             .getElementById("registerBtn")
                             .classList.remove("hidden");
@@ -189,6 +273,10 @@
                 .getElementById("registerBtn")
                 .addEventListener("click", async () => {
                     try {
+                        // ローディング画像を表示
+                        document.getElementById("loadingImage").style.display = "block";
+                        document.getElementById("registerBtn").disabled = true;
+
                         const inputEmail = data.inputEmail;
                         const inputPassword = data.inputPassword;
 
@@ -230,21 +318,32 @@
                         alert(
                             "登録中にエラーが発生しました。再度お試しください。"
                         );
+                    } finally {
+                        // ローディング画像を非表示
+                        document.getElementById("loadingImage").style.display = "none";
+                        document.getElementById("registerBtn").disabled = false;
                     }
                 });
 
             // ▼ 各登録関数 ▼
             async function checkForDuplicateEmailInDatabase(inputEmail) {
-                const res = await fetch(
-                    `${MEMBER_API_URL}/check-for-duplicate-email-in-database`,
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ inputEmail }),
-                    }
-                );
-                const result = await res.json();
-                return result.status === "ALREADY_REGISTERED_IN_DATABASE";
+                try {
+                    const res = await fetch(
+                        `${MEMBER_API_URL}/check-for-duplicate-email-in-database`,
+                        {
+                            method: "POST",
+                            headers: { 
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ inputEmail }),
+                        }
+                    );
+                    const result = await res.json();
+                    return result.status === "ALREADY_REGISTERED_IN_DATABASE";
+                } catch (error) {
+                    console.error('メール重複チェックエラー:', error);
+                    throw new Error('メール重複チェックに失敗しました');
+                }
             }
 
             async function registerUserToDatabase(
@@ -252,47 +351,61 @@
                 phoneNumber,
                 postalCode
             ) {
-                const res = await fetch(
-                    `${MEMBER_API_URL}/register-user-to-database`,
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            lastName: data.lastName,
-                            firstName: data.firstName,
-                            lastNameKana: data.lastNameKana,
-                            firstNameKana: data.firstNameKana,
-                            phoneNumber,
-                            postalCode,
-                            address: data.address,
-                            inputEmail: data.inputEmail,
-                            paymentPlan: data.paymentPlan,
-                            isTermsAgreed: true,
-                            membershipType: "regular",
-                            custCode: data.custCode,
-                        }),
-                    }
-                );
-                const result = await res.json();
-                return (
-                    result.status === "USER_SUCCESSFULLY_REGISTERED_TO_DATABASE"
-                );
+                try {
+                    const res = await fetch(
+                        `${MEMBER_API_URL}/register-user-to-database`,
+                        {
+                            method: "POST",
+                            headers: { 
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                lastName: data.lastName,
+                                firstName: data.firstName,
+                                lastNameKana: data.lastNameKana,
+                                firstNameKana: data.firstNameKana,
+                                phoneNumber,
+                                postalCode,
+                                address: data.address,
+                                inputEmail: data.inputEmail,
+                                paymentPlan: data.paymentPlan,
+                                isTermsAgreed: true,
+                                membershipType: "regular",
+                                custCode: data.custCode,
+                            }),
+                        }
+                    );
+                    const result = await res.json();
+                    return (
+                        result.status === "USER_SUCCESSFULLY_REGISTERED_TO_DATABASE"
+                    );
+                } catch (error) {
+                    console.error('データベース登録エラー:', error);
+                    throw new Error('データベース登録に失敗しました');
+                }
             }
 
             async function registerUserToCognito(inputEmail, inputPassword) {
-                const res = await fetch(
-                    `${MEMBER_API_URL}/register-user-to-cognito`,
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ inputEmail, inputPassword }),
-                    }
-                );
-                const result = await res.json();
-                return (
-                    result.status ===
-                    "SUCCESSFULLY_REGISTERED_TO_COGNITO_AND_PENDING_CONFIRMATION"
-                );
+                try {
+                    const res = await fetch(
+                        `${MEMBER_API_URL}/register-user-to-cognito`,
+                        {
+                            method: "POST",
+                            headers: { 
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ inputEmail, inputPassword }),
+                        }
+                    );
+                    const result = await res.json();
+                    return (
+                        result.status ===
+                        "SUCCESSFULLY_REGISTERED_TO_COGNITO_AND_PENDING_CONFIRMATION"
+                    );
+                } catch (error) {
+                    console.error('Cognito登録エラー:', error);
+                    throw new Error('Cognito登録に失敗しました');
+                }
             }
         </script>
     </body>

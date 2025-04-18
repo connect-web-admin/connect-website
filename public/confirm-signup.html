@@ -4,31 +4,107 @@
     <meta charset="UTF-8">
     <title>メールアドレスの認証</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
-        body {
-            font-family: sans-serif;
-            padding: 2rem;
-            max-width: 640px;
-            margin: auto;
+        :root {
+            --primary-color: #0015f7;
+            --error-color: #E74C3C;
+            --success-color: #2ECC71;
+            --text-color: #2C3E50;
+            --background-color: #F8F9FA;
+            --border-radius: 8px;
+            --spacing: 1.5rem;
         }
 
-        input, button {
-            display: block;
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            padding: 2rem;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        input {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
             margin-bottom: 1rem;
             font-size: 1rem;
         }
 
+        button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        #confirmButton {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+        }
+
+        #confirmButton:hover {
+            background-color: #357ABD;
+        }
+
+        #resendButton {
+            background-color: #6C757D;
+            color: white;
+            width: 100%;
+        }
+
+        #resendButton:hover {
+            background-color: #5A6268;
+        }
+
         .error {
-            color: red;
-            font-size: 0.9rem;
+            color: var(--error-color);
+            font-weight: 500;
+            padding: 1rem;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
         }
 
         .success {
-            color: green;
-            font-size: 0.9rem;
+            color: var(--success-color);
+            font-weight: 500;
+            padding: 1rem;
+            background-color: rgba(46, 204, 113, 0.1);
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
         }
 
         .hidden {
@@ -45,64 +121,108 @@
             width: 40px;
             height: 40px;
         }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            button {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>メールアドレスの認証</h1>
+    <div class="container">
+        <h1>メールアドレスの認証</h1>
 
-    <div id="spinner" class="spinner hidden">
-        <img src="../src/assets/icons/loading.gif" alt="読み込み中">
-    </div>
+        <div id="spinner" class="spinner hidden">
+            <img src="../src/assets/icons/loading.gif" alt="読み込み中">
+        </div>
 
-    <div id="confirmSuccess" class="hidden">
-        <!-- <form method="POST" action="https://stbfep.sps-system.com/Extra/PayRequestAction.do" accept-charset="Shift_JIS"> テスト（接続支援サイト）用データ -->
-        <form method="POST" action="https://stbfep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS">
-            <input type="hidden" name="pay_method" value="credit3d2">
-            <!-- <input type="hidden" name="merchant_id" value="19788"> -->
-            <input type="hidden" name="merchant_id" value="58913">
-            <input type="hidden" name="service_id" value="001">
-            <input type="hidden" name="cust_code" value="">
-            <input type="hidden" name="sps_cust_no" value="">
-            <input type="hidden" name="sps_payment_no" value="">
-            <input type="hidden" name="terminal_type" value="">
-            <input type="hidden" name="success_url" value="https://connect-goals.com/">
-            <input type="hidden" name="cancel_url" value="https://connect-goals.com/pickup-news">
-            <input type="hidden" name="error_url" value="https://connect-goals.com/media">
-            <input type="hidden" name="pagecon_url" value="https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url">
-            <input type="hidden" name="free1" value="">
-            <input type="hidden" name="free2" value="">
-            <input type="hidden" name="free3" value="">
-            <input type="hidden" name="free_csv" value="">
-            <input type="hidden" name="request_date" value="">
-            <input type="hidden" name="limit_second" value="">
-            <input type="hidden" name="sps_hashcode" value="">
-            <input type="submit" value="submit">
-        </form>
-    </div>
+        <div id="confirmSuccess" class="hidden">
+            <!-- <form method="POST" action="https://stbfep.sps-system.com/Extra/PayRequestAction.do" accept-charset="Shift_JIS"> テスト（接続支援サイト）用データ -->
+            <form method="POST" action="https://stbfep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS">
+            <!-- <form method="POST" action="https://fep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS"> -->
+                <input type="hidden" name="pay_method" value="credit3d2">
+                <!-- <input type="hidden" name="merchant_id" value="19788"> -->
+                <input type="hidden" name="merchant_id" value="58913">
+                <input type="hidden" name="service_id" value="001">
+                <input type="hidden" name="cust_code" value="">
+                <input type="hidden" name="sps_cust_no" value="">
+                <input type="hidden" name="sps_payment_no" value="">
+                <input type="hidden" name="terminal_type" value="">
+                <input type="hidden" name="success_url" value="https://connect-goals.com/">
+                <input type="hidden" name="cancel_url" value="https://connect-goals.com/">
+                <input type="hidden" name="error_url" value="https://connect-goals.com/">
+                <input type="hidden" name="pagecon_url" value="https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url">
+                <input type="hidden" name="free1" value="">
+                <input type="hidden" name="free2" value="">
+                <input type="hidden" name="free3" value="">
+                <input type="hidden" name="free_csv" value="">
+                <input type="hidden" name="request_date" value="">
+                <input type="hidden" name="limit_second" value="">
+                <input type="hidden" name="sps_hashcode" value="">
+                <input type="submit" value="submit">
+            </form>
+        </div>
 
-    <div id="formSection">
-        <p id="emailDisplay"></p>
+        <div id="formSection">
+            <p id="emailDisplay"></p>
 
-        <form id="verifyForm">
-            <label for="verificationCode">認証コード <span style="color:red;">*必須</span></label>
-            <input type="text" id="verificationCode" name="verificationCode" required placeholder="認証コードを入力" />
+            <form id="verifyForm">
+                <label for="verificationCode">認証コード <span style="color:red;">*必須</span></label>
+                <input type="text" id="verificationCode" name="verificationCode" required placeholder="認証コードを入力" />
 
-            <div id="errorMessage" class="error hidden"></div>
-            <div id="resendSuccess" class="success hidden">認証コードを再送信しました</div>
+                <div id="errorMessage" class="error hidden"></div>
+                <div id="resendSuccess" class="success hidden">認証コードを再送信しました</div>
 
-            <button type="submit" id="confirmButton">認証</button>
-            <button type="button" id="resendButton">認証コードを再送信</button>
-        </form>
+                <button type="submit" id="confirmButton">認証</button>
+                <button type="button" id="resendButton">認証コードを再送信</button>
+            </form>
+        </div>
     </div>
 
     <script>
         const MEMBER_API_URL = 'https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items'; 
 
-        const registrationDataJson = sessionStorage.getItem('registrationData');
-        const registrationData = registrationDataJson ? JSON.parse(registrationDataJson) : null;
+        // 入力値のサニタイズ関数
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return input;
+            return input.replace(/[&<>"']/g, function(match) {
+                const escape = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return escape[match];
+            });
+        }
+
+        let registrationData = null;
+        try {
+            const registrationDataJson = sessionStorage.getItem('registrationData');
+            if (registrationDataJson) {
+                registrationData = JSON.parse(registrationDataJson);
+            }
+        } catch (e) {
+            console.error('セッションストレージのデータ解析エラー:', e);
+            sessionStorage.removeItem('registrationData');
+        }
+        
         const inputEmail = registrationData?.inputEmail || '';
 
-        document.getElementById('emailDisplay').innerText = `${inputEmail} 宛に送信された６ケタの認証コードを入力してください。\n認証コードが届くまで１分以上かかることがあります。`;
+        document.getElementById('emailDisplay').innerText = `${sanitizeInput(inputEmail)} 宛に送信された６ケタの認証コードを入力してください。\n認証コードが届くまで１分以上かかることがあります。`;
 
         const verificationCodeInput = document.getElementById('verificationCode');
         const errorMessageDiv = document.getElementById('errorMessage');
@@ -145,11 +265,17 @@
         };
 
         function toggleSpinner(show) {
-            spinner.classList.toggle('hidden', !show);
+            if (show) {
+                spinner.classList.remove('hidden');
+                document.getElementById('formSection').classList.add('hidden');
+            } else {
+                spinner.classList.add('hidden');
+                document.getElementById('formSection').classList.remove('hidden');
+            }
         }
 
         function showError(msg) {
-            errorMessageDiv.innerText = msg;
+            errorMessageDiv.innerText = sanitizeInput(msg);
             errorMessageDiv.classList.remove('hidden');
         }
 
@@ -169,6 +295,12 @@
                 return;
             }
 
+            // 認証コードの入力値検証
+            if (!/^\d{6}$/.test(code)) {
+                showError('認証コードは6桁の数字で入力してください');
+                return;
+            }
+
             toggleSpinner(true);
 
             try {
@@ -176,7 +308,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'accept': 'application/json'
+                        'accept': 'application/json',
                     },
                     body: JSON.stringify({
                         inputEmail: inputEmail,
@@ -197,8 +329,6 @@
                 document.querySelector('input[name="request_date"]').value = requestDateValue;
                 
                 // cust_codeを代入
-                const registrationDataJson = sessionStorage.getItem('registrationData');
-                const registrationData = registrationDataJson ? JSON.parse(registrationDataJson) : null;
                 if (registrationData && registrationData.custCode) {
                     const inputCustCode = registrationData.custCode;
                     document.querySelector('input[name="cust_code"]').value = inputCustCode;
@@ -238,7 +368,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'accept': 'application/json'
+                        'accept': 'application/json',
                     },
                     body: JSON.stringify({
                         inputEmail: inputEmail
