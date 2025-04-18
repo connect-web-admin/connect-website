@@ -61,8 +61,14 @@ const scrollToTodayMatch = () => {
 
 onMounted(async () => {
     await getMatchesInThisWeek();
-    // データが読み込まれた後に少し待ってからスクロール
-    setTimeout(scrollToTodayMatch, 500);
+    // // データが読み込まれた後に少し待ってからスクロール
+    // setTimeout(scrollToTodayMatch, 500);
+
+    // ページ遷移時に最上部へスクロール
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
 });
 </script>
 

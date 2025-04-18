@@ -55,6 +55,12 @@ const getallArticles = async () => {
 
 onMounted(async () => {
     await getallArticles();
+
+    // ページ遷移時に最上部へスクロール
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
 });
 </script>
 <template>
@@ -67,9 +73,13 @@ onMounted(async () => {
         </div>
         <div v-else>
             <div class="flex flex-row justify-between items-end mb-8 gap-10 border-b-1 border-gray-200 pb-2">
-                <h1 class="text-xl font-bold w-1/3">メディア</h1>
-                <a href="https://www.sponichi.co.jp" target="_blank" class="w-full">
-                    <img src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi-annex-banner.jpg" alt="スポニチアネックスバナー" class=" w-[200px] h-auto" />
+                <h1 class="text-xl font-bold w-[200px]">メディア</h1>
+                <a href="https://www.sponichi.co.jp" target="_blank" class="w-fulll">
+                    <img 
+                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi-annex-banner.jpg" 
+                        alt="スポニチアネックスバナー" 
+                        class="w-[200px] h-auto py-1 px-2 border-2 border-[#000dff] rounded-lg" 
+                    />
                 </a>
             </div>
             <div v-for="article in allArticles" :key="article.id" class="border-b-1 border-gray-200 py-1 flex flex-row justify-between items-center gap-2">

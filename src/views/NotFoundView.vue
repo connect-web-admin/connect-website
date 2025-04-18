@@ -1,12 +1,21 @@
-
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import { onMounted } from 'vue';
 
+const route = useRoute();
 const router = useRouter();
 
 const goToTop = () => {
     router.push('/');
 };
+
+onMounted(() => {
+  // ページ遷移時に最上部へスクロール
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
+});
 </script>
 
 <template>

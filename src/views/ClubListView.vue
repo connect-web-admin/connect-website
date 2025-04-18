@@ -1,4 +1,14 @@
-<script setup></script>
+<script setup>
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  // ページ遷移時に最上部へスクロール
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
+});
+</script>
 <template>
     <div class="p-4">
         <h1 class="text-2xl font-bold">チーム紹介</h1>

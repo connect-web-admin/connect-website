@@ -57,6 +57,12 @@ const sanitizedHtml = (content) => {
 onMounted(async () => {
     // 一覧でクリックされたピックアップニュースを取得
     await getSingleNews();
+
+    // ページ遷移時に最上部へスクロール
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
 });
 </script>
 <template>

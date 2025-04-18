@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import { INQUIRY_API_URL, ID_TOKEN_FOR_AUTH } from "@/utils/constants"
 
 
@@ -91,6 +91,13 @@ const toggleConfirmView = () => {
     isConfirmView.value = !isConfirmView.value
 }
 
+onMounted(() => {
+  // ページ遷移時に最上部へスクロール
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
+});
 </script>
 
 <template>

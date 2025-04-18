@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const selectedImage = ref(null);
 const selectedImgAlt = ref('');
@@ -165,6 +165,14 @@ const category4 = [
 const categorySectionClass = 'mt-2 p-2 border border-gray-300 rounded-lg';
 const listItemClass = 'py-2 border-b border-gray-200 last:border-b-0';
 const imageNumberClass = 'inline-block px-1 mx-2 text-blue-500 border-b-1 cursor-pointer';
+
+onMounted(() => {
+  // ページ遷移時に最上部へスクロール
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
+});
 </script>
 
 <template>
