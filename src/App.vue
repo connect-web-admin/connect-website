@@ -58,7 +58,10 @@ const isConnecterPath = () => {
  */
 const isSignUpPath = () => {
     const path = router.currentRoute.value.path;
-    return path.startsWith('/signup') || path.startsWith('/confirm-signup') || path.startsWith('/connecter');
+    return path.startsWith('/signup') || 
+           path.startsWith('/confirm-signup') || 
+           path.startsWith('/connecter') ||
+           path.startsWith('/site-info');
 }
 
 
@@ -71,9 +74,6 @@ onMounted(() => {
         if (event === 'signedIn') {
             // ユーザー情報をCognitoから取得
             await fetchUserInfoFromCognito();
-
-            // // ユーザー情報の詳細をDynamoDBから取得
-            // fetchUserInfoFromDDB()
 
             router.push('/top');            
         }
