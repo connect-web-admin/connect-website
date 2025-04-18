@@ -19,7 +19,7 @@
       "function": {
         "matchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/matchLambda-6d6854396f4b6855367a-build.zip"
+          "s3Key": "amplify-builds/matchLambda-686a35564a7778416958-build.zip"
         },
         "clubLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -39,7 +39,7 @@
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/memberLambda-6a416c59473732522f68-build.zip"
+          "s3Key": "amplify-builds/memberLambda-687a6239695a6f4b5247-build.zip"
         },
         "checkUserBeforeLoginLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -52,7 +52,8 @@
         "PickupNewsDDB": {},
         "MediaDDB": {},
         "MemberDDB": {},
-        "ConnectWebsiteBucket": {}
+        "ConnectWebsiteBucket": {},
+        "CountersDDB": {}
       },
       "api": {
         "matchApi": {},

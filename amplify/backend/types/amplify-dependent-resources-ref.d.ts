@@ -108,6 +108,14 @@ export type AmplifyDependentResourcesAttributes = {
       "BucketName": "string",
       "Region": "string"
     },
+    "CountersDDB": {
+      "Arn": "string",
+      "Name": "string",
+      "PartitionKeyName": "string",
+      "PartitionKeyType": "string",
+      "Region": "string",
+      "StreamArn": "string"
+    },
     "MatchDDB": {
       "Arn": "string",
       "Name": "string",

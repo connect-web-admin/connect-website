@@ -1,0 +1,10 @@
+{
+  "resourceName": "CountersDDB",
+  "tableName": "CountersDDB",
+  "partitionKey": {
+    "fieldName": "counter_id",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}
