@@ -149,11 +149,9 @@
         </div>
 
         <div id="confirmSuccess" class="hidden">
-            <!-- <form method="POST" action="https://stbfep.sps-system.com/Extra/PayRequestAction.do" accept-charset="Shift_JIS"> テスト（接続支援サイト）用データ -->
             <form method="POST" action="https://stbfep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS">
             <!-- <form method="POST" action="https://fep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS"> -->
                 <input type="hidden" name="pay_method" value="credit3d2">
-                <!-- <input type="hidden" name="merchant_id" value="19788"> -->
                 <input type="hidden" name="merchant_id" value="58913">
                 <input type="hidden" name="service_id" value="001">
                 <input type="hidden" name="cust_code" value="">
@@ -194,7 +192,9 @@
     <script>
         const MEMBER_API_URL = 'https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items'; 
 
-        // 入力値のサニタイズ関数
+        /**
+         * 入力値のサニタイズ関数
+         */
         function sanitizeInput(input) {
             if (typeof input !== 'string') return input;
             return input.replace(/[&<>"']/g, function(match) {
@@ -231,6 +231,9 @@
         const formSection = document.getElementById('formSection');
         const confirmSuccess = document.getElementById('confirmSuccess');
 
+        /**
+         * リクエスト日時生成
+         */
         function generateRequestDate() {
             const now = new Date();
 
@@ -248,9 +251,11 @@
             return Number(expetedDateAndTime);
         }
 
+        /**
+         * ハッシュコードsbps_hashcode生成
+         */
         function generateHash() {
             const hashKey = '628779fb3044932486354ca601169f2bbab32660';
-            // const hashKey = '398a58952baf329cac5efbae97ea84ba17028d02'; // テスト用（接続支援サイト）データ
             const inputs = document.querySelectorAll('#confirmSuccess form input[type="hidden"], #confirmSuccess form input[type="submit"]');
 
             const concatenatedValues = Array.from(inputs)
@@ -264,6 +269,9 @@
             return hash;
         };
 
+        /**
+         * スピナー表示
+         */
         function toggleSpinner(show) {
             if (show) {
                 spinner.classList.remove('hidden');
@@ -274,16 +282,25 @@
             }
         }
 
+        /**
+         * エラーメッセージ表示
+         */
         function showError(msg) {
             errorMessageDiv.innerText = sanitizeInput(msg);
             errorMessageDiv.classList.remove('hidden');
         }
 
+        /**
+         * エラーメッセージ非表示
+         */
         function hideError() {
             errorMessageDiv.innerText = '';
             errorMessageDiv.classList.add('hidden');
         }
 
+        /**
+         * 認証コード入力フォーム送信
+         */
         document.getElementById('verifyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             hideError();
@@ -352,6 +369,9 @@
             }
         });
 
+        /**
+         * 認証コード再送信ボタンクリック
+         */
         document.getElementById('resendButton').addEventListener('click', async () => {
             hideError();
             resendSuccessDiv.classList.add('hidden');
