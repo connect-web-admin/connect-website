@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const paymentSection = ref(null);
 const paymentLink = ref(null);
