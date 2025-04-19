@@ -25,7 +25,7 @@ import CopyrightInfoView from '@/views/site-info/CopyrightInfoView.vue';
 import PrivacyPolicyView from '@/views/site-info/PrivacyPolicyView.vue';
 import TermsOfServiceView from '@/views/site-info/TermsOfServiceView.vue';
 import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
-
+import ConfirmMatchInputView from '@/views/ConfirmMatchInputView.vue';
 // コネクター用のページ
 import LatestResultsView from '@/views/LatestResultsView.vue';
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
@@ -181,6 +181,12 @@ const router = createRouter({
 			path: '/latest-results',
 			name: 'LatestResults',
 			component: LatestResultsView,
+		},
+
+		{
+			path: '/confirm-match-input',
+			name: 'ConfirmMatchInput',
+			component: ConfirmMatchInputView,
 		},
 
 		{
