@@ -78,7 +78,7 @@ onMounted(async () => {
                     <img 
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi-annex-banner.jpg" 
                         alt="スポニチアネックスバナー" 
-                        class="w-[200px] h-auto py-1 px-2 border-2 border-[#000dff] rounded-lg" 
+                        class="w-[200px] h-auto py-1 px-2 border-2 border-[#000dff] rounded-sm" 
                     />
                 </a>
             </div>
