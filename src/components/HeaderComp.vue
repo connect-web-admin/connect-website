@@ -211,20 +211,20 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                             class="block h-[29px] pl-4 border-b-1 border-gray-200 border-dashed">結果速報</span>
                                         <ul>
                                             <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
-                                                <router-link to="/live-report-for-user" :class="routerLinkClass">
+                                                <router-link to="/latest-results" :class="routerLinkClass">
                                                     U-12（ジュニア）
                                                     <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                                 </router-link>
                                             </li>
                                             <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
-                                                <router-link to="/live-report-for-user" :class="routerLinkClass">
+                                                <router-link to="/latest-results" :class="routerLinkClass">
                                                     U-15（ジュニアユース）
                                                     <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                                 </router-link>
                                             </li>
                                             <li @click="isMenuOpen = !isMenuOpen"
                                                 class="flex justify-between items-center h-[29px] pr-4 pl-8">
-                                                <router-link to="/live-report-for-user" :class="routerLinkClass">
+                                                <router-link to="/latest-results" :class="routerLinkClass">
                                                     U-18（ユース）
                                                     <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                                 </router-link>
@@ -259,7 +259,7 @@ const routerLinkClass = 'flex justify-between items-center w-full';
                                         <span class="block h-[29px] pl-4 border-b-1 border-gray-200 border-dashed">写真</span>
                                         <ul>
                                             <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
-                                                <router-link to="/pics-category-list" :class="routerLinkClass">
+                                                <router-link to="/pics" :class="routerLinkClass">
                                                     写真
                                                     <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                                 </router-link>
