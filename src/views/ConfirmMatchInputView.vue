@@ -134,7 +134,7 @@ onMounted(() => {
     <div>
         <div v-if="isLoading">
             <div class="flex justify-center items-center h-screen">
-                <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+                <img src="../assets/icons/loading.gif" alt="loading" class="w-1/2 h-1/2">
             </div>
         </div>
         <div v-else>
@@ -144,7 +144,6 @@ onMounted(() => {
                 </div>
                 <div v-for="(match, index) in matches" :key="index" class="p-2 border-b">
                     <div class="flex justify-start gap-5">
-
                         <p class="text-sm mb-1">{{ match.match_category }}</p>
                         <p class="text-sm mb-1">{{ match.scheduled_match_start_time }}</p>
                     </div>
