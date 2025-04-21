@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const props = defineProps({
     user: {
@@ -15,6 +15,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const route = useRoute();
 
 /**
  * スライダー表示
@@ -62,20 +63,63 @@ const prevImage = () => {
  * スライドバー下のメニュー表示
  */
 const menuList = [
-    { name: 'TOP', path: '/top' },
-    { name: '結果速報', path: '/latest-results' },
-    { name: 'お知らせ', path: '/pickup-news' },
-    { name: 'メディア', path: '/media' },
-    { name: '大会日程', path: '/archive' },
-    { name: 'チーム紹介', path: '/club-list' },
-    { name: '写真', path: '/pics' }
+    { name: 'TOP', path: '/top', position: 0 },
+    { 
+        name: '結果速報', 
+        path: '/latest-results',
+        position: 0, // この値は後で更新されます
+        submenu: [
+            { name: '2種', path: '/latest-results?match_category=U-18' },
+            { name: '3種', path: '/latest-results?match_category=U-15' },
+            { name: '4種・女子', path: '/latest-results?match_category=U-12' }
+        ]
+    },
+    { name: 'お知らせ', path: '/pickup-news', position: 0 },
+    { name: 'メディア', path: '/media', position: 0 },
+    { name: '大会日程', path: '/archive', position: 0 },
+    { name: 'チーム紹介', path: '/club-list', position: 0 },
+    { name: '写真', path: '/pics', position: 0 }
 ];
 const activeMenu = ref(0);
+const isResultsSubmenuOpen = ref(false);
+
+// メニュー項目の位置を更新する関数
+const updateMenuPositions = () => {
+    const menuItems = document.querySelectorAll('.overflow-x-auto ul li');
+    menuItems.forEach((item, index) => {
+        if (menuList[index]) {
+            const rect = item.getBoundingClientRect();
+            menuList[index].position = rect.left + (rect.width / 2) - 52.5; // サブメニューの幅の半分を引く
+        }
+    });
+};
 
 // メニュー項目をクリックしたときのナビゲーション処理
 const navigateTo = (path, index) => {
-    activeMenu.value = index;
-    router.push(path);
+    if (menuList[index].submenu) {
+        updateMenuPositions(); // サブメニューを開く前に位置を更新
+        isResultsSubmenuOpen.value = !isResultsSubmenuOpen.value;
+    } else {
+        activeMenu.value = index;
+        router.push(path);
+    }
+};
+
+// サブメニュー項目をクリックしたときの処理
+const handleSubmenuClick = (path) => {
+    isMenuOpen.value = false;
+    isResultsSubmenuOpen.value = false;
+    
+    // 現在のページがLatestResultsかどうかを確認
+    const isLatestResultsPage = route.path === '/latest-results';
+    
+    if (isLatestResultsPage) {
+        // 同じページの場合は、URLを更新してスクロール処理をトリガー
+        router.push(path);
+    } else {
+        // 異なるページの場合は、通常の遷移
+        router.push(path);
+    }
 };
 
 /**
@@ -145,6 +189,8 @@ onMounted(() => {
     interval = setTimeout(nextImage, imageList.value[currentIndex.value].duration);
     // 下にスクロールするとスライダーを非表示にするスクロールイベントを追加
     window.addEventListener('scroll', debouncedHandleScroll);
+    // ウィンドウのリサイズ時にメニュー位置を更新
+    window.addEventListener('resize', updateMenuPositions);
 });
 
 onUnmounted(() => {
@@ -153,6 +199,8 @@ onUnmounted(() => {
     // 下にスクロールするとスライダーを非表示にするスクロールイベントを削除
     window.removeEventListener('scroll', debouncedHandleScroll);
     document.body.style.overflow = 'auto';
+    // ウィンドウのリサイズ時にメニュー位置を更新
+    window.removeEventListener('resize', updateMenuPositions);
 });
 
 // CSS
@@ -377,8 +425,7 @@ const handleImageClick = (url) => {
         </div>
         <!-- スライダー直下の横スクロールメニュー -->
         <div class="overflow-x-auto">
-            <ul
-                class="flex flex-row justify-center items-end whitespace-nowrap bg-black pt-1 text-white min-w-max px-4">
+            <ul class="flex flex-row justify-center items-end whitespace-nowrap bg-black pt-1 text-white min-w-max px-4 relative">
                 <li v-for="(menu, index) in menuList" :key="index" @click="navigateTo(menu.path, index)" :class="[
                     'pb-1',
                     index === 0 ? 'ml-2 mr-4' : index === 6 ? 'ml-4 mr-2' : 'mx-4',
@@ -388,6 +435,16 @@ const handleImageClick = (url) => {
                     {{ menu.name }}
                 </li>
             </ul>
+            <!-- 結果速報のサブメニュー -->
+            <div v-if="isResultsSubmenuOpen" class="absolute bg-black text-white py-2 w-[105px]" :style="{ left: `${menuList[1].position}px` }">
+                <ul class="flex flex-col items-center space-y-2 w-[100px]">
+                    <li v-for="(submenu, index) in menuList[1].submenu" :key="index" 
+                        @click="() => handleSubmenuClick(submenu.path)"
+                        class="cursor-pointer hover:text-[#7FCDEC] transition-colors duration-200 text-center">
+                        {{ submenu.name }}
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>

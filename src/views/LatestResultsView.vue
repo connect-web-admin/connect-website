@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
 import MatchesInThisWeekComp from '@/components/MatchesInThisWeekComp.vue';
+import { useRoute } from 'vue-router';
 
 const matchInfo = ref([]);
 const noThisWeekMatchesMsg = ref('');
 const isLoading = ref(false);
+const route = useRoute();
 
 /**
  * アクセス日から次の日曜日までに開催予定の試合を取得
@@ -82,22 +84,48 @@ const scrollToCategory = (category) => {
     }
 }
 
+// URLのクエリパラメータが変更されたときの処理
+const handleRouteChange = () => {
+    // データが読み込まれている場合のみスクロール処理を実行
+    if (matchInfo.value.length > 0) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const matchCategory = urlParams.get('match_category');
+        
+        if (matchCategory) {
+            // match_categoryの値に基づいて対応するカテゴリー名を取得
+            const categoryMapping = {
+                'U-18': '２種',
+                'U-15': '３種',
+                'U-12': '４種・女子'
+            };
+            
+            const category = categoryMapping[matchCategory];
+            if (category) {
+                scrollToCategory(category);
+            }
+        } else {
+            scrollToTodayMatch();
+        }
+    }
+};
+
+// ルートのクエリパラメータの変更を監視
+watch(() => route.query, () => {
+    handleRouteChange();
+});
+
 onMounted(async () => {
     await getMatchesInThisWeek();
     // データが読み込まれた後に少し待ってからスクロール
-    setTimeout(scrollToTodayMatch, 400);
+    setTimeout(() => {
+        handleRouteChange();
+    }, 400);
 });
 </script>
 
 <template>
     <div class="px-2 pt-2">
         <div class="flex flex-col justify-between items-center">
-            <div class="flex justify-start items-center gap-8 mt-5">
-                <p class="text-blue-500 underline cursor-pointer" @click="scrollToCategory('２種')">２種</p>
-                <p class="text-blue-500 underline cursor-pointer" @click="scrollToCategory('３種')">３種</p>
-                <p class="text-blue-500 underline cursor-pointer" @click="scrollToCategory('４種・女子')">４種・女子</p>
-            </div>
-            <p class="text-sm mt-2">タップで当該種別の最上部の試合へ移動します。</p>
             <div v-if="isLoading" class="flex justify-center items-center mt-10">
                 <img src="../assets/icons/loading.gif" alt="loading" class="w-10 h-10">
             </div>
