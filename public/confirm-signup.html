@@ -112,9 +112,13 @@
         }
 
         .spinner {
-            display: flex;
+            display: none;
             justify-content: center;
             margin: 2rem 0;
+        }
+
+        .spinner.visible {
+            display: flex;
         }
 
         .spinner img {
@@ -149,8 +153,8 @@
         </div>
 
         <div id="confirmSuccess" class="hidden">
-            <form method="POST" action="https://stbfep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS">
-            <!-- <form method="POST" action="https://fep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS"> -->
+            <!-- <form method="POST" action="https://stbfep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS"> -->
+            <form method="POST" action="https://fep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS">
                 <input type="hidden" name="pay_method" value="credit3d2">
                 <input type="hidden" name="merchant_id" value="58913">
                 <input type="hidden" name="service_id" value="001">
@@ -274,10 +278,10 @@
          */
         function toggleSpinner(show) {
             if (show) {
-                spinner.classList.remove('hidden');
+                spinner.classList.add('visible');
                 document.getElementById('formSection').classList.add('hidden');
             } else {
-                spinner.classList.add('hidden');
+                spinner.classList.remove('visible');
                 document.getElementById('formSection').classList.remove('hidden');
             }
         }
