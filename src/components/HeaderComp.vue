@@ -2,11 +2,6 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-// スライダー表示の画像URLを配列に入れると正しく動作しないので個別に指定
-import firstSquare from '@/assets/slider/first-square.svg';
-import sfa from '@/assets/slider/sfa-slider-banner.svg';
-import sugenoTakanori from '@/assets/slider/sugeno-slider-banner.svg';
-
 const props = defineProps({
     user: {
         type: Object,
@@ -28,17 +23,37 @@ const router = useRouter();
  */
 // 画像リスト
 const imageList = ref([
-    { src: firstSquare, alt: "株式会社ファーストスクエア", duration: 4000 },
-    { src: sfa, alt: "札幌地区サッカー協会", duration: 4000 },
-    { src: sugenoTakanori, alt: "菅野孝憲公式アプリ", duration: 5000 },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/slider/banner-coconosusukino.png', alt: "ココノススキノ", duration: 10000, url: 'https://cocono-susukino.jp' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/slider/banner-sd-entertainment.jpg', alt: "SDエンターテイメント株式会社", duration: 10000, url: 'https://www.sd-fit.jp/' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/slider/banner-tuners.png', alt: "株式会社TUNERS", duration: 10000, url: 'https://tuners-japan.com' },
 ]);
 const currentIndex = ref(0);
 let interval = null;
+// アニメーション方向を制御するための変数を追加
+const isForward = ref(true);
+
+// 特定のインデックスの画像に移動する関数を追加
+const goToImage = (index) => {
+    isForward.value = index > currentIndex.value;
+    currentIndex.value = index;
+    clearInterval(interval);
+    interval = setTimeout(nextImage, imageList.value[currentIndex.value].duration);
+};
+
 // 次の画像を表示することを繰り返す
 const nextImage = () => {
+    isForward.value = true;
     // 0, 1, 2の繰り返し。配列のインデックス
     currentIndex.value = (currentIndex.value + 1) % imageList.value.length;
     // 次の画像の表示時間に合わせてインターバルを設定
+    clearInterval(interval);
+    interval = setTimeout(nextImage, imageList.value[currentIndex.value].duration);
+};
+
+// 前の画像に移動する関数を追加
+const prevImage = () => {
+    isForward.value = false;
+    currentIndex.value = (currentIndex.value - 1 + imageList.value.length) % imageList.value.length;
     clearInterval(interval);
     interval = setTimeout(nextImage, imageList.value[currentIndex.value].duration);
 };
@@ -145,6 +160,11 @@ const navMenu = 'flex justify-between items-center px-4 h-[29px] border-b-1 bord
 const navMenuWithSubMenu = 'border-b-1 border-gray-200';
 const subMenuLiNotLastChild = 'flex justify-between items-center h-[29px] pr-4 pl-8 border-b-1 border-gray-200 border-dashed';
 const routerLinkClass = 'flex justify-between items-center w-full';
+
+// 画像クリック時の処理を追加
+const handleImageClick = (url) => {
+    window.open(url, '_blank');
+};
 </script>
 
 <template>
@@ -324,12 +344,36 @@ const routerLinkClass = 'flex justify-between items-center w-full';
         <!-- スライダー -->
         <div v-show="!hideSlider"
             class="flex items-center justify-center overflow-hidden w-full h-20 bg-black relative">
-            <Transition enter-active-class="transition-transform duration-500 ease-in-out"
-                enter-from-class="translate-x-full" leave-to-class="-translate-x-full"
-                leave-active-class="transition-transform duration-500 ease-in-out" mode="out-in">
-                <img :key="currentIndex" :src="imageList[currentIndex].src" :alt="imageList[currentIndex].alt"
-                    class="absolute w-[428px] max-w-full h-full object-contain shadow-md" />
+            <!-- 前の画像ボタン -->
+            <button @click="prevImage" class="absolute left-10 z-10 text-white hover:text-gray-300 transition-colors">
+                <img src="@/assets/icons/arrow-backward.svg" alt="前の画像" class="h-7 w-7">
+            </button>
+            <!-- 次の画像ボタン -->
+            <button @click="nextImage" class="absolute right-10 z-10 text-white hover:text-gray-300 transition-colors">
+                <img src="@/assets/icons/arrow-forward.svg" alt="次の画像" class="h-7 w-7">
+            </button>
+            <Transition 
+                :enter-active-class="isForward ? 'transition-transform duration-500 ease-in-out' : 'transition-transform duration-500 ease-in-out'"
+                :enter-from-class="isForward ? 'translate-x-full' : '-translate-x-full'"
+                :leave-to-class="isForward ? '-translate-x-full' : 'translate-x-full'"
+                :leave-active-class="isForward ? 'transition-transform duration-500 ease-in-out' : 'transition-transform duration-500 ease-in-out'"
+                mode="out-in">
+                <img :key="currentIndex" 
+                    :src="imageList[currentIndex].src" 
+                    :alt="imageList[currentIndex].alt"
+                    @click="handleImageClick(imageList[currentIndex].url)"
+                    class="absolute w-[428px] max-w-full h-full object-contain shadow-md cursor-pointer" />
             </Transition>
+            <!-- ナビゲーションドット -->
+            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-6 z-10">
+                <button 
+                    v-for="(_, index) in imageList" 
+                    :key="index"
+                    @click="goToImage(index)"
+                    class="w-2 h-2 rounded-full transition-colors duration-200"
+                    :class="currentIndex === index ? 'bg-white' : 'bg-gray-400 hover:bg-gray-300'"
+                ></button>
+            </div>
         </div>
         <!-- スライダー直下の横スクロールメニュー -->
         <div class="overflow-x-auto">
