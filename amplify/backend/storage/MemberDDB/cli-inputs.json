@@ -30,6 +30,17 @@
         "fieldName": "cust_code",
         "fieldType": "string"
       }
+    },
+    {
+      "name": "gsiByEmailPhone",
+      "partitionKey": {
+        "fieldName": "email",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "phone_number",
+        "fieldType": "string"
+      }
     }
   ],
   "triggerFunctions": []

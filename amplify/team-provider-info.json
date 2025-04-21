@@ -31,11 +31,11 @@
         },
         "pickupNewsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/pickupNewsLambda-364b2b47326e6e7a666e-build.zip"
+          "s3Key": "amplify-builds/pickupNewsLambda-3658707538302f597a34-build.zip"
         },
         "mediaLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/mediaLambda-70464f526643457a394a-build.zip"
+          "s3Key": "amplify-builds/mediaLambda-374f5a374e6d5a78745a-build.zip"
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
