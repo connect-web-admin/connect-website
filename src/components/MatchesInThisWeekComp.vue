@@ -90,7 +90,7 @@ const formatDate = (dateString) => {
 <template>
     <div>
         <div v-if="matchInfo.length === 0">
-            <p>今週の試合情報はありません。</p>
+            <p>今週の試合情報はありません。または、試合データが更新されていません。</p>
         </div>
         <div v-else>
             <div
