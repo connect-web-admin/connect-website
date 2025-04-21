@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>決済情報入力</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0015f7;
+            --error-color: #E74C3C;
+            --success-color: #2ECC71;
+            --text-color: #2C3E50;
+            --background-color: #F8F9FA;
+            --border-radius: 8px;
+            --spacing: 1.5rem;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .notice {
+            color: var(--error-color);
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .flex-inputs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 1rem;
+            flex-wrap: nowrap;
+        }
+
+        .flex-inputs input {
+            margin-bottom: 0;
+            width: auto;
+            flex: 1;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .flex-inputs input[name="phone1"] {
+            flex: 0 0 20px;
+            max-width: 60px;
+        }
+
+        .flex-inputs input[name="phone2"],
+        .flex-inputs input[name="phone3"] {
+            flex: 0 0 30px;
+            max-width: 70px;
+        }
+
+        .flex-inputs span {
+            flex: 0 0 auto;
+            margin: 0 4px;
+        }
+
+        .flex-inputs > div {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .helper-text {
+            font-size: 0.8em;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background-color: #357ABD;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .error-message {
+            margin-top: 4px;
+            color: var(--error-color);
+            font-size: 0.8em;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .spinner {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .spinner img {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* 支払いプラン選択のスタイル */
+        .payment-plan-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-plan-option {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .payment-plan-option input[type="radio"] {
+            margin-right: 0.5rem;
+            margin-top: 0.2rem;
+        }
+        
+        .payment-plan-option label {
+            margin-bottom: 0;
+            font-weight: normal;
+            flex: 1;
+        }
+        
+        .payment-plan-option .description {
+            font-size: 0.8em;
+            color: #666;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>決済情報入力</h1>
+        <p class="notice">クレジットカード情報の登録が失敗した場合に、本ページをご利用ください。<br>すべての項目を入力してください。</p>
+
+        <div id="mainContent">
+            <div id="spinner" class="spinner hidden">
+                <img src="../src/assets/icons/loading.gif" alt="読み込み中">
+            </div>
+
+            <div id="formSection">
+                <form id="loginForm">
+                    <!-- メールアドレス -->
+                    <div class="form-group">
+                        <label for="email">メールアドレス</label>
+                        <input type="email" id="email" name="email" required placeholder="メールアドレスを入力" autocomplete="email" />
+                    </div>
+
+                    <!-- 電話番号 -->
+                    <div class="form-group">
+                        <p style="font-weight: bold;">電話番号</p>
+                        <div class="flex-inputs">
+                            <div>
+                                <label for="phone1" class="visually-hidden">電話番号１</label>
+                                <input type="tel" id="phone1" name="phone1" required placeholder="111" maxlength="3" autocomplete="tel-area-code" />
+                            </div>
+                            <span>-</span>
+                            <div>
+                                <label for="phone2" class="visually-hidden">電話番号２</label>
+                                <input type="tel" id="phone2" name="phone2" required placeholder="2222" maxlength="4" autocomplete="tel-local-prefix" />
+                            </div>
+                            <span>-</span>
+                            <div>
+                                <label for="phone3" class="visually-hidden">電話番号３</label>
+                                <input type="tel" id="phone3" name="phone3" required placeholder="3333" maxlength="4" autocomplete="tel-local-suffix" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 支払いプラン -->
+                    <div class="form-group">
+                        <p style="font-weight: bold; margin-top:10px;">お支払いプラン選択</p>
+                        <div class="payment-plan-option">
+                            <input type="radio" id="monthly" name="paymentPlan" value="monthly" />
+                            <label for="monthly">毎月払い 440円（4・5月無料！）</label>
+                        </div>
+                        <div class="payment-plan-option">
+                            <input type="radio" id="yearly" name="paymentPlan" value="yearly" checked />
+                            <label for="yearly">年払い 3,960円</label>
+                        </div>
+                        <span class="description" style="font-size: 12px; line-height: 0.8;">（年払いは５月から4,840円になります。ご登録日から、翌年の同じ日の前日までサービス利用可能です。システムの仕様上、「※ご指定のお支払い情報にて、次回以降のご請求をさせていただきます。」という案内が表示される場合がありますが、継続課金はされません。）</span>
+                    </div>
+
+                    <!-- 利用規約確認 -->
+                    <div class="form-group">
+                        <a href="/site-info/terms-of-service" target="_blank" style="margin-right: 20px;">利用規約</a>
+                        <a href="/site-info/specified-commercial-transactions-law-notations" target="_blank">特定商取引法に基づく表記</a>
+                    </div>
+
+                    <div id="errorMessage" class="error-message hidden"></div>
+
+                    <button type="button" id="proceedButton" class="submit-button">決済情報入力画面へ</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="confirmSuccess" class="hidden">
+            <!-- <form method="POST" action="https://fep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS"> -->
+            <form method="POST" action="https://stbfep.sps-system.com/f04/FepPayInfoReceive.do" accept-charset="Shift_JIS">
+                <input type="hidden" name="pay_method" value="credit3d2">
+                <input type="hidden" name="merchant_id" value="58913">
+                <input type="hidden" name="service_id" value="001">
+                <input type="hidden" name="cust_code" value="">
+                <input type="hidden" name="sps_cust_no" value="">
+                <input type="hidden" name="sps_payment_no" value="">
+                <input type="hidden" name="terminal_type" value="">
+                <input type="hidden" name="success_url" value="https://connect-goals.com/">
+                <input type="hidden" name="cancel_url" value="https://connect-goals.com/">
+                <input type="hidden" name="error_url" value="https://connect-goals.com/">
+                <input type="hidden" name="pagecon_url" value="https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items/pagecon_url">
+                <input type="hidden" name="free1" value="">
+                <input type="hidden" name="free2" value="">
+                <input type="hidden" name="free3" value="">
+                <input type="hidden" name="free_csv" value="">
+                <input type="hidden" name="request_date" value="">
+                <input type="hidden" name="limit_second" value="">
+                <input type="hidden" name="sps_hashcode" value="">
+                <input type="submit" value="submit">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const MEMBER_API_URL = 'https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items'; 
+
+        const emailInput = document.getElementById('email');
+        const phone1Input = document.getElementById('phone1');
+        const phone2Input = document.getElementById('phone2');
+        const phone3Input = document.getElementById('phone3');
+        const errorMessageDiv = document.getElementById('errorMessage');
+        const spinner = document.getElementById('spinner');
+        const formSection = document.getElementById('formSection');
+        const confirmSuccess = document.getElementById('confirmSuccess');
+        const proceedButton = document.getElementById('proceedButton');
+
+        // 初期状態でボタンを有効化
+        proceedButton.disabled = false;
+        proceedButton.style.opacity = '1';
+
+        // 初期状態でフォームを表示
+        document.addEventListener('DOMContentLoaded', function() {
+            const formSection = document.getElementById('formSection');
+            const spinner = document.getElementById('spinner');
+            formSection.classList.remove('hidden');
+            spinner.classList.add('hidden');
+        });
+
+        // 電話番号の入力制御
+        [phone1Input, phone2Input, phone3Input].forEach(input => {
+            input.addEventListener('input', function(e) {
+                // 数字以外の入力を削除
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
+
+        /**
+         * 入力値のサニタイズ関数
+         */
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return input;
+            return input.replace(/[&<>"']/g, function(match) {
+                const escape = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return escape[match];
+            });
+        }
+
+        /**
+         * リクエスト日時生成
+         */
+        function generateRequestDate() {
+            const now = new Date();
+
+            // 日本時間に調整
+            const jpTime = new Date(now.getTime() + (now.getTimezoneOffset() + 9 * 60) * 60000);
+            
+            // YYYYMMDDHHmmss 形式にフォーマット
+            const expetedDateAndTime = jpTime.getFullYear() +
+                ('0' + (jpTime.getMonth() + 1)).slice(-2) +
+                ('0' + jpTime.getDate()).slice(-2) +
+                ('0' + jpTime.getHours()).slice(-2) +
+                ('0' + jpTime.getMinutes()).slice(-2) +
+                ('0' + jpTime.getSeconds()).slice(-2);
+
+            return Number(expetedDateAndTime);
+        }
+
+        /**
+         * ハッシュコードsbps_hashcode生成
+         */
+        function generateHash() {
+            const hashKey = '628779fb3044932486354ca601169f2bbab32660';
+            const inputs = document.querySelectorAll('#confirmSuccess form input[type="hidden"], #confirmSuccess form input[type="submit"]');
+            const concatenatedValues = Array.from(inputs)
+                .filter(input => input.name && input.value !== '')
+                .map(input => input.value.trim())
+                .join('');
+            const stringToHash = concatenatedValues + hashKey;
+            const hash = CryptoJS.SHA1(stringToHash).toString().toUpperCase();
+            return hash;
+        }
+
+        /**
+         * スピナー表示
+         */
+        function toggleSpinner(show) {
+            const spinner = document.getElementById('spinner');
+            const formSection = document.getElementById('formSection');
+            
+            if (show) {
+                spinner.classList.remove('hidden');
+                formSection.classList.add('hidden');
+            } else {
+                spinner.classList.add('hidden');
+                formSection.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * エラーメッセージ表示
+         */
+        function showError(msg) {
+            errorMessageDiv.innerText = sanitizeInput(msg);
+            errorMessageDiv.classList.remove('hidden');
+        }
+
+        /**
+         * エラーメッセージ非表示
+         */
+        function hideError() {
+            errorMessageDiv.innerText = '';
+            errorMessageDiv.classList.add('hidden');
+        }
+
+        /**
+         * 決済情報入力画面へ進むボタンをクリックした時の挙動
+         * DynamoDBをからメールアドレスを使ってアイテムを取得し、is_credit_card_validがfalseであれば、
+         * その際、request_date, sps_hashcodeを生成して決済情報入力画面へリダイレクト
+         */
+        document.getElementById('proceedButton').addEventListener('click', async () => {
+            hideError();
+
+            const email = emailInput.value.trim();
+            const phone1 = phone1Input.value.trim();
+            const phone2 = phone2Input.value.trim();
+            const phone3 = phone3Input.value.trim();
+            const phoneNumber = phone1 + phone2 + phone3;
+            if (!email || !phone1 || !phone2 || !phone3) {
+                showError('メールアドレスと電話番号を入力してください');
+                return;
+            }
+
+            // 電話番号の形式チェック
+            // if (phone1.length !== 3 || phone2.length !== 4 || phone3.length !== 4) {
+            if (phone1.length !== 3 ||  phone3.length !== 4) {
+                showError('電話番号を正しく入力してください');
+                return;
+            }
+
+            // スピナーを表示
+            toggleSpinner(true);
+
+            /**
+             * DynamoDBからメールアドレスをキーにしてアイテムを取得
+             * 取得したアイテムのis_credit_card_validがfalseであれば、
+             * request_date, sps_hashcodeを生成して決済情報入力画面へリダイレクト
+             */
+            try {
+                const queryUrl = new URL(`${MEMBER_API_URL}/member-info-to-register-card`);
+                queryUrl.searchParams.append('email', email);
+                queryUrl.searchParams.append('phoneNumber', phoneNumber);
+
+                const response = await fetch(queryUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('APIリクエストに失敗しました');
+                }
+
+                const data = await response.json();
+
+                if (data.is_credit_card_valid) {
+                    alert('クレジットカード情報が既に有効です。ログイン可能です。');
+                    window.location.href = '/login';
+                    return;
+                }
+            } catch (error) {
+                showError('エラーが発生しました。時間をおいて再度お試しください。');
+                console.error('エラー:', error);
+                // エラー時はスピナーを非表示
+                toggleSpinner(false);
+            }
+
+            /**
+             * form送信
+             */
+            try {
+                // request_date生成
+                const requestDateValue = generateRequestDate();
+                document.querySelector('input[name="request_date"]').value = requestDateValue;
+                
+                // sps_hashcode生成
+                const hashcode = generateHash();
+                document.querySelector('input[name="sps_hashcode"]').value = hashcode;
+                
+                // フォーム送信
+                document.querySelector('#confirmSuccess form').submit();
+            } catch (error) {
+                showError('エラーが発生しました。時間をおいて再度お試しください。');
+                console.error('エラー:', error);
+                // エラー時はスピナーを非表示
+                toggleSpinner(false);
+            }
+        });
+    </script>
+</body>
+</html>
