@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
 
 // レギュラー会員用のページ
-import SignUpView from '@/views/SignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
 import TopView from '@/views/TopView.vue';
 import MediaView from '@/views/MediaView.vue';
@@ -41,13 +40,6 @@ const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
-			path: '/signup',
-			name: 'Signup',
-			component: SignUpView,
-			props: true
-		},
-
-		{
 			path: '/login',
 			name: 'Login',
 			component: LoginView
@@ -73,7 +65,6 @@ const router = createRouter({
 
 		{
 			path: '/media',
-			// path: '/media/:articleId?',
 			name: 'Media',
 			component: MediaView
 		},
