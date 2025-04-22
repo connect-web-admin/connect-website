@@ -74,7 +74,7 @@ onMounted(async () => {
 <template>
     <div class="px-2 pt-2">
         <div>
-            <h1 class="text-xl pt-2">今週の大会</h1>
+            <h1 class="text-xl pt-2">今週の大会<span class="text-sm text-gray-400">（タップで結果速報へ移動）</span></h1>
             <ChampionshipNamesComp :match-info="matchInfo" />
         </div>
 
