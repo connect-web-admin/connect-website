@@ -119,7 +119,7 @@ onMounted(async () => {
     // データが読み込まれた後に少し待ってからスクロール
     setTimeout(() => {
         handleRouteChange();
-    }, 400);
+    }, 500);
 });
 </script>
 
