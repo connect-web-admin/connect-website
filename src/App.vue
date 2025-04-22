@@ -92,8 +92,7 @@ onMounted(() => {
     </header>          
 
     <main class="flex-1 pb-20">
-        <RouterView />
-        <!-- <template v-if="isSignUpPath()">
+        <template v-if="isSignUpPath()">
             <RouterView />
         </template>
         <template v-else>
@@ -113,7 +112,7 @@ onMounted(() => {
                     新規会員登録
                 </a>
             </div>
-        </template> -->
+        </template>
     </main>
         
     <!-- connecterパス以外の場合のみフッターを表示 -->
