@@ -84,10 +84,10 @@ onMounted(async () => {
         <div v-else>
             <div v-for="(championships, category) in championshipInfo" :key="category">
                 <h2 class="font-bold bg-gray-200 p-2 mb-2">{{ category }}</h2>
-                <ul class="pb-2 pr-4 list-disc list-outside ml-8">
-                    <li class="pb-2" v-for="championship in championships" :key="championship.championship_id">
+                <ul class="pb-2">
+                    <li class="pb-2 px-2 not-last:border-b-1 border-gray-300" v-for="championship in championships" :key="championship.championship_id">
                         <span v-if="championship.championship_id === 'TakamadonomiyaCup2025HokkaidoSapporoBlock'">
-                            <router-link :to="`/pics-list/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
+                            <router-link :to="`/pics-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
                                 <p class="pr-2">{{ championship.championship_name }}</p>
                                 <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
                             </router-link>
