@@ -101,6 +101,7 @@ const navigateTo = (path, index) => {
         isResultsSubmenuOpen.value = !isResultsSubmenuOpen.value;
     } else {
         activeMenu.value = index;
+        isResultsSubmenuOpen.value = false; // 他のメニューをクリックした時にサブメニューを非表示にする
         router.push(path);
     }
 };
@@ -120,6 +121,11 @@ const handleSubmenuClick = (path) => {
         // 異なるページの場合は、通常の遷移
         router.push(path);
     }
+    
+    // サブメニューを非表示にする
+    setTimeout(() => {
+        isResultsSubmenuOpen.value = false;
+    }, 100);
 };
 
 /**
