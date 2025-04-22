@@ -3,8 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import PickupNewsCompForTop from '@/components/PickupNewsCompForTop.vue';
 import MediaCompForTop from '@/components/MediaCompForTop.vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
-import MatchesInThisWeekComp from '@/components/MatchesInThisWeekComp.vue';
-
+import ChampionshipNamesComp from '@/components/ChampionshipNamesComp.vue';
 const matchInfo = ref([]);
 const noThisWeekMatchesMsg = ref('');
 
@@ -39,25 +38,25 @@ const getMatchesInThisWeek = async () => {
     }
 }
 
-const scrollToTodayMatch = () => {
-    // 日本時間で今日の日付を取得（YYYY-MM-DD形式）
-    const today = new Date().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' }).split('/').map((num, index) => {
-        if (index === 0) return num;
-        return num.padStart(2, '0');
-    }).join('-');
+// const scrollToTodayMatch = () => {
+//     // 日本時間で今日の日付を取得（YYYY-MM-DD形式）
+//     const today = new Date().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' }).split('/').map((num, index) => {
+//         if (index === 0) return num;
+//         return num.padStart(2, '0');
+//     }).join('-');
     
-    // 今日の日付の要素を探す
-    const todayElement = document.querySelector(`[data-date="${today}"]`);
+//     // 今日の日付の要素を探す
+//     const todayElement = document.querySelector(`[data-date="${today}"]`);
     
-    // 要素が見つかった場合、その要素の50ピクセル上までスクロール
-    if (todayElement) {
-        const elementPosition = todayElement.getBoundingClientRect().top + window.scrollY;
-        window.scrollTo({
-            top: elementPosition - 110,
-            behavior: 'smooth'
-        });
-    }
-}
+//     // 要素が見つかった場合、その要素の50ピクセル上までスクロール
+//     if (todayElement) {
+//         const elementPosition = todayElement.getBoundingClientRect().top + window.scrollY;
+//         window.scrollTo({
+//             top: elementPosition - 110,
+//             behavior: 'smooth'
+//         });
+//     }
+// }
 
 onMounted(async () => {
     await getMatchesInThisWeek();
@@ -75,9 +74,8 @@ onMounted(async () => {
 <template>
     <div class="px-2 pt-2">
         <div>
-            <h1 class="text-xl pt-2">今週の試合</h1>
-            <!-- <div class="bg-black text-white w-fit px-1 mb-1">2025.2.22(Sat)</div> -->
-            <MatchesInThisWeekComp :match-info="matchInfo" />
+            <h1 class="text-xl pt-2">今週の大会</h1>
+            <ChampionshipNamesComp :match-info="matchInfo" />
         </div>
 
         <div class="my-8">
