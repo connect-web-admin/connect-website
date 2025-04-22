@@ -4,6 +4,8 @@ import PickupNewsCompForTop from '@/components/PickupNewsCompForTop.vue';
 import MediaCompForTop from '@/components/MediaCompForTop.vue';
 import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
 import ChampionshipNamesComp from '@/components/ChampionshipNamesComp.vue';
+import BannersComp from '@/components/BannersComp.vue';
+
 const matchInfo = ref([]);
 const noThisWeekMatchesMsg = ref('');
 
@@ -37,26 +39,6 @@ const getMatchesInThisWeek = async () => {
         console.error('速報対象試合の取得に失敗しました。');
     }
 }
-
-// const scrollToTodayMatch = () => {
-//     // 日本時間で今日の日付を取得（YYYY-MM-DD形式）
-//     const today = new Date().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' }).split('/').map((num, index) => {
-//         if (index === 0) return num;
-//         return num.padStart(2, '0');
-//     }).join('-');
-    
-//     // 今日の日付の要素を探す
-//     const todayElement = document.querySelector(`[data-date="${today}"]`);
-    
-//     // 要素が見つかった場合、その要素の50ピクセル上までスクロール
-//     if (todayElement) {
-//         const elementPosition = todayElement.getBoundingClientRect().top + window.scrollY;
-//         window.scrollTo({
-//             top: elementPosition - 110,
-//             behavior: 'smooth'
-//         });
-//     }
-// }
 
 onMounted(async () => {
     await getMatchesInThisWeek();
@@ -95,78 +77,7 @@ onMounted(async () => {
         </div>
 
         <div>
-            <div class="mb-8">
-                <p class="bg-black text-white text-center font-light mb-2">提　携</p>
-                <div class="flex justify-between">
-                    <img src="@/assets/banners/partner/safa-banner.svg" alt="札幌地区サッカー協会" class="w-49/100" />
-                    <img src="@/assets/banners/partner/sugeno-banner.svg" alt="菅野孝憲公式アプリ" class="w-49/100" />
-                </div>
-            </div>
-            <div class="mb-8">
-                <p class="bg-black text-white text-center font-light mb-2">リ　ー　グ　・　チ　ー　ム</p>
-                <div class="grid grid-cols-3">
-                    <div>
-                        <img src="@/assets/banners/jleague-club/jleague-banner.svg" alt="Jリーグ" class="w-full" />
-                    </div>
-                    <div>
-                        <img src="@/assets/banners/jleague-club/consadole-banner.svg" alt="北海道コンサドーレ札幌"
-                            class="w-full h-8/10" />
-                    </div>
-                    <div>
-                        <img src="@/assets/banners/jleague-club/espolada-banner.svg" alt="エスポラーダ北海道" class="w-full" />
-                    </div>
-                </div>
-            </div>
-            <div class="mb-8">
-                <p class="bg-black text-white text-center font-light mb-2">サ　ッ　カ　ー　協　会</p>
-                <div class="flex justify-between">
-                    <img src="@/assets/banners/football-association/jfa.svg" alt="日本サッカー協会" class="w-49/100" />
-                    <img src="@/assets/banners/football-association/hfa.svg" alt="北海道サッカー協会" class="w-49/100" />
-                </div>
-            </div>
-
-            <div class="mb-8">
-                <p class="bg-black text-white text-center font-light mb-2">地　区　協　会</p>
-                <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                    <img src="@/assets/banners/regional-association/hakodate-assoc.svg" alt="函館地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/otaru-assoc.svg" alt="小樽地区サッカー協会" class="w-full" />
-                    <img src="@/assets/banners/regional-association/sorachi-assoc.svg" alt="空知地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/asahikawa-assoc.svg" alt="旭川地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/kushiro-assoc.svg" alt="釧路地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/tokachi-assoc.svg" alt="十勝地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/muroran-assoc.svg" alt="室蘭地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/tomakomai-assoc.svg" alt="苫小牧地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/kitasorachi-assoc.svg" alt="北空知地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/chitose-assoc.svg" alt="千歳地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/okhotsk-assoc.svg" alt="オホーツク地区サッカー協会"
-                        class="w-full" />
-                    <img src="@/assets/banners/regional-association/nemuro-assoc.svg" alt="根室地区サッカー協会" class="w-full" />
-                    <img src="@/assets/banners/regional-association/souya-assoc.svg" alt="宗谷地区サッカー協会" class="w-full" />
-                </div>
-            </div>
-
-            <div>
-                <p class="bg-black text-white text-center font-light mb-2">そ　の　他　連　盟　等</p>
-                <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                    <img src="@/assets/banners/others/sp-takamadonomiya.svg" alt="札幌地区サッカー協会" class="w-full" />
-                    <img src="@/assets/banners/others/sjfa.svg" alt="札幌地区少年サッカー連盟" class="h-full" />
-                    <img src="@/assets/banners/others/hokkaido-futsal.svg" alt="北海道フットサル連盟" class="w-full" />
-                    <img src="@/assets/banners/others/sapporo-futsal.svg" alt="札幌フットサル連盟" class="w-full" />
-                    <img src="@/assets/banners/others/chutairen.svg" alt="北海道中学校体育連盟" class="w-full" />
-                    <img src="@/assets/banners/others/jcy.svg" alt="日本クラブユースサッカー連盟" class="w-full" />
-                    <img src="@/assets/banners/others/amusement.svg" alt="札幌サッカーアミューズメントパーク" class="w-full" />
-                    <img src="@/assets/banners/others/highschool-soccer.svg" alt="高校サッカードットコム" class="h-full" />
-                </div>
-            </div>
+            <BannersComp />
         </div>
     </div>
 </template>
