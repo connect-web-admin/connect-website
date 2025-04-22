@@ -47,13 +47,13 @@
                 /></a>
                 <a href="https://www.consadole-sapporo.jp/" target="_blank"
                     ><img
-                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/consadole.svg"
+                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/consadole-banner-2.png"
                         alt="北海道コンサドーレ札幌"
-                        class="h-8 border-1 border-black px-5"
+                        class="h-8 border-1 border-black px-3"
                 /></a>
                 <a href="https://espolada.com/" target="_blank"
                     ><img
-                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/espolada-banner.png"
+                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/espolada-banner-2.png"
                         alt="エスポラーダ北海道"
                         class="h-8 border-1 border-black"
                 /></a>
