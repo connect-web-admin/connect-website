@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -86,9 +86,9 @@ onMounted(() => {
         behavior: 'auto'
     });
 });
-</script>
+</script> -->
 
-<template>
+<!-- <template>
     <div class="p-4">
         <h1 class="text-2xl font-bold py-2">高円宮杯 JFA U-18 サッカー2025北海道 ブロックリーグ札幌</h1>
         <div class="grid grid-cols-3 gap-4">
@@ -97,8 +97,6 @@ onMounted(() => {
                 <img :src="image.src" alt="高円宮杯 JFA U-18 サッカー2025北海道 ブロックリーグ札幌" class="w-full h-full object-cover">
             </div>
         </div>
-
-        <!-- モーダル -->
         <div v-if="showModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
             @click="closeModal">
             <div class="relative w-[98vw] flex items-center justify-center">
@@ -110,10 +108,104 @@ onMounted(() => {
             </div>
         </div>
     </div>
-</template>
+</template> -->
 
-<style scoped>
-.fixed {
-    position: fixed;
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { MATCH_API_URL, THIS_FISCAL_YEAR, PICS_API_URL } from '../utils/constants';
+
+const router = useRouter();
+const selectedImage = ref(null);
+const showModal = ref(false);
+const championshipId = ref(null);
+const isLoading = ref(true);
+const targetPics = ref([]);
+const matchDates = ref([]);
+const failedMsg = ref('');
+
+
+const getTargetChampionshipInfo = async () => {
+    isLoading.value = true;
+
+    const queryUrl = new URL(`${MATCH_API_URL}/match-dates`);
+    queryUrl.searchParams.append('championshipId', championshipId.value);
+    queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
+
+    try {
+        const response = await fetch(queryUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        matchDates.value = await response.json();
+    } catch (error) {
+        failedMsg.value = '大会情報の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。';
+        console.error('大会情報の取得に失敗しました。');
+    } finally {
+        isLoading.value = false;
+    }
 }
-</style>
+
+const getTargetPics = async (matchDate) => {
+    isLoading.value = true;
+
+    const queryUrl = new URL(`${PICS_API_URL}/get-target-pics`);
+    queryUrl.searchParams.append('championshipId', championshipId.value);
+    queryUrl.searchParams.append('matchDate', matchDate);
+
+    try {
+        const response = await fetch(queryUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        targetPics.value = await response.json();
+
+    } catch (error) {
+        failedMsg.value = '画像の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。';
+        console.error('画像の取得に失敗しました。');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+
+onMounted(async () => {
+    // ページ遷移時に最上部へスクロール
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
+
+    // 大会IDをルートから取得
+    championshipId.value = router.currentRoute.value.params.championshipId;
+
+    // 大会IDをもとに、大会情報を取得
+    await getTargetChampionshipInfo();
+});
+
+</script>
+<template>
+    <div>
+        <div class="p-4 text-sm">
+            試合日を選択してください。<br>
+            <span v-for="matchDate in matchDates" :key="matchDate.article_id" class="not-last:mr-3">
+                <span class="cursor-pointer text-blue-600" @click="getTargetPics(matchDate)">{{ matchDate }}</span>
+            </span>
+        </div>
+    </div>
+</template>
+<style></style>
