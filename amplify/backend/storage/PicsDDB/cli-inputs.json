@@ -1,0 +1,18 @@
+{
+  "resourceName": "PicsDDB",
+  "tableName": "PicsDDB",
+  "partitionKey": {
+    "fieldName": "pic_id",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "gsiByChampionshipName",
+      "partitionKey": {
+        "fieldName": "championship_name",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

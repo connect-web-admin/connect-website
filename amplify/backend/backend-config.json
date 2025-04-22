@@ -70,6 +70,20 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
+    "picsLambda": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "picsLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "sendInquiryViaSESApi": {
       "dependsOn": [
         {
@@ -214,6 +228,25 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "picsLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "PicsDDB"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "sendInquiryViaSESLambda": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -317,6 +350,22 @@
         }
       ]
     },
+    "AMPLIFY_function_picsLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "picsLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_picsLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "picsLambda"
+        }
+      ]
+    },
     "AMPLIFY_function_sendInquiryViaSESLambda_deploymentBucketName": {
       "usedBy": [
         {
@@ -361,6 +410,10 @@
       "service": "DynamoDB"
     },
     "PickupNewsDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "PicsDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }

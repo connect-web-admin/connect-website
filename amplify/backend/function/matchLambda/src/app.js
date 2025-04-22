@@ -114,7 +114,6 @@ function canAccess(matchDate) {
 ************************************/
 app.get(path + '/matches-in-this-week', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
-	const matchPassword = req.query.matchPassword;
 
 	const queryItemParams = {
 		TableName: tableName,
@@ -165,7 +164,6 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 ************************************/
 app.get(path + '/current-matches', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
-	const matchPassword = req.query.matchPassword;
 	const accessToken = req.query.accessToken;
 
 	// 配列化して長さが１ならばU-15（ジュニアユース）かU-18（ユース）、そうでなければU-12（ジュニア）とWOMAN
@@ -360,7 +358,6 @@ app.get(path + '/target-match', async function (req, res) {
 		const data = fetchedData.Item;
 
 		if (data['item_type'] === 'championship') {
-			outerLoop:
 			for (const round in data['matches']) {
 				for (const match in data['matches'][round]) {
 					if (matchId === data['matches'][round][match]['match_id']) {
@@ -370,7 +367,6 @@ app.get(path + '/target-match', async function (req, res) {
 						passingData['match'] = match;
 						passingData['match_detail'] = data['matches'][round][match];
 					}
-					break outerLoop; // 即座にループ抜け
 				}
 			}
 		}

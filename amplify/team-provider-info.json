@@ -19,7 +19,7 @@
       "function": {
         "matchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/matchLambda-686a35564a7778416958-build.zip"
+          "s3Key": "amplify-builds/matchLambda-536b2b4e444b54784c4a-build.zip"
         },
         "clubLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -39,11 +39,15 @@
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/memberLambda-687a6239695a6f4b5247-build.zip"
+          "s3Key": "amplify-builds/memberLambda-6a6954535a4956514d56-build.zip"
         },
         "checkUserBeforeLoginLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/checkUserBeforeLoginLambda-7a786d70526a70314b6c-build.zip"
+        },
+        "picsLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/picsLambda-566d6d593671794d7847-build.zip"
         }
       },
       "storage": {
@@ -53,7 +57,8 @@
         "MediaDDB": {},
         "MemberDDB": {},
         "ConnectWebsiteBucket": {},
-        "CountersDDB": {}
+        "CountersDDB": {},
+        "PicsDDB": {}
       },
       "api": {
         "matchApi": {},
@@ -61,7 +66,8 @@
         "sendInquiryViaSESApi": {},
         "pickupNewsApi": {},
         "mediaApi": {},
-        "memberApi": {}
+        "memberApi": {},
+        "picsLambda": {}
       }
     }
   }

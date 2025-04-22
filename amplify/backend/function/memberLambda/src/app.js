@@ -26,6 +26,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 
 const GSI_BY_EMAIL = process.env.GSI_BY_EMAIL;
 const GSI_BY_CUST_CODE = process.env.GSI_BY_CUST_CODE;
+const GSI_BY_EMAIL_PHONE = process.env.GSI_BY_EMAIL_PHONE;
 
 const ddbClient = new DynamoDBClient({ region: process.env.TABLE_REGION });
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
@@ -111,7 +112,7 @@ app.get(path + '/member-info', async function (req, res) {
 	try {
 		const queryParams = {
 			TableName: tableName,
-			IndexName: gsiByEmail,
+			IndexName: GSI_BY_EMAIL,
 			KeyConditionExpression: 'email = :email',
 			ExpressionAttributeValues: {
 				':email': inputEmail
@@ -130,6 +131,7 @@ app.get(path + '/member-info', async function (req, res) {
 			};
 		}
 
+		console.log('取得されたアイテム', queryResult)
 		res.status(200).json(queryResult.Items[0]);
 	} catch (err) {
 		res.statusCode = 500;
@@ -137,6 +139,43 @@ app.get(path + '/member-info', async function (req, res) {
 	}
 });
 
+
+/************************************
+ * HTTP Get method to 会員情報を取得 *
+ ************************************/
+app.get(path + '/member-info-to-register-card', async function (req, res) {
+	const inputEmail = req.query.email;
+	const inputPhoneNumber = req.query.phoneNumber;
+
+	try {
+		const queryParams = {
+			TableName: tableName,
+			IndexName: GSI_BY_EMAIL_PHONE,
+			KeyConditionExpression: 'email = :email AND phone_number = :phoneNumber',
+			ExpressionAttributeValues: {
+				':email': inputEmail,
+				':phoneNumber': inputPhoneNumber
+			},
+		};
+
+		console.log('会員情報取得パラメタ', queryParams);
+
+		const commandForQuery = new QueryCommand(queryParams);
+		const queryResult = await ddbDocClient.send(commandForQuery);
+		if (!queryResult.Items || queryResult.Items.length === 0) {
+			return {
+				statusCode: 404,
+				body: JSON.stringify({ message: '対象のアイテムが見つかりませんでした' })
+			};
+		}
+
+		console.log('取得されたアイテム', queryResult)
+		res.status(200).json(queryResult.Items[0]);
+	} catch (err) {
+		res.statusCode = 500;
+		res.json({ error: 'Could not load items: ' + err.message })
+	}
+});
 
 /************************************
 * HTTP post method for DynamoDBにすでにメールアドレスが存在するか確認 *
@@ -607,7 +646,7 @@ app.post(path + '/error_url', async (req, res) => {
 *************************************/
 app.post(path + '/pagecon_url', async (req, res) => {
 	// 決済システム接続先
-	const sbpsApiEndPoint = process.env.SBPS_API_END_POINT; // 本番データ
+	const sbpsApiEndPoint = process.env.SBPS_API_END_POINT;
 	// Basic認証ID
 	const basicAuthId = process.env.BASIC_AUTH_ID;
 	// Basic認証パスワード
