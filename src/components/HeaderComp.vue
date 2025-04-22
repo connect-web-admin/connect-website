@@ -69,9 +69,10 @@ const menuList = [
         path: '/latest-results',
         position: 0, // この値は後で更新されます
         submenu: [
-            { name: '2種', path: '/latest-results?match_category=U-18' },
-            { name: '3種', path: '/latest-results?match_category=U-15' },
-            { name: '4種・女子', path: '/latest-results?match_category=U-12' }
+            { name: 'U-12', path: '/latest-results?match_category=U-12' },
+            { name: 'U-15', path: '/latest-results?match_category=U-15' },
+            { name: 'U-18', path: '/latest-results?match_category=U-18' },
+            { name: 'WOMEN', path: '/latest-results?match_category=WOMEN' }
         ]
     },
     { name: 'お知らせ', path: '/pickup-news', position: 0 },
