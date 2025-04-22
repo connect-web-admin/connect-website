@@ -48,6 +48,8 @@ export const MATCH_API_URL = "https://dvk11mi4fh.execute-api.ap-northeast-1.amaz
 export const MEMBER_API_URL = "https://sirvr7hb77.execute-api.ap-northeast-1.amazonaws.com/prod/items"
 // コネクターのAPIGatewayのエンドポイント
 export const CONNECTER_API_URL = "https://x9etjju7dd.execute-api.ap-northeast-1.amazonaws.com/prod/items";
+// 写真のAPIGatewayのエンドポイント
+export const PICS_API_URL = "https://e1et94tw6f.execute-api.ap-northeast-1.amazonaws.com/prod";
 
 /**
  * 固有名詞及び定数
