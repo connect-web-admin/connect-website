@@ -25,7 +25,7 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
-    "picsLambda": {
+    "picsApi": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"

@@ -9,7 +9,7 @@
     {
       "name": "gsiByChampionshipName",
       "partitionKey": {
-        "fieldName": "championship_name",
+        "fieldName": "championship_id",
         "fieldType": "string"
       }
     }

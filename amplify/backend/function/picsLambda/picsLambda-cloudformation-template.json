@@ -97,12 +97,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "connectwebsiteLambdaRoled4c19f27",
+            "connectwebsiteLambdaRolee5700768",
             {
               "Fn::Join": [
                 "",
                 [
-                  "connectwebsiteLambdaRoled4c19f27",
+                  "connectwebsiteLambdaRolee5700768",
                   "-",
                   {
                     "Ref": "env"

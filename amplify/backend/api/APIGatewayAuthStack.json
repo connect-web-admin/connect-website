@@ -29,7 +29,7 @@
     "memberApi": {
       "Type": "String"
     },
-    "picsLambda": {
+    "picsApi": {
       "Type": "String"
     }
   },
@@ -1510,7 +1510,7 @@
                       },
                       ":",
                       {
-                        "Ref": "picsLambda"
+                        "Ref": "picsApi"
                       },
                       "/",
                       {
@@ -1540,7 +1540,7 @@
                       },
                       ":",
                       {
-                        "Ref": "picsLambda"
+                        "Ref": "picsApi"
                       },
                       "/",
                       {
@@ -1570,7 +1570,7 @@
                       },
                       ":",
                       {
-                        "Ref": "picsLambda"
+                        "Ref": "picsApi"
                       },
                       "/",
                       {
@@ -1600,7 +1600,7 @@
                       },
                       ":",
                       {
-                        "Ref": "picsLambda"
+                        "Ref": "picsApi"
                       },
                       "/",
                       {
@@ -1630,7 +1630,7 @@
                       },
                       ":",
                       {
-                        "Ref": "picsLambda"
+                        "Ref": "picsApi"
                       },
                       "/",
                       {
@@ -1660,7 +1660,7 @@
                       },
                       ":",
                       {
-                        "Ref": "picsLambda"
+                        "Ref": "picsApi"
                       },
                       "/",
                       {
@@ -1690,7 +1690,7 @@
                       },
                       ":",
                       {
-                        "Ref": "picsLambda"
+                        "Ref": "picsApi"
                       },
                       "/",
                       {
@@ -1720,7 +1720,7 @@
                       },
                       ":",
                       {
-                        "Ref": "picsLambda"
+                        "Ref": "picsApi"
                       },
                       "/",
                       {

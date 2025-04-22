@@ -67,7 +67,7 @@
         "pickupNewsApi": {},
         "mediaApi": {},
         "memberApi": {},
-        "picsLambda": {}
+        "picsApi": {}
       }
     }
   }
