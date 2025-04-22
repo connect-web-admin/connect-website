@@ -12,6 +12,13 @@
         "fieldName": "championship_id",
         "fieldType": "string"
       }
+    },
+    {
+      "name": "gsiByChampionshipId",
+      "partitionKey": {
+        "fieldName": "championship_id",
+        "fieldType": "string"
+      }
     }
   ],
   "triggerFunctions": []
