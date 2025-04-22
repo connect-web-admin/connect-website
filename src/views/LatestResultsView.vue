@@ -84,14 +84,31 @@ const scrollToCategory = (category) => {
     }
 }
 
+const scrollToChampionship = (championshipName) => {
+    // 大会名に対応する要素を探す
+    const targetElement = document.querySelector(`[data-championship="${championshipName}"]`);
+    
+    // 要素が見つかった場合、その要素までスクロール
+    if (targetElement) {
+        const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+            top: elementPosition - 110,
+            behavior: 'smooth'
+        });
+    }
+}
+
 // URLのクエリパラメータが変更されたときの処理
 const handleRouteChange = () => {
     // データが読み込まれている場合のみスクロール処理を実行
     if (matchInfo.value.length > 0) {
         const urlParams = new URLSearchParams(window.location.search);
         const matchCategory = urlParams.get('match_category');
+        const championship = urlParams.get('championship');
         
-        if (matchCategory) {
+        if (championship) {
+            scrollToChampionship(championship);
+        } else if (matchCategory) {
             // match_categoryの値に基づいて対応するカテゴリー名を取得
             const categoryMapping = {
                 'U-18': '２種',

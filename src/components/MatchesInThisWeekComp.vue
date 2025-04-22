@@ -106,6 +106,7 @@ const formatDate = (dateString) => {
                 <div
                     v-for="(championship, index) in championships"
                     :key="index"
+                    :data-championship="championship.championship_name"
                 >
                     <div
                         v-for="(matches, matchesKey) in championship.matches"
