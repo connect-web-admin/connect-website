@@ -7,16 +7,13 @@
   },
   "gsi": [
     {
-      "name": "gsiByChampionshipName",
+      "name": "gsiByChampionshipIdAndTakenAt",
       "partitionKey": {
         "fieldName": "championship_id",
         "fieldType": "string"
-      }
-    },
-    {
-      "name": "gsiByChampionshipId",
-      "partitionKey": {
-        "fieldName": "championship_id",
+      },
+      "sortKey": {
+        "fieldName": "taken_at",
         "fieldType": "string"
       }
     }

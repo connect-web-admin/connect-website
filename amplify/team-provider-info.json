@@ -23,11 +23,11 @@
         },
         "clubLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/clubLambda-65754f524b2b6d637375-build.zip"
+          "s3Key": "amplify-builds/clubLambda-3671527963564459536d-build.zip"
         },
         "sendInquiryViaSESLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/sendInquiryViaSESLambda-547351636f4b39305844-build.zip"
+          "s3Key": "amplify-builds/sendInquiryViaSESLambda-646b584558376f72346f-build.zip"
         },
         "pickupNewsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -47,7 +47,7 @@
         },
         "picsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/picsLambda-4267494450706f304e2b-build.zip"
+          "s3Key": "amplify-builds/picsLambda-566d6d593671794d7847-build.zip"
         }
       },
       "storage": {
