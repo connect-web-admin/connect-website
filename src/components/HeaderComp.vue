@@ -72,7 +72,7 @@ const menuList = [
             { name: 'U-12', path: '/latest-results?match_category=U-12' },
             { name: 'U-15', path: '/latest-results?match_category=U-15' },
             { name: 'U-18', path: '/latest-results?match_category=U-18' },
-            { name: 'WOMEN', path: '/latest-results?match_category=WOMEN' }
+            { name: 'WOMAN', path: '/latest-results?match_category=WOMAN' }
         ]
     },
     { name: 'お知らせ', path: '/pickup-news', position: 0 },
@@ -400,11 +400,11 @@ const handleImageClick = (url) => {
         <div v-show="!hideSlider"
             class="flex items-center justify-center overflow-hidden w-full h-20 bg-black relative">
             <!-- 前の画像ボタン -->
-            <button @click="prevImage" class="absolute left-10 z-10 text-white hover:text-gray-300 transition-colors">
+            <button @click="prevImage" class="absolute left-5 z-10 text-white hover:text-gray-300 transition-colors">
                 <img src="@/assets/icons/arrow-backward.svg" alt="前の画像" class="h-7 w-7">
             </button>
             <!-- 次の画像ボタン -->
-            <button @click="nextImage" class="absolute right-10 z-10 text-white hover:text-gray-300 transition-colors">
+            <button @click="nextImage" class="absolute right-5 z-10 text-white hover:text-gray-300 transition-colors">
                 <img src="@/assets/icons/arrow-forward.svg" alt="次の画像" class="h-7 w-7">
             </button>
             <Transition 
