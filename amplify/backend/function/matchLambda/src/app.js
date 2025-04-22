@@ -112,6 +112,34 @@ function canAccess(matchDate) {
 /************************************
 * HTTP Get method TOP画面に表示する試合を取得 *
 ************************************/
+app.get(path + '/championship-names-ids', async function (req, res) {
+	const fiscalYear = req.query.fiscalYear;
+
+	const queryItemParams = {
+		TableName: tableName,
+		IndexName: "gsiByFiscalYear",
+		KeyConditionExpression: "fiscal_year = :fiscalYear",
+		ExpressionAttributeValues: {
+			":fiscalYear": fiscalYear,
+		},
+	};
+
+	try {
+		const command = new QueryCommand(queryItemParams);
+		const fetchedData = await ddbDocClient.send(command);
+		const data = fetchedData.Items;
+		const namesAndIds = data.map(({ championship_name, championship_id, category }) => ({ championship_name, championship_id, category }));
+
+		res.status(200).json(namesAndIds);
+	} catch (err) {
+		console.error('Error getting data:', err);
+		res.status(500).json({ success: false, error: 'Error getting data' });
+	}
+});
+
+/************************************
+* HTTP Get method TOP画面に表示する試合を取得 *
+************************************/
 app.get(path + '/matches-in-this-week', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
 
@@ -372,6 +400,58 @@ app.get(path + '/target-match', async function (req, res) {
 		}
 
 		res.status(200).json(passingData);
+	} catch (err) {
+		console.error('Error getting data:', err);
+		res.status(500).json({ success: false, error: 'Error getting data' });
+	}
+});
+
+/************************************
+* HTTP Get method 対象の一大会の試合日のみを取得 *
+************************************/
+app.get(path + '/match-dates', async function (req, res) {
+	const championshipId = req.query.championshipId;
+	const fiscalYear = req.query.fiscalYear
+
+	const getItemParams = {
+		TableName: tableName,
+		Key: {
+			championship_id: championshipId,
+			fiscal_year: fiscalYear
+		}
+	};
+
+	try {
+		const command = new GetCommand(getItemParams);
+		const fetchedData = await ddbDocClient.send(command);
+		const data = fetchedData.Item;
+
+		// Set で重複を除外しつつ抽出
+		const dateSet = new Set();
+		Object.values(data.matches).forEach(division => {
+			Object.values(division).forEach(item => {
+				if (item.match_date) {
+					dateSet.add(item.match_date);
+				}
+			});
+		});
+
+		// 結果を配列に変換
+		const uniqueDates = Array.from(dateSet);
+
+		// YYYY-MM-DD形式からMM/DD形式にして返却
+		// 最新日付が先頭に来るよう降順ソート
+		// M/D 形式に変換（先頭ゼロ削除）
+		const formattedDatesDesc = uniqueDates
+			.sort((a, b) => new Date(b) - new Date(a))
+			.map(date => {
+				const [, month, day] = date.split('-');
+				const m = parseInt(month, 10);  // "04" → 4
+				const d = parseInt(day, 10);    // "03" → 3
+				return `${m}/${d}`;
+			});
+
+		res.status(200).json(formattedDatesDesc);
 	} catch (err) {
 		console.error('Error getting data:', err);
 		res.status(500).json({ success: false, error: 'Error getting data' });
