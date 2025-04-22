@@ -147,6 +147,9 @@ onMounted(async () => {
                 <img src="../assets/icons/loading.gif" alt="loading" class="w-10 h-10">
             </div>
             <div v-else>
+                <p>
+                    U-18プリンスリーグの大会詳細結果はこちら→　<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank" class="text-blue-600 underline break-all">https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/</a>　からご覧ください。
+                </p>
                 <MatchesInThisWeekComp :match-info="matchInfo" />
             </div>
         </div>
