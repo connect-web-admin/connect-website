@@ -114,7 +114,7 @@ const router = createRouter({
 		// },
 
 		{
-			path: '/pics-list/:championshipId',
+			path: '/pics-list/:championshipName/:championshipId',
 			name: 'PicsList',
 			component: PicsListView,
 			props: true
