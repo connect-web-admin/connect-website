@@ -59,8 +59,8 @@ const sendInquiry = async () => {
         const response = await fetch(url, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Bearer ${ idTokenForAuth }`
+                "Content-Type": "application/json"
+                // 'Authorization': `Bearer ${ idTokenForAuth }`
             },
             body: JSON.stringify(inquiryData.value),
         })
@@ -81,6 +81,12 @@ const sendInquiry = async () => {
         } else {
             alert("送信に失敗しました。必須項目が入力されていても失敗する場合は、時間をおいて再度お試しください。")
         }
+        
+        // ページ遷移時に最上部へスクロール
+        window.scrollTo({
+            top: 0,
+            behavior: 'auto'
+        });
     } catch (error) {
         console.error("送信エラー", error)
         alert("送信に失敗しました。時間をおいて再度お試しください。")
@@ -101,153 +107,183 @@ onMounted(() => {
 </script>
 
 <template>
-<div class="contents-wrapper">
-    <h1>お問い合わせ</h1>
-    <div class="forms-wrapper">
-        <form @submit.prevent="sendInquiry">
-            <div v-if="!isConfirmView">
-                <div class="each-block-container contact-category">
-                    <p>お問い合わせ種別<span class="hissu">必須</span></p>
-                    <select v-model="inquiryData.category" required>
-                        <option disabled selected value=''>選択してください</option>
-                        <option value="試合結果について">試合結果について</option>
-                        <option value="チーム紹介について">チーム紹介について</option>
-                        <option value="写真・動画について">写真・動画について</option>
-                        <option value="お知らせについて">お知らせについて</option>
-                        <option value="プレミアム会員について">プレミアム会員について</option>
-                        <option value="その他">その他</option>
-                    </select>
-                </div>
-                <div class="each-block-container">
-                    <p>お問い合わせ内容<span class="hissu">必須</span>（1000字以内。現在{{ inquiryData.message.length }}字）</p>
-                    <textarea v-model="inquiryData.message" required></textarea>
-                </div>
-                <div class="each-block-container">
-                    <p>お名前<span class="hissu">必須</span></p>
-                    <input type="text" v-model="inquiryData.name" placeholder="（例）山田太郎" required/>
-                </div>
-                <div class="each-block-container">
-                    <p>お名前（ふりがな）<span class="hissu">必須</span></p>
-                    <input type="text" v-model="inquiryData.furigana" placeholder="（例）やまだたろう" required/>
-                </div>
-                <div class="each-block-container">
-                    <p>メールアドレス<span class="hissu">必須</span></p>
-                    <input type="email" v-model="inquiryData.email" placeholder="（例）yamada@toiawase.com" required/>
-                </div>
-                <div class="each-block-container">
-                    <p>電話番号(ハイフンなし)</p>
-                    <input type="tel" v-model="inquiryData.phoneNum" placeholder="（例）090123456" required/>
-                </div>
-                <button type="submit" @click="toggleConfirmView">確認画面</button>
-            </div>
-            <div v-else>
-                <p>記入内容は下記のとおりです。</p>
-                <div class="sending-contents">
-                    <div class="each-sending-content">
-                        お問い合わせ種別：<br>
-                        {{ inquiryData.category }}<br>
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">お問い合わせ</h1>
+        <div class="bg-white shadow rounded-lg p-6 sm:p-8">
+            <form @submit.prevent="sendInquiry" class="space-y-6">
+                <div v-if="!isConfirmView">
+                    <!-- お問い合わせ種別 -->
+                    <div class="space-y-2 mb-4">
+                        <label for="category" class="block text-sm font-medium text-gray-700">
+                            お問い合わせ種別<span class="text-red-500">*</span>
+                        </label>
+                        <select 
+                            v-model="inquiryData.category" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                            required
+                            id="category"
+                            name="category"
+                        >
+                            <option disabled selected value=''>選択してください</option>
+                            <option value="試合結果について">試合結果について</option>
+                            <option value="チーム紹介について">チーム紹介について</option>
+                            <option value="写真・動画について">写真・動画について</option>
+                            <option value="お知らせについて">お知らせについて</option>
+                            <option value="プレミアム会員について">プレミアム会員について</option>
+                            <option value="その他">その他</option>
+                        </select>
                     </div>
-                    <div class="each-sending-content">
-                        お問い合わせ内容：<br>
-                        {{ inquiryData.message }}
+
+                    <!-- お問い合わせ内容 -->
+                    <div class="space-y-2 mb-4">
+                        <label for="message" class="block text-sm font-medium text-gray-700">
+                            お問い合わせ内容<span class="text-red-500">*</span>
+                            <span class="text-sm text-gray-500">（1000字以内。現在{{ inquiryData.message.length }}字）</span>
+                        </label>
+                        <textarea 
+                            v-model="inquiryData.message" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                            rows="6"
+                            required
+                            id="message"
+                            name="message"
+                        ></textarea>
                     </div>
-                    <div class="each-sending-content">
-                        お名前：<br>
-                        {{ inquiryData.name }}
+
+                    <!-- お名前 -->
+                    <div class="space-y-2 mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700">
+                            お名前<span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            v-model="inquiryData.name" 
+                            placeholder="（例）山田太郎"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                            required
+                            id="name"
+                            name="name"
+                            autocomplete="name"
+                        />
                     </div>
-                    <div class="each-sending-content">
-                        お名前（ふりがな）：<br>
-                        {{ inquiryData.furigana }}
+
+                    <!-- ふりがな -->
+                    <div class="space-y-2 mb-4">
+                        <label for="furigana" class="block text-sm font-medium text-gray-700">
+                            お名前（ふりがな）<span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            v-model="inquiryData.furigana" 
+                            placeholder="（例）やまだたろう"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                            required
+                            id="furigana"
+                            name="furigana"
+                        />
                     </div>
-                    <div class="each-sending-content">
-                        メールアドレス：<br>
-                        {{ inquiryData.email }}
-                        <input type="hidden" v-model="inquiryData.email" required/>
+
+                    <!-- メールアドレス -->
+                    <div class="space-y-2 mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700">
+                            メールアドレス<span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            v-model="inquiryData.email" 
+                            placeholder="（例）yamada@toiawase.com"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                            required
+                            id="email"
+                            name="email"
+                            autocomplete="email"
+                        />
                     </div>
-                    <div class="each-sending-content">
-                        電話番号：<br>
-                        <span v-if="inquiryData.phoneNum">{{ inquiryData.phoneNum }}</span>
-                        <span v-else>未記入</span>
+
+                    <!-- 電話番号 -->
+                    <div class="space-y-2 mb-4">
+                        <label for="phoneNum" class="block text-sm font-medium text-gray-700">
+                            電話番号(ハイフンなし)
+                        </label>
+                        <input 
+                            type="tel" 
+                            v-model="inquiryData.phoneNum" 
+                            placeholder="（例）090123456"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                            id="phoneNum"
+                            name="phoneNum"
+                        />
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        @click="toggleConfirmView"
+                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                        確認画面
+                    </button>
+                </div>
+
+                <!-- 確認画面 -->
+                <div v-else class="space-y-6">
+                    <p class="text-lg font-medium text-gray-900">記入内容は下記のとおりです。</p>
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-sm font-medium text-gray-500">お問い合わせ種別</p>
+                            <p class="mt-1 text-gray-900">{{ inquiryData.category }}</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-sm font-medium text-gray-500">お問い合わせ内容</p>
+                            <p class="mt-1 text-gray-900 whitespace-pre-line">{{ inquiryData.message }}</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-sm font-medium text-gray-500">お名前</p>
+                            <p class="mt-1 text-gray-900">{{ inquiryData.name }}</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-sm font-medium text-gray-500">お名前（ふりがな）</p>
+                            <p class="mt-1 text-gray-900">{{ inquiryData.furigana }}</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-sm font-medium text-gray-500">メールアドレス</p>
+                            <p class="mt-1 text-gray-900">{{ inquiryData.email }}</p>
+                            <input type="hidden" v-model="inquiryData.email" required/>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-sm font-medium text-gray-500">電話番号</p>
+                            <p class="mt-1 text-gray-900">
+                                <span v-if="inquiryData.phoneNum">{{ inquiryData.phoneNum }}</span>
+                                <span v-else class="text-gray-500">未記入</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col space-y-4">
+                        <button 
+                            type="submit" 
+                            @click="toggleConfirmView"
+                            class="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                        >
+                            修正画面
+                        </button>
+
+                        <p class="text-sm text-gray-500 text-center">
+                            <a href="https://connect-goals.com/site-info/terms-of-service" target="_blank" class="text-blue-500 hover:text-blue-600">利用規約</a>・<a href="https://connect-goals.com/site-info/privacy-policy" target="_blank" class="text-blue-500 hover:text-blue-600">プライバシーポリシー</a>に同意のうえ送信してください。3営業日以内に返信いたします。
+                        </p>
+
+                        <button 
+                            type="submit"
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        >
+                            送信
+                        </button>
                     </div>
                 </div>
-                <div class="btn-to-edit">
-                    <button type="submit" @click="toggleConfirmView">修正画面</button>
-                </div>
-                <div>
-                    <p class="notice-before-sending">
-                        利用規約・プライバシーポリシーに同意のうえ送信してください。3営業日以内に返信いたします。
-                    </p>
-                    <button type="submit">送信</button>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 </template>
 
-<style scoped>
-@media screen and (max-width: 500px) {
-    .contents-wrapper {
-        width: 100%;
-        text-align: center;
-    }
-
-    .forms-wrapper {
-        min-width: 350px;
-        width: 90%;
-        margin: 2em auto;
-    }
-
-    .forms-wrapper button {
-        width: 100%;
-        margin-top: 1em;
-        padding: 0.2em 0;
-    }
-
-    .contact-category {
-        display: flex;
-        flex-direction: row;
-    }
-
-    .contact-category select {
-        margin-left: 1em;
-    }
-
-    .each-block-container {
-        margin-bottom: 1em;
-        text-align: left;
-    }
-
-    .each-block-container>p {
-        margin-bottom: 0.5em;
-    }
-
-    .each-block-container>input,
-    .each-block-container textarea {
-        width: 100%;
-    }
-
-    .hissu {
-        font-size: 8px;
-        color: #ff0000;
-        vertical-align: top;
-        margin-left: 4px;
-    }
-
-    .btn-to-edit {
-        margin-bottom: 2em;
-    }
-
-    .sending-contents {
-        text-align: left;
-    }
-
-    .each-sending-content {
-        margin-top: 1em;
-    }
-
-    .notice-before-sending {
-        text-align: left;
-    }
-}
-</style>
+<style></style>
