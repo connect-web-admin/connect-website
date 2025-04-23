@@ -17,6 +17,7 @@ const targetPics = ref([]);
 const matchDates = ref([]);
 const failedMsg = ref("");
 const noTargetPicsMsg = ref("");
+const matchDateAfterChampionshipName = ref("");
 
 const openModal = (index) => {
     selectedImage.value = index;
@@ -105,6 +106,7 @@ const getTargetPics = async (matchDate) => {
             "画像の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。";
         console.error("画像の取得に失敗しました。");
     } finally {
+        matchDateAfterChampionshipName.value = matchDate;
         isLoading.value = false;
     }
 };
@@ -127,7 +129,7 @@ onMounted(async () => {
 <template>
     <div>
         <div class="p-2 text-sm">
-            <h1 class="text-lg font-bold py-2">{{ championshipName }}</h1>
+            <h1 class="text-lg font-bold py-2">{{ championshipName }}&nbsp;{{ matchDateAfterChampionshipName }}</h1>
             <p>試合日を選択してください。</p>
             <span
                 v-for="matchDate in matchDates"
@@ -152,13 +154,13 @@ onMounted(async () => {
                 <div v-else class="grid grid-cols-3 gap-3 px-2">
                     <div v-for="(pic, index) in targetPics" :key="index" class="relative cursor-pointer aspect-square"
                         @click="openModal(index)">
-                        <img :src="pic.pic_url" alt="高円宮杯 JFA U-18 サッカー2025北海道 ブロックリーグ札幌" class="w-full h-full object-cover">
+                        <img :src="pic.pic_url" :alt="championshipName" class="w-full h-full object-cover">
                     </div>
                 </div>
                 <div v-if="showModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
                     @click="closeModal">
                     <div class="relative w-[98vw] flex items-center justify-center">
-                        <img :src="targetPics[selectedImage].pic_url" alt="高円宮杯 JFA U-18 サッカー2025北海道 ブロックリーグ札幌" class="w-full h-auto object-contain">
+                        <img :src="targetPics[selectedImage].pic_url" :alt="championshipName" class="w-full h-auto object-contain">
                         <button @click.stop="closeModal"
                             class="absolute top-2 right-2 text-white bg-black/50 rounded-full w-5 h-5 flex items-center justify-center">
                             ✕
