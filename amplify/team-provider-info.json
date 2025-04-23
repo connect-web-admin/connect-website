@@ -27,7 +27,7 @@
         },
         "sendInquiryViaSESLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/sendInquiryViaSESLambda-646b584558376f72346f-build.zip"
+          "s3Key": "amplify-builds/sendInquiryViaSESLambda-5a486c48625a4f587879-build.zip"
         },
         "pickupNewsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",

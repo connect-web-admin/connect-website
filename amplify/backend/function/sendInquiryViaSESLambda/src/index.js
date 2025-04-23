@@ -1,10 +1,11 @@
 const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses")
-const senderEmail = "espina.soccer@gmail.com" // SESで確認済みの送信元メールアドレス
+const senderEmail = "info@connect-goals.com" // SESで確認済みの送信元メールアドレス
 const sesClient = new SESClient({ region: 'ap-northeast-1' })
 
 exports.handler = async (event) => {
     try {
-        const body = JSON.parse(event.body)
+        console.log('メール送信開始');
+        const body = JSON.parse(event.body);
 
         // バリデーション
         const requiredFields = ["category", "message", "name", "furigana", "email"]
@@ -17,7 +18,7 @@ exports.handler = async (event) => {
             }
         }
 
-        const { category, message, name, furigana, email, phoneNum } = body
+        const { category, message, name, furigana, email, phoneNum } = body;
 
         const params = {
             Source: senderEmail,
@@ -41,9 +42,13 @@ exports.handler = async (event) => {
                 },
             },
         }
+        
+        console.log('メール送信パラメータ', JSON.stringify(params));
+        
+        const command = new SendEmailCommand(params);
+        const sendResult = await sesClient.send(command);
 
-        const command = new SendEmailCommand(params)
-        await sesClient.send(command)
+        console.log('sendResult', sendResult);
 
         return {
             statusCode: 200,
