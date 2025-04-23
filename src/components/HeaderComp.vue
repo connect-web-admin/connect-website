@@ -60,7 +60,7 @@ const prevImage = () => {
 };
 
 /**
- * スライドバー下のメニュー表示
+ * スライダー下のメニュー表示
  */
 const menuList = [
     { name: 'TOP', path: '/top', position: 0 },
@@ -190,6 +190,14 @@ watch(isMenuOpen, (newValue) => {
         document.body.style.overflow = 'auto';
     }
 });
+
+// ルートの変更を監視してactiveMenuを更新
+watch(() => route.path, (newPath) => {
+    const index = menuList.findIndex(menu => menu.path === newPath);
+    if (index !== -1) {
+        activeMenu.value = index;
+    }
+}, { immediate: true });
 
 onMounted(() => {
     // 最初の画像の表示時間でタイマーを開始
