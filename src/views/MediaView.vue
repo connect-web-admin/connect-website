@@ -76,9 +76,9 @@ onMounted(async () => {
                 <h1 class="text-xl font-bold w-[200px]">メディア</h1>
                 <a href="https://www.sponichi.co.jp" target="_blank" class="w-fulll">
                     <img 
-                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi-annex-banner.jpg" 
+                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi.png" 
                         alt="スポニチアネックスバナー" 
-                        class="w-[200px] h-auto py-1 px-2 border-2 border-[#000dff] rounded-sm" 
+                        class="w-[200px] h-auto py-1 px-2 border-1 border-[#070e85] rounded-sm" 
                     />
                 </a>
             </div>
