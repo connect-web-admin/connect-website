@@ -112,6 +112,12 @@ onMounted(() => {
                     新規会員登録
                 </a>
             </div>
+            <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10">
+                <a href="/register-card-info.html" class="text-center text-blue-600 underline text-xs">
+                    新規会員登録で決済情報登録に失敗した場合
+                </a>
+            </div>
+
         </template>
     </main>
         
