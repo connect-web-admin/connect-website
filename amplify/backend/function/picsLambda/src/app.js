@@ -64,205 +64,24 @@ app.get(path + '/get-target-pics', async function(req, res) {
   const championshipId = req.query.championshipId;
 	const matchDate = req.query.matchDate;
 
-  const getItemParams = {
+  const queryItemParams = {
 		TableName: tableName,
-		Key: {
-			championship_id: championshipId,
-			match_date: fiscalYear
-		}
+		IndexName: "gsiByChampionshipIdAndTakenAt",
+		KeyConditionExpression: "championship_id = :championship_id AND taken_at = :taken_at",
+		ExpressionAttributeValues: {
+			":championship_id": championshipId,
+			":taken_at": matchDate,
+		},
 	};
-
+  console.log('クエリパラメタ', queryItemParams)
   try {
-    const data = await ddbDocClient.send(new QueryCommand(queryParams));
+    const data = await ddbDocClient.send(new QueryCommand(queryItemParams));
+    data.Items.sort((a, b) => b.pic_id.localeCompare(a.pic_id));
+    console.log('取得データ', JSON.stringify(data));
     res.json(data.Items);
   } catch (err) {
     res.statusCode = 500;
     res.json({error: 'Could not load items: ' + err.message});
-  }
-});
-
-/************************************
-* HTTP Get method to list objects *
-************************************/
-
-app.get(path, async function(req, res) {
-  var params = {
-    TableName: tableName,
-    Select: 'ALL_ATTRIBUTES',
-  };
-
-  try {
-    const data = await ddbDocClient.send(new ScanCommand(params));
-    res.json(data.Items);
-  } catch (err) {
-    res.statusCode = 500;
-    res.json({error: 'Could not load items: ' + err.message});
-  }
-});
-
-/************************************
- * HTTP Get method to query objects *
- ************************************/
-
-app.get(path + hashKeyPath, async function(req, res) {
-  const condition = {}
-  condition[partitionKeyName] = {
-    ComparisonOperator: 'EQ'
-  }
-
-  if (userIdPresent && req.apiGateway) {
-    condition[partitionKeyName]['AttributeValueList'] = [req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH ];
-  } else {
-    try {
-      condition[partitionKeyName]['AttributeValueList'] = [ convertUrlType(req.params[partitionKeyName], partitionKeyType) ];
-    } catch(err) {
-      res.statusCode = 500;
-      res.json({error: 'Wrong column type ' + err});
-    }
-  }
-
-  let queryParams = {
-    TableName: tableName,
-    KeyConditions: condition
-  }
-
-  try {
-    const data = await ddbDocClient.send(new QueryCommand(queryParams));
-    res.json(data.Items);
-  } catch (err) {
-    res.statusCode = 500;
-    res.json({error: 'Could not load items: ' + err.message});
-  }
-});
-
-/*****************************************
- * HTTP Get method for get single object *
- *****************************************/
-
-app.get(path + '/object' + hashKeyPath + sortKeyPath, async function(req, res) {
-  const params = {};
-  if (userIdPresent && req.apiGateway) {
-    params[partitionKeyName] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
-  } else {
-    params[partitionKeyName] = req.params[partitionKeyName];
-    try {
-      params[partitionKeyName] = convertUrlType(req.params[partitionKeyName], partitionKeyType);
-    } catch(err) {
-      res.statusCode = 500;
-      res.json({error: 'Wrong column type ' + err});
-    }
-  }
-  if (hasSortKey) {
-    try {
-      params[sortKeyName] = convertUrlType(req.params[sortKeyName], sortKeyType);
-    } catch(err) {
-      res.statusCode = 500;
-      res.json({error: 'Wrong column type ' + err});
-    }
-  }
-
-  let getItemParams = {
-    TableName: tableName,
-    Key: params
-  }
-
-  try {
-    const data = await ddbDocClient.send(new GetCommand(getItemParams));
-    if (data.Item) {
-      res.json(data.Item);
-    } else {
-      res.json(data) ;
-    }
-  } catch (err) {
-    res.statusCode = 500;
-    res.json({error: 'Could not load items: ' + err.message});
-  }
-});
-
-
-/************************************
-* HTTP put method for insert object *
-*************************************/
-
-app.put(path, async function(req, res) {
-
-  if (userIdPresent) {
-    req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
-  }
-
-  let putItemParams = {
-    TableName: tableName,
-    Item: req.body
-  }
-  try {
-    let data = await ddbDocClient.send(new PutCommand(putItemParams));
-    res.json({ success: 'put call succeed!', url: req.url, data: data })
-  } catch (err) {
-    res.statusCode = 500;
-    res.json({ error: err, url: req.url, body: req.body });
-  }
-});
-
-/************************************
-* HTTP post method for insert object *
-*************************************/
-
-app.post(path, async function(req, res) {
-
-  if (userIdPresent) {
-    req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
-  }
-
-  let putItemParams = {
-    TableName: tableName,
-    Item: req.body
-  }
-  try {
-    let data = await ddbDocClient.send(new PutCommand(putItemParams));
-    res.json({ success: 'post call succeed!', url: req.url, data: data })
-  } catch (err) {
-    res.statusCode = 500;
-    res.json({ error: err, url: req.url, body: req.body });
-  }
-});
-
-/**************************************
-* HTTP remove method to delete object *
-***************************************/
-
-app.delete(path + '/object' + hashKeyPath + sortKeyPath, async function(req, res) {
-  const params = {};
-  if (userIdPresent && req.apiGateway) {
-    params[partitionKeyName] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
-  } else {
-    params[partitionKeyName] = req.params[partitionKeyName];
-     try {
-      params[partitionKeyName] = convertUrlType(req.params[partitionKeyName], partitionKeyType);
-    } catch(err) {
-      res.statusCode = 500;
-      res.json({error: 'Wrong column type ' + err});
-    }
-  }
-  if (hasSortKey) {
-    try {
-      params[sortKeyName] = convertUrlType(req.params[sortKeyName], sortKeyType);
-    } catch(err) {
-      res.statusCode = 500;
-      res.json({error: 'Wrong column type ' + err});
-    }
-  }
-
-  let removeItemParams = {
-    TableName: tableName,
-    Key: params
-  }
-
-  try {
-    let data = await ddbDocClient.send(new DeleteCommand(removeItemParams));
-    res.json({url: req.url, data: data});
-  } catch (err) {
-    res.statusCode = 500;
-    res.json({error: err, url: req.url});
   }
 });
 

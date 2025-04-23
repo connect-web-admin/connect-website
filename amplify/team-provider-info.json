@@ -47,7 +47,7 @@
         },
         "picsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/picsLambda-566d6d593671794d7847-build.zip"
+          "s3Key": "amplify-builds/picsLambda-2b37316f6c6647374367-build.zip"
         }
       },
       "storage": {
