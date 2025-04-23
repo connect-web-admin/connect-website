@@ -39,7 +39,7 @@
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/memberLambda-6a6954535a4956514d56-build.zip"
+          "s3Key": "amplify-builds/memberLambda-53524e5a595753353043-build.zip"
         },
         "checkUserBeforeLoginLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",

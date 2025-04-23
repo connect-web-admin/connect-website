@@ -669,15 +669,20 @@ app.post(path + '/pagecon_url', async (req, res) => {
 
 	// 課金額は2025年4月中は3,960円、5月以降は4,840円にする
 	// 日本時間を取得
-	const nowJST = new Date(Date.now() + 9 * 60 * 60 * 1000); // UTC+9時間。YYYY-MM-DDThh:mm:ssZ表記
-	const today = nowJST.toISOString().slice(0, 10); // YYYY-MM-DD表記
-	// 比較対象の日付（日本時間として扱う。本日との比較に使うのはtodayだけであり、todayは日本時間（UTC+9時間）にしてある）
-	const mayFirst2025 = new Date('2025-05-01T00:00:00Z');
+	// const nowJST = new Date(Date.now() + 9 * 60 * 60 * 1000); // UTC+9時間。YYYY-MM-DDThh:mm:ssZ表記
+	// const today = nowJST.toISOString().slice(0, 10); // YYYY-MM-DD表記
+	// // 比較対象の日付（日本時間として扱う。本日との比較に使うのはtodayだけであり、todayは日本時間（UTC+9時間）にしてある）
+	// const mayFirst2025 = new Date('2025-05-01T00:00:00');
+	// 1. 今の日本時間を表す Date オブジェクトを作成
+	const now = new Date();
+	const nowUTC = now.getTime() + now.getTimezoneOffset() * 60000; // UTC へ変換
+	const nowJST = new Date(nowUTC + 9 * 60 * 60000); // UTC → JST (＋9時間)
+	const mayFirst2025 = new Date('2025-05-01T00:00:00+09:00');
+
 	// 課金額
 	const amountOfYearly = (nowJST < mayFirst2025) ? '3960' : '4840';
 	const amountOfMonthly = '440';
-	// const amountOfYearly = (nowJST < mayFirst) ? '3' : '5';
-	// const amountOfMonthly = '7';
+
 	// 暗号化フラグ
 	const encrypted_flg = '0'; // 暗号化しない
 
@@ -747,7 +752,8 @@ app.post(path + '/pagecon_url', async (req, res) => {
 
 		// 本日の日付により、月払い用の決済要求・確定要求を送信
 		if(paymentPlan === 'monthly') {
-			const juneFirst2025 = new Date('2025-06-01T00:00:00Z');
+			// const juneFirst2025 = new Date('2025-06-01T00:00:00');
+			const juneFirst2025 = new Date('2025-06-01T00:00:00+09:00');
 
 			// 2025年5月いっぱいは決済しない。6月1日0時00分以降は決済を通す。
 			if (nowJST < juneFirst2025) {
