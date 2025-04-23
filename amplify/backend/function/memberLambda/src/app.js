@@ -139,6 +139,36 @@ app.get(path + '/member-info', async function (req, res) {
 	}
 });
 
+/************************************
+ * HTTP Get method to 既存のアイテムのcust_codeに上書き *
+ ************************************/
+app.put(path + '/put-cust-code', async function (req, res) {
+	const memberId = req.body.memberId;
+	const email = req.body.email;
+	const custCode = req.body.custCode;
+
+	try {
+		// 更新したアイテムを保存
+		const params = {
+			TableName: tableName,
+			Key: { member_id: memberId, membership_type: 'regular' },
+			UpdateExpression: 'SET cust_code = :cust_code',
+			ExpressionAttributeValues: {
+                ":cust_code": custCode
+			},
+			ReturnValues: 'UPDATED_NEW'
+		};
+
+		const command = new UpdateCommand(params);
+		const result = await ddbDocClient.send(command);
+		console.log('Update successful:', JSON.stringify(result));
+		res.status(200).send();
+	} catch (err) {
+		console.error('Error updating data:', err);
+		res.status(500).json({ success: false, error: 'Error adding data' });
+	}
+});
+
 
 /************************************
  * HTTP Get method to 会員情報を取得 *
@@ -645,6 +675,7 @@ app.post(path + '/error_url', async (req, res) => {
 * HTTP post method for  *
 *************************************/
 app.post(path + '/pagecon_url', async (req, res) => {
+	console.log('結果通知された', req.body);
 	// 決済システム接続先
 	const sbpsApiEndPoint = process.env.SBPS_API_END_POINT;
 	// Basic認証ID
@@ -670,13 +701,13 @@ app.post(path + '/pagecon_url', async (req, res) => {
 	// 課金額は2025年4月中は3,960円、5月以降は4,840円にする
 	// 日本時間を取得
 	// const nowJST = new Date(Date.now() + 9 * 60 * 60 * 1000); // UTC+9時間。YYYY-MM-DDThh:mm:ssZ表記
-	// const today = nowJST.toISOString().slice(0, 10); // YYYY-MM-DD表記
 	// // 比較対象の日付（日本時間として扱う。本日との比較に使うのはtodayだけであり、todayは日本時間（UTC+9時間）にしてある）
 	// const mayFirst2025 = new Date('2025-05-01T00:00:00');
 	// 1. 今の日本時間を表す Date オブジェクトを作成
 	const now = new Date();
 	const nowUTC = now.getTime() + now.getTimezoneOffset() * 60000; // UTC へ変換
 	const nowJST = new Date(nowUTC + 9 * 60 * 60000); // UTC → JST (＋9時間)
+	const today = nowJST.toISOString().slice(0, 10); // YYYY-MM-DD表記
 	const mayFirst2025 = new Date('2025-05-01T00:00:00+09:00');
 
 	// 課金額
@@ -699,10 +730,10 @@ app.post(path + '/pagecon_url', async (req, res) => {
 				':cust_code': cust_code
 			}
 		};
-
+console.log('queryParams',queryParams)
 		const commandForQuery = new QueryCommand(queryParams);
 		const queryResult = await ddbDocClient.send(commandForQuery);
-
+console.log('queryResult', queryResult)
 		if (!queryResult.Items || queryResult.Items.length === 0) {
 			return res.status(404).json({ error: '指定されたemailのアイテムが見つかりませんでした' });
 		}
@@ -757,6 +788,7 @@ app.post(path + '/pagecon_url', async (req, res) => {
 
 			// 2025年5月いっぱいは決済しない。6月1日0時00分以降は決済を通す。
 			if (nowJST < juneFirst2025) {
+				console.log('2025年5月以前の月払い加入者の処理')
 				// can_loginをtrueに更新してログイン可能とする
 				const expirationDay = '2025-05-31';
 				await updateMemberInfo(member_id, membership_type, today, expirationDay);
@@ -766,6 +798,7 @@ app.post(path + '/pagecon_url', async (req, res) => {
 			}
 
 			if (juneFirst2025 <= nowJST){
+				console.log('2025年6月以降の月払い加入者の処理')
 				// チェックサム作成	
 				const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthly, free1, encrypted_flg, request_date];
 				const sbps_hashcode = generateHash(paymentElementsForHash);

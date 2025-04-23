@@ -353,6 +353,26 @@
         }
 
         /**
+         * 顧客コード生成
+         */
+        function generateCustCode() {
+            const now = new Date();
+            const timestamp = now.getTime().toString(36);
+            const randomPart = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+                .map(b => b.toString(36).padStart(2, '0'))
+                .join('');
+            const dateStr = now.getFullYear().toString(36) +
+                (now.getMonth() + 1).toString(36).padStart(2, '0') +
+                now.getDate().toString(36).padStart(2, '0') +
+                now.getHours().toString(36).padStart(2, '0') +
+                now.getMinutes().toString(36).padStart(2, '0') +
+                now.getSeconds().toString(36).padStart(2, '0');
+            
+            const combined = (timestamp + randomPart + dateStr).slice(0, 64);
+            return combined.padEnd(64, '0');
+        }
+
+        /**
          * リクエスト日時生成
          */
         function generateRequestDate() {
@@ -432,8 +452,17 @@
             const phone2 = phone2Input.value.trim();
             const phone3 = phone3Input.value.trim();
             const phoneNumber = phone1 + phone2 + phone3;
-            if (!email || !phone1 || !phone2 || !phone3) {
-                showError('メールアドレスと電話番号を入力してください');
+            const paymentPlan = document.querySelector('input[name="paymentPlan"]:checked').value;
+
+            // メールアドレスと電話番号と支払いプランを入力してください
+            if (!email || !phone1 || !phone2 || !phone3 || !paymentPlan) {
+                showError('メールアドレスと電話番号と支払いプランを入力してください');
+                return;
+            }
+            
+            // メールアドレスの形式チェック
+            if (!email.includes('@')) {
+                showError('メールアドレスを正しく入力してください');
                 return;
             }
 
@@ -447,11 +476,42 @@
             // スピナーを表示
             toggleSpinner(true);
 
+            window.addEventListener("DOMContentLoaded", () => {
+                if (!data) {
+                    document.getElementById("loading").classList.add("hidden");
+                    const errorBox = document.getElementById("error");
+                    errorBox.textContent = "入力データが存在しません。";
+                    errorBox.classList.remove("hidden");
+                    return;
+                }
+
+                const tokenRequest = {
+                    merchantId: "58913",
+                    serviceId: "001",
+                };
+
+                const callback = function (result) {
+                    // 「トークン取得成功は[B01-1]機能を起動するのに必要な要素
+                    //  トークンが要求され正常にエンドユーザー側に届いていることが重要であり、
+                    // このトークン自体の検証等は開発者側では行わず、何かに利用することもない。
+                    if (result.result === "OK") {
+                        console.log('トークン取得成功');
+                    } else {
+                        const errorBox = document.getElementById("error");
+                        errorBox.textContent = `トークン取得エラーです。戻るボタンで戻り、ブラウザを更新するか、時間を空けてから再度お試しください。`;
+                        errorBox.classList.remove("hidden");
+                    }
+                };
+
+                com_sbps_system_tds2.generateToken(tokenRequest, callback);
+            });
+
             /**
              * DynamoDBからメールアドレスをキーにしてアイテムを取得
              * 取得したアイテムのis_credit_card_validがfalseであれば、
              * request_date, sps_hashcodeを生成して決済情報入力画面へリダイレクト
              */
+            let memberId = '';
             try {
                 const queryUrl = new URL(`${MEMBER_API_URL}/member-info-to-register-card`);
                 queryUrl.searchParams.append('email', email);
@@ -469,10 +529,11 @@
                 }
 
                 const data = await response.json();
+                memberId = data.member_id;
 
                 if (data.is_credit_card_valid) {
                     alert('クレジットカード情報が既に有効です。ログイン可能です。');
-                    window.location.href = '/login';
+                    window.location.href = '/';
                     return;
                 }
             } catch (error) {
@@ -483,9 +544,35 @@
             }
 
             /**
-             * form送信
+             * DyunamoDBのアイテムにcust_codeを上書き保存してform送信
              */
             try {
+                // 顧客コード生成
+                const custCode = generateCustCode();
+
+                const queryUrl = new URL(`${MEMBER_API_URL}/put-cust-code`);
+                const response = await fetch(queryUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        memberId: memberId,
+                        custCode: custCode,
+                        email: email
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('APIリクエストに失敗しました');
+                }
+
+                // form送信準備
+                document.querySelector('input[name="cust_code"]').value = custCode;
+
+                // 支払いプランの選択状態を取得
+                document.querySelector('input[name="free1"]').value = paymentPlan;
+                    
                 // request_date生成
                 const requestDateValue = generateRequestDate();
                 document.querySelector('input[name="request_date"]').value = requestDateValue;
@@ -493,7 +580,7 @@
                 // sps_hashcode生成
                 const hashcode = generateHash();
                 document.querySelector('input[name="sps_hashcode"]').value = hashcode;
-                
+
                 // フォーム送信
                 document.querySelector('#confirmSuccess form').submit();
             } catch (error) {
