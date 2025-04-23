@@ -16,7 +16,7 @@
                     ><img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi.png"
                         alt="スポニチアネックス"
-                        class="border-1 border-black px-8 w-full h-9"
+                        class="border-1 border-black px-8 w-full h-8"
                 /></a>
                 <a
                     href="https://apps.apple.com/jp/app/takanori-sugeno-official-app/id6476841020"
@@ -30,7 +30,7 @@
                     ><img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/btop-banner.png"
                         alt="BTOP北海道"
-                        class="h-9 border-1 border-black px-12"
+                        class="h-8 border-1 border-black px-12"
                 /></a>
             </div>
         </div>
@@ -49,7 +49,7 @@
                     ><img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/consadole-banner-2.png"
                         alt="北海道コンサドーレ札幌"
-                        class="h-8 border-1 border-black px-3"
+                        class="h-8 border-1 border-black px-1"
                 /></a>
                 <a href="https://espolada.com/" target="_blank"
                     ><img
