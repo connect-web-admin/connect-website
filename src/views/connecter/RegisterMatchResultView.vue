@@ -917,9 +917,9 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     <p>試合日時：{{ formattedMatchDate }} - {{ scheduledMatchStartTime }}</p>
                     <p>会場：{{ venue }}</p>
                     <div :class="flexRow" class="justify-center">
-                        <p class="w-[150px] break-words text-right">{{ homeClubName }}</p>
+                        <p class="w-[150px] break-words text-right text-sm">{{ homeClubName }}</p>
                         <p class="mx-2">vs</p>
-                        <p class="w-[150px] break-words text-left">{{ awayClubName }}</p>
+                        <p class="w-[150px] break-words text-left text-sm">{{ awayClubName }}</p>
                     </div>
                 </div>
                 <div class="mt-5">
