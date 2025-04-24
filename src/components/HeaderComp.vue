@@ -411,11 +411,11 @@ const handleImageClick = (url) => {
         <div v-show="!hideSlider"
             class="flex items-center justify-center overflow-hidden w-full h-20 bg-black relative">
             <!-- 前の画像ボタン -->
-            <button @click="prevImage" class="absolute left-5 z-10 text-white hover:text-gray-300 transition-colors">
+            <button @click="prevImage" class="absolute left-0 z-10 text-white hover:text-gray-300 transition-colors w-20 h-full flex items-center justify-center">
                 <img src="@/assets/icons/arrow-backward.svg" alt="前の画像" class="h-7 w-7">
             </button>
             <!-- 次の画像ボタン -->
-            <button @click="nextImage" class="absolute right-5 z-10 text-white hover:text-gray-300 transition-colors">
+            <button @click="nextImage" class="absolute right-0 z-10 text-white hover:text-gray-300 transition-colors w-20 h-full flex items-center justify-center">
                 <img src="@/assets/icons/arrow-forward.svg" alt="次の画像" class="h-7 w-7">
             </button>
             <Transition 
@@ -436,9 +436,11 @@ const handleImageClick = (url) => {
                     v-for="(_, index) in imageList" 
                     :key="index"
                     @click="goToImage(index)"
-                    class="w-2 h-2 rounded-full transition-colors duration-200"
+                    class="w-2 h-2 flex items-center justify-center rounded-full transition-colors duration-200"
                     :class="currentIndex === index ? 'bg-white' : 'bg-gray-400 hover:bg-gray-300'"
-                ></button>
+                >
+                    <div class="w-1 h-1 rounded-full" :class="currentIndex === index ? 'bg-black' : 'bg-white'"></div>
+                </button>
             </div>
         </div>
         <!-- スライダー直下の横スクロールメニュー -->
@@ -458,7 +460,7 @@ const handleImageClick = (url) => {
                 <ul class="flex flex-col items-center space-y-2 w-[100px]">
                     <li v-for="(submenu, index) in menuList[1].submenu" :key="index" 
                         @click="() => handleSubmenuClick(submenu.path)"
-                        class="cursor-pointer hover:text-[#7FCDEC] transition-colors duration-200 text-center">
+                        class="cursor-pointer hover:text-[#7FCDEC] transition-colors duration-200 text-center w-full py-2">
                         {{ submenu.name }}
                     </li>
                 </ul>
