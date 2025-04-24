@@ -293,24 +293,21 @@ const handleImageClick = (url) => {
                                         <span
                                             class="block h-[29px] pl-4 border-b-1 border-gray-200 border-dashed">結果速報</span>
                                         <ul>
-                                            <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
-                                                <router-link to="/latest-results" :class="routerLinkClass">
-                                                    U-12（ジュニア）
-                                                    <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
-                                                </router-link>
+                                            <li @click="(isMenuOpen = !isMenuOpen), handleSubmenuClick('/latest-results?match_category=U-12')" :class="subMenuLiNotLastChild">
+                                                U-12（ジュニア）
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </li>
-                                            <li @click="isMenuOpen = !isMenuOpen" :class="subMenuLiNotLastChild">
-                                                <router-link to="/latest-results" :class="routerLinkClass">
-                                                    U-15（ジュニアユース）
-                                                    <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
-                                                </router-link>
+                                            <li @click="(isMenuOpen = !isMenuOpen), handleSubmenuClick('/latest-results?match_category=U-15')" :class="subMenuLiNotLastChild">
+                                                U-15（ジュニアユース）
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </li>
-                                            <li @click="isMenuOpen = !isMenuOpen"
-                                                class="flex justify-between items-center h-[29px] pr-4 pl-8">
-                                                <router-link to="/latest-results" :class="routerLinkClass">
-                                                    U-18（ユース）
-                                                    <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
-                                                </router-link>
+                                            <li @click="(isMenuOpen = !isMenuOpen), handleSubmenuClick('/latest-results?match_category=U-18')" :class="subMenuLiNotLastChild">
+                                                U-18（ユース）
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
+                                            </li>
+                                            <li @click="(isMenuOpen = !isMenuOpen), handleSubmenuClick('/latest-results?match_category=WOMAN')" :class="subMenuLiNotLastChild">
+                                                WOMAN
+                                                <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
                                             </li>
                                         </ul>
                                     </li>
@@ -355,6 +352,12 @@ const handleImageClick = (url) => {
                                                 </router-link>
                                             </li>
                                         </ul>
+                                    </li>
+                                    <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
+                                        <router-link to="/coupon" :class="routerLinkClass">
+                                            クーポン
+                                            <img src="@/assets/icons/arrow-right.png" alt="矢印" class="h-[16px]">
+                                        </router-link>
                                     </li>
                                     <li @click="isMenuOpen = !isMenuOpen" :class="navMenu">
                                         <router-link to="/faq" :class="routerLinkClass">
