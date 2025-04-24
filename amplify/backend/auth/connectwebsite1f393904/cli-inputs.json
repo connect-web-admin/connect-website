@@ -12,10 +12,10 @@
     "mfaTypes": [
       "SMS Text Message"
     ],
-    "smsAuthenticationMessage": "Your authentication code is {####}",
-    "smsVerificationMessage": "Your verification code is {####}",
-    "emailVerificationSubject": "Your verification code",
-    "emailVerificationMessage": "Your verification code is {####}",
+    "smsAuthenticationMessage": "Connect認証コードは {####} です。",
+    "smsVerificationMessage": "Connect認証コードは {####} です。",
+    "emailVerificationSubject": "Connect認証コード",
+    "emailVerificationMessage": "Connect認証コードは {####} です。",
     "defaultPasswordPolicy": false,
     "passwordPolicyMinLength": 8,
     "passwordPolicyCharacters": [],
