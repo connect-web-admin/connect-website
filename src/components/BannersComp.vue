@@ -84,10 +84,10 @@
                 地　区　協　会
             </p>
             <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                <a href="http://www.fa-hakodate.jp/" target="_blank"
+                <a href="http://www.afa11.com/" target="_blank"
                     ><img
                         src="https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/banner-link-img/asahikawa-banner.png"
-                        alt="函館地区サッカー協会"
+                        alt="旭川地区サッカー協会"
                         class="w-full"
                 /></a>
                 <a href="https://otarufa.sakura.ne.jp/" target="_blank"
@@ -104,10 +104,10 @@
                         alt="空知地区サッカー協会"
                         class="w-full"
                 /></a>
-                <a href="http://www.afa11.com/" target="_blank"
+                <a href="http://www.fa-hakodate.jp/" target="_blank"
                     ><img
-                        src="https://connect-website-bucket0c0f1-dev.s3.amazonaws.com/banner-link-img/asahikawa-banner.png"
-                        alt="旭川地区サッカー協会"
+                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/hakodate-banner.png"
+                        alt="函館地区サッカー協会"
                         class="w-full"
                 /></a>
                 <a href="https://www.kushiro-fa.com/index.html" target="_blank"
