@@ -134,7 +134,7 @@ onMounted(() => {
     <div>
         <div v-if="isLoading">
             <div class="flex justify-center items-center h-screen">
-                <img src="../assets/icons/loading.gif" alt="loading" class="w-1/2 h-1/2">
+                <img src="../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
             </div>
         </div>
         <div v-else>
