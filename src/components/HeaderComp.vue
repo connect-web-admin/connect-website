@@ -145,21 +145,6 @@ const handleScroll = () => {
     hideSlider.value = scrollTop !== 0;
 }
 
-// デバウンス関数の実装
-const debounce = (func, wait) => {
-    let timeout;
-    return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            func.apply(this, args);
-        }, wait);
-    };
-};
-
-// デバウンスされたスクロールハンドラー
-const debouncedHandleScroll = debounce(handleScroll, 200); // デバウンス時間を2000msから200msに短縮 ー`
-
-
 /**
  * ログアウトしてローカルストレージのアイテムを削除
  */
@@ -203,7 +188,7 @@ onMounted(() => {
     // 最初の画像の表示時間でタイマーを開始
     interval = setTimeout(nextImage, imageList.value[currentIndex.value].duration);
     // 下にスクロールするとスライダーを非表示にするスクロールイベントを追加
-    window.addEventListener('scroll', debouncedHandleScroll);
+    window.addEventListener('scroll', handleScroll);
     // ウィンドウのリサイズ時にメニュー位置を更新
     window.addEventListener('resize', updateMenuPositions);
 });
@@ -212,7 +197,7 @@ onUnmounted(() => {
     // スライダーのインターバルをクリア
     clearInterval(interval);
     // 下にスクロールするとスライダーを非表示にするスクロールイベントを削除
-    window.removeEventListener('scroll', debouncedHandleScroll);
+    window.removeEventListener('scroll', handleScroll);
     document.body.style.overflow = 'auto';
     // ウィンドウのリサイズ時にメニュー位置を更新
     window.removeEventListener('resize', updateMenuPositions);
