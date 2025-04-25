@@ -108,14 +108,13 @@ onMounted(() => {
                 </template>
             </Authenticator>
             <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10">
-                <p class="font-bold text-red-500 p-5">ただいま予想を上回る反響をいただいており、新規会員登録ができにくい状態です。ご迷惑をおかけしますが、登録が成功しない場合は、時間を空けてお試しくださいますようお願いいたします。</p>
                 <a href="/signup.html" class="text-center bg-lime-600 text-white px-4 py-2 rounded-sm">
                     新規会員登録
                 </a>
             </div>
             <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10">
-                <a href="/register-card-info.html" class="text-center text-blue-600 underline text-sm">
-                    新規会員登録で決済情報登録に失敗した場合
+                <a href="/register-card-info.html" class="text-center text-blue-600 underline text-lg">
+                    新規会員登録時に決済情報登録に失敗した場合はこちら
                 </a>
             </div>
 
