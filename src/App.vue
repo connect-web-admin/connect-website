@@ -112,9 +112,14 @@ onMounted(() => {
                     新規会員登録
                 </a>
             </div>
-            <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10">
-                <a href="/register-card-info.html" class="text-center text-blue-600 underline text-lg">
-                    新規会員登録時に決済情報登録に失敗した場合はこちら
+            <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10 p-4">
+                <p class="mb-8 text-left"><span class="font-bold underline">新規会員登録について</span><br>何らかの事象により認証コードの入力画面が表示されなくなった場合、
+                    ご登録いただいたメールアドレスとパスワードを上記のログインフォームに入力してログインボタンをタップしていただきますと、認証コード入力画面に移動することができます。<br>
+                    認証が成功しましたら、<a href="/register-card-info.html" class="text-center text-blue-600 underline text-lg">「新規会員登録時に決済情報登録を完了できなかった場合はこちら」</a>
+                    をタップしていただきますと、決済情報登録画面に移動することができます。<br>
+                    決済情報の登録が完了しましたら、正式にログインいただくことができるようになります。</p>
+                <a href="/register-card-info.html" class="text-blue-600 underline text-lg block text-left">
+                    新規会員登録時に決済情報登録を完了できなかった場合はこちら
                 </a>
             </div>
 
