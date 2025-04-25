@@ -56,6 +56,10 @@ const championshipsThisWeek = computed(() => {
     return Array.from(championships);
 });
 
+const championshipsThisWeekSorted = computed(() => {
+    return championshipsThisWeek.value.sort((a, b) => a.localeCompare(b));
+});
+
 const handleChampionshipClick = (championshipName) => {
     router.push({
         path: '/latest-results',
@@ -74,7 +78,7 @@ const handleChampionshipClick = (championshipName) => {
             </div>
             <div v-else>
                 <ul class="list-none p-0">
-                    <li v-for="championship in championshipsThisWeek" 
+                    <li v-for="championship in championshipsThisWeekSorted" 
                         :key="championship"
                         @click="handleChampionshipClick(championship)"
                         class="cursor-pointer hover:bg-gray-200 text-blue-600  p-2 underline">
