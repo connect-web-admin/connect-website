@@ -66,16 +66,10 @@ const sortedFormattedData = computed(() => {
         championships.forEach((championship) => {
             Object.keys(championship.matches).forEach((matchKey) => {
                 championship.matches[matchKey] = Object.fromEntries(
-                    Object.entries(championship.matches[matchKey]).sort(
-                        ([, a], [, b]) => {
-                            if (!a || !b) return 0;
-                            if (!a.match_id || !b.match_id) return 0;
-                            return a.match_id.localeCompare(b.match_id);
-                        }
-                    )
+                    Object.entries(championship.matches[matchKey])
+                        .filter(([key]) => key !== 'round_id') // round_idは無視
+                        .sort(([, a], [, b]) => a.match_id.localeCompare(b.match_id))
                 );
-                // round_idを削除
-                delete championship.matches[matchKey].round_id;
             });
         });
     });
