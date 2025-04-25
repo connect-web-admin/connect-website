@@ -67,7 +67,11 @@ const sortedFormattedData = computed(() => {
             Object.keys(championship.matches).forEach((matchKey) => {
                 championship.matches[matchKey] = Object.fromEntries(
                     Object.entries(championship.matches[matchKey]).sort(
-                        ([, a], [, b]) => a.match_id.localeCompare(b.match_id)
+                        ([, a], [, b]) => {
+                            if (!a || !b) return 0;
+                            if (!a.match_id || !b.match_id) return 0;
+                            return a.match_id.localeCompare(b.match_id);
+                        }
                     )
                 );
                 // round_idを削除
