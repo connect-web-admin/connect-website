@@ -40,7 +40,7 @@ const getAllNews = async () => {
         allNews.value = await response.json();
         
         // news_idで降順ソート（新しい記事を上に表示）
-        allNews.value.sort((a, b) => a.news_id.localeCompare(b.news_id));
+        allNews.value.sort((a, b) => b.news_id.localeCompare(a.news_id));
     } catch (error) {
         failedMsg.value = '記事の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。';
         console.error('記事の取得に失敗しました。');
