@@ -69,27 +69,32 @@ function formatTimeZone(gameStatus) {
 	}
 }
 
-function isWithinLastMondayFromNextSunday(targetDate) {
-	const today = new Date();
-	today.setUTCHours(0, 0, 0, 0);
-	today.setTime(today.getTime() + 9 * 60 * 60 * 1000); // 日本時間に調整
+function isWithinLastTuesdayToNextMonday(targetDate) {
+    // 今日の日付を日本時間の00:00に合わせる
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    today.setTime(today.getTime() + 9 * 60 * 60 * 1000); // 日本時間に調整
 
-	// 過去の直近の月曜日を取得（今日が月曜なら今日）
-	const monday = new Date(today);
-	const dayOfWeek = monday.getDay(); // 0: 日曜, 1: 月曜, ..., 6: 土曜
-	const diffToMonday = (dayOfWeek === 0) ? -6 : 1 - dayOfWeek;
-	monday.setDate(today.getDate() + diffToMonday);
+    // 過去の直近の火曜日を取得（今日が火曜なら今日）
+    const lastTuesday = new Date(today);
+    const dayOfWeek = lastTuesday.getDay(); // 0:日曜,1:月曜,2:火曜, ...,6:土曜
+    // 「今日から何日遡れば直近の火曜になるか」を計算
+    const diffSinceTuesday = (dayOfWeek - 2 + 7) % 7;
+    lastTuesday.setDate(today.getDate() - diffSinceTuesday);
 
-	// 未来の直近の日曜日を取得（今日が日曜なら今日）
-	const sunday = new Date(today);
-	sunday.setDate(today.getDate() + (7 - dayOfWeek) % 7);
+    // 未来の直近の月曜日を取得（今日が月曜なら今日）
+    const nextMonday = new Date(today);
+    // 「今日から何日進めば次の月曜（または今日）が来るか」を計算
+    const diffToNextMonday = (1 - dayOfWeek + 7) % 7;
+    nextMonday.setDate(today.getDate() + diffToNextMonday);
 
-	// targetDate を同様に日本時間で調整
-	const target = new Date(targetDate);
-	target.setUTCHours(0, 0, 0, 0);
-	target.setTime(target.getTime() + 9 * 60 * 60 * 1000);
+    // targetDate を同様に日本時間の00:00に調整
+    const target = new Date(targetDate);
+    target.setUTCHours(0, 0, 0, 0);
+    target.setTime(target.getTime() + 9 * 60 * 60 * 1000);
 
-	return target >= monday && target <= sunday;
+    // 範囲内なら true
+    return target >= lastTuesday && target <= nextMonday;
 }
 
 function canAccess(matchDate) {
@@ -138,7 +143,7 @@ app.get(path + '/championship-names-ids', async function (req, res) {
 });
 
 /************************************
-* HTTP Get method TOP画面に表示する試合を取得 *
+* HTTP Get method 結果速報画面に表示する試合を取得 *
 ************************************/
 app.get(path + '/matches-in-this-week', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
@@ -164,7 +169,7 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 					for (const match in item['matches'][round]) {
 						// round_idはのバリューは文字列なので、それ以外の場合のみmatch_dateについて判定
 						if (typeof item['matches'][round][match] !== 'string') {
-							if (!isWithinLastMondayFromNextSunday(item['matches'][round][match]['match_date'])) {
+							if (!isWithinLastTuesdayToNextMonday(item['matches'][round][match]['match_date'])) {
 								delete item['matches'][round][match];
 							}
 						}

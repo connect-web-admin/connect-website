@@ -19,7 +19,7 @@
       "function": {
         "matchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/matchLambda-6d784450666c39435135-build.zip"
+          "s3Key": "amplify-builds/matchLambda-4c613050354463416d65-build.zip"
         },
         "clubLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -39,11 +39,11 @@
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/memberLambda-46464a396434417a4f43-build.zip"
+          "s3Key": "amplify-builds/memberLambda-617161686f594e2b5950-build.zip"
         },
         "checkUserBeforeLoginLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/checkUserBeforeLoginLambda-7a786d70526a70314b6c-build.zip"
+          "s3Key": "amplify-builds/checkUserBeforeLoginLambda-612b784c35325a77786f-build.zip"
         },
         "picsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",

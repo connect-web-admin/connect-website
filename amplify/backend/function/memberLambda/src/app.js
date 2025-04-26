@@ -309,6 +309,7 @@ app.post(path + '/register-user-to-database', async (req, res) => {
 					ReturnValues: 'UPDATED_NEW'
 				}));
 				const newCounterValue = counterResult.Attributes.current_value;
+				console.log('新しく作成されたmember_id', newCounterValue);
 				newMemberId = String(newCounterValue).padStart(10, '0');
 		
 				// --- ステップ 3: 日付生成 ---

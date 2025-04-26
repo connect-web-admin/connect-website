@@ -10,6 +10,7 @@ exports.handler = async (event) => {
 
     // ログイン情報（メールアドレス）を取得
     const inputEmail = event.request.userAttributes.email;
+    console.log('ログイン試行メールアドレス', inputEmail);
 
     // メールアドレスが空の場合はエラーを投げる
     if (!inputEmail) {
@@ -39,13 +40,13 @@ exports.handler = async (event) => {
         if (!result.Items || result.Items[0].can_login === false) {
             throw new Error("ログインできません");
         }
-
+        console.log(inputEmail, 'ログインOK')
         // 問題なければログインを許可
         return event;
     } catch (err) {
         console.error("ログイン前チェックでエラー:", err);
 
         // エラーを投げると Cognito はログインをブロックする
-        throw new Error("ログインが拒否されました: " + err.message);
+        throw new Error("決済情報の登録が完了していない可能性があります。: " + err.message);
     }
 };
