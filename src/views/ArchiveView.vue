@@ -368,6 +368,182 @@ onMounted(() => {
         <p class="font-bold mt-5">※詳細決定次第、順次掲載</p>
         <div class="space-y-4 mt-8">
             <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>U-12サッカーリーグ in 北海道札幌地区リーグ</h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                ['https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%88S%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%881%E9%83%A8%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%882A%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%882B%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%883A%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%883B%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%883C%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%883D%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884A%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884B%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884C%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884D%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%88%EF%BC%95A%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%88%EF%BC%95B%EF%BC%89.jpg'
+                                ],
+                                ['４種リーグ戦 組合せ（S）',
+                                    '４種リーグ戦 組合せ（1部）',
+                                    '４種リーグ戦 組合せ（2A）',
+                                    '４種リーグ戦 組合せ（2B）',
+                                    '４種リーグ戦 組合せ（3A）',
+                                    '４種リーグ戦 組合せ（3B）',
+                                    '４種リーグ戦 組合せ（3C）',
+                                    '４種リーグ戦 組合せ（4A）',
+                                    '４種リーグ戦 組合せ（4B）',
+                                    '４種リーグ戦 組合せ（4C）',
+                                    '４種リーグ戦 組合せ（5A）',
+                                    '４種リーグ戦 組合せ（5B）'
+                                ]
+                            )
+                        "
+                    >
+                        組 み 合 わ せ
+                    </p>
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>2025年度第17回北海道カブスリーグU-13 １部・２部</h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        組 み 合 せ
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                ['https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U13+1%E9%83%A8.jpg', 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%92%E9%83%A8.jpg'],
+                                ['2025年度第17回北海道カブスリーグU-13 １部', '2025年度第17回北海道カブスリーグU-13 ２部']
+                            )
+                        "
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>
+                    高円宮杯 JFA U-15サッカーリーグ2025 第17回札幌ブロックカブスリーグ
+                </h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_TakamadonomiyaCup_17th_SapporoBlock_CubsLeague/%E6%9C%AD%E5%B9%8C%E3%83%95%E3%82%99%E3%83%AD%E3%83%83%E3%82%AF%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%97%A5%E7%A8%8B%E8%A1%A8%EF%BC%94%E6%9C%8825%E6%97%A5%E7%89%88.jpg'],
+                                ['札幌ブロックカブスリーグ日程表４月25日版.jpg']
+                            )
+                        "
+                    >
+                        組 み 合 わ せ
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%91%E9%83%A8.jpg',
+                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFAサッカーリーグ2025北海道１部'
+                            )
+                        "
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>
+                    第19回北海道カブスリーグU-15 兼
+                    高円宮杯JFAサッカーリーグ2025北海道１部
+                </h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        組 み 合 せ
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%91%E9%83%A8.jpg',
+                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFAサッカーリーグ2025北海道１部'
+                            )
+                        "
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>
+                    第19回北海道カブスリーグU-15 兼
+                    高円宮杯JFAサッカーリーグ2025北海道２部
+                </h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        組 み 合 せ
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%92%E9%83%A8.jpg',
+                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFAサッカーリーグ2025北海道２部'
+                            )
+                        "
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
                 <h2>
                     高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌
                 </h2>
@@ -436,152 +612,6 @@ onMounted(() => {
                                     '高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 試合結果1',
                                     '高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 試合結果2',
                                 ]
-                            )
-                        "
-                    >
-                        試 合 結 果
-                    </p>
-                </div>
-            </div>
-
-            <div class="space-y-3 border-b border-gray-200 pb-3">
-                <h2>
-                    第19回北海道カブスリーグU-15 兼
-                    高円宮杯JFAサッカーリーグ2025北海道１部
-                </h2>
-                <div class="flex flex-row justify-between gap-4">
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                    >
-                        大 会 概 要
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                    >
-                        組 み 合 せ
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                        @click="
-                            openModal(
-                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%91%E9%83%A8.jpg',
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFAサッカーリーグ2025北海道１部'
-                            )
-                        "
-                    >
-                        試 合 結 果
-                    </p>
-                </div>
-            </div>
-
-            <div class="space-y-3 border-b border-gray-200 pb-3">
-                <h2>
-                    第19回北海道カブスリーグU-15 兼
-                    高円宮杯JFAサッカーリーグ2025北海道２部
-                </h2>
-                <div class="flex flex-row justify-between gap-4">
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                    >
-                        大 会 概 要
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                    >
-                        組 み 合 せ
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                        @click="
-                            openModal(
-                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%92%E9%83%A8.jpg',
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFAサッカーリーグ2025北海道２部'
-                            )
-                        "
-                    >
-                        試 合 結 果
-                    </p>
-                </div>
-            </div>
-
-            <div class="space-y-3 border-b border-gray-200 pb-3">
-                <h2>2025年度第17回北海道カブスリーグU-13 １部・２部</h2>
-                <div class="flex flex-row justify-between gap-4">
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                    >
-                        大 会 概 要
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                    >
-                        組 み 合 せ
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                        @click="
-                            openModal(
-                                ['https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U13+1%E9%83%A8.jpg', 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%92%E9%83%A8.jpg'],
-                                ['2025年度第17回北海道カブスリーグU-13 １部', '2025年度第17回北海道カブスリーグU-13 ２部']
-                            )
-                        "
-                    >
-                        試 合 結 果
-                    </p>
-                </div>
-            </div>
-
-            <div class="space-y-3 border-b border-gray-200 pb-3">
-                <h2>U-12サッカーリーグ in 北海道札幌地区リーグ</h2>
-                <div class="flex flex-row justify-between gap-4">
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                    >
-                        大 会 概 要
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                        @click="
-                            openModal(
-                                ['https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%88S%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%881%E9%83%A8%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%882A%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%882B%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%883A%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%883B%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%883C%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%883D%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884A%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884B%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884C%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884D%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%88%EF%BC%95A%EF%BC%89.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%88%EF%BC%95B%EF%BC%89.jpg'
-                                ],
-                                ['４種リーグ戦 組合せ（S）',
-                                    '４種リーグ戦 組合せ（1部）',
-                                    '４種リーグ戦 組合せ（2A）',
-                                    '４種リーグ戦 組合せ（2B）',
-                                    '４種リーグ戦 組合せ（3A）',
-                                    '４種リーグ戦 組合せ（3B）',
-                                    '４種リーグ戦 組合せ（3C）',
-                                    '４種リーグ戦 組合せ（4A）',
-                                    '４種リーグ戦 組合せ（4B）',
-                                    '４種リーグ戦 組合せ（4C）',
-                                    '４種リーグ戦 組合せ（5A）',
-                                    '４種リーグ戦 組合せ（5B）'
-                                ]
-                            )
-                        "
-                    >
-                        組 み 合 わ せ
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                        @click="
-                            openModal(
-                                [''],
-                                ['']
                             )
                         "
                     >
