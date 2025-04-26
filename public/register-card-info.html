@@ -531,6 +531,14 @@
                 const data = await response.json();
                 memberId = data.member_id;
 
+                // 認証コードの検証が完了していない場合は、認証コード画面へリダイレクト
+                if (!(data.is_email_verified)) {
+                    alert('認証コードの検証が完了していません。ログインフォームにメールアドレスとパスワードを入力して、認証コード画面へ移動してください。');
+                    window.location.href = '/';
+                    return;
+                }
+
+                // 決済情報がすでに有効であればログイン画面に遷移
                 if (data.is_credit_card_valid) {
                     alert('クレジットカード情報が既に有効です。ログイン可能です。');
                     window.location.href = '/';
