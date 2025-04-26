@@ -16,7 +16,7 @@
                     ><img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi.png"
                         alt="スポニチアネックス"
-                        class="border-2 border-black h-[92%] w-[999%] py-[2%] px-[15%] md:h-[96%] md:py-[1%] md:w-95%"
+                        class="border-1 border-black h-[92%] w-[999%] py-[2%] px-[15%] md:h-[96%] md:py-[1%] md:w-95%"
                 /></a>
                 <a
                     href="https://apps.apple.com/jp/app/takanori-sugeno-official-app/id6476841020"
@@ -30,7 +30,7 @@
                     ><img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/btop-banner.png"
                         alt="BTOP北海道"
-                        class="border-2 border-black px-[23%] md:py-[2%] md:px-[27%]"
+                        class="border-1 border-black px-[23%] md:py-[2%] md:px-[27%]"
                 /></a>
             </div>
         </div>
