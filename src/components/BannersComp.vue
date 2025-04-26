@@ -16,7 +16,7 @@
                     ><img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/sponichi.png"
                         alt="スポニチアネックス"
-                        class="border-1 border-black px-8 w-full h-8"
+                        class="border-2 border-black h-[92%] w-[999%] py-[2%] px-[15%] md:h-[96%] md:py-[1%] md:w-95%"
                 /></a>
                 <a
                     href="https://apps.apple.com/jp/app/takanori-sugeno-official-app/id6476841020"
@@ -30,7 +30,7 @@
                     ><img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/btop-banner.png"
                         alt="BTOP北海道"
-                        class="h-8 border-1 border-black px-12"
+                        class="border-2 border-black px-[23%] md:py-[2%] md:px-[27%]"
                 /></a>
             </div>
         </div>
@@ -38,25 +38,28 @@
             <p class="bg-black text-white text-center font-light mb-2">
                 リ　ー　グ　・　チ　ー　ム
             </p>
-            <div class="flex justify-between items-center">
-                <a href="https://www.jleague.jp/" target="_blank"
-                    ><img
+            <div class="flex justify-between gap-2 items-center">
+                <a href="https://www.jleague.jp/" target="_blank" class="flex justify-center">
+                    <img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/jleague-banner.png"
                         alt="Jリーグ"
-                        class="border-1 border-black h-8"
-                /></a>
-                <a href="https://www.consadole-sapporo.jp/" target="_blank"
-                    ><img
+                        class="border border-black h-10 w-55 md:h-20 md:w-auto object-contain"
+                    />
+                </a>
+                <a href="https://www.consadole-sapporo.jp/" target="_blank" class="flex justify-center">
+                    <img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/consadole-banner-2.png"
                         alt="北海道コンサドーレ札幌"
-                        class="h-8 border-1 border-black px-1"
-                /></a>
-                <a href="https://espolada.com/" target="_blank"
-                    ><img
+                        class="border border-black h-10 w-55 md:h-20 md:w-auto object-contain"
+                    />
+                </a>
+                <a href="https://espolada.com/" target="_blank" class="flex justify-center">
+                    <img
                         src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/espolada-banner-2.png"
                         alt="エスポラーダ北海道"
-                        class="h-8 border-1 border-black"
-                /></a>
+                        class="border border-black h-10 w-55 md:h-20 md:w-auto object-contain"
+                    />
+                </a>
             </div>
         </div>
         <div class="mb-8">
