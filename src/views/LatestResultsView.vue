@@ -150,6 +150,7 @@ onMounted(async () => {
                 <p>
                     U-18プリンスリーグの大会詳細結果はこちら→　<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank" class="text-blue-600 underline break-all">https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/</a>　からご覧ください。
                 </p>
+                <p class="mt-5 text-sm text-red-500">毎週火曜日更新<br>会場の状況や天候により、定刻通りの速報とならない場合があります。</p>
                 <MatchesInThisWeekComp :match-info="matchInfo" />
             </div>
         </div>
