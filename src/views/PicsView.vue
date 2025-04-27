@@ -83,20 +83,22 @@ onMounted(async () => {
         </div>
         <div v-else>
             <div v-for="(championships, category) in championshipInfo" :key="category">
-                <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
-                <ul>
-                    <li class="p-2 not-last:border-b-1 border-gray-300" v-for="championship in championships" :key="championship.championship_id">
-                        <span v-if="championship.championship_id === 'TakamadonomiyaCup2025HokkaidoSapporoBlock'">
-                            <router-link :to="`/pics-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
-                                <p class="pr-2">{{ championship.championship_name }}</p>
-                                <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
-                            </router-link>
-                        </span>
-                        <span v-else>
-                            {{ championship.championship_name }}
-                        </span>
-                    </li>
-                </ul>
+                <div v-if="category === 'U-18（ユース）'">
+                    <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
+                    <ul>
+                        <li class="p-2 not-last:border-b-1 border-gray-300" v-for="championship in championships" :key="championship.championship_id">
+                            <span v-if="championship.championship_id === 'TakamadonomiyaCup2025HokkaidoSapporoBlock'">
+                                <router-link :to="`/pics-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
+                                    <p class="pr-2">{{ championship.championship_name }}</p>
+                                    <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
+                                </router-link>
+                            </span>
+                            <span v-else>
+                                {{ championship.championship_name }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
