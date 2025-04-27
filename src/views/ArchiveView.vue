@@ -442,9 +442,9 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="space-y-2 border-b border-gray-200 pb-3">
+            <div class="space-y-1 border-b border-gray-200 pb-3">
                 <h2>2025年度第17回北海道カブスリーグU-13 １部</h2>
-                <p class="text-red-500">2025年4月27日現在、速報対象ではありません。</p>
+                <p class="text-red-500 text-sm">現時点では速報対象ではありません。</p>
                 <div class="flex flex-row justify-between gap-4">
                     <p class="border-1 w-1/3 py-1 text-xs text-center">
                         大 会 概 要
@@ -470,9 +470,9 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="space-y-3 border-b border-gray-200 pb-3">
+            <div class="space-y-1 border-b border-gray-200 pb-3">
                 <h2>2025年度第17回北海道カブスリーグU-13 ２部</h2>
-                <p class="text-red-500">2025年4月27日現在、速報対象ではありません。</p>
+                <p class="text-red-500 text-sm">現時点では速報対象ではありません。</p>
                 <div class="flex flex-row justify-between gap-4">
                     <p class="border-1 w-1/3 py-1 text-xs text-center">
                         大 会 概 要
@@ -500,11 +500,12 @@ onMounted(() => {
 
             
 
-            <div class="space-y-3 border-b border-gray-200 pb-3">
+            <div class="space-y-1border-b border-gray-200 pb-3">
                 <h2>
                     第19回北海道カブスリーグU-15 兼
                     高円宮杯JFAサッカーリーグ2025北海道１部
                 </h2>
+                <p class="text-red-500 text-sm">現時点では速報対象ではありません。</p>
                 <div class="flex flex-row justify-between gap-4">
                     <p class="border-1 w-1/3 py-1 text-xs text-center">
                         大 会 概 要
@@ -526,11 +527,12 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="space-y-3 border-b border-gray-200 pb-3">
+            <div class="space-y-1 border-b border-gray-200 pb-3">
                 <h2>
                     第19回北海道カブスリーグU-15 兼
                     高円宮杯JFAサッカーリーグ2025北海道２部
                 </h2>
+                <p class="text-red-500 text-sm">現時点では速報対象ではありません。</p>
                 <div class="flex flex-row justify-between gap-4">
                     <p class="border-1 w-1/3 py-1 text-xs text-center">
                         大 会 概 要
