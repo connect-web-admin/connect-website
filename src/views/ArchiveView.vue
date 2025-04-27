@@ -443,13 +443,51 @@ onMounted(() => {
             </div>
 
             <div class="space-y-1 border-b border-gray-200 pb-3">
-                <h2>2025年度第17回北海道カブスリーグU-13 １部</h2>
+                <h2>2025年度第17回北海道カブスリーグU-13 １部・２部</h2>
                 <p class="text-red-500 text-sm">現時点では速報対象ではありません。</p>
                 <div class="flex flex-row justify-between gap-4">
-                    <p class="border-1 w-1/3 py-1 text-xs text-center">
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025+%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13+%E9%96%8B%E5%82%AC%E8%A6%81%E9%A0%85_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025+%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13+%E9%96%8B%E5%82%AC%E8%A6%81%E9%A0%85_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_2.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025+%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13+%E9%96%8B%E5%82%AC%E8%A6%81%E9%A0%85_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_3.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025+%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13+%E9%96%8B%E5%82%AC%E8%A6%81%E9%A0%85_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_4.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025+%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13+%E9%96%8B%E5%82%AC%E8%A6%81%E9%A0%85_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_5.jpg'
+                                ],
+                                [
+                                    '2025 年度第17回北海道カブスリーグU-13 開催要項_ページ_1',
+                                    '2025 年度第17回北海道カブスリーグU-13 開催要項_ページ_2',
+                                    '2025 年度第17回北海道カブスリーグU-13 開催要項_ページ_3',
+                                    '2025 年度第17回北海道カブスリーグU-13 開催要項_ページ_4',
+                                    '2025 年度第17回北海道カブスリーグU-13 開催要項_ページ_5',
+                                ]
+                            )
+                        "
+                    >
                         大 会 概 要
                     </p>
-                    <p class="border-1 w-1/3 py-1 text-xs text-center">
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13%E9%96%8B%E5%82%AC%E6%97%A5%E7%A8%8B%EF%BC%881%E9%83%A8%EF%BC%89_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13%E9%96%8B%E5%82%AC%E6%97%A5%E7%A8%8B%EF%BC%881%E9%83%A8%EF%BC%89_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_2.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13%E9%96%8B%E5%82%AC%E6%97%A5%E7%A8%8B%EF%BC%882%E9%83%A8)%E3%80%80_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/2025%E5%B9%B4%E5%BA%A6%E7%AC%AC17%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-13%E9%96%8B%E5%82%AC%E6%97%A5%E7%A8%8B%EF%BC%882%E9%83%A8)%E3%80%80_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_2.jpg'
+                                ],
+                                [
+                                    '2025年度第17回北海道カブスリーグU-13開催日程（1部）_ページ_1',
+                                    '2025年度第17回北海道カブスリーグU-13開催日程（1部）_ページ_2',
+                                    '2025年度第17回北海道カブスリーグU-13開催日程（2部）_ページ_1',
+                                    '2025年度第17回北海道カブスリーグU-13開催日程（2部）_ページ_2',
+                                ]
+                            )
+                        "
+                    >
                         組 み 合 せ
                     </p>
                     <p
@@ -470,36 +508,6 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="space-y-1 border-b border-gray-200 pb-3">
-                <h2>2025年度第17回北海道カブスリーグU-13 ２部</h2>
-                <p class="text-red-500 text-sm">現時点では速報対象ではありません。</p>
-                <div class="flex flex-row justify-between gap-4">
-                    <p class="border-1 w-1/3 py-1 text-xs text-center">
-                        大 会 概 要
-                    </p>
-                    <p class="border-1 w-1/3 py-1 text-xs text-center">
-                        組 み 合 せ
-                    </p>
-                    <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
-                        @click="
-                            openModal(
-                                [                                    
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025-04-12%2C2025-04-13/2025%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%98%9F%E5%8F%96%E8%A1%A8+U15%EF%BC%92%E9%83%A8.jpg',
-                                ],
-                                [
-                                    '2025年度第17回北海道カブスリーグU-13 ２部',
-                                ]
-                            )
-                        "
-                    >
-                        試 合 結 果
-                    </p>
-                </div>
-            </div>
-
-            
-
             <div class="space-y-1border-b border-gray-200 pb-3">
                 <h2>
                     第19回北海道カブスリーグU-15 兼
@@ -510,7 +518,21 @@ onMounted(() => {
                     <p class="border-1 w-1/3 py-1 text-xs text-center">
                         大 会 概 要
                     </p>
-                    <p class="border-1 w-1/3 py-1 text-xs text-center">
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/2025%E5%B9%B4%E5%BA%A6%E7%AC%AC19%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-15%E9%96%8B%E5%82%AC%E6%97%A5%E7%A8%8B%EF%BC%881%E9%83%A8)%E3%80%80_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/2025%E5%B9%B4%E5%BA%A6%E7%AC%AC19%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-15%E9%96%8B%E5%82%AC%E6%97%A5%E7%A8%8B%EF%BC%881%E9%83%A8)%E3%80%80_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_2.jpg'
+                                ],
+                                [
+                                    '2025年度第19回北海道カブスリーグU-15開催日程（1部)　_ページ_1',
+                                    '2025年度第19回北海道カブスリーグU-15開催日程（1部)　_ページ_2',
+                                ]
+                            )
+                        "
+                    >
                         組 み 合 せ
                     </p>
                     <p
@@ -537,7 +559,21 @@ onMounted(() => {
                     <p class="border-1 w-1/3 py-1 text-xs text-center">
                         大 会 概 要
                     </p>
-                    <p class="border-1 w-1/3 py-1 text-xs text-center">
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/2025%E5%B9%B4%E5%BA%A6%E7%AC%AC19%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-15%E9%96%8B%E5%82%AC%E6%97%A5%E7%A8%8B%EF%BC%882%E9%83%A8%EF%BC%89_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/2025%E5%B9%B4%E5%BA%A6%E7%AC%AC19%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-15%E9%96%8B%E5%82%AC%E6%97%A5%E7%A8%8B%EF%BC%882%E9%83%A8%EF%BC%89_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_2.jpg'
+                                ],
+                                [
+                                    '2025年度第19回北海道カブスリーグU-15開催日程（2部）_ページ_1',
+                                    '2025年度第19回北海道カブスリーグU-15開催日程（2部）_ページ_2',
+                                ]
+                            )
+                        "
+                    >
                         組 み 合 せ
                     </p>
                     <p
