@@ -676,7 +676,7 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-15TakamadonomiyaCup2025_17thHokkaidoSapporoBlock_CubsLeague/2025_U15_SapBloCab_kekka.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_SapBloCab_kekka_page-0001.jpg',
                                 ],
                                 [
                                     '高円宮杯 JFA U-15サッカーリーグ2025 第17回札幌ブロックカブスリーグ結果',
