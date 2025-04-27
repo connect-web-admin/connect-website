@@ -13,9 +13,11 @@ const formattedData = computed(() => {
     props.matchInfo.forEach((championship) => {
         // matchesをround_idの昇順でソート
         const sortedMatches = Object.fromEntries(
-            Object.entries(championship.matches).sort(([, a], [, b]) =>
-                a.round_id.localeCompare(b.round_id)
-            )
+            Object.entries(championship.matches).sort(([, a], [, b]) => {
+                const roundIdA = a?.round_id || '';
+                const roundIdB = b?.round_id || '';
+                return roundIdA.localeCompare(roundIdB);
+            })
         );
 
         Object.entries(sortedMatches).forEach(([matchKey, orders]) => {
