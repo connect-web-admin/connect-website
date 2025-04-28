@@ -47,6 +47,6 @@ exports.handler = async (event) => {
         console.error("ログイン前チェックでエラー:", err);
 
         // エラーを投げると Cognito はログインをブロックする
-        throw new Error("決済情報の登録が完了していない可能性があります。: " + err.message);
+        throw new Error("ログインできない場合は、認証コードで登録者本人確認がお済みでないか、クレジットカード決済情報が登録されていない可能性があります。ご不明な点は、下部のコンタクトからお問い合わせください。: " + err.message);
     }
 };
