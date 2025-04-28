@@ -199,8 +199,34 @@ app.get(path + '/member-info-to-register-card', async function (req, res) {
 			};
 		}
 
-		console.log('取得されたアイテム', queryResult)
-		res.status(200).json(queryResult.Items[0]);
+		console.log('取得されたアイテム', queryResult);
+
+		const memberInfo = queryResult.Items[0];
+
+		// Cognito で email_verified を確認
+		const getUserCmd = new AdminGetUserCommand({
+			UserPoolId: USER_POOL_ID,
+			Username: inputEmail // Usernameはメールアドレスと同じ
+		});
+		const userResp = await cognitoClient.send(getUserCmd);
+		// 'email_verified' は "true" / "false" 文字列で返る
+		const emailVerifiedAttr = userResp.UserAttributes?.find(
+		  (attr) => attr.Name === 'email_verified'
+		);
+		// アイテムにCognitoのメアド認証状態をつけて返却
+		const isEmailVerified = emailVerifiedAttr?.Value === 'true';
+		memberInfo.is_email_verified = isEmailVerified;
+		console.log('決済情報登録画面へ遷移するmemberInfo', memberInfo)
+
+		// // ここでは「未承認なら emailVerified=false を付けて返す」だけにしている。
+		// console.log('memberInfo', ...memberInfo);
+		// console.log('emailverified', emailVerified)
+		// res.status(200).json({
+		// 	...memberInfo,
+		// 	emailVerified: isEmailVerified,
+		// });
+
+		res.status(200).json(memberInfo);
 	} catch (err) {
 		res.statusCode = 500;
 		res.json({ error: 'Could not load items: ' + err.message })
@@ -520,6 +546,8 @@ app.post(path + '/confirm-signup', async (req, res) => {
         await cognitoClient.send(command);
 
         console.log(`Cognito認証コード確認成功: ${inputEmail}`);
+
+
 
         return res.status(200).json({
             status: 'EMAIL_CONFIRMED',
