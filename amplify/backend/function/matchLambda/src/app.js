@@ -108,7 +108,7 @@ function canAccess(matchDate) {
 	const day = String(japanTime.getUTCDate()).padStart(2, "0");
 	const today = `${year}-${month}-${day}`;
 
-	// 保存されている日付と比較
+	// 試合日と今日を比較
 	const isMatchDateToday = matchDate === today;
 
 	return isMatchDateToday;
@@ -199,6 +199,7 @@ app.get(path + '/current-matches', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
 	const accessToken = req.query.accessToken;
 
+	// U-12とWOMANはまとめて一つの扱いなので
 	// 配列化して長さが１ならばU-15（ジュニアユース）かU-18（ユース）、そうでなければU-12（ジュニア）とWOMAN
 	const category = (req.query.category).split(',').length === 1 ? req.query.category : (req.query.category).split(',')
 
@@ -243,7 +244,7 @@ app.get(path + '/current-matches', async function (req, res) {
 			});
 
 			// 各大会の各ラウンドの各試合の中身を走査して、一つでもdeleteされていない試合があれば。trueとしてfilteredDataに追加
-			// round_idはdeleteされないので、必ず一つはキー・バリューが残っている。二つ以上のキー・バリュがあれば、一つ以上の試合が残っていると判定
+			// round_idはdeleteされないので、必ず一つはキー・バリューが残っている。二つ以上のキー・バリューがあれば、一つ以上の試合が残っていると判定
 			const filteredData = data.filter(item =>
 				item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
 			);
@@ -307,66 +308,31 @@ app.get(path + '/current-matches', async function (req, res) {
 });
 
 /************************************
-* HTTP Get method 当年度の全大会のアイテムを取得 *
+* HTTP Get method 対象の一試合のみを取得 *
 ************************************/
-// app.get(path + '/all-championships', async function (req, res) {
-// 	const fiscalYear = req.query.fiscalYear;
+app.get(path + '/target-championship', async function (req, res) {
+	const championshipId = req.query.championshipId;
+	const fiscalYear = req.query.fiscalYear;
 
-//     const queryItemParams = {
-// 		TableName: tableName,
-// 		IndexName: "gsiByFiscalYear",
-// 		KeyConditionExpression: "fiscal_year = :fiscalYear",
-// 		ExpressionAttributeValues: {
-// 		  ":fiscalYear": fiscalYear,
-// 		},
-// 	  };
+	const getItemParams = {
+		TableName: tableName,
+		Key: {
+			championship_id: championshipId,
+			fiscal_year: fiscalYear
+		}
+	};
 
-// 	try {
-// 		const command = new QueryCommand(queryItemParams);
-// 		const fetchedData = await ddbDocClient.send(command);
-// 		const data = fetchedData.Items;
+	try {
+		const command = new GetCommand(getItemParams);
+		const fetchedData = await ddbDocClient.send(command);
+		const data = fetchedData.Item;
 
-// 		// 今日の日付と今日から１日前の日付を取得
-// 		const today = new Date();
-// 		const oneWeekAgo = new Date();
-// 		oneWeekAgo.setDate(today.getDate() - 1);
-
-// 		data.forEach(item => {
-// 			for (const round in item['matches']) {
-// 				for (const match in item['matches'][round]) {
-// 					// matchのmatchDateが１日前から今日の間でない場合はdataから削除
-// 					const matchDateInItem = new Date(item['matches'][round][match]['match_date']);					
-// 					if (!(oneWeekAgo <= matchDateInItem && matchDateInItem <= today)) {
-// 						delete item['matches'][round][match];
-// 					}
-// 				}
-// 			}
-// 		});
-
-// 		// // 今日の日付と今日から一週間前の日付を取得
-// 		// const today = new Date();
-// 		// const oneWeekAgo = new Date();
-// 		// oneWeekAgo.setDate(today.getDate() - 7);
-
-// 		// data.forEach(item => {
-// 		// 	for (const round in item['matches']) {
-// 		// 		for (const match in item['matches'][round]) {
-// 		// 			// matchのmatchDateが一週間前から本日の間でない場合はdataから削除
-// 		// 			const matchDateInItem = new Date(item['matches'][round][match]['match_date']);					
-// 		// 			if (!(oneWeekAgo <= matchDateInItem && matchDateInItem <= today)) {
-// 		// 				delete item['matches'][round][match];
-// 		// 			}
-// 		// 		}
-// 		// 	}
-// 		// });
-
-
-// 		res.status(200).json(data);
-// 	} catch (err) {
-// 		console.error('Error getting data:', err);
-// 		res.status(500).json({ success: false, error: 'Error getting data' });
-// 	}
-// });
+		res.status(200).json(data);
+	} catch (err) {
+		console.error('Error getting data:', err);
+		res.status(500).json({ success: false, error: 'Error getting data' });
+	}
+});
 
 /************************************
 * HTTP Get method 対象の一試合のみを取得 *
@@ -517,128 +483,6 @@ app.put(path + '/plus-score', async function (req, res) {
 	}
 });
 
-// app.put(path + '/plus-score', async function (req, res) {
-// 	// フロントから渡されるリクエストボディの内容
-// 	const championshipId = req.body.championshipId;
-// 	const matchId = req.body.matchId;
-// 	const fiscalYear = req.body.fiscalYear;
-// 	const homeOrAway = req.body.homeOrAway;
-// 	const gameStatus = req.body.gameStatus;
-
-// 	// 証跡用出力
-// 	console.log('得点追加', req.body);
-
-// 	// 取得したアイテムをいったん格納する
-// 	let data = {};
-
-// 	const getItemParams = {
-// 		TableName: tableName,
-// 		Key: {
-// 			championship_id: championshipId,
-// 			fiscal_year: fiscalYear
-// 		}
-// 	};
-
-// 	try {
-// 		const command = new GetCommand(getItemParams);
-// 		const fetchedData = await ddbDocClient.send(command);
-// 		data = fetchedData.Item;
-// 	} catch (err) {
-// 		console.error('Error getting data:', err);
-// 		res.status(500).json({ success: false, error: 'Error getting data' });
-// 	}
-
-// 	if (data['item_type'] === 'championship') {
-// 		try {
-// 			// match_idで該当の試合を検索し得点追加
-// 			let updated = false;
-// 			for (const round in data.matches) {
-// 				for (const match in data.matches[round]) {
-// 					if (data.matches[round][match]['match_id'] === matchId) {
-// 						if (homeOrAway === 'home') {
-// 							switch (gameStatus) {
-// 								case '前半':
-// 									data.matches[round][match]['home_club']['first_half_score']++;
-// 									break;
-// 								case '後半':
-// 									data.matches[round][match]['home_club']['second_half_score']++;
-// 									break;
-// 								case '延長前半':
-// 									data.matches[round][match]['home_club']['extra_first_half_score']++;
-// 									break;
-// 								case '延長後半':
-// 									data.matches[round][match]['home_club']['extra_second_half_score']++;
-// 									break;
-// 							}
-
-// 							data.matches[round][match]['home_club']['final_score'] =
-// 								data.matches[round][match]['home_club']['first_half_score']
-// 								+ data.matches[round][match]['home_club']['second_half_score']
-// 								+ data.matches[round][match]['home_club']['extra_first_half_score']
-// 								+ data.matches[round][match]['home_club']['extra_second_half_score']
-// 							// 証跡用出力
-// 							console.log('得点追加後final_score', data.matches[round][match]['home_club']['final_score']);
-// 						}
-						
-// 						if (homeOrAway === 'away') {
-// 							switch (gameStatus) {
-// 								case '前半':
-// 									data.matches[round][match]['away_club']['first_half_score']++;
-// 									break;
-// 								case '後半':
-// 									data.matches[round][match]['away_club']['second_half_score']++;
-// 									break;
-// 								case '延長前半':
-// 									data.matches[round][match]['away_club']['extra_first_half_score']++;
-// 									break;
-// 								case '延長後半':
-// 									data.matches[round][match]['away_club']['extra_second_half_score']++;
-// 									break;
-// 							}
-
-// 							data.matches[round][match]['away_club']['final_score'] =
-// 								data.matches[round][match]['away_club']['first_half_score']
-// 								+ data.matches[round][match]['away_club']['second_half_score']
-// 								+ data.matches[round][match]['away_club']['extra_first_half_score']
-// 								+ data.matches[round][match]['away_club']['extra_second_half_score']
-// 							// 証跡用出力
-// 							console.log('得点追加後final_score', data.matches[round][match]['away_club']['final_score']);
-// 						}
-
-// 						updated = true;
-// 					}
-// 				}
-// 			}
-
-// 			if (!updated) {
-// 				res.status(500).json({ message: 'Match not found' });
-// 				return;
-// 			}
-
-// 			// 更新したアイテムを保存
-// 			const params = {
-// 				TableName: tableName,
-// 				Key: {
-// 					'championship_id': championshipId,
-// 					'fiscal_year': fiscalYear
-// 				},
-// 				UpdateExpression: 'SET matches = :updatedMatches',
-// 				ExpressionAttributeValues: {
-// 					':updatedMatches': data.matches
-// 				},
-// 				ReturnValues: 'UPDATED_NEW'
-// 			};
-
-// 			const result = await ddbDocClient.send(new UpdateCommand(params));
-// 			console.log('Update successful:', result);
-// 			res.status(200).send();
-// 		} catch (err) {
-// 			console.error('Error updating data:', err);
-// 			res.status(500).json({ success: false, error: 'Error adding data' });
-// 		}
-// 	}
-// });
-
 /************************************
 * HTTP Put method 得点取り消し *
 ************************************/
@@ -692,143 +536,6 @@ app.put(path + '/minus-score', async function (req, res) {
 		res.status(500).json({ success: false, error: 'Error adding data' });
 	}
 });
-// app.put(path + '/minus-score', async function (req, res) {
-// 	// フロントから渡されるリクエストボディの内容
-// 	const championshipId = req.body.championshipId;
-// 	const matchId = req.body.matchId;
-// 	const fiscalYear = req.body.fiscalYear;
-// 	const homeOrAway = req.body.homeOrAway;
-// 	const gameStatus = req.body.gameStatus;
-
-// 	// 証跡用出力
-// 	console.log('得点取り消し', req.body);
-
-// 	// 取得したアイテムをいったん格納する
-// 	let data = {};
-
-// 	const getItemParams = {
-// 		TableName: tableName,
-// 		Key: {
-// 			championship_id: championshipId,
-// 			fiscal_year: fiscalYear
-// 		}
-// 	};
-
-// 	try {
-// 		const command = new GetCommand(getItemParams);
-// 		const fetchedData = await ddbDocClient.send(command);
-// 		data = fetchedData.Item;
-// 	} catch (err) {
-// 		console.error('Error getting data:', err);
-// 		res.status(500).json({ success: false, error: 'Error getting data' });
-// 	}
-	
-// 	if (data['item_type'] === 'championship') {
-// 		try {
-// 			// match_idで該当の試合を検索し得点取り消し
-// 			let updated = false;
-// 			for (const round in data.matches) {
-// 				for (const match in data.matches[round]) {
-// 					if (data.matches[round][match]['match_id'] === matchId) {
-// 						if (homeOrAway === 'home') {
-// 							switch (gameStatus) {
-// 								case '前半':
-// 									if (0 < data.matches[round][match]['home_club']['first_half_score']) {
-// 										data.matches[round][match]['home_club']['first_half_score']--;
-// 									}
-// 									break;
-// 								case '後半':
-// 									if (0 < data.matches[round][match]['home_club']['second_half_score']) {
-// 										data.matches[round][match]['home_club']['second_half_score']--;
-// 									}
-// 									break;
-// 								case '延長前半':
-// 									if (0 < data.matches[round][match]['home_club']['extra_first_half_score']) {
-// 										data.matches[round][match]['home_club']['extra_first_half_score']--;
-// 									}
-// 									break;
-// 								case '延長後半':
-// 									if (0 < data.matches[round][match]['home_club']['extra_second_half_score']) {
-// 										data.matches[round][match]['home_club']['extra_second_half_score']--;
-// 									}
-// 									break;
-// 							}
-
-// 							data.matches[round][match]['home_club']['final_score'] =
-// 								data.matches[round][match]['home_club']['first_half_score']
-// 								+ data.matches[round][match]['home_club']['second_half_score']
-// 								+ data.matches[round][match]['home_club']['extra_first_half_score']
-// 								+ data.matches[round][match]['home_club']['extra_second_half_score']
-
-// 							// 証跡用出力
-// 							console.log('得点取り消し後', data.matches[round][match]['home_club']['final_score']);
-// 						} else if (homeOrAway === 'away') {
-// 							switch (gameStatus) {
-// 								case '前半':
-// 									if (0 < data.matches[round][match]['away_club']['first_half_score']) {
-// 										data.matches[round][match]['away_club']['first_half_score']--;
-// 									}
-// 									break;
-// 								case '後半':
-// 									if (0 < data.matches[round][match]['away_club']['second_half_score']) {
-// 										data.matches[round][match]['away_club']['second_half_score']--;
-// 									}
-// 									break;
-// 								case '延長前半':
-// 									if (0 < data.matches[round][match]['away_club']['extra_first_half_score']) {
-// 										data.matches[round][match]['away_club']['extra_first_half_score']--;
-// 									}
-// 									break;
-// 								case '延長後半':
-// 									if (0 < data.matches[round][match]['away_club']['extra_second_half_score']) {
-// 										data.matches[round][match]['away_club']['extra_second_half_score']--;
-// 									}
-// 									break;
-// 							}
-
-// 							data.matches[round][match]['away_club']['final_score'] =
-// 								data.matches[round][match]['away_club']['first_half_score']
-// 								+ data.matches[round][match]['away_club']['second_half_score']
-// 								+ data.matches[round][match]['away_club']['extra_first_half_score']
-// 								+ data.matches[round][match]['away_club']['extra_second_half_score']
-
-// 							// 証跡用出力
-// 							console.log('得点取り消し後', data.matches[round][match]['away_club']['final_score']);
-// 						}
-
-// 						updated = true;
-// 					}
-// 				}
-// 			}
-
-// 			if (!updated) {
-// 				res.status(500).json({ message: 'Match not found' });
-// 				return;
-// 			}
-
-// 			// 更新したアイテムを保存
-// 			const params = {
-// 				TableName: tableName,
-// 				Key: {
-// 					'championship_id': championshipId,
-// 					'fiscal_year': fiscalYear
-// 				},
-// 				UpdateExpression: 'SET matches = :updatedMatches',
-// 				ExpressionAttributeValues: {
-// 					':updatedMatches': data.matches
-// 				},
-// 				ReturnValues: 'UPDATED_NEW'
-// 			};
-
-// 			const result = await ddbDocClient.send(new UpdateCommand(params));
-// 			console.log('Update successful:', result);
-// 			res.status(200).send();
-// 		} catch (err) {
-// 			console.error('Error updating data:', err);
-// 			res.status(500).json({ success: false, error: 'Error adding data' });
-// 		}
-// 	}
-// });
 
 /************************************
 * HTTP Put method PKの得点の操作 *
@@ -911,124 +618,6 @@ app.put(path + '/manage-pk-score', async function (req, res) {
 		res.status(500).json({ success: false, error: 'Error adding data' });
 	}
 });
-// app.put(path + '/manage-pk-score', async function (req, res) {
-// 	// フロントから渡されるリクエストボディの内容
-// 	const championshipId = req.body.championshipId;
-// 	const matchId = req.body.matchId;
-// 	const fiscalYear = req.body.fiscalYear;
-// 	const homeOrAway = req.body.homeOrAway;
-// 	const index = req.body.index;
-// 	const result = req.body.result;
-
-// 	// 証跡用出力
-// 	console.log('PK得点操作', req.body);
-
-// 	// 取得したアイテムをいったん格納する
-// 	let data = {};
-
-// 	const getItemParams = {
-// 		TableName: tableName,
-// 		Key: {
-// 			championship_id: championshipId,
-// 			fiscal_year: fiscalYear
-// 		}
-// 	};
-
-// 	try {
-// 		const command = new GetCommand(getItemParams);
-// 		const fetchedData = await ddbDocClient.send(command);
-// 		data = fetchedData.Item;
-// 	} catch (err) {
-// 		console.error('Error getting data:', err);
-// 		res.status(500).json({ success: false, error: 'Error getting data' });
-// 	}
-
-// 	if (data['item_type'] === 'championship') {
-// 		try {
-// 			// match_idで該当の試合を検索し得点追加
-// 			let updated = false;
-// 			for (const round in data.matches) {
-// 				for (const match in data.matches[round]) {
-// 					if (data.matches[round][match]['match_id'] === matchId) {
-// 						if (homeOrAway === 'home') {
-// 							switch (result) {
-// 								case 'success':
-// 									data.matches[round][match]['home_club']['pk_score_list'][index] = 'success';
-// 									break;
-// 								case 'failure':
-// 									data.matches[round][match]['home_club']['pk_score_list'][index] = 'failure';
-// 									break;
-// 								case 'cancel':
-// 									data.matches[round][match]['home_club']['pk_score_list'].splice(index, 1);
-// 									break;
-// 								default:
-// 									// 何もしない
-// 							}
-
-// 							// 証跡用出力
-// 							console.log('PK成績', data.matches[round][match]['home_club']['pk_score_list']);
-
-// 							// 成功数を計算
-// 							const score = data.matches[round][match]['home_club']['pk_score_list'].filter(result => result === 'success').length;
-// 							data.matches[round][match]['home_club']['pk_score'] = score;
-// 						}
-
-// 						if (homeOrAway === 'away') {
-// 							switch (result) {
-// 								case 'success':
-// 									data.matches[round][match]['away_club']['pk_score_list'][index] = 'success';
-// 									break;
-// 								case 'failure':
-// 									data.matches[round][match]['away_club']['pk_score_list'][index] = 'failure';
-// 									break;
-// 								case 'cancel':
-// 									data.matches[round][match]['away_club']['pk_score_list'].splice(index, 1);
-// 									break;
-// 								default:
-// 									// 何もしない
-// 							}
-
-// 							// 証跡用出力
-// 							console.log('PK成績', data.matches[round][match]['away_club']['pk_score_list']);
-
-// 							// 成功数を計算
-// 							const score = data.matches[round][match]['away_club']['pk_score_list'].filter(result => result === 'success').length;
-// 							data.matches[round][match]['away_club']['pk_score'] = score;
-// 						}
-
-// 						updated = true;
-// 					}
-// 				}
-// 			}
-
-// 			if (!updated) {
-// 				res.status(500).json({ message: 'Match not found' });
-// 				return;
-// 			}
-
-// 			// 更新したアイテムを保存
-// 			const params = {
-// 				TableName: tableName,
-// 				Key: {
-// 					'championship_id': championshipId,
-// 					'fiscal_year': fiscalYear
-// 				},
-// 				UpdateExpression: 'SET matches = :updatedMatches',
-// 				ExpressionAttributeValues: {
-// 					':updatedMatches': data.matches
-// 				},
-// 				ReturnValues: 'UPDATED_NEW'
-// 			};
-
-// 			const updateResult = await ddbDocClient.send(new UpdateCommand(params));
-// 			console.log('Update successful:', updateResult);
-// 			res.status(200).send();
-// 		} catch (err) {
-// 			console.error('Error updating data:', err);
-// 			res.status(500).json({ success: false, error: 'Error adding data' });
-// 		}
-// 	}
-// });
 
 /************************************
 * HTTP Put method 試合状況進行（試合前から前半に進める、試合終了から後半に戻すなど） *
@@ -1073,79 +662,6 @@ app.put(path + '/handle-game-status', async function (req, res) {
 		res.status(500).json({ success: false, error: 'Error adding data' });
 	}
 });
-// app.put(path + '/handle-game-status', async function (req, res) {
-// 	// フロントから渡されるリクエストボディの内容
-// 	const championshipId = req.body.championshipId;
-// 	const matchId = req.body.matchId;
-// 	const fiscalYear = req.body.fiscalYear;
-// 	const changingGameStatus = req.body.changingGameStatus;
-
-// 	// 証跡用出力
-// 	console.log('試合状態遷移先', req.body);
-	
-// 	// 取得したアイテムをいったん格納する
-// 	let data = {};
-
-// 	const getItemParams = {
-// 		TableName: tableName,
-// 		Key: {
-// 			championship_id: championshipId,
-// 			fiscal_year: fiscalYear
-// 		}
-// 	};
-
-// 	try {
-// 		const command = new GetCommand(getItemParams);
-// 		const fetchedData = await ddbDocClient.send(command);
-// 		data = fetchedData.Item;
-// 	} catch (err) {
-// 		console.error('Error getting data:', err);
-// 		res.status(500).json({ success: false, error: 'Error getting data' });
-// 	}
-
-
-// 	if (data['item_type'] === 'championship') {
-// 		try {
-// 			// match_idで該当の試合を検索し試合進行状況を変更
-// 			let updated = false;
-// 			for (const round in data.matches) {
-// 				for (const match in data.matches[round]) {
-// 					if (data.matches[round][match]['match_id'] === matchId) {
-// 						data.matches[round][match]['game_status'] = changingGameStatus;
-// 					}
-
-// 					updated = true;
-// 				}
-// 			}
-
-// 			if (!updated) {
-// 				res.status(500).json({ message: 'Match not found' });
-// 				return;
-// 			}
-
-// 			// 更新したアイテムを保存
-// 			const params = {
-// 				TableName: tableName,
-// 				Key: {
-// 					'championship_id': championshipId,
-// 					'fiscal_year': fiscalYear
-// 				},
-// 				UpdateExpression: 'SET matches = :updatedMatches',
-// 				ExpressionAttributeValues: {
-// 					':updatedMatches': data.matches
-// 				},
-// 				ReturnValues: 'UPDATED_NEW'
-// 			};
-
-// 			const result = await ddbDocClient.send(new UpdateCommand(params));
-// 			console.log('Update successful:', result);
-// 			res.status(200).send();
-// 		} catch (err) {
-// 			console.error('Error updating data:', err);
-// 			res.status(500).json({ success: false, error: 'Error adding data' });
-// 		}
-// 	}
-// });
 
 /************************************
 * HTTP Put method to 延長戦開始・取り消し *
@@ -1441,106 +957,6 @@ app.put(path + '/register-match-result', async function (req, res) {
 		res.status(500).json({ success: false, error: 'Error adding data' });
 	}
 });
-// app.put(path + '/register-match-result', async function (req, res) {
-// 	// フロントから渡されるリクエストボディの内容
-// 	const championshipId = req.body.championshipId;
-// 	const matchId = req.body.matchId;
-// 	const fiscalYear = req.body.fiscalYear;
-// 	const actualMatchStartTime = req.body.actualMatchStartTime;
-
-// 	// 証跡用出力
-// 	console.log('試合結果登録', req.body);
-
-// 	// 取得したアイテムをいったん格納する
-// 	let data = {};
-
-// 	const getItemParams = {
-// 		TableName: tableName,
-// 		Key: {
-// 			championship_id: championshipId,
-// 			fiscal_year: fiscalYear
-// 		}
-// 	};
-
-// 	try {
-// 		const command = new GetCommand(getItemParams);
-// 		const fetchedData = await ddbDocClient.send(command);
-// 		data = fetchedData.Item;
-// 	} catch (err) {
-// 		console.error('Error getting data:', err);
-// 		res.status(500).json({ success: false, error: 'Error getting data' });
-// 	}
-
-
-// 	if (data['item_type'] === 'championship') {
-// 		try {
-// 			// match_idで該当の試合を検索しデータを追加
-// 			let updated = false;
-// 			for (const round in data.matches) {
-// 				for (const match in data.matches[round]) {
-// 					if (data.matches[round][match]['match_id'] === matchId) {
-// 						let targetMatchInfo = data.matches[round][match];
-
-// 						targetMatchInfo['actual_match_start_time'] = actualMatchStartTime;
-
-// 						// 前後半（と延長戦前後半）の得点の合計またはPK戦の最終結果により勝敗を登録
-// 						if (targetMatchInfo['has_pk']) {
-// 							if (targetMatchInfo['home_club']['pk_score'] > targetMatchInfo['away_club']['pk_score']) {
-// 								targetMatchInfo['home_club']['result'] = 'win';
-// 								targetMatchInfo['away_club']['result'] = 'lose';	
-// 							} else { // PK戦の最終得点が同じになることはない
-// 								targetMatchInfo['home_club']['result'] = 'lose';
-// 								targetMatchInfo['away_club']['result'] = 'win';	
-// 							}
-// 						} else {
-// 							if (targetMatchInfo['home_club']['final_score'] > targetMatchInfo['away_club']['final_score']) {
-// 								targetMatchInfo['home_club']['result'] = 'win';
-// 								targetMatchInfo['away_club']['result'] = 'lose';
-// 							} else if (targetMatchInfo['home_club']['final_score'] < targetMatchInfo['away_club']['final_score']) {
-// 								targetMatchInfo['home_club']['result'] = 'lose';
-// 								targetMatchInfo['away_club']['result'] = 'win';
-// 							} else {
-// 								targetMatchInfo['home_club']['result'] = 'draw';
-// 								targetMatchInfo['away_club']['result'] = 'draw';
-// 							}
-// 						}
-
-// 						targetMatchInfo['game_status'] = '試合終了';
-// 						targetMatchInfo['is_result_registered'] = true;
-
-// 						updated = true;
-// 					}
-// 				}
-// 			}
-
-// 			if (!updated) {
-// 				res.status(500).json({ message: 'Match not found' });
-// 				return;
-// 			}
-
-// 			// 更新したアイテムを保存
-// 			const params = {
-// 				TableName: tableName,
-// 				Key: {
-// 					'championship_id': championshipId,
-// 					'fiscal_year': fiscalYear
-// 				},
-// 				UpdateExpression: 'SET matches = :updatedMatches',
-// 				ExpressionAttributeValues: {
-// 					':updatedMatches': data.matches
-// 				},
-// 				ReturnValues: 'UPDATED_NEW'
-// 			};
-
-// 			const result = await ddbDocClient.send(new UpdateCommand(params));
-// 			console.log('Update successful:', result);
-// 			res.status(200).send();
-// 		} catch (err) {
-// 			console.error('Error updating data:', err);
-// 			res.status(500).json({ success: false, error: 'Error adding data' });
-// 		}
-// 	}
-// });
 
 /************************************
 * HTTP Put method to register match result *
