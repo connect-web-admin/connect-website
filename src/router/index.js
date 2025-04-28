@@ -11,6 +11,7 @@ import MediaArticleView from '@/views/MediaArticleView.vue';
 import ArchiveView from '@/views/ArchiveView.vue';
 import ClubListView from '@/views/ClubListView.vue';
 import PicsView from '@/views/PicsView.vue';
+import PicsMatchListView from '@/views/PicsMatchListView.vue';
 import PicsListView from '@/views/PicsListView.vue';
 import VideosView from '@/views/VideosView.vue';
 import FaqView from '@/views/FaqView.vue';
@@ -107,14 +108,16 @@ const router = createRouter({
 			component: PicsView
 		},
 
-		// {
-		// 	path: '/pics-list',
-		// 	name: 'PicsList',
-		// 	component: PicsListView
-		// },
+		
+		{
+			path: '/pics-match-list/:championshipName/:championshipId',
+			name: 'PicsMatchList',
+			component: PicsMatchListView,
+			props: true
+		},
 
 		{
-			path: '/pics-list/:championshipName/:championshipId',
+			path: '/pics-list/:championshipName/:championshipId/:matchId/:matchDate/:club1/:club2',
 			name: 'PicsList',
 			component: PicsListView,
 			props: true

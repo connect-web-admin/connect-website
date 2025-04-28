@@ -59,7 +59,6 @@ const convertUrlType = (param, type) => {
 /************************************
  * HTTP Get method to query objects *
  ************************************/
-
 app.get(path + '/get-target-pics', async function(req, res) {
   const championshipId = req.query.championshipId;
 	const matchDate = req.query.matchDate;
@@ -71,6 +70,33 @@ app.get(path + '/get-target-pics', async function(req, res) {
 		ExpressionAttributeValues: {
 			":championship_id": championshipId,
 			":taken_at": matchDate,
+		},
+	};
+  console.log('クエリパラメタ', queryItemParams)
+  try {
+    const data = await ddbDocClient.send(new QueryCommand(queryItemParams));
+    data.Items.sort((a, b) => b.pic_id.localeCompare(a.pic_id));
+    console.log('取得データ', JSON.stringify(data));
+    res.json(data.Items);
+  } catch (err) {
+    res.statusCode = 500;
+    res.json({error: 'Could not load items: ' + err.message});
+  }
+});
+
+/************************************
+ * HTTP Get method to query objects *
+ ************************************/
+app.get(path + '/get-target-pics-by-matchId', async function(req, res) {
+  const championshipId = req.query.championshipId;
+	const matchId = req.query.matchId;
+
+  const queryItemParams = {
+		TableName: tableName,
+		IndexName: "gsiByMatchId",
+		KeyConditionExpression: "match_id = :match_id",
+		ExpressionAttributeValues: {
+			":match_id": matchId,
 		},
 	};
   console.log('クエリパラメタ', queryItemParams)

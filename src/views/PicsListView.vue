@@ -2,20 +2,23 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import {
-    MATCH_API_URL,
     THIS_FISCAL_YEAR,
     PICS_API_URL,
 } from "../utils/constants";
 
 const router = useRouter();
-const selectedImage = ref(null);
-const showModal = ref(false);
+const isLoading = ref(true);
+const failedMsg = ref("");
+
 const championshipId = ref(null);
 const championshipName = ref(null);
-const isLoading = ref(true);
+const matchId = ref(null);
+const club1 = ref(null);
+const club2 = ref(null);
+const matchDate = ref(null);
+const selectedImage = ref(null);
+const showModal = ref(false);
 const targetPics = ref([]);
-const matchDates = ref([]);
-const failedMsg = ref("");
 const noTargetPicsMsg = ref("");
 const matchDateAfterChampionshipName = ref("");
 
@@ -42,44 +45,13 @@ function toIsoDate(mAndD) {
     return `${THIS_FISCAL_YEAR}-${mm}-${dd}`;
 }
 
-const getTargetChampionshipInfo = async () => {
+const getTargetPics = async () => {
     isLoading.value = true;
-
-    const queryUrl = new URL(`${MATCH_API_URL}/match-dates`);
-    queryUrl.searchParams.append("championshipId", championshipId.value);
-    queryUrl.searchParams.append("fiscalYear", THIS_FISCAL_YEAR);
-
-    try {
-        const response = await fetch(queryUrl, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        matchDates.value = await response.json();
-    } catch (error) {
-        failedMsg.value =
-            "大会情報の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。";
-        console.error("大会情報の取得に失敗しました。");
-    } finally {
-        isLoading.value = false;
-    }
-};
-
-const getTargetPics = async (matchDate) => {
-    isLoading.value = true;
-
-    const queryUrl = new URL(`${PICS_API_URL}/get-target-pics`);
+    const queryUrl = new URL(`${PICS_API_URL}/get-target-pics-by-matchId`);
 
     // GET用パラメータを追加
     queryUrl.searchParams.append("championshipId", championshipId.value);
-    const targetDate = toIsoDate(matchDate);
-    queryUrl.searchParams.append("matchDate", targetDate);
+    queryUrl.searchParams.append("matchId", matchId.value);
 
     try {
         const response = await fetch(queryUrl, {
@@ -106,7 +78,6 @@ const getTargetPics = async (matchDate) => {
             "画像の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。";
         console.error("画像の取得に失敗しました。");
     } finally {
-        matchDateAfterChampionshipName.value = matchDate;
         isLoading.value = false;
     }
 };
@@ -121,48 +92,64 @@ onMounted(async () => {
     // 大会IDをルートから取得
     championshipId.value = router.currentRoute.value.params.championshipId;
     championshipName.value = router.currentRoute.value.params.championshipName;
+    matchId.value = router.currentRoute.value.params.matchId;
+    matchDate.value = router.currentRoute.value.params.matchDate;
+    club1.value = router.currentRoute.value.params.club1;
+    club2.value = router.currentRoute.value.params.club2;
 
-    // 大会IDをもとに、大会情報を取得
-    await getTargetChampionshipInfo();
+    await getTargetPics();
 });
 </script>
 <template>
-    <div>
-        <div class="p-2 text-sm">
-            <h1 class="text-lg font-bold py-2">{{ championshipName }}&nbsp;{{ matchDateAfterChampionshipName }}</h1>
-            <p>試合日を選択してください。</p>
-            <span
-                v-for="matchDate in matchDates"
-                :key="matchDate.article_id"
-                class="not-last:mr-3"
-            >
-                <span
-                    class="cursor-pointer text-blue-600"
-                    @click="getTargetPics(matchDate)"
-                    >{{ matchDate }}</span
-                >
-            </span>
-        </div>
+    <div class="p-2">
+        <h1 class="text-lg font-bold py-2">
+            {{ championshipName }}_{{ matchDate }}<br>{{ club1 }}&nbsp;-&nbsp;{{ club2 }}
+        </h1>
         <div>
             <div v-if="isLoading" class="mt-20">
-                <img src="../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
+                <img
+                    src="../assets/icons/loading.gif"
+                    alt="読み込み中"
+                    class="w-10 h-10 mx-auto"
+                />
             </div>
             <div v-else>
                 <div v-if="noTargetPicsMsg" class="mt-20">
-                    <p class="text-center text-gray-500">{{ noTargetPicsMsg }}</p>
+                    <p class="text-center text-gray-500">
+                        {{ noTargetPicsMsg }}
+                    </p>
                 </div>
                 <div v-else class="grid grid-cols-3 gap-3 px-2">
-                    <div v-for="(pic, index) in targetPics" :key="index" class="relative cursor-pointer aspect-square"
-                        @click="openModal(index)">
-                        <img :src="pic.pic_url" :alt="championshipName" class="w-full h-full object-cover">
+                    <div
+                        v-for="(pic, index) in targetPics"
+                        :key="index"
+                        class="relative cursor-pointer aspect-square"
+                        @click="openModal(index)"
+                    >
+                        <img
+                            :src="pic.pic_url"
+                            :alt="championshipName"
+                            class="w-full h-full object-cover"
+                        />
                     </div>
                 </div>
-                <div v-if="showModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-                    @click="closeModal">
-                    <div class="relative w-[98vw] flex items-center justify-center">
-                        <img :src="targetPics[selectedImage].pic_url" :alt="championshipName" class="w-full h-auto object-contain">
-                        <button @click.stop="closeModal"
-                            class="absolute top-2 right-2 text-white bg-black/50 rounded-full w-5 h-5 flex items-center justify-center">
+                <div
+                    v-if="showModal"
+                    class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+                    @click="closeModal"
+                >
+                    <div
+                        class="relative w-[98vw] flex items-center justify-center"
+                    >
+                        <img
+                            :src="targetPics[selectedImage].pic_url"
+                            :alt="championshipName"
+                            class="w-full h-auto object-contain"
+                        />
+                        <button
+                            @click.stop="closeModal"
+                            class="absolute top-2 right-2 text-white bg-black/50 rounded-full w-5 h-5 flex items-center justify-center"
+                        >
                             ✕
                         </button>
                     </div>
