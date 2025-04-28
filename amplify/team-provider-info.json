@@ -19,7 +19,7 @@
       "function": {
         "matchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/matchLambda-4c613050354463416d65-build.zip"
+          "s3Key": "amplify-builds/matchLambda-53423361705236736d75-build.zip"
         },
         "clubLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -39,15 +39,15 @@
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/memberLambda-617161686f594e2b5950-build.zip"
+          "s3Key": "amplify-builds/memberLambda-6f4f6f34564d76562b53-build.zip"
         },
         "checkUserBeforeLoginLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/checkUserBeforeLoginLambda-612b784c35325a77786f-build.zip"
+          "s3Key": "amplify-builds/checkUserBeforeLoginLambda-6364775768383272744e-build.zip"
         },
         "picsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/picsLambda-2b37316f6c6647374367-build.zip"
+          "s3Key": "amplify-builds/picsLambda-6c554738685267464c76-build.zip"
         }
       },
       "storage": {

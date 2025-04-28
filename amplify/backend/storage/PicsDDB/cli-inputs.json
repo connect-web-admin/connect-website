@@ -16,6 +16,13 @@
         "fieldName": "taken_at",
         "fieldType": "string"
       }
+    },
+    {
+      "name": "gsiByMatchId",
+      "partitionKey": {
+        "fieldName": "match_id",
+        "fieldType": "string"
+      }
     }
   ],
   "triggerFunctions": []
