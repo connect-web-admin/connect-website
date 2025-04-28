@@ -11,43 +11,67 @@ const props = defineProps({
     },
 });
 
-// 今週の日付範囲を取得する関数（日本時間）
+// 今週の日付範囲を取得する関数（火曜日始まり月曜日終わり）
 const getCurrentWeekDates = () => {
     // 日本時間の現在時刻を取得
     const today = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
     const currentDay = today.getDay(); // 0: 日曜日, 1: 月曜日, ..., 6: 土曜日
-    const diff = currentDay === 0 ? -6 : 1 - currentDay; // 月曜日を週の始まりとする調整
     
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diff);
-    monday.setHours(0, 0, 0, 0);
+    // 火曜日始まり月曜日終わりの調整
+    // 2: 火曜日を起点とする
+    const diff = currentDay === 1 ? -6 : 2 - currentDay; // 月曜日の場合は前週の火曜日から、それ以外は今週の火曜日から
     
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
+    const tuesday = new Date(today);
+    tuesday.setDate(today.getDate() + diff);
+    tuesday.setHours(0, 0, 0, 0);
     
-    return { monday, sunday };
+    const nextMonday = new Date(tuesday);
+    nextMonday.setDate(tuesday.getDate() + 6); // 火曜日から6日後が月曜日
+    nextMonday.setHours(23, 59, 59, 999);
+    
+    return { tuesday, nextMonday };
 };
 
 // 今週の試合がある大会名を取得
 const championshipsThisWeek = computed(() => {
     isLoading.value = true;
-    const { monday, sunday } = getCurrentWeekDates();
+
+    // 現在の年を取得
+    const currentDate = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+    const currentYear = currentDate.getFullYear();
+    
+    // 現在の週の日付範囲を取得（火曜日始まり月曜日終わり）
+    const { tuesday, nextMonday } = getCurrentWeekDates();
+    
+    // データが2025年なので、同じ月日で2025年の日付を作成
+    const targetTuesday = new Date(tuesday);
+    targetTuesday.setFullYear(2025);
+    
+    const targetMonday = new Date(nextMonday);
+    targetMonday.setFullYear(2025);
+    
+    // console.log("表示期間:", targetTuesday.toLocaleDateString('ja-JP'), "から", targetMonday.toLocaleDateString('ja-JP'));
+    
     const championships = new Set();
     
     props.matchInfo.forEach(championship => {
         if (championship.matches) {
-            Object.values(championship.matches).forEach(division => {
-                if (division.round_id) {
-                    Object.values(division).forEach(match => {
-                        if (match.match_date) {
-                            const matchDate = new Date(match.match_date);
-                            if (matchDate >= monday && matchDate <= sunday) {
+            // 各試合ブロック（例：Aブロック、１部リーグ、4/26など）を処理
+            Object.entries(championship.matches).forEach(([blockName, blockData]) => {
+                // blockDataが試合データのオブジェクトを含む場合を処理
+                Object.entries(blockData).forEach(([key, value]) => {
+                    // round_idをスキップし、試合データのみを処理
+                    if (key !== 'round_id') {
+                        // valueが試合オブジェクトかチェック（match_dateプロパティがあるか）
+                        if (value && typeof value === 'object' && value.match_date) {
+                            const matchDate = new Date(value.match_date);
+                            
+                            if (matchDate >= targetTuesday && matchDate <= targetMonday) {
                                 championships.add(championship.championship_name);
                             }
                         }
-                    });
-                }
+                    }
+                });
             });
         }
     });
