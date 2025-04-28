@@ -8,6 +8,7 @@ import BannersComp from '@/components/BannersComp.vue';
 
 const matchInfo = ref([]);
 const noThisWeekMatchesMsg = ref('');
+const isLoading = ref(true);
 
 /**
  * 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
@@ -37,6 +38,8 @@ const getMatchesInThisWeek = async () => {
         }
     } catch (error) {
         console.error('速報対象試合の取得に失敗しました。');
+    } finally {
+        isLoading.value = false;
     }
 }
 
@@ -58,7 +61,10 @@ onMounted(async () => {
         <div>
             <h1 class="text-xl pt-2">今週の大会<span class="text-sm text-gray-400">（タップで結果速報へ移動）</span></h1>
             <p class="text-sm text-red-500">毎週火曜日更新</p>
-            <ChampionshipNamesComp :match-info="matchInfo" />
+            <div v-if="isLoading" class="flex justify-center items-center py-8">
+                <img src="../assets/icons/loading.gif" alt="loading" class="w-10 h-10">
+            </div>
+            <ChampionshipNamesComp v-else :match-info="matchInfo" />
         </div>
 
         <div class="my-8">
