@@ -681,10 +681,72 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_SapBloCab_kekka_page-0001.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/%E9%AB%98%E5%86%86%E5%AE%AE%E6%9D%AF+JFA+U-15%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%992025+%E7%AC%AC17%E5%9B%9E%E6%9C%AD%E5%B9%8C%E3%83%95%E3%82%99%E3%83%AD%E3%83%83%E3%82%AF%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E7%B5%90%E6%9E%9C0430.jpg',
                                 ],
                                 [
                                     '高円宮杯 JFA U-15サッカーリーグ2025 第17回札幌ブロックカブスリーグ結果',
+                                ]
+                            )
+                        "
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>
+                    2025年度 札幌支部高等学校サッカー春季大会
+                </h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_SapporoShibu_Kohtohgakko_Soccer_Shunki_Taikai/2025_Syunki_yoko_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_SapporoShibu_Kohtohgakko_Soccer_Shunki_Taikai/2025_Syunki_yoko_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_2.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_SapporoShibu_Kohtohgakko_Soccer_Shunki_Taikai/2025_Syunki_yoko_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_3.jpg',
+                                ],
+                                [
+                                    '2025年度 札幌支部高等学校サッカー春季大会 開催要項1',
+                                    '2025年度 札幌支部高等学校サッカー春季大会 開催要項2',
+                                    '2025年度 札幌支部高等学校サッカー春季大会 開催要項3',
+                                ]
+                            )
+                        "
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        組 み 合 せ
+                    </p>
+                    <!-- <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/2025_18TakaSapBlock_kumi.jpg',
+                                ],
+                                [
+                                    '高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 組み合わせ',
+                                ]
+                            )
+                        "
+                    >
+                        組 み 合 せ
+                    </p> -->
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_SapporoShibu_Kohtohgakko_Soccer_Shunki_Taikai/%E6%98%A5%E5%AD%A3%E5%A4%A7%E4%BC%9A_%E7%B5%90%E6%9E%9C.jpg',
+                                ],
+                                [
+                                    '2025年度 札幌支部高等学校サッカー春季大会 試合結果1',
                                 ]
                             )
                         "
