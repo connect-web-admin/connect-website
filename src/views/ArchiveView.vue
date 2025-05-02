@@ -664,7 +664,7 @@ onMounted(() => {
                             )
                         "
                     >
-                        試 合 結 果
+                        組 み 合 わ せ
                     </p>
                     <p
                         class="text-white bg-black w-1/3 py-1 text-xs text-center"
