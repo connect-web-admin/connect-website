@@ -719,25 +719,20 @@ onMounted(() => {
                         大 会 概 要
                     </p>
                     <p
-                        class="border-1 w-1/3 py-1 text-xs text-center"
-                    >
-                        組 み 合 せ
-                    </p>
-                    <!-- <p
                         class="text-white bg-black w-1/3 py-1 text-xs text-center"
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/2025_18TakaSapBlock_kumi.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_SapporoShibu_Kohtohgakko_Soccer_Shunki_Taikai/2025_Syunki_kumi.jpg',
                                 ],
                                 [
-                                    '高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 組み合わせ',
+                                    '2025年度 札幌支部高等学校サッカー春季大会 組み合せ',
                                 ]
                             )
                         "
                     >
                         組 み 合 せ
-                    </p> -->
+                    </p>
                     <p
                         class="text-white bg-black w-1/3 py-1 text-xs text-center"
                         @click="
