@@ -103,6 +103,7 @@ const sortedFormattedData = computed(() => {
                             home_club: match.home_club.club_name,
                             away_club: match.away_club.club_name,
                             match_category: match.match_category,
+                            match_id: match.match_id,
                             scheduled_match_start_time: match.scheduled_match_start_time
                         });
                     }
@@ -150,6 +151,7 @@ onMounted(() => {
                         <p class="text-sm mb-1">{{ match.home_club }} vs {{ match.away_club }}</p>
                     <p class="text-sm">{{ match.venue }}
                     ：<span class="text-red-600">{{ match.access_token }}</span><span v-if="match.match_category === 'U-12'">４種</span></p>
+                    <p class="text-sm">{{ match.match_id }}</p>
                 </div>
             </div>
         </div>
