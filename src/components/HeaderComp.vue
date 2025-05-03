@@ -27,6 +27,7 @@ const imageList = ref([
     { src: 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/slider/banner-coconosusukino.png', alt: "ココノススキノ", duration: 10000, url: 'https://cocono-susukino.jp' },
     { src: 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/slider/banner-sd-entertainment.jpg', alt: "SDエンターテイメント株式会社", duration: 10000, url: 'https://www.sd-fit.jp/' },
     { src: 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/slider/banner-tuners.png', alt: "株式会社TUNERS", duration: 10000, url: 'https://tuners-japan.com' },
+    { src: 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/%E6%9C%AD%E5%B9%8C%E6%B5%B7%E9%AE%AE%E4%B8%B8%E3%83%8F%E3%82%99%E3%83%8A%E3%83%BC%EF%BC%88%E5%87%BA%E5%89%8D%E5%AF%BF%E5%8F%B8%E8%A1%A8%E8%A8%98%EF%BC%89.jpg', alt: "札幌海鮮丸", duration: 10000, url: 'https://www.kaisenmaru.co.jp/' },    
 ]);
 const currentIndex = ref(0);
 let interval = null;
