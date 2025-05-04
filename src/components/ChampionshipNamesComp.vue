@@ -17,17 +17,27 @@ const getCurrentWeekDates = () => {
     const today = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
     const currentDay = today.getDay(); // 0: 日曜日, 1: 月曜日, ..., 6: 土曜日
     
-    // 火曜日始まり月曜日終わりの調整
-    // 2: 火曜日を起点とする
-    const diff = currentDay === 1 ? -6 : 2 - currentDay; // 月曜日の場合は前週の火曜日から、それ以外は今週の火曜日から
+    // 直近の過去の火曜日を計算
+    let daysToSubtract;
+    if (currentDay === 2) { // 今日が火曜日
+        daysToSubtract = 0;
+    } else if (currentDay > 2) { // 水曜日〜土曜日
+        daysToSubtract = currentDay - 2;
+    } else { // 日曜日(0)または月曜日(1)
+        daysToSubtract = currentDay + 5; // 7 - (2 - currentDay)
+    }
     
     const tuesday = new Date(today);
-    tuesday.setDate(today.getDate() + diff);
+    tuesday.setDate(today.getDate() - daysToSubtract);
     tuesday.setHours(0, 0, 0, 0);
     
     const nextMonday = new Date(tuesday);
     nextMonday.setDate(tuesday.getDate() + 6); // 火曜日から6日後が月曜日
     nextMonday.setHours(23, 59, 59, 999);
+    
+    // console.log("今日:", today.toISOString());
+    // console.log("直近の過去の火曜日:", tuesday.toISOString());
+    // console.log("直近の未来の月曜日:", nextMonday.toISOString());
     
     return { tuesday, nextMonday };
 };
@@ -50,10 +60,10 @@ const championshipsThisWeek = computed(() => {
     const targetMonday = new Date(nextMonday);
     targetMonday.setFullYear(2025);
     
-    // console.log("表示期間:", targetTuesday.toLocaleDateString('ja-JP'), "から", targetMonday.toLocaleDateString('ja-JP'));
+    // console.log("表示期間:", targetTuesday.toISOString(), "から", targetMonday.toISOString());
     
     const championships = new Set();
-    
+
     props.matchInfo.forEach(championship => {
         if (championship.matches) {
             // 各試合ブロック（例：Aブロック、１部リーグ、4/26など）を処理
@@ -65,9 +75,15 @@ const championshipsThisWeek = computed(() => {
                         // valueが試合オブジェクトかチェック（match_dateプロパティがあるか）
                         if (value && typeof value === 'object' && value.match_date) {
                             const matchDate = new Date(value.match_date);
+                            // console.log("試合日:", matchDate.toISOString(), 
+                            //     "比較結果:", 
+                            //     ">=", matchDate >= targetTuesday, 
+                            //     "<=", matchDate <= targetMonday);
                             
+                            // 日付の比較
                             if (matchDate >= targetTuesday && matchDate <= targetMonday) {
                                 championships.add(championship.championship_name);
+                                // console.log("追加された大会:", championship.championship_name);
                             }
                         }
                     }
@@ -76,6 +92,7 @@ const championshipsThisWeek = computed(() => {
         }
     });
     
+    console.log("検出された大会数:", championships.size);
     isLoading.value = false;
     return Array.from(championships);
 });
@@ -105,7 +122,7 @@ const handleChampionshipClick = (championshipName) => {
                     <li v-for="championship in championshipsThisWeekSorted" 
                         :key="championship"
                         @click="handleChampionshipClick(championship)"
-                        class="cursor-pointer hover:bg-gray-200 text-blue-600  p-2 underline">
+                        class="cursor-pointer hover:bg-gray-200 text-blue-600 p-2 underline">
                         {{ championship }}
                     </li>
                 </ul>
