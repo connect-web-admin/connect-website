@@ -29,7 +29,7 @@ onMounted(() => {
             </div>
             <div class="flex items-start gap-2">
                 <img src="../assets/icons/exclamation-mark.svg" alt="FAQ" class="pl-[2px] w-[29px] h-auto" />
-                <p>退会につきましては、退会を希望される月の前の月の20日までに、会員情報ページに記載の会員IDを添えて<a href="mailto:info@connect-goals.com" class="text-blue-500 underline">Connectまでご連絡</a>ください。<br />
+                <p>退会につきましては、退会を希望される月の前の月の20日までに、会員情報ページに記載の会員IDとお名前を添えて<a href="mailto:info@connect-goals.com" class="text-blue-500 underline">Connectまでご連絡</a>ください。<br />
                     （例えば、６月15日にご連絡いただきますと、７月初日以降はご利用いただけなくなります。）</p>
             </div>
         </div>

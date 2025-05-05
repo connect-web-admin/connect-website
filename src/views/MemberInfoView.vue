@@ -107,7 +107,7 @@ onMounted(async () => {
                 </li>
             </ul>
             <p class="mt-10 text-sm">
-                退会につきましては、退会を希望される月の前の月の20日までに、「会員ID：{{ memberInfo.member_id }}」を添えて<a href="mailto:info@connect-goals.com" class="text-blue-500 underline">Connectまでご連絡</a>ください。<br />
+                退会につきましては、退会を希望される月の前の月の20日までに、「お名前」と「会員ID：{{ memberInfo.member_id }}」を添えて<a href="mailto:info@connect-goals.com" class="text-blue-500 underline">Connectまでご連絡</a>ください。<br />
                 （例えば、６月15日にご連絡いただきますと、７月初日以降はご利用いただけなくなります。）
             </p>
         </div>
