@@ -740,7 +740,8 @@ app.post(path + '/pagecon_url', async (req, res) => {
 	const mayFirst2025 = new Date('2025-05-01T00:00:00+09:00');
 
 	// 課金額
-	const amountOfYearly = (nowJST < mayFirst2025) ? '3960' : '4840';
+	// const amountOfYearly = (nowJST < mayFirst2025) ? '3960' : '4840';
+	const amountOfYearly = '4840';
 	const amountOfMonthly = '440';
 
 	// 暗号化フラグ

@@ -69,33 +69,36 @@ function formatTimeZone(gameStatus) {
 	}
 }
 
-function isWithinLastTuesdayToNextMonday(targetDate) {
-    // 今日の日付を日本時間の00:00に合わせる
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
-    today.setTime(today.getTime() + 9 * 60 * 60 * 1000); // 日本時間に調整
-
-    // 過去の直近の火曜日を取得（今日が火曜なら今日）
-    const lastTuesday = new Date(today);
-    const dayOfWeek = lastTuesday.getDay(); // 0:日曜,1:月曜,2:火曜, ...,6:土曜
-    // 「今日から何日遡れば直近の火曜になるか」を計算
-    const diffSinceTuesday = (dayOfWeek - 2 + 7) % 7;
-    lastTuesday.setDate(today.getDate() - diffSinceTuesday);
-
-    // 未来の直近の月曜日を取得（今日が月曜なら今日）
-    const nextMonday = new Date(today);
-    // 「今日から何日進めば次の月曜（または今日）が来るか」を計算
-    const diffToNextMonday = (1 - dayOfWeek + 7) % 7;
-    nextMonday.setDate(today.getDate() + diffToNextMonday);
-
-    // targetDate を同様に日本時間の00:00に調整
-    const target = new Date(targetDate);
-    target.setUTCHours(0, 0, 0, 0);
-    target.setTime(target.getTime() + 9 * 60 * 60 * 1000);
-
-    // 範囲内なら true
-    return target >= lastTuesday && target <= nextMonday;
-}
+function isWithinLastTuesdayToNextMonday(targetDateStr) {
+	// ── １．JST の今日 00:00 を取得 ──
+	const todayJST = new Date(
+	  new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+	);
+	todayJST.setHours(0, 0, 0, 0);
+  
+	const day = todayJST.getDay(); // 0: 日曜 … 2: 火曜 … 1: 月曜
+  
+	// ── ２．過去の直近火曜 ──
+	const lastTuesday = new Date(todayJST);
+	const diffToLastTue = (day - 2 + 7) % 7;
+	lastTuesday.setDate(todayJST.getDate() - diffToLastTue);
+  
+	// ── ３．未来の直近月曜 ──
+	const nextMonday = new Date(todayJST);
+	let diffToNextMon = (1 - day + 7) % 7;
+	if (diffToNextMon === 0) diffToNextMon = 7;  // 今日が月曜なら「来週の月曜」
+	nextMonday.setDate(todayJST.getDate() + diffToNextMon);
+  
+	// ── ４．target も JST の当日 00:00 に丸める ──
+	const tJST = new Date(
+	  new Date(targetDateStr).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+	);
+	tJST.setHours(0, 0, 0, 0);
+  
+	// ── ５．判定 ──
+	return tJST >= lastTuesday && tJST <= nextMonday;
+  }
+  
 
 function canAccess(matchDate) {
 	// 日本時間での現在の日付を取得（YYYY-MM-DD形式）
@@ -169,6 +172,8 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 					for (const match in item['matches'][round]) {
 						// round_idはのバリューは文字列なので、それ以外の場合のみmatch_dateについて判定
 						if (typeof item['matches'][round][match] !== 'string') {
+							// console.log('date', item['matches'][round][match]['match_date']);
+							// console.log('bool',isWithinLastTuesdayToNextMonday(item['matches'][round][match]['match_date']))
 							if (!isWithinLastTuesdayToNextMonday(item['matches'][round][match]['match_date'])) {
 								delete item['matches'][round][match];
 							}
@@ -183,7 +188,7 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 		const filteredData = data.filter(item =>
 			item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
 		);
-
+console.log('filteredData', JSON.stringify((filteredData)));
 		res.status(200).json(filteredData);
 	} catch (err) {
 		console.error('Error getting data:', err);

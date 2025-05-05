@@ -107,7 +107,15 @@ app.get(path + '/latest-four-news', async function (req, res) {
 		data.sort((a, b) => b.news_id - a.news_id);
 		passingData.push(...data);
 
-		res.status(200).json(passingData);
+		// 最新の4件だけを残すためにupdated_atで降順ソートして5個目以降の要素は削除
+		// 20250502時点、2件に減らすよう指示があった
+		const latest2 = [...passingData]
+			.sort((a, b) => {
+				return b.updated_at.localeCompare(a.updated_at);
+			})
+			.slice(0, 2);
+
+		res.status(200).json(latest2);
 	} catch (err) {
 		res.statusCode = 500;
 		res.json({ error: 'Could not load items: ' + err.message });
@@ -127,7 +135,7 @@ app.get(path + '/all-news', async function (req, res) {
 		const fetchedData = await ddbDocClient.send(command);
 		const data = fetchedData.Items;
 
-		data.sort((a, b) => b.news_id - a.news_id);
+		// data.sort((a, b) => b.news_id - a.news_id);
 
 		res.status(200).json(data);
 	} catch (err) {
