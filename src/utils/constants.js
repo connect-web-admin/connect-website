@@ -50,6 +50,8 @@ export const MEMBER_API_URL = "https://sirvr7hb77.execute-api.ap-northeast-1.ama
 export const CONNECTER_API_URL = "https://x9etjju7dd.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // 写真のAPIGatewayのエンドポイント
 export const PICS_API_URL = "https://ooscpu0ezc.execute-api.ap-northeast-1.amazonaws.com/prod/items";
+// 大会日程（アーカイブ）のエンドポイント
+export const ARCHIVE_API_URL = "https://j018mgmeeh.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 
 /**
  * 固有名詞及び定数
