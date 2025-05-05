@@ -1,0 +1,18 @@
+{
+  "resourceName": "ArchiveDDB",
+  "tableName": "ArchiveDDB",
+  "partitionKey": {
+    "fieldName": "championship_id",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "gsiByFiscalYear",
+      "partitionKey": {
+        "fieldName": "fiscal_year",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

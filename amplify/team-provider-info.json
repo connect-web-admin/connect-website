@@ -19,7 +19,7 @@
       "function": {
         "matchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/matchLambda-53423361705236736d75-build.zip"
+          "s3Key": "amplify-builds/matchLambda-31364d6143465833306e-build.zip"
         },
         "clubLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -31,15 +31,15 @@
         },
         "pickupNewsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/pickupNewsLambda-3658707538302f597a34-build.zip"
+          "s3Key": "amplify-builds/pickupNewsLambda-75584450365a7873384a-build.zip"
         },
         "mediaLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/mediaLambda-374f5a374e6d5a78745a-build.zip"
+          "s3Key": "amplify-builds/mediaLambda-4f313664554c3838746b-build.zip"
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/memberLambda-6f4f6f34564d76562b53-build.zip"
+          "s3Key": "amplify-builds/memberLambda-5863466c4a58796f7475-build.zip"
         },
         "checkUserBeforeLoginLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -48,6 +48,10 @@
         "picsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/picsLambda-6c554738685267464c76-build.zip"
+        },
+        "archiveLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/archiveLambda-6f566c2f666c346f7158-build.zip"
         }
       },
       "storage": {
@@ -58,7 +62,8 @@
         "MemberDDB": {},
         "ConnectWebsiteBucket": {},
         "CountersDDB": {},
-        "PicsDDB": {}
+        "PicsDDB": {},
+        "ArchiveDDB": {}
       },
       "api": {
         "matchApi": {},
@@ -67,7 +72,8 @@
         "pickupNewsApi": {},
         "mediaApi": {},
         "memberApi": {},
-        "picsApi": {}
+        "picsApi": {},
+        "archiveApi": {}
       }
     }
   }
