@@ -52,6 +52,10 @@
         "archiveLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/archiveLambda-6f566c2f666c346f7158-build.zip"
+        },
+        "testMatchLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/testMatchLambda-736b484364694d494278-build.zip"
         }
       },
       "storage": {
@@ -63,7 +67,8 @@
         "ConnectWebsiteBucket": {},
         "CountersDDB": {},
         "PicsDDB": {},
-        "ArchiveDDB": {}
+        "ArchiveDDB": {},
+        "TestMatchDDB": {}
       },
       "api": {
         "matchApi": {},
@@ -73,7 +78,8 @@
         "mediaApi": {},
         "memberApi": {},
         "picsApi": {},
-        "archiveApi": {}
+        "archiveApi": {},
+        "testMatchApi": {}
       }
     }
   }

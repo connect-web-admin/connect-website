@@ -39,6 +39,11 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"
+    },
+    "testMatchApi": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
     }
   },
   "auth": {
@@ -110,6 +115,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "sendInquiryViaSESLambda": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "testMatchLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
@@ -189,6 +201,14 @@ export type AmplifyDependentResourcesAttributes = {
       "StreamArn": "string"
     },
     "PicsDDB": {
+      "Arn": "string",
+      "Name": "string",
+      "PartitionKeyName": "string",
+      "PartitionKeyType": "string",
+      "Region": "string",
+      "StreamArn": "string"
+    },
+    "TestMatchDDB": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",

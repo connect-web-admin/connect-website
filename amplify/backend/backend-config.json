@@ -111,6 +111,20 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
+    },
+    "testMatchApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "testMatchLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {
@@ -284,6 +298,25 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
+    },
+    "testMatchLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "TestMatchDDB"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
     }
   },
   "parameters": {
@@ -430,6 +463,22 @@
           "resourceName": "sendInquiryViaSESLambda"
         }
       ]
+    },
+    "AMPLIFY_function_testMatchLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "testMatchLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_testMatchLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "testMatchLambda"
+        }
+      ]
     }
   },
   "storage": {
@@ -467,6 +516,10 @@
       "service": "DynamoDB"
     },
     "PicsDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "TestMatchDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }
