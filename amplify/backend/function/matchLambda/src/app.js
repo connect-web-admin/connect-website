@@ -203,7 +203,7 @@ console.log('filteredData', JSON.stringify((filteredData)));
 app.get(path + '/current-matches', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
 	const accessToken = req.query.accessToken;
-
+console.log('entering current matches', req.body)
 	// U-12とWOMANはまとめて一つの扱いなので
 	// 配列化して長さが１ならばU-15（ジュニアユース）かU-18（ユース）、そうでなければU-12（ジュニア）とWOMAN
 	const category = (req.query.category).split(',').length === 1 ? req.query.category : (req.query.category).split(',')
@@ -715,8 +715,8 @@ app.put(path + '/register-extra-halves', async function (req, res) {
 						} else {
 							data.matches[round][match]['has_extra_halves'] = false;
 
-							// 強制的に後半終了に戻す
-							data.matches[round][match]['game_status'] = '後半終了';
+							// 強制的に後半に戻す
+							data.matches[round][match]['game_status'] = '後半';
 
 							// 両クラブの延長戦スコアを初期化、合計スコアを再計算
 							data.matches[round][match]['home_club']['extra_first_half_score'] = 0;
@@ -819,10 +819,9 @@ app.put(path + '/register-pk', async function (req, res) {
 
 						// 強制的に後半（延長後半があれば延長後半）に戻す
 						if (data.matches[round][match]['has_extra_halves']) {
-							data.matches[round][match]['game_status'] = '延長後半終了';
-
+							data.matches[round][match]['game_status'] = '延長後半';
 						} else {
-							data.matches[round][match]['game_status'] = '後半終了';
+							data.matches[round][match]['game_status'] = '後半';
 						}
 
 						// 両クラブのPKスコアを初期化
