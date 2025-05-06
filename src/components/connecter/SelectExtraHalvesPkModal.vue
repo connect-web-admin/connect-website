@@ -19,16 +19,16 @@ const textBase = 'text-xl text-white';
                     <slot name="body">
                         <div class="text-center flex flex-col gap-10 justify-center items-center">
                             <h3>操作を選んでください。</h3>
-                            <button type="submit" v-if="gameStatus !== '延長後半終了'"
+                            <button type="submit" v-if="gameStatus !== '延長後半'"
                                 @click="$emit('close'), $emit('register-extra-halves', 'apply')" :class="btnBase"
-                                class="bg-orange-800">
+                                class="bg-orange-900">
                                 <span
-                                    :class="textBase" class="bg-orange-800">延長前半開始</span></button>
+                                    :class="textBase" class="bg-orange-900">延長前半開始</span></button>
                             <button type="submit" v-if="gameStatus !== 'PK終了'"
                                 @click="$emit('close'), $emit('register-pk', 'apply')" :class="btnBase"
-                                class="bg-amber-500">
+                                class="bg-green-700">
                                 <span
-                                    :class="textBase" class="bg-amber-500">PK戦開始</span></button>
+                                    :class="textBase" class="bg-green-700">PK戦開始</span></button>
                             <button type="submit" @click="$emit('close'), $emit('handle-game-status', 'end')" :class="btnBase" class="bg-blue-500">
                                 <span
                                     :class="textBase" class="bg-blue-500">試合終了</span></button>
