@@ -487,7 +487,7 @@ const arrowDownwardIcon = 'w-5 my-2 mx-auto';
                         </div>
                     </Transition>
                     <img src="@/assets/icons/arrow_downward.png" alt="下向き矢印" :class="arrowDownwardIcon">
-                    <div :class="[borderTopBottom, 'bg-amber-300 text- flex flex-row justify-center gap-10 py-2']">
+                    <div :class="[borderTopBottom, 'bg-green-200 text- flex flex-row justify-center gap-10 py-2']">
                         <h2>PK戦の有無</h2>
                         <div class="flex flex-row gap-5">
                             <div>
