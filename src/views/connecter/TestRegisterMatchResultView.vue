@@ -516,11 +516,9 @@ const getGameStatusTransitions = computed(() => {
                 '試合前': { next: '前半', label: '試合開始' },
                 '前半': { next: 'ハーフタイム', label: '前半終了' },
                 'ハーフタイム': { next: '後半', label: '後半開始' },
-                '後半': { next: '後半終了', label: '後半終了' }, // 特殊処理
-                '後半終了': { next: '選択', label: '選択' }, // 特殊処理
+                '後半': { next: '選択', label: '選択' },
                 '延長前半': { next: '延長後半', label: '延長後半開始' },
-                '延長後半': { next: '延長後半終了', label: '延長後半終了' },
-                '延長後半終了': { next: '選択', label: '選択' }, // PK戦・試合終了を選択
+                '延長後半': { next: '選択', label: '選択' },
                 'PK戦': { next: '試合終了', label: '試合終了' },
             },
             prev: {
@@ -528,12 +526,10 @@ const getGameStatusTransitions = computed(() => {
                 '前半': '試合前',
                 'ハーフタイム': '前半',
                 '後半': 'ハーフタイム',
-                '後半終了': '後半',
-                '延長前半': '後半終了',
+                '延長前半': '後半',
                 '延長後半': '延長前半',
-                '延長後半終了': '延長後半',
-                'PK戦': hasExtraHalves.value ? '延長後半終了' : '後半終了',
-                '試合終了': hasPk.value ? 'PK戦' : (hasExtraHalves.value ? '延長後半終了' : '後半終了')
+                'PK戦': hasExtraHalves.value ? '延長後半' : '後半',
+                '試合終了': hasPk.value ? 'PK戦' : (hasExtraHalves.value ? '延長後半' : '後半')
             }
         };
     }
@@ -561,8 +557,8 @@ const getPrevButtonLabel = computed(() => {
     }
     if (!isLeague.value && gameStatus.value === '試合終了') {
         if (hasPk.value) return 'PK戦';
-        if (hasExtraHalves.value) return '延長後半終了';
-        return '後半終了';
+        if (hasExtraHalves.value) return '延長後半';
+        return '後半';
     }
 
     // 通常のケース
@@ -570,10 +566,8 @@ const getPrevButtonLabel = computed(() => {
     if (prevStatus === '前半') return '前半';
     if (prevStatus === 'ハーフタイム') return 'ハーフタイム';
     if (prevStatus === '後半') return '後半';
-    if (prevStatus === '後半終了') return '後半終了';
     if (prevStatus === '延長前半') return '延長前半';
     if (prevStatus === '延長後半') return '延長後半';
-    if (prevStatus === '延長後半終了') return '延長後半終了';
     if (prevStatus === 'PK戦') return 'PK戦';
 
     return '戻る';
@@ -661,13 +655,13 @@ const handleGameStatus = async (direction) => {
  * 延長戦登録のバリデーション
  */
 const registerExtraHalvesValidation = (action) => {
-    if (action === 'apply' && !(gameStatus.value === '後半終了')) {
-        alert('試合状態が後半終了の場合のみ、延長戦を開始できます。');
-        return;
-    }
+    // if (action === 'apply' && !(gameStatus.value === '後半終了')) {
+    //     alert('試合状態が後半終了の場合のみ、延長戦を開始できます。');
+    //     return;
+    // }
 
-    if (action === 'cancel' && !(gameStatus.value === '延長前半' || gameStatus.value === '延長前半終了' || gameStatus.value === '延長後半' || gameStatus.value === '延長後半終了' || gameStatus.value === '試合終了')) {
-        alert('試合状態が延長前半・延長前半終了・延長後半・延長後半終了・試合終了の場合のみ、延長戦を取り消すことができます。');
+    if (action === 'cancel' && !(gameStatus.value === '延長前半' || gameStatus.value === '延長後半' || gameStatus.value === '試合終了')) {
+        alert('試合状態が延長前半・延長後半・試合終了の場合のみ、延長戦を取り消すことができます。');
         return;
     }
 
@@ -719,13 +713,13 @@ const registerExtraHalves = async (action) => {
  * PK戦登録のバリデーション
  */
 const registerPkValidation = (action) => {
-    if (action === 'apply' && !(gameStatus.value === '後半終了' || gameStatus.value === '延長後半終了')) {
-        alert('試合状態が後半終了か延長後半終了の場合のみ、PK戦を開始できます。');
+    if (action === 'apply' && !(gameStatus.value === '後半' || gameStatus.value === '延長後半')) {
+        alert('試合状態が後半か延長後半の場合のみ、PK戦を開始できます。');
         return;
     }
 
-    if (action === 'cancel' && !(gameStatus.value === 'PK戦' || gameStatus.value === 'PK戦終了' || gameStatus.value === '試合終了')) {
-        alert('試合状態がPK戦・PK戦終了・試合終了の場合のみ、PK戦を取り消すことができます。');
+    if (action === 'cancel' && !(gameStatus.value === 'PK戦' || gameStatus.value === '試合終了')) {
+        alert('試合状態がPK戦・試合終了の場合のみ、PK戦を取り消すことができます。');
         return;
     }
 
@@ -847,9 +841,9 @@ const registerMatchDelay = async () => {
         // 成功時の処理を追加
         alert('試合延期を正常に登録しました。試合検索画面に戻ります。');
         if (accessToken) {
-            router.push(`/connecter/select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`);
+            router.push(`/connecter/test-select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`);
         } else {
-            router.push(`/connecter/select-reporting-match-${RETURN_PATH}`);
+            router.push(`/connecter/test-select-reporting-match-${RETURN_PATH}`);
         }
     } catch (error) {
         console.error('Error details:', error);
@@ -878,7 +872,7 @@ onMounted(async () => {
 });
 
 // CSS クラスの共通化
-const textClubName = 'text-xl py-2';
+const textClubName = 'py-2';
 const scoreInputBg = 'p-4';
 const scoringOpenModal = 'text-4xl';
 const scoringBtn = 'w-12 h-10';
@@ -964,7 +958,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     <div :class="flexRow">
                         <!-- Homeクラブ得点入力 -->
                         <div class="w-1/2">
-                            <p :class="textClubName" class="bg-blue-100">{{ homeClubName }}</p>
+                            <p :class="textClubName" class="bg-blue-100 h-15">{{ homeClubName }}</p>
                             <div :class="scoreInputBg" class="bg-blue-50 border-b-1">
                                 <button type="button" @click="plusScoreValidation('home')" :class="scoringBtn"
                                     class="h-[50px] border-3 border-red-400 rounded-md bg-white">
@@ -979,7 +973,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                         </div>
                         <!-- Awayクラブ得点入力 -->
                         <div class="w-1/2">
-                            <p :class="textClubName" class="bg-amber-100">{{ awayClubName }}</p>
+                            <p :class="textClubName" class="bg-amber-100 h-15">{{ awayClubName }}</p>
                             <div :class="scoreInputBg" class="bg-amber-50 border-b-1">
                                 <button type="button" @click="plusScoreValidation('away')" :class="scoringBtn"
                                     class="h-[50px] border-3 border-red-400 rounded-md bg-white">
@@ -1001,36 +995,36 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                         <!-- 操作ボタン -->
                         <div :class="[flexCenterGap, 'mb-4']">
                             <div :class="[flexCol, 'items-center']">
-                                <p class="text-md mb-1">{{ homeClubName }}</p>
+                                <p class="h-12 mb-1">{{ homeClubName }}</p>
                                 <div class="flex gap-3">
                                     <button @click="managePkScore('home', 'success')"
-                                        class="bg-green-500 text-white px-3 py-1 rounded">
+                                        class="bg-green-500 text-white px-3 py-1 rounded h-9">
                                         ○
                                     </button>
                                     <button @click="managePkScore('home', 'failure')"
-                                        class="bg-red-500 text-white px-3 py-1 rounded">
+                                        class="bg-red-500 text-white px-3 py-1 rounded h-9">
                                         ×
                                     </button>
                                     <button @click="cancelLastKick('home')"
-                                        class="bg-gray-500 text-white px-2 py-1 rounded text-sm">
+                                        class="bg-gray-500 text-white px-2 py-1 rounded text-s h-9 w-16">
                                         取消
                                     </button>
                                 </div>
                             </div>
 
                             <div :class="[flexCol, 'items-center']">
-                                <p class="text-md mb-1">{{ awayClubName }}</p>
+                                <p class="h-12 mb-1">{{ awayClubName }}</p>
                                 <div class="flex gap-3">
                                     <button @click="managePkScore('away', 'success')"
-                                        class="bg-green-500 text-white px-3 py-1 rounded">
+                                        class="bg-green-500 text-white px-3 py-1 rounded h-9">
                                         ○
                                     </button>
                                     <button @click="managePkScore('away', 'failure')"
-                                        class="bg-red-500 text-white px-3 py-1 rounded">
+                                        class="bg-red-500 text-white px-3 py-1 rounded h-9">
                                         ×
                                     </button>
                                     <button @click="cancelLastKick('away')"
-                                        class="bg-gray-500 text-white px-2 py-1 rounded text-sm">
+                                        class="bg-gray-500 text-white px-2 py-1 rounded text-s h-9 w-16">
                                         取消
                                     </button>
                                 </div>
@@ -1145,7 +1139,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
 
         <Teleport to="body">
             <select-extra-halves-pk-modal :show="showSelectExtraHalvesPkModal" :game-status="gameStatus"
-                :is-after-second-half="gameStatus === '後半終了'" :is-after-extra-second-half="gameStatus === '延長後半終了'"
+                :is-after-second-half="gameStatus === '後半'" :is-after-extra-second-half="gameStatus === '延長後半'"
                 @close="showSelectExtraHalvesPkModal = false; isLoading = false;" @register-extra-halves="registerExtraHalves"
                 @register-pk="registerPk" @handle-game-status="handleGameStatus">
             </select-extra-halves-pk-modal>
@@ -1190,7 +1184,7 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
             <register-extra-halves-modal :show="showExtraHalvesCancelModal" :is-cancel="true"
                 @close="showExtraHalvesCancelModal = false; isLoading = false;" @register-extra-halves="registerExtraHalves">
                 <template v-slot:body>
-                    <p>延長戦を取り消します。延長戦の得点がすべて取り消されます。<br />試合状態は後半終了に変わります。<br />よろしいですか？
+                    <p>延長戦を取り消します。延長戦の得点がすべて取り消されます。<br />試合状態は後半に変わります。<br />よろしいですか？
                     </p>
                 </template>
             </register-extra-halves-modal>
@@ -1207,8 +1201,8 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
             <register-pk-modal :show="showPkCancelModal" :is-cancel="true" @close="showPkCancelModal = false; isLoading = false;"
                 @register-pk="registerPk">
                 <template v-slot:body>
-                    <p v-if="hasExtraHalves">PK戦を取り消します。PK戦の得点がすべて取り消されます。<br />試合状態は延長後半終了に変わります。<br />よろしいですか？</p>
-                    <p v-if="!hasExtraHalves">PK戦を取り消します。PK戦の得点がすべて取り消されます。<br />試合状態は後半終了に変わります。<br />よろしいですか？</p>
+                    <p v-if="hasExtraHalves">PK戦を取り消します。PK戦の得点がすべて取り消されます。<br />試合状態は延長後半に変わります。<br />よろしいですか？</p>
+                    <p v-if="!hasExtraHalves">PK戦を取り消します。PK戦の得点がすべて取り消されます。<br />試合状態は後半に変わります。<br />よろしいですか？</p>
                 </template>
             </register-pk-modal>
         </Teleport>

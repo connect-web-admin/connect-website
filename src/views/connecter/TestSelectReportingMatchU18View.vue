@@ -42,12 +42,14 @@ dayjs.tz.setDefault('Asia/Tokyo');
  */
 const getCurrentMatches = async () => {
     isLoading.value = true;
+    console.log(props.accessToken);
+    console.log(THIS_FISCAL_YEAR);
+    console.log(CATEGORY);
 
     const queryUrl = new URL(`${TEST_MATCH_API_URL}/current-matches`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
     queryUrl.searchParams.append('category', CATEGORY);
     queryUrl.searchParams.append('accessToken', props.accessToken);
-    console.log(props.accessToken);
 
     try {
         const response = await fetch(queryUrl, {
@@ -101,7 +103,7 @@ const moveToRegisterMatchResult = async (matchId) => {
 
         // 大会IDと試合IDをパラメーターとして渡す
         router.push({
-            name: 'RegisterMatchResult',
+            name: 'TestRegisterMatchResult',
             params: {
                 championshipId: championshipId,
                 matchId: matchId

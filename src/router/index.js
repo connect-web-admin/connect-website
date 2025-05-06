@@ -34,7 +34,7 @@ import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMa
 import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
 import TestRegisterMatchResultView from '@/views/connecter/TestRegisterMatchResultView.vue';
-import TestSelectMatchU18View from '@/views/connecter/TestSelectMatchU18View.vue';
+import TestSelectReportingMatchU18View from '@/views/connecter/TestSelectReportingMatchU18View.vue';
 
 // 404ルート
 import NotFoundView from '@/views/NotFoundView.vue';
@@ -234,9 +234,9 @@ const router = createRouter({
 		},
 
 		{
-			path: '/connecter/test-select-match-u18',
-			name: 'TestSelectMatchU18',
-			component: TestSelectMatchU18View,
+			path: '/connecter/test-select-reporting-match-u18',
+			name: 'TestSelectReportingMatchU18',
+			component: TestSelectReportingMatchU18View,
 			props: (route) => ({ accessToken: route.query.access_token })
 		},
 
