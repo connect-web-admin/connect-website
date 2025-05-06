@@ -52,6 +52,9 @@ export const CONNECTER_API_URL = "https://x9etjju7dd.execute-api.ap-northeast-1.
 export const PICS_API_URL = "https://ooscpu0ezc.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // 大会日程（アーカイブ）のエンドポイント
 export const ARCHIVE_API_URL = "https://j018mgmeeh.execute-api.ap-northeast-1.amazonaws.com/prod/items";
+// 速報閲覧・入力画面開発用テーブルへつなぐエンドポイント
+export const TEST_MATCH_API_URL = "https://w8i71q6qhl.execute-api.ap-northeast-1.amazonaws.com/prod/items";
+
 
 /**
  * 固有名詞及び定数

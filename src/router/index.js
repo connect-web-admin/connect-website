@@ -33,6 +33,8 @@ import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
 import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMatchU12andWView.vue';
 import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
+import TestRegisterMatchResultView from '@/views/connecter/TestRegisterMatchResultView.vue';
+import TestSelectMatchU18View from '@/views/connecter/TestSelectMatchU18View.vue';
 
 // 404ルート
 import NotFoundView from '@/views/NotFoundView.vue';
@@ -222,6 +224,20 @@ const router = createRouter({
 			name: 'EditMatchResult',
 			component: EditMatchResultView,
 			props: true
+		},
+
+		{
+			path: '/connecter/test-register-match-result/:championshipId/:matchId',
+			name: 'TestRegisterMatchResult',
+			component: TestRegisterMatchResultView,
+			props: true
+		},
+
+		{
+			path: '/connecter/test-select-match-u18',
+			name: 'TestSelectMatchU18',
+			component: TestSelectMatchU18View,
+			props: (route) => ({ accessToken: route.query.access_token })
 		},
 
 		// 404ルート この記載場所は最下部から動かさないこと
