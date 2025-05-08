@@ -83,7 +83,7 @@ onMounted(async () => {
         </div>
         <div v-else>
             <div v-for="(championships, category) in championshipInfo" :key="category">
-                <div v-if="category === 'U-18（ユース）'">
+                <div v-if="category === 'U-18（ユース）' || category === 'U-15（ジュニアユース）'">
                     <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
                     <ul>
                         <li class="p-2 not-last:border-b-1 border-gray-300" v-for="championship in championships" :key="championship.championship_id">
