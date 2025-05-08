@@ -800,9 +800,9 @@ const registerMatchResult = async () => {
         // 成功時の処理を追加
         alert('試合結果を正常に登録しました。試合検索画面に戻ります。');
         if (accessToken) {
-            router.push(`/connecter/select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`);
+            router.push(`/connecter/test-select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`);
         } else {
-            router.push(`/connecter/select-reporting-match-${RETURN_PATH}`);
+            router.push(`/connecter/test-select-reporting-match-${RETURN_PATH}`);
         }
     } catch (error) {
         console.error('Error details:', error)
@@ -1130,9 +1130,9 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     </div>
                 </div>
             </div>
-            <router-link v-if="accessToken" :to="`/connecter/select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`"
+            <router-link v-if="accessToken" :to="`/connecter/test-select-reporting-match-${RETURN_PATH}?access_token=${accessToken}`"
                 class="block text-center text-blue-600 underline mt-20">速報対象試合検索画面に戻る</router-link>
-            <router-link v-else :to="`/connecter/select-reporting-match-${RETURN_PATH}`"
+            <router-link v-else :to="`/connecter/test-select-reporting-match-${RETURN_PATH}`"
                 class="block text-center text-blue-600 underline mt-20">速報対象試合検索画面に戻る</router-link>
         </div>
         <CopyrightComp />
