@@ -773,6 +773,58 @@ onMounted(() => {
 
             <div class="space-y-3 border-b border-gray-200 pb-3">
                 <h2>
+                    第78回札幌支部高等学校サッカー選手権大会<br>
+                    兼 第78回北海道高等学校サッカー選手権大会札幌支部予選会<br>
+                    第３回札幌支部高等学校女子サッカー選手権大会<br>
+                    兼 第14回北海道高等学校総合体育大会女子サッカー競技札幌支部予選会
+                </h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/2025_Koutairen_yoko-1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/2025_Koutairen_yoko-2.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/2025_Koutairen_yoko-3.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/2025_Koutairen_yoko-4.jpg',
+                                ],
+                                [
+                                    '第78回札幌支部高等学校サッカー選手権大会等 開催要項1',
+                                    '第78回札幌支部高等学校サッカー選手権大会等 開催要項2',
+                                    '第78回札幌支部高等学校サッカー選手権大会等 開催要項3',
+                                    '第78回札幌支部高等学校サッカー選手権大会等 開催要項4',
+                                ]
+                            )
+                        "
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/%E9%AB%98%E4%BD%93%E9%80%A3_%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E8%A1%A82025%EF%BC%88HP%E7%94%A8%EF%BC%89.jpg',
+                                ],
+                                [
+                                    '第78回札幌支部高等学校サッカー選手権大会等 組み合せ',
+                                ]
+                            )
+                        "
+                    >
+                        組 み 合 せ
+                    </p>
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>
                     高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌
                 </h2>
                 <div class="flex flex-row justify-between gap-4">
@@ -842,6 +894,49 @@ onMounted(() => {
                                 ]
                             )
                         "
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>２０２５年度第４１回会長杯札幌女子サッカー大会</h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_WOMAN_41th_KaichoCup/2025_Kaicho_yoko-1.jpg',
+                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_WOMAN_41th_KaichoCup/2025_Kaicho_yoko-2.jpg',
+                                ],
+                                [
+                                    '２０２５年度第４１回会長杯札幌女子サッカー大会 開催要項1',
+                                    '２０２５年度第４１回会長杯札幌女子サッカー大会 開催要項2',
+                                ]
+                            )
+                        "
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_WOMAN_41th_KaichoCup/2025%E4%BC%9A%E9%95%B7%E6%9D%AF%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B0507%E4%BF%AE%E6%AD%A3.jpg',
+                                ],
+                                [
+                                    '第78回札幌支部高等学校サッカー選手権大会等 組み合せ',
+                                ]
+                            )
+                        "
+                    >
+                        組 み 合 せ
+                    </p>
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
                     >
                         試 合 結 果
                     </p>
