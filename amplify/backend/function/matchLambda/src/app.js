@@ -97,24 +97,39 @@ function isWithinLastTuesdayToNextMonday(targetDateStr) {
   
 	// ── ５．判定 ──
 	return tJST >= lastTuesday && tJST <= nextMonday;
-  }
+}
   
-
 function canAccess(matchDate) {
-	// 日本時間での現在の日付を取得（YYYY-MM-DD形式）
+	// 現在の時刻（UTC epoch）にJST(+9h)を足して日本時間を表現
 	const now = new Date();
 	const japanTime = new Date(now.getTime() + 9 * 60 * 60 * 1000);
 
-	// YYYY-MM-DD 形式に整形
-	const year = japanTime.getUTCFullYear();
-	const month = String(japanTime.getUTCMonth() + 1).padStart(2, "0");
-	const day = String(japanTime.getUTCDate()).padStart(2, "0");
-	const today = `${year}-${month}-${day}`;
+	// YYYY-MM-DD 形式に整形するヘルパー
+	const formatDate = date => {
+	const Y = date.getUTCFullYear();
+	const M = String(date.getUTCMonth() + 1).padStart(2, '0');
+	const D = String(date.getUTCDate()).padStart(2, '0');
+	return `${Y}-${M}-${D}`;
+	};
 
-	// 試合日と今日を比較
-	const isMatchDateToday = matchDate === today;
+	const today    = formatDate(japanTime);
+	const tomorrow = formatDate(new Date(japanTime.getTime() + 24 * 60 * 60 * 1000));
 
-	return isMatchDateToday;
+	// ■ 今日の場合
+	if (matchDate === today) {
+		// JSTの「時」だけ取得（getUTCHoursを使う点に注意）
+		const hour = japanTime.getUTCHours();
+		// 20時未満のみアクセス可
+		return hour < 20;
+	}
+
+	// ■ 明日の場合は時間関係なくアクセス可
+	if (matchDate === tomorrow) {
+		return true;
+	}
+
+	// ■ それ以外の日付はアクセス不可
+	return false;
 }
 
 /************************************
