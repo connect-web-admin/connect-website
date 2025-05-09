@@ -146,12 +146,19 @@ const moveToEditMatchResult = async (matchId) => {
  */
 const championshipsFilteredByCategory = computed(() => {
     const championshipNames = [];
+
     matchInfo.value.forEach(match => {
         if (match['category'] === selectedCategory.value) {
-            championshipNames.push(match['championship_name']);
+            championshipNames.push({
+                id: match['championship_id'],
+                name: match['championship_name']
+            });
         }
     });
-    return championshipNames;
+    // championship_idで昇順にソート
+    championshipNames.sort((a, b) => a.id.localeCompare(b.id));
+    // championship_nameのみの配列を返す
+    return championshipNames.map(item => item.name);
 });
 
 /**
