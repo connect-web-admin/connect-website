@@ -807,7 +807,7 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/%E9%AB%98%E4%BD%93%E9%80%A3_%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E8%A1%A82025%EF%BC%88HP%E7%94%A8%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/%E9%AB%98%E4%BD%93%E9%80%A3_%E7%B5%84%E5%90%88%E3%81%9B%E8%A1%A82025.jpg',
                                 ],
                                 [
                                     '第78回札幌支部高等学校サッカー選手権大会等 組み合せ',
