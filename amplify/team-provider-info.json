@@ -56,6 +56,10 @@
         "testMatchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/testMatchLambda-73674e6f56465461614a-build.zip"
+        },
+        "addSessionIdLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/addSessionIdLambda-564b574b6d33566d3638-build.zip"
         }
       },
       "storage": {

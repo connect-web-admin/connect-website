@@ -156,6 +156,11 @@
     }
   },
   "function": {
+    "addSessionIdLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "archiveLambda": {
       "build": true,
       "dependsOn": [
@@ -320,6 +325,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_addSessionIdLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addSessionIdLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_addSessionIdLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addSessionIdLambda"
+        }
+      ]
+    },
     "AMPLIFY_function_archiveLambda_deploymentBucketName": {
       "usedBy": [
         {
