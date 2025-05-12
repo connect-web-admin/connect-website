@@ -1,6 +1,19 @@
 <script setup>
 import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+
+const props = defineProps({
+    user: {
+        type: Object,
+        default: null
+    },
+    signOut: {
+        type: Function,
+        default: () => { }
+    },
+});
 /**
  * ログアウトしてローカルストレージのアイテムを削除
  */
@@ -11,9 +24,6 @@ import { onMounted } from 'vue';
     localStorage.removeItem('isAccountAvailable');
     localStorage.removeItem('userAttrSub');
     localStorage.removeItem('custom:membership_type');
-
-    // ハンバーガーメニューを閉じる
-    isMenuOpen.value = false;
 
     // Authenticator備え付けのログアウト用の関数
     props.signOut();
