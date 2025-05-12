@@ -90,7 +90,7 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class='space-y-4 border border-gray-200 rounded-lg p-4'>
+        <!-- <div class='space-y-4 border border-gray-200 rounded-lg p-4'>
             <div class="flex items-center gap-2 border-b border-gray-200 pb-4">
                 <img src="../assets/icons/question-mark.svg" alt="FAQ" class="w-[30px] h-auto" />
                 <p>ログアウトしたい。</p>
@@ -101,7 +101,7 @@ onMounted(() => {
                     こちらをタップ（クリック）してください。
                 </router-link>
             </div>
-        </div>
+        </div> -->
 
         <div class='space-y-4 border border-gray-200 rounded-lg p-4'>
             <div class="flex items-center gap-2 border-b border-gray-200 pb-4">
