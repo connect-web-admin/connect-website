@@ -278,6 +278,15 @@ router.beforeEach(async (to, from, next) => {
 				if (authState.user) {
 					// ユーザーが存在する場合はサインアウト
 					await authState.signOut();
+
+					// ローカルストレージのアイテムを削除
+					localStorage.removeItem('email');
+					localStorage.removeItem('idTokenForAuth');
+					localStorage.removeItem('isAccountAvailable');
+					localStorage.removeItem('userAttrSub');
+					localStorage.removeItem('custom:membership_type');
+					localStorage.removeItem(USER_ATTR_SESSION_ID);
+					localStorage.removeItem(USER_ATTR_EMAIL);
 				}
 			} catch (error) {
 				console.error('認証エラー:', error);
