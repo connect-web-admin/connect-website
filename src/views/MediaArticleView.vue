@@ -28,7 +28,7 @@ const getSingleArticle = async () => {
 
     const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
     if (!idToken) {
-        failedMsg.value = '認証が無効です。再度ログインしてください。';
+        failedMsg.value = '認証が無効です。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
         console.error('認証トークンが見つかりません。');
         return;
     }
@@ -43,7 +43,7 @@ const getSingleArticle = async () => {
         });
 
         if (response.status === 401) {
-            failedMsg.value = '認証が無効です。ログインしてから再度ログインしてください。';
+            failedMsg.value = '認証が無効です。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
             console.error('認証が無効です。');
             return;
         }
