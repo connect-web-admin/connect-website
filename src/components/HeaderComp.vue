@@ -17,7 +17,6 @@ const props = defineProps({
 
 const router = useRouter();
 const route = useRoute();
-const isLoading = ref(false);
 
 /**
  * スライダー表示
@@ -149,10 +148,9 @@ const handleScroll = () => {
 }
 
 /**
- * session_idを作成しMemberDDBに保存する関数
+ * session_idを削除する関数
  */
 const removeSessionIdInMemberDDB = async () => {
-    isLoading.value = true;
     const idTokenForAuth = localStorage.getItem('idTokenForAuth');
 
     try {
@@ -177,9 +175,6 @@ const removeSessionIdInMemberDDB = async () => {
 
     } catch (error) {
         console.error('Error details:', error);
-        isLoading.value = false;
-    } finally {
-        isLoading.value = false;
     }
 }
 

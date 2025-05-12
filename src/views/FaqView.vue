@@ -16,9 +16,8 @@ const props = defineProps({
     },
 });
 
-
 /**
- * session_idを作成しMemberDDBに保存する関数
+ * session_idを削除する関数
  */
 const removeSessionIdInMemberDDB = async () => {
     isLoading.value = true;
@@ -46,9 +45,6 @@ const removeSessionIdInMemberDDB = async () => {
 
     } catch (error) {
         console.error('Error details:', error);
-        isLoading.value = false;
-    } finally {
-        isLoading.value = false;
     }
 }
 
@@ -66,7 +62,7 @@ const signOutAndDeleteItemsInLocalStorage = async () => {
     localStorage.removeItem('custom:membership_type');
     localStorage.removeItem(USER_ATTR_SESSION_ID);
     localStorage.removeItem(USER_ATTR_EMAIL);
-    
+
     // Authenticator備え付けのログアウト用の関数
     props.signOut();
 
