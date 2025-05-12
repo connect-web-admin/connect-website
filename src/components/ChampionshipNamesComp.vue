@@ -92,7 +92,6 @@ const championshipsThisWeek = computed(() => {
         }
     });
     
-    console.log("検出された大会数:", championships.size);
     isLoading.value = false;
     return Array.from(championships);
 });

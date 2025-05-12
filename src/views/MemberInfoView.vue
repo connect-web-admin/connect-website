@@ -13,6 +13,14 @@ const memberInfo = ref([]);
 const getMemberInfo = async () => {
     isLoading.value = true;
 
+    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    if (!idToken) {
+        failedMsg.value = '認証が無効です。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+        console.error('認証トークンが見つかりません。');
+        isLoading.value = false;
+        return;
+    }
+
     const email = localStorage.getItem(USER_ATTR_EMAIL);
 
     const queryUrl = new URL(`${MEMBER_API_URL}/member-info`);
@@ -23,8 +31,16 @@ const getMemberInfo = async () => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem(ID_TOKEN_FOR_AUTH)}`
             },
         });
+
+        if (response.status === 401) {
+            failedMsg.value = '認証が無効です。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+            console.error('認証が無効です。');
+            isLoading.value = false;
+            return;
+        }
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
