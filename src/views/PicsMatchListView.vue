@@ -75,7 +75,7 @@ const getTargetChampionshipInfo = async () => {
             .sort((a, b) => b.match_date.localeCompare(a.match_date));
     } catch (error) {
         failedMsg.value =
-            "大会情報の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。";
+            "大会情報の取得に失敗しました。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。または、ブラウザを更新するか、時間を置いてからアクセスしてください。";
         console.error("大会情報の取得に失敗しました。");
     } finally {
         isLoading.value = false;

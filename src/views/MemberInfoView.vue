@@ -33,7 +33,7 @@ const getMemberInfo = async () => {
         memberInfo.value = await response.json();
     } catch (error) {
         failedMsg.value =
-            "会員情報の取得に失敗しました。ブラウザを更新するか、時間を置いてからアクセスしてください。それでも改善されない場合は、Connectまでお問い合わせください。";
+            "会員情報の取得に失敗しました。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。または、ブラウザを更新するか、時間を置いてからアクセスしてください。";
         console.error("会員情報の取得に失敗しました。");
     } finally {
         isLoading.value = false;
