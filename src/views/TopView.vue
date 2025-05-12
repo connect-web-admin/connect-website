@@ -60,7 +60,6 @@ onMounted(async () => {
     <div class="px-2 pt-2">
         <div class="font-bold">
             <h1 class="text-xl pt-2">☆お知らせ☆</h1>
-            <p>【重要】5月12日（月）システムメンテナンスに伴う一時閉鎖とログアウトのお知らせ<br><router-link to="/pickup-news/article/2025/1202505092002" class="text-blue-500">→こちら</router-link></p>
             <p>北海道カブスリーグの試合結果速報につきまして<br><a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E3%80%90%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B%E3%80%91%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E3%81%AE%E8%A9%A6%E5%90%88%E7%B5%90%E6%9E%9C%E9%80%9F%E5%A0%B1%E3%81%AB%E3%81%A4%E3%81%8D%E3%81%BE%E3%81%97%E3%81%A6.jpg" target="_blank" class="text-blue-500">→こちら</a></p>
             <p>結果速報につきまして<br><a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E3%80%90%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B%E3%80%91%E7%B5%90%E6%9E%9C%E9%80%9F%E5%A0%B1%E3%81%AB%E3%81%A4%E3%81%8D%E3%81%BE%E3%81%97%E3%81%A6.jpg" target="_blank" class="text-blue-500">→こちら</a></p>
         </div>
