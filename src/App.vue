@@ -8,7 +8,7 @@ import '@aws-amplify/ui-vue/styles.css';
 import { Hub } from 'aws-amplify/utils';
 import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
 // 自作コンポーネントのインポート
-import { CONNECTER, ID_TOKEN_FOR_AUTH, USER_ATTR_EMAIL, USER_ATTR_MEMBERSHIP_TYPE, USER_ATTR_SESSION_ID, USER_ATTR_SUB } from '@/utils/constants';
+import { CONNECTER, ID_TOKEN_FOR_AUTH, USER_ATTR_EMAIL, USER_ATTR_MEMBERSHIP_TYPE, USER_ATTR_SESSION_ID, USER_ATTR_SUB, MEMBER_API_URL } from '@/utils/constants';
 import HeaderComp from './components/HeaderComp.vue'; 
 import FooterComp from './components/FooterComp.vue';
 
@@ -20,28 +20,58 @@ const router = useRouter();
 const isAccountAvailable = ref(true);
 const userAttrMembershipType = ref('');
 const idTokenForAuth = ref('');
+const isLoading = ref(false);
+const failedMsg = ref('');
+const memberInfo = ref({});
 
 /**
- * Cognitoからユーザー情報を取得し、ローカルストレージにセット
+ * MemberDDBからsession_idを取得するため
  */
-const fetchUserInfoFromCognito = async () => {
+const getMemberInfo = async () => {
+    isLoading.value = true;
+
+    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    if (!idToken) {
+        failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+        console.error('認証トークンが見つかりません。');
+        isLoading.value = false;
+        return;
+    }
+
+    const email = localStorage.getItem(USER_ATTR_EMAIL);
+
+    const queryUrl = new URL(`${MEMBER_API_URL}/member-info`);
+    queryUrl.searchParams.append("email", email);
+
     try {
-        // 現在のユーザーと属性を取得
-        const attributes = await fetchUserAttributes();
+        const response = await fetch(queryUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem(ID_TOKEN_FOR_AUTH)}`
+            },
+        });
 
-        // ユーザー属性を取得・ローカルストレージにセット
-        localStorage.setItem(USER_ATTR_EMAIL, attributes[USER_ATTR_EMAIL]);
-        // localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, attributes[USER_ATTR_MEMBERSHIP_TYPE]);
+        if (response.status === 401) {
+            failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+            console.error('認証が無効です。');
+            isLoading.value = false;
+            return;
+        }
 
-        // ログイン後にユーザーの種別によりルーティングを変更するために格納
-        // userAttrMembershipType.value = attributes[USER_ATTR_MEMBERSHIP_TYPE];
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-        // API認可用のトークンを取得・ローカルストレージにセット
-        const authSession = await fetchAuthSession();
-        localStorage.setItem(ID_TOKEN_FOR_AUTH, authSession.tokens.idToken);
-        localStorage.setItem(USER_ATTR_SUB, authSession.tokens.idToken.payload.sub);
+        memberInfo.value = await response.json();
+        console.log('memberInfo', memberInfo.value);
+        localStorage.setItem(USER_ATTR_SESSION_ID, memberInfo.value.session_id);
     } catch (error) {
-        console.error('Cognitoユーザー情報の取得に失敗しました。', error);
+        failedMsg.value =
+            "会員情報の取得に失敗しました。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。または、ブラウザを更新するか、時間を置いてからアクセスしてください。";
+        console.error("会員情報の取得に失敗しました。");
+    } finally {
+        isLoading.value = false;
     }
 }
 
@@ -73,9 +103,15 @@ onMounted(() => {
         const { event } = data.payload;
         if (event === 'signedIn') {
             // ユーザー情報をCognitoから取得
+            const attributes = await fetchUserAttributes();
+            localStorage.setItem(USER_ATTR_EMAIL, attributes[USER_ATTR_EMAIL]);
+
             const session = await fetchAuthSession();
             idTokenForAuth.value = session['tokens'].idToken;
             localStorage.setItem(ID_TOKEN_FOR_AUTH, idTokenForAuth.value);
+
+            // // session_idをMemberDDBから取得するため
+            // await getMemberInfo();
 
             // ログイン後にトップページにリダイレクト
             router.push('/top');            
