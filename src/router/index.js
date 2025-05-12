@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
+import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
+import { Authenticator, useAuthenticator } from "@aws-amplify/ui-vue";
 
 // レギュラー会員用のページ
 import LoginView from '@/views/LoginView.vue';
@@ -248,5 +250,45 @@ const router = createRouter({
 		}
 	]
 })
+
+// 保護されたルートのリスト
+const protectedRoutes = [
+	'Top',
+	'Pics',
+	'PicsMatchList',
+	'PicsList',
+	'PickupNews',
+	'PickupNewsArticle',
+	'MemberInfo',
+	'Archive',
+	'Coupon',
+	'LatestResults',
+	'MediaArticle',
+	'Media',
+	'ClubList'
+];
+
+// ナビゲーションガードの実装
+router.beforeEach(async (to, from, next) => {
+	if (protectedRoutes.includes(to.name)) {
+		const idToken = localStorage.getItem('idTokenForAuth');
+		if (!idToken) {
+			try {
+				const authState = useAuthenticator();
+				if (authState.user) {
+					alert('ログインしてください。')
+					// ユーザーが存在する場合はサインアウト
+					await authState.signOut();
+				}
+			} catch (error) {
+				console.error('認証エラー:', error);
+			}
+			// ログインページにリダイレクト
+			next({ name: 'Home' });
+			return;
+		}
+	}
+	next();
+});
 
 export default router

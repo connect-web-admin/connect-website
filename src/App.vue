@@ -65,7 +65,6 @@ const isSignUpPath = () => {
            path.startsWith('/site-info');
 }
 
-
 onMounted(() => {
     /**
      * 認証イベントを監視
