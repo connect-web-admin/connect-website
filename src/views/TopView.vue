@@ -11,6 +11,8 @@ const noThisWeekMatchesMsg = ref('');
 const isLoading = ref(true);
 const latestTwoNews = ref([]);
 const latestFourArticles = ref([]);
+const failedMsgPickupNews = ref('');
+const failedMsgMedia = ref('');
 
 /**
  * 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
@@ -54,7 +56,7 @@ const getLatestTwoNews = async () => {
 
     const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
     if (!idToken) {
-        failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+        failedMsgPickupNews.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
         console.error('認証トークンが見つかりません。');
         return;
     }
@@ -68,7 +70,7 @@ const getLatestTwoNews = async () => {
         });
 
         if (response.status === 401) {
-            failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+            failedMsgPickupNews.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
             console.error('認証が無効です。');
             return;
         }
@@ -81,7 +83,7 @@ const getLatestTwoNews = async () => {
         // news_idで降順ソート（新しい記事を上に表示）
         latestTwoNews.value.sort((a, b) => b.news_id.localeCompare(a.news_id));
     } catch (error) {
-        failedMsg.value = 'ピックアップニュースの取得に失敗しました。';
+        failedMsgPickupNews.value = 'ピックアップニュースの取得に失敗しました。';
         console.error('ピックアップニュースの取得に失敗しました。');
     }
 }
@@ -95,7 +97,7 @@ const getLatestFourArticles = async () => {
 
     const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
     if (!idToken) {
-        failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+        failedMsgMedia.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
         console.error('認証トークンが見つかりません。');
         return;
     }
@@ -110,7 +112,7 @@ const getLatestFourArticles = async () => {
         });
 
         if (response.status === 401) {
-            failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+            failedMsgMedia.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
             console.error('認証が無効です。');
             return;
         }
@@ -123,7 +125,7 @@ const getLatestFourArticles = async () => {
         // article_idで降順ソート（新しい記事を上に表示）
         latestFourArticles.value.sort((a, b) => b.article_id.localeCompare(a.article_id));
     } catch (error) {
-        failedMsg.value = 'メディア記事の取得に失敗しました。';
+        failedMsgMedia.value = 'メディア記事の取得に失敗しました。';
         console.error('メディア記事の取得に失敗しました。', error);
     }
 }
