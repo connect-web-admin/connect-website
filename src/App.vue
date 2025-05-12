@@ -19,6 +19,7 @@ const router = useRouter();
 // ユーザー単位のデータ
 const isAccountAvailable = ref(true);
 const userAttrMembershipType = ref('');
+const idTokenForAuth = ref('');
 
 /**
  * Cognitoからユーザー情報を取得し、ローカルストレージにセット
@@ -73,8 +74,11 @@ onMounted(() => {
         const { event } = data.payload;
         if (event === 'signedIn') {
             // ユーザー情報をCognitoから取得
-            await fetchUserInfoFromCognito();
+            const session = await fetchAuthSession();
+            idTokenForAuth.value = session['tokens'].idToken;
+            localStorage.setItem(ID_TOKEN_FOR_AUTH, idTokenForAuth.value);
 
+            // ログイン後にトップページにリダイレクト
             router.push('/top');            
         }
     })

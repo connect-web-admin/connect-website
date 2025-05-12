@@ -1,6 +1,26 @@
 <script setup>
 import { onMounted } from 'vue';
 
+/**
+ * ログアウトしてローカルストレージのアイテムを削除
+ */
+ const signOutAndDeleteItemsInLocalStorage = () => {
+    // ローカルストレージのアイテムを削除
+    localStorage.removeItem('email');
+    localStorage.removeItem('idTokenForAuth');
+    localStorage.removeItem('isAccountAvailable');
+    localStorage.removeItem('userAttrSub');
+    localStorage.removeItem('custom:membership_type');
+
+    // ハンバーガーメニューを閉じる
+    isMenuOpen.value = false;
+
+    // Authenticator備え付けのログアウト用の関数
+    props.signOut();
+
+    router.push('/top');
+}
+
 onMounted(() => {
   // ページ遷移時に最上部へスクロール
     window.scrollTo({
@@ -19,6 +39,19 @@ onMounted(() => {
             <div class="flex items-start gap-2">
                 <img src="../assets/icons/exclamation-mark.svg" alt="FAQ" class="pl-[2px] w-[29px] h-auto" />
                 <p>写真を選んで「保存する」ボタンを押していただくとダウンロードしていただけます（お使いの機種により操作が異なる場合がございます。お使いのブラウザの使用方法をご確認ください）。</p>
+            </div>
+        </div>
+
+        <div class='space-y-4 border border-gray-200 rounded-lg p-4'>
+            <div class="flex items-center gap-2 border-b border-gray-200 pb-4">
+                <img src="../assets/icons/question-mark.svg" alt="FAQ" class="w-[30px] h-auto" />
+                <p>ログアウトしたい。</p>
+            </div>
+            <div class="flex items-start gap-2">
+                <img src="../assets/icons/exclamation-mark.svg" alt="FAQ" class="pl-[2px] w-[29px] h-auto" />
+                <router-link @click="signOutAndDeleteItemsInLocalStorage" to="/top" class="text-blue-500 underline">
+                    こちらをタップ（クリック）してください。
+                </router-link>
             </div>
         </div>
 

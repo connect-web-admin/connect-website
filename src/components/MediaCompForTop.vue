@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { MEDIA_API_URL, THIS_FISCAL_YEAR } from '@/utils/constants';
+import { MEDIA_API_URL, THIS_FISCAL_YEAR, ID_TOKEN_FOR_AUTH } from '@/utils/constants';
 import dayjs from 'dayjs';
 
 const latestFourArticles = ref([]);
@@ -23,13 +23,27 @@ const getLatestFourArticles = async () => {
     const queryUrl = new URL(`${MEDIA_API_URL}/latest-four-articles`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
+    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    if (!idToken) {
+        failedMsg.value = '認証が無効です。再度ログインしてください。';
+        console.error('認証トークンが見つかりません。');
+        return;
+    }
+
     try {
         const response = await fetch(queryUrl, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
             }
         });
+
+        if (response.status === 401) {
+            failedMsg.value = '認証が無効です。ログインしてから再度ログインしてください。';
+            console.error('認証が無効です。');
+            return;
+        }
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -40,7 +54,7 @@ const getLatestFourArticles = async () => {
         latestFourArticles.value.sort((a, b) => b.article_id.localeCompare(a.article_id));
     } catch (error) {
         failedMsg.value = 'メディア記事の取得に失敗しました。';
-        console.error('メディア記事の取得に失敗しました。');
+        console.error('メディア記事の取得に失敗しました。', error);
     }
 }
 

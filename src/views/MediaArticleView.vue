@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import DOMPurify from 'dompurify';
-import { MEDIA_API_URL } from '@/utils/constants';
+import { MEDIA_API_URL, ID_TOKEN_FOR_AUTH } from '@/utils/constants';
 
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
@@ -26,13 +26,27 @@ const getSingleArticle = async () => {
 
     const queryUrl = new URL(`${MEDIA_API_URL}/article/${fiscalYear}/${articleId}`);
 
+    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    if (!idToken) {
+        failedMsg.value = '認証が無効です。再度ログインしてください。';
+        console.error('認証トークンが見つかりません。');
+        return;
+    }
+
     try {
         const response = await fetch(queryUrl, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
             }
         });
+
+        if (response.status === 401) {
+            failedMsg.value = '認証が無効です。ログインしてから再度ログインしてください。';
+            console.error('認証が無効です。');
+            return;
+        }
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

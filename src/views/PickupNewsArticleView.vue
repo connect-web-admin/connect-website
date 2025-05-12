@@ -1,11 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import DOMPurify from 'dompurify';
-import { PICKUP_NEWS_API_URL } from '@/utils/constants';
+import { PICKUP_NEWS_API_URL, ID_TOKEN_FOR_AUTH } from '@/utils/constants';
 
 // ルーティングで渡されたパラメータを取得
 const route = useRoute();
+const router = useRouter();
 const fiscalYear = route.params.fiscalYear;
 const newsId = route.params.newsId;
 
@@ -26,13 +27,27 @@ const getSingleNews = async () => {
 
     const queryUrl = new URL(`${PICKUP_NEWS_API_URL}/article/${fiscalYear}/${newsId}`);
 
+    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    if (!idToken) {
+        failedMsg.value = '認証が無効です。再度ログインしてください。';
+        console.error('認証トークンが見つかりません。');
+        return;
+    }
+
     try {
         const response = await fetch(queryUrl, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
             }
         });
+
+        if (response.status === 401) {
+            failedMsg.value = '認証が無効です。ログインしてから再度ログインしてください。';
+            console.error('認証が無効です。');
+            return;
+        }
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -51,7 +66,19 @@ const getSingleNews = async () => {
  * ピックアップニュースの内容をHTMLに変換　念のためサニタイズ
  */
 const sanitizedHtml = (content) => {
-    return DOMPurify.sanitize(content);
+    // contentが存在しない場合は空文字を返す
+    if (!content) return '';
+    
+    // router-linkをaタグに変換
+    const convertedContent = content.replace(
+        /<router-link\s+to="([^"]+)"[^>]*>(.*?)<\/router-link>/g,
+        '<a href="#" class="router-link" data-to="$1">$2</a>'
+    );
+    
+    return DOMPurify.sanitize(convertedContent, {
+        ADD_TAGS: ['a'],
+        ADD_ATTR: ['href', 'data-to', 'class']
+    });
 };
 
 onMounted(async () => {
@@ -62,6 +89,15 @@ onMounted(async () => {
     window.scrollTo({
         top: 0,
         behavior: 'auto'
+    });
+
+    // コンテンツ内のリンクにクリックイベントを追加
+    document.querySelectorAll('.router-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const to = link.getAttribute('data-to');
+            router.push(to);
+        });
     });
 });
 </script>

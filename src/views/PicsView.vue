@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { MATCH_API_URL, THIS_FISCAL_YEAR } from "@/utils/constants";
+import { MATCH_API_URL, THIS_FISCAL_YEAR, ID_TOKEN_FOR_AUTH } from "@/utils/constants";
 
 const router = useRouter();
 const championshipInfo = ref([]);
@@ -20,13 +20,26 @@ const getChampionshipInfo = async () => {
     const queryUrl = new URL(`${MATCH_API_URL}/championship-names-ids`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
+    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    if (!idToken) {
+        failedMsg.value = '認証が無効です。再度ログインしてください。';
+        console.error('認証トークンが見つかりません。');
+        return;
+    }
     try {
         const response = await fetch(queryUrl, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
             }
         });
+
+        if (response.status === 401) {
+            failedMsg.value = '認証が無効です。ログインしてから再度ログインしてください。';
+            console.error('認証が無効です。');
+            return;
+        }
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
