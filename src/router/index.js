@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
 import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-vue";
-import { USER_ATTR_SESSION_ID, USER_ATTR_EMAIL } from '@/utils/constants';
+import { USER_ATTR_SESSION_ID, USER_ATTR_EMAIL, MEMBER_API_URL } from '@/utils/constants';
 
 // レギュラー会員用のページ
 import LoginView from '@/views/LoginView.vue';
