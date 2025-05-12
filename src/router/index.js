@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
 import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-vue";
+import { USER_ATTR_SESSION_ID, USER_ATTR_EMAIL } from '@/utils/constants';
 
 // レギュラー会員用のページ
 import LoginView from '@/views/LoginView.vue';
@@ -268,6 +269,37 @@ const protectedRoutes = [
 	'ClubList'
 ];
 
+/**
+ * session_idを削除する関数
+ */
+const removeSessionIdInMemberDDB = async () => {
+    const idTokenForAuth = localStorage.getItem('idTokenForAuth');
+
+    try {
+        const putUrl = new URL(`${MEMBER_API_URL}/remove-session-id`);
+        const requestBody = {
+            email: localStorage.getItem(USER_ATTR_EMAIL),
+            sessionId: localStorage.getItem(USER_ATTR_SESSION_ID)
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idTokenForAuth}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+    } catch (error) {
+        console.error('Error details:', error);
+    }
+}
+
 // ナビゲーションガードの実装
 router.beforeEach(async (to, from, next) => {
 	if (protectedRoutes.includes(to.name)) {
@@ -276,8 +308,7 @@ router.beforeEach(async (to, from, next) => {
 			try {
 				const authState = useAuthenticator();
 				if (authState.user) {
-					// ユーザーが存在する場合はサインアウト
-					await authState.signOut();
+					await removeSessionIdInMemberDDB();
 
 					// ローカルストレージのアイテムを削除
 					localStorage.removeItem('email');
@@ -287,6 +318,9 @@ router.beforeEach(async (to, from, next) => {
 					localStorage.removeItem('custom:membership_type');
 					localStorage.removeItem(USER_ATTR_SESSION_ID);
 					localStorage.removeItem(USER_ATTR_EMAIL);
+
+					// ユーザーが存在する場合はサインアウト
+					await authState.signOut();
 				}
 			} catch (error) {
 				console.error('認証エラー:', error);
