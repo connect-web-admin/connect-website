@@ -10,11 +10,8 @@ onMounted(() => {
 });
 </script>
 <template>
-    <div class="p-4 h-100 flex items-center justify-center">
-        <h1 class="text-2xl font-bold absolute top-4">クーポン</h1>
-        <div class="text-xl">
-            準備中
-        </div>
+    <div class="p-5">
+        <img src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/coupon/TUNERS_coupon.jpg" class="w-full h-auto" />
     </div>
 </template>
 <style></style>
