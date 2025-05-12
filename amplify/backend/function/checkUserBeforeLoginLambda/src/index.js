@@ -37,15 +37,16 @@ exports.handler = async (event) => {
         console.log("DynamoDBから取得したデータ:", result);
 
         const countSessionId = result.Items[0].session_id.length;
+        console.log('countSessionIdの数', countSessionId);
 
         // can_loginがfalseの場合はログインを拒否
         if (!result.Items || result.Items[0].can_login === false) {
             throw new Error("ログインできません");
         }
 
-        // countSessionIdが2以上の場合はログインを拒否
-        if (countSessionId > 2) {
-            throw new Error("ログインできません。同時接続可能デバイスの上限を超えています。");
+        // countSessionIdがすでに2以上の場合はログインを拒否
+        if (countSessionId >= 2) {
+            throw new Error("ログインできません");
         }
 
         console.log(inputEmail, 'ログインOK')
@@ -55,6 +56,6 @@ exports.handler = async (event) => {
         console.error("ログイン前チェックでエラー:", err);
 
         // エラーを投げると Cognito はログインをブロックする
-        throw new Error("ログインできない場合は、認証コードで登録者本人確認がお済みでないか、クレジットカード決済情報が登録されていない可能性があります。ご不明な点は、下部のコンタクトからお問い合わせください。: " + err.message);
+        throw new Error("ログインできない場合は、同時ログイン可能デバイス数の上限を超えるログインか、認証コードで登録者本人確認がお済みでないか、クレジットカード決済情報が登録されていないなどの可能性があります.ご不明な点は、下部のコンタクトからお問い合わせください");
     }
 };
