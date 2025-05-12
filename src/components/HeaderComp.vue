@@ -1,4 +1,5 @@
 <script setup>
+import { MEMBER_API_URL } from '@/utils/constants';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
@@ -146,10 +147,38 @@ const handleScroll = () => {
     hideSlider.value = scrollTop !== 0;
 }
 
+
+
+const delSessIdInMemberDDB = async () => {
+    isLoading.value = true;
+    const putUrl = new URL(`${MEMBER_API_URL}/del-session-id-in-member-ddb`);
+    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+
+    try {
+        const response = await fetch(putUrl, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${idToken}`
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("画像の取得に失敗しました。");
+    } finally {
+        isLoading.value = false;
+    }
+};
+
 /**
  * ログアウトしてローカルストレージのアイテムを削除
  */
-const signOutAndDeleteItemsInLocalStorage = () => {
+const signOutAndDeleteItemsInLocalStorage = async () => {
+    // await delSessIdInMemberDDB();
+    
     // ローカルストレージのアイテムを削除
     localStorage.removeItem('email');
     localStorage.removeItem('idTokenForAuth');
