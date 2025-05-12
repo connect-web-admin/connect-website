@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { MEMBER_API_URL, USER_ATTR_EMAIL } from "@/utils/constants";
+import { MEMBER_API_URL, USER_ATTR_EMAIL, ID_TOKEN_FOR_AUTH } from "@/utils/constants";
 
 const failedMsg = ref("");
 const isLoading = ref(false);
