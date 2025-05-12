@@ -10,7 +10,7 @@ const isLoading = ref(false);
 const route = useRoute();
 
 /**
- * アクセス日から次の日曜日までに開催予定の試合を取得
+ * アクセス日から次の月曜日までに開催予定の試合を取得（火曜日始まり月曜終わり）
  */
 const getMatchesInThisWeek = async () => {
     isLoading.value = true;

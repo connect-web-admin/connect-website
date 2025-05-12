@@ -70,33 +70,32 @@ function formatTimeZone(gameStatus) {
 }
 
 function isWithinLastTuesdayToNextMonday(targetDateStr) {
-	// ── １．JST の今日 00:00 を取得 ──
-	const todayJST = new Date(
-	  new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
-	);
-	todayJST.setHours(0, 0, 0, 0);
-  
-	const day = todayJST.getDay(); // 0: 日曜 … 2: 火曜 … 1: 月曜
-  
-	// ── ２．過去の直近火曜 ──
-	const lastTuesday = new Date(todayJST);
-	const diffToLastTue = (day - 2 + 7) % 7;
-	lastTuesday.setDate(todayJST.getDate() - diffToLastTue);
-  
-	// ── ３．未来の直近月曜 ──
-	const nextMonday = new Date(todayJST);
-	let diffToNextMon = (1 - day + 7) % 7;
-	if (diffToNextMon === 0) diffToNextMon = 7;  // 今日が月曜なら「来週の月曜」
-	nextMonday.setDate(todayJST.getDate() + diffToNextMon);
-  
-	// ── ４．target も JST の当日 00:00 に丸める ──
-	const tJST = new Date(
-	  new Date(targetDateStr).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
-	);
-	tJST.setHours(0, 0, 0, 0);
-  
-	// ── ５．判定 ──
-	return tJST >= lastTuesday && tJST <= nextMonday;
+	  // １．JST の今日 00:00 を取得
+	  const todayJST = new Date(
+		new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+	  );
+	  todayJST.setHours(0, 0, 0, 0);
+	
+	  const day = todayJST.getDay(); // 0:日曜 … 1:月曜 … 2:火曜 … 
+	
+	  // ２．過去の直近火曜
+	  const lastTuesday = new Date(todayJST);
+	  const diffToLastTue = (day - 2 + 7) % 7;
+	  lastTuesday.setDate(todayJST.getDate() - diffToLastTue);
+	
+	  // ３．未来の直近月曜（特例なし）
+	  const nextMonday = new Date(todayJST);
+	  const diffToNextMon = (1 - day + 7) % 7;
+	  nextMonday.setDate(todayJST.getDate() + diffToNextMon);
+	
+	  // ４．target を JST の当日 00:00 に丸める
+	  const tJST = new Date(
+		new Date(targetDateStr).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+	  );
+	  tJST.setHours(0, 0, 0, 0);
+	
+	  // ５．判定（inclusive）
+	  return tJST >= lastTuesday && tJST <= nextMonday;
 }
   
 function canAccess(matchDate) {
