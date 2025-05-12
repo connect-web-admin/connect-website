@@ -1,5 +1,5 @@
 <script setup>
-import { MEMBER_API_URL } from '@/utils/constants';
+import { MEMBER_API_URL, USER_ATTR_SESSION_ID, USER_ATTR_EMAIL } from '@/utils/constants';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
@@ -17,6 +17,7 @@ const props = defineProps({
 
 const router = useRouter();
 const route = useRoute();
+const isLoading = ref(false);
 
 /**
  * スライダー表示
@@ -147,37 +148,46 @@ const handleScroll = () => {
     hideSlider.value = scrollTop !== 0;
 }
 
-
-
-const delSessIdInMemberDDB = async () => {
+/**
+ * session_idを作成しMemberDDBに保存する関数
+ */
+const removeSessionIdInMemberDDB = async () => {
     isLoading.value = true;
-    const putUrl = new URL(`${MEMBER_API_URL}/del-session-id-in-member-ddb`);
-    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    const idTokenForAuth = localStorage.getItem('idTokenForAuth');
 
     try {
+        const putUrl = new URL(`${MEMBER_API_URL}/remove-session-id`);
+        const requestBody = {
+            email: localStorage.getItem(USER_ATTR_EMAIL),
+            sessionId: localStorage.getItem(USER_ATTR_SESSION_ID)
+        }
+
         const response = await fetch(putUrl, {
-            method: "PUT",
+            method: 'PUT',
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${idToken}`
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idTokenForAuth}`
             },
+            body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+
     } catch (error) {
-        console.error("画像の取得に失敗しました。");
+        console.error('Error details:', error);
+        isLoading.value = false;
     } finally {
         isLoading.value = false;
     }
-};
+}
 
 /**
  * ログアウトしてローカルストレージのアイテムを削除
  */
 const signOutAndDeleteItemsInLocalStorage = async () => {
-    // await delSessIdInMemberDDB();
+    await removeSessionIdInMemberDDB();
     
     // ローカルストレージのアイテムを削除
     localStorage.removeItem('email');
@@ -185,7 +195,8 @@ const signOutAndDeleteItemsInLocalStorage = async () => {
     localStorage.removeItem('isAccountAvailable');
     localStorage.removeItem('userAttrSub');
     localStorage.removeItem('custom:membership_type');
-
+    localStorage.removeItem(USER_ATTR_SESSION_ID);
+    localStorage.removeItem(USER_ATTR_EMAIL);
     // ハンバーガーメニューを閉じる
     isMenuOpen.value = false;
 

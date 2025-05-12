@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { USER_ATTR_SESSION_ID, USER_ATTR_EMAIL, MEMBER_API_URL } from '@/utils/constants';
 
 const router = useRouter();
 
@@ -14,17 +15,58 @@ const props = defineProps({
         default: () => { }
     },
 });
+
+
+/**
+ * session_idを作成しMemberDDBに保存する関数
+ */
+const removeSessionIdInMemberDDB = async () => {
+    isLoading.value = true;
+    const idTokenForAuth = localStorage.getItem('idTokenForAuth');
+
+    try {
+        const putUrl = new URL(`${MEMBER_API_URL}/remove-session-id`);
+        const requestBody = {
+            email: localStorage.getItem(USER_ATTR_EMAIL),
+            sessionId: localStorage.getItem(USER_ATTR_SESSION_ID)
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idTokenForAuth}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+    } catch (error) {
+        console.error('Error details:', error);
+        isLoading.value = false;
+    } finally {
+        isLoading.value = false;
+    }
+}
+
 /**
  * ログアウトしてローカルストレージのアイテムを削除
  */
- const signOutAndDeleteItemsInLocalStorage = () => {
+const signOutAndDeleteItemsInLocalStorage = async () => {
+    await removeSessionIdInMemberDDB();
+
     // ローカルストレージのアイテムを削除
     localStorage.removeItem('email');
     localStorage.removeItem('idTokenForAuth');
     localStorage.removeItem('isAccountAvailable');
     localStorage.removeItem('userAttrSub');
     localStorage.removeItem('custom:membership_type');
-
+    localStorage.removeItem(USER_ATTR_SESSION_ID);
+    localStorage.removeItem(USER_ATTR_EMAIL);
+    
     // Authenticator備え付けのログアウト用の関数
     props.signOut();
 
