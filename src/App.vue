@@ -92,7 +92,13 @@ onMounted(() => {
     </header>          
 
     <main class="flex-1 pb-20">
-        <template v-if="isSignUpPath()">
+        <div class="p-4">            
+            <h1 class="text-center text-2xl font-bold">システムメンテナンス中です。</h1>
+            <p class="text-center pt-3">
+                終了は5月12日（月）16時59分を予定しておりますが、事情により前後する場合がございます。ご了承ください。
+            </p>
+        </div>
+        <!-- <template v-if="isSignUpPath()">
             <RouterView />
         </template>
         <template v-else>
@@ -123,7 +129,7 @@ onMounted(() => {
                 </a>
             </div>
 
-        </template>
+        </template> -->
     </main>
         
     <!-- connecterパス以外の場合のみフッターを表示 -->
