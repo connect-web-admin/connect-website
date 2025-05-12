@@ -383,10 +383,10 @@ const handleImageClick = (url) => {
                                         </router-link>
                                     </li> -->
                                 </ul>
-                                <!-- <router-link @click="signOutAndDeleteItemsInLocalStorage" to="/top" :class="routerLinkClass"
+                                <router-link @click="signOutAndDeleteItemsInLocalStorage" to="/top" :class="routerLinkClass"
                                     class="text-gray-500 pl-4">
                                     ログアウト
-                                </router-link> -->
+                                </router-link>
                             </div>
                         </div>
                     </Transition>
