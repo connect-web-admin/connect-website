@@ -44,6 +44,7 @@ const getTargetChampionshipInfo = async () => {
     if (!idToken) {
         failedMsg.value = '認証が無効です。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
         console.error('認証トークンが見つかりません。');
+        isLoading.value = false;
         return;
     }
     try {
@@ -58,6 +59,7 @@ const getTargetChampionshipInfo = async () => {
         if (response.status === 401) {
             failedMsg.value = '認証が無効です。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
             console.error('認証が無効です。');
+            isLoading.value = false;
             return;
         }
 

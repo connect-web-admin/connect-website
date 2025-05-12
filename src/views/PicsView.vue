@@ -7,6 +7,7 @@ const router = useRouter();
 const championshipInfo = ref([]);
 const noChampionshipMsg = ref('');
 const isLoading = ref(true);
+const failedMsg = ref('');
 
 // カテゴリーの表示順序を定義
 const categoryOrder = [
@@ -24,6 +25,7 @@ const getChampionshipInfo = async () => {
     if (!idToken) {
         failedMsg.value = '認証が無効です。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
         console.error('認証トークンが見つかりません。');
+        isLoading.value = false;
         return;
     }
     try {
@@ -38,6 +40,7 @@ const getChampionshipInfo = async () => {
         if (response.status === 401) {
             failedMsg.value = '認証が無効です。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
             console.error('認証が無効です。');
+            isLoading.value = false;
             return;
         }
 
@@ -95,8 +98,12 @@ onMounted(async () => {
             <img src="../assets/icons/loading.gif" alt="読み込み中" class="w-10 h-10 mx-auto">
         </div>
         <div v-else>
-            <div v-for="(championships, category) in championshipInfo" :key="category">
-                <div v-if="category === 'U-18（ユース）'">
+            <div v-if="failedMsg" class="p-4">
+                <p>{{ failedMsg }}</p>
+            </div>
+            <div v-else>
+                <div v-for="(championships, category) in championshipInfo" :key="category">
+                    <div v-if="category === 'U-18（ユース）'">
                     <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
                     <ul>
                         <li class="px-4 py-2 not-last:border-b-1 border-gray-300" v-for="championship in championships" :key="championship.championship_id">
@@ -118,6 +125,7 @@ onMounted(async () => {
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     </div>
