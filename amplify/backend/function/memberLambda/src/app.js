@@ -206,7 +206,7 @@ app.put(path + '/add-session-id', async function (req, res) {
  ************************************/
 app.put(path + '/remove-session-id', async function (req, res) {
 	const inputEmail = req.body.email;
-	const targetSessionId = req.body.sessionId;  // リネーム
+	const targetSessionId = req.body.sessionId;
   
 	try {
 	  // 1. email からアイテム取得
@@ -228,18 +228,24 @@ app.put(path + '/remove-session-id', async function (req, res) {
 	  }
   
 	  const fetchedMemberInfo = queryResult.Items[0];
-	  const { member_id, membership_type, session_id = [] } = fetchedMemberInfo;
+	  const { member_id, membership_type } = fetchedMemberInfo;
+	  // session_id がない場合は空配列にフォールバック
+	  const sessionList = Array.isArray(fetchedMemberInfo.session_id)
+		? fetchedMemberInfo.session_id
+		: [];
   
-	  // 2. session_id 配列から targetSessionId を除外
-	  const filteredSessionIds = session_id.filter(id => id !== targetSessionId);
+	  // 2. targetSessionId が含まれているか確認
+	  if (!sessionList.includes(targetSessionId)) {
+		return res.status(404).json({ message: '指定のセッションIDが見つかりませんでした' });
+	  }
   
-	  // 3. フィルタ済みリストで上書き更新
+	  // 3. 見つかった要素を除外
+	  const filteredSessionIds = sessionList.filter(id => id !== targetSessionId);
+  
+	  // 4. フィルタ済みリストで上書き更新
 	  const updateParams = {
 		TableName: tableName,
-		Key: {
-		  member_id,
-		  membership_type
-		},
+		Key: { member_id, membership_type },
 		UpdateExpression: 'SET session_id = :new_list',
 		ExpressionAttributeValues: {
 		  ':new_list': filteredSessionIds
