@@ -36,10 +36,18 @@ exports.handler = async (event) => {
 
         console.log("DynamoDBから取得したデータ:", result);
 
+        const countSessionId = result.Items[0].session_id.length;
+
         // can_loginがfalseの場合はログインを拒否
         if (!result.Items || result.Items[0].can_login === false) {
             throw new Error("ログインできません");
         }
+
+        // countSessionIdが2以上の場合はログインを拒否
+        if (countSessionId > 2) {
+            throw new Error("ログインできません。同時接続可能デバイスの上限を超えています。");
+        }
+
         console.log(inputEmail, 'ログインOK')
         // 問題なければログインを許可
         return event;

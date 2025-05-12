@@ -43,7 +43,7 @@
         },
         "checkUserBeforeLoginLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/checkUserBeforeLoginLambda-6364775768383272744e-build.zip"
+          "s3Key": "amplify-builds/checkUserBeforeLoginLambda-72373746664252587542-build.zip"
         },
         "picsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
