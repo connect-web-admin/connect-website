@@ -22,58 +22,6 @@ const userAttrMembershipType = ref('');
 const idTokenForAuth = ref('');
 const isLoading = ref(false);
 const failedMsg = ref('');
-const memberInfo = ref({});
-
-/**
- * MemberDDBからsession_idを取得するため
- */
-const getMemberInfo = async () => {
-    isLoading.value = true;
-
-    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
-    if (!idToken) {
-        failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
-        console.error('認証トークンが見つかりません。');
-        isLoading.value = false;
-        return;
-    }
-
-    const email = localStorage.getItem(USER_ATTR_EMAIL);
-
-    const queryUrl = new URL(`${MEMBER_API_URL}/member-info`);
-    queryUrl.searchParams.append("email", email);
-
-    try {
-        const response = await fetch(queryUrl, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem(ID_TOKEN_FOR_AUTH)}`
-            },
-        });
-
-        if (response.status === 401) {
-            failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
-            console.error('認証が無効です。');
-            isLoading.value = false;
-            return;
-        }
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        memberInfo.value = await response.json();
-        console.log('memberInfo', memberInfo.value);
-        localStorage.setItem(USER_ATTR_SESSION_ID, memberInfo.value.session_id);
-    } catch (error) {
-        failedMsg.value =
-            "会員情報の取得に失敗しました。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。または、ブラウザを更新するか、時間を置いてからアクセスしてください。";
-        console.error("会員情報の取得に失敗しました。");
-    } finally {
-        isLoading.value = false;
-    }
-}
 
 /**
  * connecterのパスかどうかを判定する関数
@@ -81,6 +29,57 @@ const getMemberInfo = async () => {
  */
 const isConnecterPath = () => {
     return router.currentRoute.value.path.startsWith('/connecter');
+}
+
+/**
+ * session_idを作成しMemberDDBに保存する関数
+ */
+const createSessionIdAndSaveToMemberDDB = async () => {
+    isLoading.value = true;
+
+    const now = new Date();
+	const tokyo = new Date(
+		now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
+	);
+	const z2 = v => String(v).padStart(2, '0');
+	const datetime = [
+		tokyo.getFullYear(),
+		z2(tokyo.getMonth() + 1),
+		z2(tokyo.getDate()),
+		z2(tokyo.getHours()),
+		z2(tokyo.getMinutes()),
+		z2(tokyo.getSeconds())
+	].join('');
+	const rand4 = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+	const newSessionId = datetime + rand4;
+
+    localStorage.setItem(USER_ATTR_SESSION_ID, newSessionId);
+
+    try {
+        const putUrl = new URL(`${MEMBER_API_URL}/add-session-id`);
+        const requestBody = {
+            email: localStorage.getItem(USER_ATTR_EMAIL),
+            sessionId: newSessionId
+        }
+
+        const response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idTokenForAuth.value}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Error details:', error);
+        isLoading.value = false;
+    } finally {
+        isLoading.value = false;
+    }
 }
 
 /**
@@ -110,8 +109,8 @@ onMounted(() => {
             idTokenForAuth.value = session['tokens'].idToken;
             localStorage.setItem(ID_TOKEN_FOR_AUTH, idTokenForAuth.value);
 
-            // // session_idをMemberDDBから取得するため
-            // await getMemberInfo();
+            // session_idを作成しMemberDDBに保存
+            await createSessionIdAndSaveToMemberDDB();
 
             // ログイン後にトップページにリダイレクト
             router.push('/top');            
