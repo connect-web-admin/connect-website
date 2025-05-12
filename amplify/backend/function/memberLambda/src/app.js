@@ -140,6 +140,124 @@ app.get(path + '/member-info', async function (req, res) {
 });
 
 /************************************
+ * HTTP Get method to sess_idをDynamoDBに保存 *
+ ************************************/
+app.put(path + '/add-session-id', async function (req, res) {
+	const inputEmail = req.body.email;
+	const newSessionId = req.body.sessionId;
+
+	try {
+		const queryParams = {
+			TableName: tableName,
+			IndexName: GSI_BY_EMAIL,
+			KeyConditionExpression: 'email = :email',
+			ExpressionAttributeValues: {
+				':email': inputEmail
+			},
+		};
+
+		console.log('会員情報取得パラメタ', queryParams);
+
+		const commandForQuery = new QueryCommand(queryParams);
+		const queryResult = await ddbDocClient.send(commandForQuery);
+
+		if (!queryResult.Items || queryResult.Items.length === 0) {
+			return {
+				statusCode: 404,
+				body: JSON.stringify({ message: '対象のアイテムが見つかりませんでした' })
+			};
+		}
+
+		const fetchedMemberInfo = queryResult.Items[0];
+		const { member_id, membership_type } = fetchedMemberInfo;
+
+		// 更新したアイテムを保存
+		const updateParams = {
+			TableName: tableName,
+			Key: {
+				member_id,
+				membership_type
+			},
+			UpdateExpression: `
+					SET session_id = list_append(
+						if_not_exists(session_id, :empty_list),
+						:new_vals
+					)
+				`,
+			ExpressionAttributeValues: {
+				':empty_list': [],
+				':new_vals': [newSessionId]
+			}
+		};
+
+		const command = new UpdateCommand(updateParams);
+		const result = await ddbDocClient.send(command);
+		console.log('Update successful:', JSON.stringify(result));
+		res.status(200).send();
+	} catch (err) {
+		console.error('Error updating data:', err);
+		res.status(500).json({ success: false, error: 'Error adding data' });
+	}
+});
+
+
+/************************************
+ * HTTP Get method to sess_idをDynamoDBに保存 *
+ ************************************/
+app.put(path + '/remove-session-id', async function (req, res) {
+	const inputEmail = req.body.email;
+	const targetSessionId = req.body.sessionId;  // リネーム
+  
+	try {
+	  // 1. email からアイテム取得
+	  const queryParams = {
+		TableName: tableName,
+		IndexName: GSI_BY_EMAIL,
+		KeyConditionExpression: 'email = :email',
+		ExpressionAttributeValues: {
+		  ':email': inputEmail
+		},
+	  };
+	  console.log('会員情報取得パラメタ', queryParams);
+  
+	  const commandForQuery = new QueryCommand(queryParams);
+	  const queryResult = await ddbDocClient.send(commandForQuery);
+  
+	  if (!queryResult.Items || queryResult.Items.length === 0) {
+		return res.status(404).json({ message: '対象のアイテムが見つかりませんでした' });
+	  }
+  
+	  const fetchedMemberInfo = queryResult.Items[0];
+	  const { member_id, membership_type, session_id = [] } = fetchedMemberInfo;
+  
+	  // 2. session_id 配列から targetSessionId を除外
+	  const filteredSessionIds = session_id.filter(id => id !== targetSessionId);
+  
+	  // 3. フィルタ済みリストで上書き更新
+	  const updateParams = {
+		TableName: tableName,
+		Key: {
+		  member_id,
+		  membership_type
+		},
+		UpdateExpression: 'SET session_id = :new_list',
+		ExpressionAttributeValues: {
+		  ':new_list': filteredSessionIds
+		}
+	  };
+  
+	  const commandForUpdate = new UpdateCommand(updateParams);
+	  const result = await ddbDocClient.send(commandForUpdate);
+	  console.log('Update successful:', JSON.stringify(result));
+  
+	  res.status(200).json({ success: true });
+	} catch (err) {
+	  console.error('Error updating data:', err);
+	  res.status(500).json({ success: false, error: 'Error removing session ID' });
+	}
+  });  
+
+/************************************
  * HTTP Get method to 既存のアイテムのcust_codeに上書き *
  ************************************/
 app.put(path + '/put-cust-code', async function (req, res) {
@@ -168,7 +286,6 @@ app.put(path + '/put-cust-code', async function (req, res) {
 		res.status(500).json({ success: false, error: 'Error adding data' });
 	}
 });
-
 
 /************************************
  * HTTP Get method to 会員情報を取得 *

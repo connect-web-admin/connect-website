@@ -62,7 +62,7 @@ export const TEST_MATCH_API_URL = "https://w8i71q6qhl.execute-api.ap-northeast-1
 // Cognitoのユーザー情報から属性を取得・ローカルストレージに保存する際のキー名
 export const USER_ATTR_EMAIL = "email";
 export const USER_ATTR_MEMBERSHIP_TYPE = "custom:membership_type";
-export const USER_ATTR_SESSION_ID = "sessId";
+export const USER_ATTR_SESSION_ID = "sessionId";
 export const USER_ATTR_SUB = "userAttrSub"; // UUID。Cognitoのsub情報と同じ
 export const ID_TOKEN_FOR_AUTH = "idTokenForAuth"; // APIGatewayの認可情報
 
