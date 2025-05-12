@@ -276,7 +276,6 @@ router.beforeEach(async (to, from, next) => {
 			try {
 				const authState = useAuthenticator();
 				if (authState.user) {
-					alert('ログインしてください。')
 					// ユーザーが存在する場合はサインアウト
 					await authState.signOut();
 				}
