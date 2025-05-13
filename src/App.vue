@@ -147,12 +147,16 @@ onMounted(() => {
                     </div>
                 </template>
             </Authenticator>
+            
             <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10">
                 <a href="/signup.html" class="text-center bg-lime-600 text-white px-4 py-2 rounded-sm">
                     新規会員登録
                 </a>
             </div>
-            <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10 p-4">
+            <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-5 p-4">
+                <p class="mb-8 text-left"><span class="font-bold underline">ログインできなくなっていた事象につきまして（復旧済み）</span><br>5月12日22時ごろからログインできない事象が発生しておりましたが、現在は復旧しております。会員の皆様におかれましては、ご不便・ご心配をおかけいたしましたことをお詫びいたします。</p>                
+            </div>
+            <div v-if="authState.authStatus !== 'authenticated'" class="text-center p-4">
                 <p class="mb-8 text-left"><span class="font-bold underline">新規会員登録について</span><br>何らかの事象により認証コードの入力画面が表示されなくなった場合、
                     ご登録いただいたメールアドレスとパスワードを上記のログインフォームに入力してログインボタンをタップしていただきますと、認証コード入力画面に移動することができます。<br>
                     認証が成功しましたら、<a href="/register-card-info.html" class="text-center text-blue-600 underline text-lg">「新規会員登録時に決済情報登録を完了できなかった場合はこちら」</a>
