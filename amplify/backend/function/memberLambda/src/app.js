@@ -156,7 +156,7 @@ app.put(path + '/add-session-id', async function (req, res) {
 			},
 		};
 
-		console.log('会員情報取得パラメタ', queryParams);
+		console.log('セッションID追加用会員情報取得パラメタ', queryParams);
 
 		const commandForQuery = new QueryCommand(queryParams);
 		const queryResult = await ddbDocClient.send(commandForQuery);
@@ -218,7 +218,7 @@ app.put(path + '/remove-session-id', async function (req, res) {
 		  ':email': inputEmail
 		},
 	  };
-	  console.log('会員情報取得パラメタ', queryParams);
+	  console.log('セッションID削除用会員情報取得パラメタ', queryParams);
   
 	  const commandForQuery = new QueryCommand(queryParams);
 	  const queryResult = await ddbDocClient.send(commandForQuery);

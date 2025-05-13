@@ -36,7 +36,7 @@ exports.handler = async (event) => {
 
         console.log("DynamoDBから取得したデータ:", result);
 
-        const countSessionId = result.Items[0].session_id.length;
+        const countSessionId = Array.isArray(result.Items[0].session_id) ? result.Items[0].session_id.length : 0;
         console.log('countSessionIdの数', countSessionId);
 
         // can_loginがfalseの場合はログインを拒否
