@@ -878,7 +878,17 @@ onMounted(() => {
                         組 み 合 せ
                     </p>
                     <p
-                        class="border-1 w-1/3 py-1 text-xs text-center"
+                        class="text-white bg-[#55948B] w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/%E9%AB%98%E4%BD%93%E9%80%A3%E4%B8%80%E6%97%A5%E7%9B%AE%E7%B5%90%E6%9E%9C.jpg',
+                                ],
+                                [
+                                    '第78回札幌支部高等学校サッカー選手権大会等 1日目試合結果',
+                                ]
+                            )
+                        "
                     >
                         試 合 結 果
                     </p>
