@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { MATCH_API_URL, THIS_FISCAL_YEAR } from '@/utils/constants';
-import MatchesInThisWeekComp from '@/components/MatchesInThisWeekComp.vue';
+
 const isLoading = ref(false);
 const matchInfo = ref([]);
 const noThisWeekMatchesMsg = ref('');
@@ -147,14 +147,14 @@ onMounted(() => {
                     <h3 class="bg-black text-white w-fit px-2">{{ formatDate(date) }}</h3>
                 </div>
                 <div v-for="(match, index) in matches" :key="index" class="p-2 border-b">
-                    <div class="flex justify-start gap-5">
-                        <p class="text-sm mb-1">{{ match.match_category }}</p>
-                        <p class="text-sm mb-1">{{ match.scheduled_match_start_time }}</p>
+                    <div>
+                        <p class="text-sm mb-1">種別：{{ match.match_category }}</p>
+                        <p class="text-sm mb-1">定刻：{{ match.scheduled_match_start_time }}</p>
+                        <p class="text-sm mb-1">対戦カード：{{ match.home_club }} vs {{ match.away_club }}</p>
+                        <p class="text-sm">試合会場：{{ match.venue }}</p>
+                        <p>アクセストークン：<span class="text-red-600">{{ match.access_token }}</span><span v-if="match.match_category === 'U-12'">４種</span></p>
+                        <p class="text-sm">マッチID：{{ match.match_id }}</p>
                     </div>
-                        <p class="text-sm mb-1">{{ match.home_club }} vs {{ match.away_club }}</p>
-                    <p class="text-sm">{{ match.venue }}
-                    ：<span class="text-red-600">{{ match.access_token }}</span><span v-if="match.match_category === 'U-12'">４種</span></p>
-                    <p class="text-sm">{{ match.match_id }}</p>
                 </div>
             </div>
         </div>
