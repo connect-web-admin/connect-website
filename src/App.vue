@@ -153,9 +153,6 @@ onMounted(() => {
                     新規会員登録
                 </a>
             </div>
-            <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-5 p-4">
-                <p class="mb-8 text-left"><span class="font-bold underline">ログインできなくなっていた事象につきまして（復旧済み）</span><br>5月12日22時ごろからログインできない事象が発生しておりましたが、現在は復旧しております。会員の皆様におかれましては、ご不便・ご心配をおかけいたしましたことをお詫びいたします。</p>                
-            </div>
             <div v-if="authState.authStatus !== 'authenticated'" class="text-center p-4">
                 <p class="mb-8 text-left"><span class="font-bold underline">新規会員登録について</span><br>何らかの事象により認証コードの入力画面が表示されなくなった場合、
                     ご登録いただいたメールアドレスとパスワードを上記のログインフォームに入力してログインボタンをタップしていただきますと、認証コード入力画面に移動することができます。<br>
