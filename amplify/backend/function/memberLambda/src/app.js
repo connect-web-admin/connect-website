@@ -224,6 +224,7 @@ app.put(path + '/remove-session-id', async function (req, res) {
 	  const queryResult = await ddbDocClient.send(commandForQuery);
   
 	  if (!queryResult.Items || queryResult.Items.length === 0) {
+		console.log('指定のメールアドレスが見つかりませんでした', inputEmail)
 		return res.status(404).json({ message: '対象のアイテムが見つかりませんでした' });
 	  }
   
@@ -236,6 +237,7 @@ app.put(path + '/remove-session-id', async function (req, res) {
   
 	  // 2. targetSessionId が含まれているか確認
 	  if (!sessionList.includes(targetSessionId)) {
+		console.log('指定のセッションIDが見つかりませんでした', inputEmail)
 		return res.status(404).json({ message: '指定のセッションIDが見つかりませんでした' });
 	  }
   
@@ -254,7 +256,7 @@ app.put(path + '/remove-session-id', async function (req, res) {
   
 	  const commandForUpdate = new UpdateCommand(updateParams);
 	  const result = await ddbDocClient.send(commandForUpdate);
-	  console.log('Update successful:', JSON.stringify(result));
+	  console.log('セッションID削除成功:', JSON.stringify(result));
   
 	  res.status(200).json({ success: true });
 	} catch (err) {

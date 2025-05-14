@@ -41,11 +41,13 @@ exports.handler = async (event) => {
 
         // can_loginがfalseの場合はログインを拒否
         if (!result.Items || result.Items[0].can_login === false) {
+            console.log('can_loginがfalseのためログイン不可：', inputEmail)
             throw new Error("ログインできません");
         }
 
         // countSessionIdがすでに2以上の場合はログインを拒否
         if (countSessionId >= 2) {
+            console.log('セッションIDがすでに2つ存在するためログイン不可：', inputEmail)
             throw new Error("ログインできません");
         }
 

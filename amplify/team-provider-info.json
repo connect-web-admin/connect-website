@@ -39,11 +39,11 @@
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/memberLambda-6a2b4562546f78594b57-build.zip"
+          "s3Key": "amplify-builds/memberLambda-58712f396b446955536e-build.zip"
         },
         "checkUserBeforeLoginLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/checkUserBeforeLoginLambda-7359517330434a2b745a-build.zip"
+          "s3Key": "amplify-builds/checkUserBeforeLoginLambda-585873317930702b5661-build.zip"
         },
         "picsLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
