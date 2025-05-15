@@ -182,6 +182,9 @@ const removeSessionIdInMemberDDB = async () => {
  * ログアウトしてローカルストレージのアイテムを削除
  */
 const signOutAndDeleteItemsInLocalStorage = async () => {
+    // ハンバーガーメニューを閉じる
+    isMenuOpen.value = false;
+
     await removeSessionIdInMemberDDB();
     
     // ローカルストレージのアイテムを削除
@@ -192,8 +195,6 @@ const signOutAndDeleteItemsInLocalStorage = async () => {
     localStorage.removeItem('custom:membership_type');
     localStorage.removeItem(USER_ATTR_SESSION_ID);
     localStorage.removeItem(USER_ATTR_EMAIL);
-    // ハンバーガーメニューを閉じる
-    isMenuOpen.value = false;
 
     // Authenticator備え付けのログアウト用の関数
     props.signOut();
