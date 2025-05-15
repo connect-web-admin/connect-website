@@ -304,6 +304,11 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "sessionIdDailyRemovalLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "testMatchLambda": {
       "build": true,
       "dependsOn": [
@@ -482,6 +487,22 @@
         {
           "category": "function",
           "resourceName": "sendInquiryViaSESLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sessionIdDailyRemovalLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sessionIdDailyRemovalLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sessionIdDailyRemovalLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sessionIdDailyRemovalLambda"
         }
       ]
     },

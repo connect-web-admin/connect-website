@@ -128,6 +128,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Name": "string",
       "Region": "string"
     },
+    "sessionIdDailyRemovalLambda": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
     "testMatchLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",

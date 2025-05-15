@@ -60,6 +60,10 @@
         "addSessionIdLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/addSessionIdLambda-705a303349796654696b-build.zip"
+        },
+        "sessionIdDailyRemovalLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/sessionIdDailyRemovalLambda-6757316578346d42797a-build.zip"
         }
       },
       "storage": {
