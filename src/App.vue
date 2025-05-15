@@ -91,7 +91,8 @@ const isSignUpPath = () => {
     return path.startsWith('/signup') || 
            path.startsWith('/confirm-signup') || 
            path.startsWith('/connecter') ||
-           path.startsWith('/site-info');
+           path.startsWith('/site-info') ||
+           path.startsWith('/contact');
 }
 
 onMounted(() => {
