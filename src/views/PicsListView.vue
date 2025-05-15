@@ -56,7 +56,7 @@ const getTargetPics = async () => {
 
     const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
     if (!idToken) {
-        failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+        failedMsg.value = '認証トークンが見つかりません。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
         console.error('認証トークンが見つかりません。');
         isLoading.value = false;
         return;

@@ -21,13 +21,13 @@ const isNew = (publishedDate) => {
 /**
  * 当年度のすべてのピックアップニュースを取得する
  */
-const getallArticles = async () => {
+const getAllArticles = async () => {
     isLoading.value = true;
     const queryUrl = new URL(`${MEDIA_API_URL}/all-articles`);
 
     const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
     if (!idToken) {
-        failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+        failedMsg.value = '認証トークンが見つかりません。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
         console.error('認証トークンが見つかりません。');
         isLoading.value = false;
         return;
@@ -65,12 +65,8 @@ const getallArticles = async () => {
     }
 }
 
-// const sanitizedMarkdown = () => {
-//     return DOMPurify.sanitize(marked(content.value));
-// };
-
 onMounted(async () => {
-    await getallArticles();
+    await getAllArticles();
 
     // ページ遷移時に最上部へスクロール
     window.scrollTo({
