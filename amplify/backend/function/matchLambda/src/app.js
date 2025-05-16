@@ -164,6 +164,8 @@ app.get(path + '/championship-names-ids', async function (req, res) {
 ************************************/
 app.get(path + '/matches-in-this-week', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
+	const tryingEmail = req.query.tryingEmail;
+	console.log('watching member email', tryingEmail);
 
 	const queryItemParams = {
 		TableName: tableName,
@@ -217,7 +219,7 @@ console.log('filteredData', JSON.stringify((filteredData)));
 app.get(path + '/current-matches', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
 	const accessToken = req.query.accessToken;
-console.log('entering current matches', req.body)
+console.log('entering current matches', req.query)
 	// U-12とWOMANはまとめて一つの扱いなので
 	// 配列化して長さが１ならばU-15（ジュニアユース）かU-18（ユース）、そうでなければU-12（ジュニア）とWOMAN
 	const category = (req.query.category).split(',').length === 1 ? req.query.category : (req.query.category).split(',')
