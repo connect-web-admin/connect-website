@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR } from '@/utils/constants';
+import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, USER_ATTR_EMAIL } from '@/utils/constants';
 import MatchesInThisWeekComp from '@/components/MatchesInThisWeekComp.vue';
 import { useRoute } from 'vue-router';
 
@@ -16,6 +16,7 @@ const getMatchesInThisWeek = async () => {
     isLoading.value = true;
     const queryUrl = new URL(`${MATCH_API_URL}/matches-in-this-week`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
+    queryUrl.searchParams.append('tryingEmail', localStorage.getItem(USER_ATTR_EMAIL));
 
     try {
         const response = await fetch(queryUrl, {
@@ -141,16 +142,13 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="px-2 pt-2">
+    <div class="p-4">
         <div class="flex flex-col justify-between items-center">
             <div v-if="isLoading" class="flex justify-center items-center mt-10">
                 <img src="../assets/icons/loading.gif" alt="loading" class="w-10 h-10">
             </div>
             <div v-else>
-                <p>
-                    U-18プリンスリーグの大会詳細結果はこちら→　<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank" class="text-blue-600 underline break-all">https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/</a>　からご覧ください。
-                </p>
-                <p class="mt-5 text-sm text-red-500">毎週火曜日更新<br>会場の状況や天候により、定刻通りの速報とならない場合があります。</p>
+                <p class="text-sm text-red-500">毎週火曜日更新<br>会場の状況や天候により、定刻通りの速報とならない場合があります。</p>
                 <MatchesInThisWeekComp :match-info="matchInfo" />
             </div>
         </div>

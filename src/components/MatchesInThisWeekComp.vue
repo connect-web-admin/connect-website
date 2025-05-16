@@ -154,7 +154,7 @@ const formatDate = (dateString) => {
                                         <div class="w-2/5 text-right">
                                             {{match["home_club"]["club_name"]}}
                                         </div>
-                                        <div class="w-1/5 text-sm">
+                                        <div class="w-2/5 text-sm">
                                             <p>
                                                 {{match["home_club"]["first_half_score"]}}
                                                 前半
