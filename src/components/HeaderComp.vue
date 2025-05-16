@@ -163,8 +163,7 @@ const removeSessionIdInMemberDDB = async () => {
         const response = await fetch(putUrl, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idTokenForAuth}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestBody)
         });

@@ -39,8 +39,7 @@ const getSingleNews = async () => {
         const response = await fetch(queryUrl, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idToken}`
+                'Content-Type': 'application/json'
             }
         });
 

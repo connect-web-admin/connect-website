@@ -65,8 +65,7 @@ const createSessionIdAndSaveToMemberDDB = async () => {
         const response = await fetch(putUrl, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idTokenForAuth.value}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestBody)
         });

@@ -30,8 +30,7 @@ const getMemberInfo = async () => {
         const response = await fetch(queryUrl, {
             method: "GET",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem(ID_TOKEN_FOR_AUTH)}`
+                "Content-Type": "application/json"
             },
         });
 
