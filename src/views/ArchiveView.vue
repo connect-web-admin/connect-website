@@ -900,10 +900,10 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/%E9%AB%98%E4%BD%93%E9%80%A32%E6%97%A5%E7%9B%AE%E7%B5%90%E6%9E%9C.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/%E9%AB%98%E4%BD%93%E9%80%A3%EF%BC%93%E6%97%A5%E7%9B%AE%E7%B5%90%E6%9E%9C.jpg',
                                 ],
                                 [
-                                    '第78回札幌支部高等学校サッカー選手権大会等 ２日目試合結果',
+                                    '第78回札幌支部高等学校サッカー選手権大会等 ３日目試合結果',
                                 ]
                             )
                         "
