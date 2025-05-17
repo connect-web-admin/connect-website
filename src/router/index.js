@@ -7,6 +7,8 @@ import { USER_ATTR_SESSION_ID, USER_ATTR_EMAIL, MEMBER_API_URL } from '@/utils/c
 // レギュラー会員用のページ
 import LoginView from '@/views/LoginView.vue';
 import TopView from '@/views/TopView.vue';
+import LatestResultsView from '@/views/LatestResultsView.vue';
+import LatestResultsByChampionshipView from '@/views/LatestResultsByChampionshipNameView.vue';
 import MediaView from '@/views/MediaView.vue';
 import PickupNewsView from '@/views/PickupNewsView.vue';
 import PickupNewsArticleView from '@/views/PickupNewsArticleView.vue';
@@ -30,7 +32,6 @@ import TermsOfServiceView from '@/views/site-info/TermsOfServiceView.vue';
 import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 import ConfirmMatchInputView from '@/views/ConfirmMatchInputView.vue';
 // コネクター用のページ
-import LatestResultsView from '@/views/LatestResultsView.vue';
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
 import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMatchU12andWView.vue';
@@ -190,6 +191,12 @@ const router = createRouter({
 		},
 
 		{
+			path: '/latest-results-by-championship/:championshipId',
+			name: 'LatestResultsByChampionship',
+			component: LatestResultsByChampionshipView,
+		},
+
+		{
 			path: '/confirm-match-input',
 			name: 'ConfirmMatchInput',
 			component: ConfirmMatchInputView,
@@ -285,8 +292,7 @@ const removeSessionIdInMemberDDB = async () => {
         const response = await fetch(putUrl, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idTokenForAuth}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestBody)
         });
