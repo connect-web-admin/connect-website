@@ -102,31 +102,40 @@ onMounted(async () => {
             </div>
             <div v-else>
                 <div v-for="(championships, category) in championshipInfo" :key="category">
-                    <div v-if="category === 'U-18（ユース）'">
-                    <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
-                    <ul>
-                        <li class="px-4 py-2" v-for="championship in championships" :key="championship.championship_id">
-                            <div v-if="championship.championship_name !== '第78回札幌支部高等学校サッカー選手権大会'">
-                            <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
-                                <p class="pr-2">{{ championship.championship_name }}</p>
-                                <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
-                            </router-link>
+                    <div v-if="category === 'U-12（ジュニア）'">
+                        <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
+                        <div v-for="championship in championships" :key="championship.championship_id">
+                            <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name === 'Ｕ―１２サッカーリーグｉｎ北海道 札幌地区リーグ2025（2部Aブロック）'">
+                                <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
+                                    <p class="pr-2">{{ championship.championship_name }}</p>
+                                    <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
+                                </router-link>
                             </div>
-                        </li>
-                    </ul>
-                </div>
-                <div v-if="category === 'U-15（ジュニアユース）'">
-                    <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
-                    <div v-for="championship in championships" :key="championship.championship_id">
-                        <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name === '高円宮杯 JFA U-15サッカーリーグ2025 第17回札幌ブロックカブスリーグ'">
-                            <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
-                                <p class="pr-2">{{ championship.championship_name }}</p>
-                                <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
-                            </router-link>
+                        </div>
+                    </div>
+                    <div v-if="category === 'U-15（ジュニアユース）'">
+                        <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
+                        <div v-for="championship in championships" :key="championship.championship_id">
+                            <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name === '高円宮杯 JFA U-15サッカーリーグ2025 第17回札幌ブロックカブスリーグ'">
+                                <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
+                                    <p class="pr-2">{{ championship.championship_name }}</p>
+                                    <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
+                                </router-link>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="category === 'U-18（ユース）'">
+                        <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
+                        <div v-for="championship in championships" :key="championship.championship_id">
+                            <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name !== '第78回札幌支部高等学校サッカー選手権大会'">
+                                <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
+                                    <p class="pr-2">{{ championship.championship_name }}</p>
+                                    <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
+                                </router-link>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
