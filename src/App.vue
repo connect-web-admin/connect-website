@@ -148,18 +148,22 @@ onMounted(() => {
                 </template>
             </Authenticator>
             
-            <div v-if="authState.authStatus !== 'authenticated'" class="text-center mt-10">
+            <div v-if="authState.authStatus !== 'authenticated'" class="text-center my-4">
                 <a href="/signup.html" class="text-center bg-lime-600 text-white px-4 py-2 rounded-sm">
                     新規会員登録
                 </a>
             </div>
-            <div v-if="authState.authStatus !== 'authenticated'" class="text-center p-4">
-                <p class="mb-8 text-left"><span class="font-bold underline">新規会員登録について</span><br>何らかの事象により認証コードの入力画面が表示されなくなった場合、
+            <div v-if="authState.authStatus !== 'authenticated'" class="text-center text-sm p-4">
+                <p class="mb-8 text-left"><span class="font-bold underline">新規会員登録について</span><br>
+                    <span class="text-red-500">
+                        2025年5月20日 （火） 01：00 ～ 06：00および5月27日（火） 01：00 ～ 06：00 （時間は24時間表記）の期間において、クレジットカード決済機能のメンテナンスが行われます。期間中にクレジットカード決済をご利用いただけない場合がございます。その際は時間をおいて再度お試しください。
+                    </span><br>
+                    何らかの事象により認証コードの入力画面が表示されなくなった場合、
                     ご登録いただいたメールアドレスとパスワードを上記のログインフォームに入力してログインボタンをタップしていただきますと、認証コード入力画面に移動することができます。<br>
-                    認証が成功しましたら、<a href="/register-card-info.html" class="text-center text-blue-600 underline text-lg">「新規会員登録時に決済情報登録を完了できなかった場合はこちら」</a>
+                    認証が成功しましたら、<a href="/register-card-info.html" class="text-center text-blue-600 underline">「新規会員登録時に決済情報登録を完了できなかった場合はこちら」</a>
                     をタップしていただきますと、決済情報登録画面に移動することができます。<br>
                     決済情報の登録が完了しましたら、正式にログインいただくことができるようになります。</p>
-                <a href="/register-card-info.html" class="text-blue-600 underline text-lg block text-left">
+                <a href="/register-card-info.html" class="text-blue-600 underline block text-left">
                     新規会員登録時に決済情報登録を完了できなかった場合はこちら
                 </a>
             </div>
