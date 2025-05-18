@@ -118,8 +118,8 @@ function canAccess(matchDate) {
 	if (matchDate === today) {
 		// JSTの「時」だけ取得（getUTCHoursを使う点に注意）
 		const hour = japanTime.getUTCHours();
-		// 20時未満のみアクセス可
-		return hour < 20;
+		// 18時未満のみアクセス可
+		return hour < 18;
 	}
 
 	// ■ 明日の場合は時間関係なくアクセス可
