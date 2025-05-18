@@ -125,8 +125,6 @@ const getTargetChampionship = async () => {
                 delete matchInfo.value.matches[dateKey];
             }
         }
-
-        console.log(matchInfo.value);
     } catch (error) {
         console.error("速報対象試合の取得に失敗しました。");
     } finally {

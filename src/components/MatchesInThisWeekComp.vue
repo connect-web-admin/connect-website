@@ -18,8 +18,8 @@ const categoryMap = {
 };
 
 const selectedCategory = ref("");
-const sortKey = ref("championship_name");
-const sortOrder = ref("asc");
+const sortKey = ref("match_date");
+const sortOrder = ref("desc");
 
 onMounted(() => {
     if (route.query.match_category && categoryMap[route.query.match_category]) {

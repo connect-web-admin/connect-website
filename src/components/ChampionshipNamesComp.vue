@@ -90,7 +90,7 @@ const championshipsThisWeek = computed(() => {
 const championshipsThisWeekSorted = computed(() => {
     return championshipsThisWeek.value.sort((a, b) => {
         if (a.category === b.category) {
-            return a.fiscal_year - b.fiscal_year;
+            return a.id.localeCompare(b.id);
         }
         return a.category.localeCompare(b.category);
     });
