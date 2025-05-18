@@ -18,6 +18,9 @@ const props = defineProps({
 const router = useRouter();
 const route = useRoute();
 
+const EXTREME_LEFT_MENU_INDEX = 0;
+const EXTREME_RIGHT_MENU_INDEX = 6;
+
 /**
  * スライダー表示
  * onMountedでオブジェクトに設定された秒数ごとに画像を切り替える
@@ -214,9 +217,14 @@ watch(isMenuOpen, (newValue) => {
 
 // ルートの変更を監視してactiveMenuを更新
 watch(() => route.path, (newPath) => {
-    const index = menuList.findIndex(menu => menu.path === newPath);
-    if (index !== -1) {
-        activeMenu.value = index;
+    // /latest-results-by-championship/で始まるパスの場合
+    if (newPath.startsWith('/latest-results-by-championship/')) {
+        activeMenu.value = 1; // 結果速報のインデックス
+    } else {
+        const index = menuList.findIndex(menu => menu.path === newPath);
+        if (index !== -1) {
+            activeMenu.value = index;
+        }
     }
 }, { immediate: true });
 
@@ -469,7 +477,7 @@ const handleImageClick = (url) => {
             <ul class="flex flex-row justify-center items-end whitespace-nowrap bg-black pt-1 text-white min-w-max px-4 relative">
                 <li v-for="(menu, index) in menuList" :key="index" @click="navigateTo(menu.path, index)" :class="[
                     'pb-1',
-                    index === 0 ? 'ml-2 mr-4' : index === 6 ? 'ml-4 mr-2' : 'mx-4',
+                    index === EXTREME_LEFT_MENU_INDEX ? 'ml-2 mr-4' : index === EXTREME_RIGHT_MENU_INDEX ? 'ml-4 mr-2' : 'mx-4',
                     activeMenu === index ? 'text-[#7FCDEC] border-[#7FCDEC]' : 'text-white border-transparent',
                     'cursor-pointer border-b-2 transition-colors duration-200'
                 ]">

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useRouter } from 'vue-router';
+import { THIS_FISCAL_YEAR } from '@/utils/constants';
 
 const router = useRouter();
 const isLoading = ref(false);
@@ -35,10 +36,6 @@ const getCurrentWeekDates = () => {
     nextMonday.setDate(tuesday.getDate() + 6); // 火曜日から6日後が月曜日
     nextMonday.setHours(23, 59, 59, 999);
     
-    // console.log("今日:", today.toISOString());
-    // console.log("直近の過去の火曜日:", tuesday.toISOString());
-    // console.log("直近の未来の月曜日:", nextMonday.toISOString());
-    
     return { tuesday, nextMonday };
 };
 
@@ -51,16 +48,11 @@ const championshipsThisWeek = computed(() => {
     const currentYear = currentDate.getFullYear();
     
     // 現在の週の日付範囲を取得（火曜日始まり月曜日終わり）
-    const { tuesday, nextMonday } = getCurrentWeekDates();
-    
-    // データが2025年なので、同じ月日で2025年の日付を作成
+    const { tuesday, nextMonday } = getCurrentWeekDates();    
     const targetTuesday = new Date(tuesday);
-    targetTuesday.setFullYear(2025);
-    
+    targetTuesday.setFullYear(THIS_FISCAL_YEAR);
     const targetMonday = new Date(nextMonday);
-    targetMonday.setFullYear(2025);
-    
-    // console.log("表示期間:", targetTuesday.toISOString(), "から", targetMonday.toISOString());
+    targetMonday.setFullYear(THIS_FISCAL_YEAR);
     
     const championships = new Set();
 
@@ -75,15 +67,14 @@ const championshipsThisWeek = computed(() => {
                         // valueが試合オブジェクトかチェック（match_dateプロパティがあるか）
                         if (value && typeof value === 'object' && value.match_date) {
                             const matchDate = new Date(value.match_date);
-                            // console.log("試合日:", matchDate.toISOString(), 
-                            //     "比較結果:", 
-                            //     ">=", matchDate >= targetTuesday, 
-                            //     "<=", matchDate <= targetMonday);
                             
                             // 日付の比較
                             if (matchDate >= targetTuesday && matchDate <= targetMonday) {
-                                championships.add(championship.championship_name);
-                                // console.log("追加された大会:", championship.championship_name);
+                                championships.add(JSON.stringify({
+                                    name: championship.championship_name,
+                                    id: championship.championship_id,
+                                    category: championship.category,
+                                }));
                             }
                         }
                     }
@@ -93,17 +84,21 @@ const championshipsThisWeek = computed(() => {
     });
     
     isLoading.value = false;
-    return Array.from(championships);
+    return Array.from(championships).map(item => JSON.parse(item));
 });
 
 const championshipsThisWeekSorted = computed(() => {
-    return championshipsThisWeek.value.sort((a, b) => a.localeCompare(b));
+    return championshipsThisWeek.value.sort((a, b) => {
+        if (a.category === b.category) {
+            return a.fiscal_year - b.fiscal_year;
+        }
+        return a.category.localeCompare(b.category);
+    });
 });
 
-const handleChampionshipClick = (championshipName) => {
+const handleChampionshipClick = (championship) => {
     router.push({
-        path: '/latest-results',
-        query: { championship: championshipName }
+        path: `/latest-results-by-championship/${championship.id}`,
     });
 };
 </script>
@@ -119,10 +114,10 @@ const handleChampionshipClick = (championshipName) => {
             <div v-else>
                 <ul class="list-none p-0">
                     <li v-for="championship in championshipsThisWeekSorted" 
-                        :key="championship"
+                        :key="championship.id"
                         @click="handleChampionshipClick(championship)"
-                        class="cursor-pointer hover:bg-gray-200 text-blue-600 p-2 underline">
-                        {{ championship }}
+                        class="cursor-pointer hover:bg-gray-200 text-blue-600 p-1 underline">
+                        ■ {{ championship.name }}
                     </li>
                 </ul>
             </div>

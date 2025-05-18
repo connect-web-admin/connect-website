@@ -1,5 +1,8 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 const props = defineProps({
     matchInfo: {
         type: Array,
@@ -7,216 +10,275 @@ const props = defineProps({
     },
 });
 
-const formattedData = computed(() => {
-    const result = {};
+const categoryMap = {
+    "U-12": "U-12（ジュニア）",
+    "U-15": "U-15（ジュニアユース）",
+    "U-18": "U-18（ユース）",
+    WOMAN: "WOMAN",
+};
 
-    props.matchInfo.forEach((championship) => {
-        // matchesをround_idの昇順でソート
-        const sortedMatches = Object.fromEntries(
-            Object.entries(championship.matches).sort(([, a], [, b]) => {
-                const roundIdA = a?.round_id || "";
-                const roundIdB = b?.round_id || "";
-                return roundIdA.localeCompare(roundIdB);
-            })
-        );
+const selectedCategory = ref("");
+const sortKey = ref("championship_name");
+const sortOrder = ref("asc");
 
-        Object.entries(sortedMatches).forEach(([matchKey, orders]) => {
-            const round_id = orders.round_id;
-            Object.entries(orders).forEach(([orderKey, match]) => {
-                if (orderKey === "round_id") return; // round_idは無視
-                const date = match?.match_date;
-                if (!date) return; // dateがundefinedの場合スキップ
-
-                if (!result[date]) {
-                    result[date] = [];
-                }
-
-                let championshipEntry = result[date].find(
-                    (t) =>
-                        t.championship_name === championship.championship_name
-                );
-                if (!championshipEntry) {
-                    championshipEntry = {
-                        fiscal_year: championship.fiscal_year,
-                        championship_name: championship.championship_name,
-                        matches: {},
-                    };
-                    result[date].push(championshipEntry);
-                }
-
-                if (!championshipEntry.matches[matchKey]) {
-                    championshipEntry.matches[matchKey] = { round_id };
-                }
-
-                championshipEntry.matches[matchKey][orderKey] = { ...match };
-            });
-        });
-    });
-
-    return Object.fromEntries(
-        Object.entries(result).sort(
-            ([dateA], [dateB]) => new Date(dateA) - new Date(dateB)
-        )
-    );
+onMounted(() => {
+    if (route.query.match_category && categoryMap[route.query.match_category]) {
+        selectedCategory.value = route.query.match_category;
+    }
 });
 
-const sortedFormattedData = computed(() => {
-    const sorted = JSON.parse(JSON.stringify(formattedData.value));
+watch(
+    () => route.query.match_category,
+    (newVal) => {
+        if (newVal && categoryMap[newVal]) {
+            selectedCategory.value = newVal;
+        }
+    }
+);
 
-    // matches内のmatch_idで昇順ソート
-    Object.values(sorted).forEach((championships) => {
-        championships.forEach((championship) => {
-            Object.keys(championship.matches).forEach((matchKey) => {
-                championship.matches[matchKey] = Object.fromEntries(
-                    Object.entries(championship.matches[matchKey])
-                        .filter(([key]) => key !== "round_id") // round_idは無視
-                        .sort(([, a], [, b]) =>
-                            a.match_id.localeCompare(b.match_id)
-                        )
-                );
-            });
-        });
+const filteredMatches = computed(() => {
+    if (!selectedCategory.value) return props.matchInfo;
+    const realCategory = categoryMap[selectedCategory.value];
+    return props.matchInfo.filter((match) => {
+        return match.category === realCategory;
     });
+});
 
+const displayMatches = computed(() => {
+    const result = [];
+    filteredMatches.value.forEach((championship) => {
+        if (!championship.matches) return;
+        Object.entries(championship.matches).forEach(
+            ([roundKey, roundValue]) => {
+                if (typeof roundValue !== "object" || roundKey === "round_id")
+                    return;
+                Object.entries(roundValue).forEach(([matchKey, matchValue]) => {
+                    if (
+                        typeof matchValue !== "object" ||
+                        matchKey === "round_id"
+                    )
+                        return;
+                    result.push({
+                        championship_name: championship.championship_name || "",
+                        round_name: roundKey,
+                        match_name: matchKey,
+                        venue: matchValue.venue || "",
+                        home_club: matchValue.home_club?.club_name || "",
+                        away_club: matchValue.away_club?.club_name || "",
+                        actual_match_start_time:
+                            matchValue.actual_match_start_time || "",
+                        scheduled_match_start_time:
+                            matchValue.scheduled_match_start_time || "",
+                        game_status: matchValue.game_status || "",
+                        home_club_info: matchValue.home_club || {},
+                        away_club_info: matchValue.away_club || {},
+                        has_extra_halves: matchValue.has_extra_halves || false,
+                        has_pk: matchValue.has_pk || false,
+                        match_date: matchValue.match_date || "",
+                    });
+                });
+            }
+        );
+    });
+    // ソート処理
+    const sorted = result.sort((a, b) => {
+        let comp = 0;
+        if (sortKey.value === "scheduled_match_start_time") {
+            if (!a.scheduled_match_start_time) return 1;
+            if (!b.scheduled_match_start_time) return -1;
+            comp = a.scheduled_match_start_time.localeCompare(
+                b.scheduled_match_start_time
+            );
+        } else if (sortKey.value === "match_date") {
+            comp = a.match_date.localeCompare(b.match_date);
+        } else if (sortKey.value === "venue") {
+            comp = a.venue.localeCompare(b.venue);
+        } else {
+            comp = a.championship_name.localeCompare(b.championship_name);
+        }
+        return sortOrder.value === "asc" ? comp : -comp;
+    });
     return sorted;
 });
-
-const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
-    return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}(${
-        dayNames[date.getDay()]
-    })`;
-};
 </script>
 <template>
-    <div>
-        <div v-if="matchInfo.length === 0">
-            <p>
-                今週の試合情報はありません。または、試合データが更新されていません。
-            </p>
+    <div class="break-all">
+        <div
+            class="flex flex-col gap-2 border-1 border-gray-300 rounded-md py-1 px-3 my-4"
+        >
+            表示種別
+            <div class="flex flex-row gap-3">
+                <label class="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        v-model="selectedCategory"
+                        value="U-12"
+                        class="w-4 h-4"
+                    />
+                    <span>U-12</span>
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        v-model="selectedCategory"
+                        value="U-15"
+                        class="w-4 h-4"
+                    />
+                    <span>U-15</span>
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        v-model="selectedCategory"
+                        value="U-18"
+                        class="w-4 h-4"
+                    />
+                    <span>U-18</span>
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        v-model="selectedCategory"
+                        value="WOMAN"
+                        class="w-4 h-4"
+                    />
+                    <span>WOMAN</span>
+                </label>
+            </div>
         </div>
-        <div v-else>
-            <div
-                v-for="(championships, date) in sortedFormattedData"
-                :key="date"
-                :data-date="date"
-            >
-                <div class="border-b-1 border-black mt-4">
-                    <h3 class="bg-black text-white w-fit px-2">
-                        {{ formatDate(date) }}
-                    </h3>
-                </div>
-                <div
-                    v-for="(championship, index) in championships"
-                    :key="index"
-                    :data-championship="championship.championship_name"
+        <div
+            class="flex flex-col gap-2 border-1 border-gray-300 rounded-md py-1 px-3 my-4"
+        >
+            <div class="flex flex-row gap-3 items-center">
+                <span>表示順</span>
+                <select
+                    v-model="sortOrder"
+                    class="border border-gray-300 rounded px-1 py-0.5 text-sm ml-2"
                 >
-                    <div
-                        v-for="(matches, matchesKey) in championship.matches"
-                        :key="matchesKey"
-                    >
-                        <div
-                            v-for="(match, matchKey) in matches"
-                            :key="matchKey"
-                            class="text-center border-b-1 border-gray-300 pt-1 pb-2"
-                            :data-match-category="match.match_category"
-                        >
-                            <div v-if="matchKey !== 'round_id'">
-                                <p class="text-sm">
-                                    {{ championship.championship_name }}<br />
-                                    {{ matchesKey }}&nbsp;&nbsp;{{ matchKey
-                                    }}<br />
-                                    会場：{{ match.venue }}
-                                    <span class="hidden">{{
-                                        match.match_category
-                                    }}</span>
-                                </p>
-                                <div>
-                                    <div
-                                        v-if="match['game_status'] === '試合前'"
-                                        class="flex flex-row justify-center items-center text-lg"
-                                    >
-                                        <div class="w-36/100 text-right">
-                                            {{match["home_club"]["club_name"]}}
-                                        </div>
-                                        <div v class="w-28/100 text-2xl">
-                                            {{match["scheduled_match_start_time"]}}
-                                        </div>
-                                        <div class="w-36/100 text-left">
-                                            {{match["away_club"]["club_name"]}}
-                                        </div>
-                                    </div>
-                                    <div
-                                        v-else
-                                        class="flex flex-row justify-center items-center text-lg"
-                                    >
-                                        <div class="w-2/5 text-right">
-                                            {{match["home_club"]["club_name"]}}
-                                        </div>
-                                        <div class="w-2/5 text-sm">
-                                            <p>
-                                                {{match["home_club"]["first_half_score"]}}
-                                                前半
-                                                {{match["away_club"]["first_half_score"]}}
-                                            </p>
-                                            <p>
-                                                {{match["home_club"]["second_half_score"]}}
-                                                後半
-                                                {{match["away_club"]["second_half_score"]}}
-                                            </p>
-                                            <div v-if="match['has_extra_halves']">
-                                                <p>
-                                                    {{match["home_club"]["extra_first_half_score"]}}
-                                                    延長前半
-                                                    {{match["away_club"]["extra_first_half_score"]}}
-                                                </p>
-                                                <p>
-                                                    {{match["home_club"]["extra_second_half_score"]}}
-                                                    延長後半
-                                                    {{match["away_club"]["extra_second_half_score"]}}
-                                                </p>
-                                            </div>
-                                            <p class="font-bold ">
-                                                {{match["home_club"]["final_score"]}}
-                                                合計
-                                                {{match["away_club"]["final_score"]}}
-                                            </p>
-                                            <p
-                                                v-if="match['has_pk']"
-                                                class="text-red-600 text-[18px]"
-                                            >
-                                                {{match["home_club"]["pk_score"]}}
-                                                PK
-                                                {{match["away_club"]["pk_score"]}}
-                                            </p>
-                                        </div>
-                                        <div class="w-2/5 text-left">
-                                            {{match["away_club"]["club_name"]}}
-                                        </div>
-                                    </div>
-                                </div>
-                                <p>
-                                    <span
-                                        v-if="match['game_status'] === '試合前'"
-                                        class="text-blue-400"
-                                        >{{ match["game_status"] }}</span
-                                    >
-                                    <span
-                                        v-else-if="
-                                            match['game_status'] === '試合終了'
-                                        "
-                                        class="text-green-600"
-                                        >{{ match["game_status"] }}</span
-                                    >
-                                    <span v-else class="text-red-600">{{
-                                        match["game_status"]
-                                    }}</span>
-                                </p>
-                            </div>
-                        </div>
+                    <option value="asc">昇順</option>
+                    <option value="desc">降順</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+                <label class="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        v-model="sortKey"
+                        value="championship_name"
+                        class="w-4 h-4"
+                    />
+                    <span>大会</span>
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        v-model="sortKey"
+                        value="match_date"
+                        class="w-4 h-4"
+                    />
+                    <span>試合日</span>
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        v-model="sortKey"
+                        value="scheduled_match_start_time"
+                        class="w-4 h-4"
+                    />
+                    <span>試合開始時刻</span>
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        v-model="sortKey"
+                        value="venue"
+                        class="w-4 h-4"
+                    />
+                    <span>会場</span>
+                </label>
+            </div>
+        </div>
+        <div
+            v-for="(match, index) in displayMatches"
+            :key="match.championship_name + match.round_name + match.match_name"
+            :class="index % 2 === 0 ? 'bg-blue-50' : ''"
+            class="my-1 rounded-md p-2"
+        >
+            <div class="text-center text-sm leading-[15px]">
+                {{ match.championship_name }}
+            </div>
+            <div class="text-center text-sm">
+                {{ match.round_name }} {{ match.match_name }}
+            </div>
+            <div class="text-center text-sm mb-1">
+                試合日：{{ match.match_date }}
+            </div>
+            <div class="text-center text-sm mb-1 leading-1">会場：{{ match.venue }}</div>
+            <div v-if="match.game_status !== '試合前'" class="text-center text-sm mb-1">試合開始時刻：{{ match.actual_match_start_time }}</div>
+            <div
+                class="grid grid-cols-3 items-center text-base font-normal mt-4"
+            >
+                <span class="text-right whitespace-normal break-words">{{
+                    match.home_club
+                }}</span>
+                <span
+                    v-if="match.game_status === '試合前'"
+                    class="text-center text-lg font-bold"
+                    >{{ match.scheduled_match_start_time }}</span
+                >
+                <div v-if="match.game_status !== '試合前'" class="text-center">
+                    <p>
+                        {{ match.home_club_info.first_half_score }} 前半
+                        {{ match.away_club_info.first_half_score }}
+                    </p>
+                    <p>
+                        {{ match.home_club_info.second_half_score }} 前半
+                        {{ match.away_club_info.second_half_score }}
+                    </p>
+                    <div v-if="match.has_extra_halves">
+                        <p>
+                            {{ match.home_club_info.extra_first_half_score }}
+                            延長前半
+                            {{ match.away_club_info.extra_first_half_score }}
+                        </p>
+                        <p>
+                            {{ match.home_club_info.extra_second_half_score }}
+                            延長後半
+                            {{ match.away_club_info.extra_second_half_score }}
+                        </p>
+                    </div>
+                    <p class="font-bold">
+                        {{ match.home_club_info.final_score }} 合計
+                        {{ match.away_club_info.final_score }}
+                    </p>
+                    <div v-if="match.has_pk" class="font-bold text-red-500">
+                        <p>
+                            {{ match.home_club_info.pk_score }} PK
+                            {{ match.away_club_info.pk_score }}
+                        </p>
                     </div>
                 </div>
+
+                <span class="text-left whitespace-normal break-words">{{
+                    match.away_club
+                }}</span>
+            </div>
+            <div class="text-center mt-1">
+                <span
+                    v-if="match.game_status === '試合前'"
+                    class="text-blue-500 cursor-pointer"
+                    >{{ match.game_status }}</span
+                >
+                <span
+                    v-if="match.game_status === '試合終了'"
+                    class="text-green-600 cursor-pointer"
+                    >{{ match.game_status }}</span
+                >
+                <span
+                    v-if="match.game_status !== '試合前' && match.game_status !== '試合終了'"
+                    class="text-red-600 cursor-pointer"
+                    >{{ match.game_status }}</span
+                >
             </div>
         </div>
     </div>
