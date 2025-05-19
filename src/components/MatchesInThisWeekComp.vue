@@ -214,7 +214,7 @@ const displayMatches = computed(() => {
                 試合日：{{ match.match_date }}
             </div>
             <div class="text-center text-sm mb-1 leading-1">会場：{{ match.venue }}</div>
-            <div v-if="match.game_status !== '試合前'" class="text-center text-sm mb-1">試合開始時刻：{{ match.actual_match_start_time }}</div>
+            <div v-if="match.game_status === '試合終了'" class="text-center text-sm mb-1">試合開始時刻：{{ match.actual_match_start_time }}</div>
             <div
                 class="grid grid-cols-3 items-center text-base font-normal mt-4"
             >
@@ -232,7 +232,7 @@ const displayMatches = computed(() => {
                         {{ match.away_club_info.first_half_score }}
                     </p>
                     <p>
-                        {{ match.home_club_info.second_half_score }} 前半
+                        {{ match.home_club_info.second_half_score }} 後半
                         {{ match.away_club_info.second_half_score }}
                     </p>
                     <div v-if="match.has_extra_halves">
