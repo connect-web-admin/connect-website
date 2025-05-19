@@ -235,7 +235,7 @@ onMounted(async () => {
                                 会場：{{ matchDetail.venue }}
                             </div>
                             <div
-                                v-if="matchDetail.game_status !== '試合前'"
+                                v-if="matchDetail.game_status === '試合終了'"
                                 class="text-center text-sm leading-[15px]"
                             >
                                 試合開始時刻：{{
