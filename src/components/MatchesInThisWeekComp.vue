@@ -216,7 +216,7 @@ const displayMatches = computed(() => {
             <div class="text-center text-sm mb-1 leading-1">会場：{{ match.venue }}</div>
             <div v-if="match.game_status === '試合終了'" class="text-center text-sm mb-1">試合開始時刻：{{ match.actual_match_start_time }}</div>
             <div
-                class="grid grid-cols-3 items-center text-base font-normal mt-4"
+                class="grid grid-cols-3 items-center text-base font-normal mt-2"
             >
                 <span class="text-right whitespace-normal break-words">{{
                     match.home_club
