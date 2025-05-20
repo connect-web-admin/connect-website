@@ -32,6 +32,12 @@
                         alt="BTOP北海道"
                         class="border-1 border-black px-[23%] md:py-[2%] md:px-[27%]"
                 /></a>
+                <a href="https://fea-sapporo.com/" target="_blank" class="bg-[#231F20] flex justify-center"
+                    ><img
+                        src="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/banner-link-img/FEA-banner.png"
+                        alt="Football Elite Academy　SAPPORO"
+                        class="h-8 md:h-15"
+                /></a>
             </div>
         </div>
         <div class="mb-8">
