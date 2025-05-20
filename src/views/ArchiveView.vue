@@ -710,9 +710,9 @@ onMounted(() => {
                             openModal(
                                 [
                                 'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/%E6%9C%AD%E5%B9%8C%E5%9C%B0%E5%8C%BA%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E7%B5%90%E6%9E%9CA%E3%82%AF%E3%82%99%E3%83%AB%E3%83%BC%E3%83%95%E3%82%9A0512.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/%E6%9C%AD%E5%B9%8C%E5%9C%B0%E5%8C%BA%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E7%B5%90%E6%9E%9CB%E3%82%AF%E3%82%99%E3%83%AB%E3%83%BC%E3%83%95%E3%82%9A0512.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/%E6%9C%AD%E5%B9%8C%E5%9C%B0%E5%8C%BA%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E7%B5%90%E6%9E%9CC%E3%82%AF%E3%82%99%E3%83%AB%E3%83%BC%E3%83%95%E3%82%9A0512.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/%E6%9C%AD%E5%B9%8C%E5%9C%B0%E5%8C%BA%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E7%B5%90%E6%9E%9CD%E3%82%AF%E3%82%99%E3%83%AB%E3%83%BC%E3%83%95%E3%82%9A0512.jpg'
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_TikuCabs_kekka-B.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_TikuCabs_kekka-C.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_TikuCabs_kekka-D.jpg'
                                 ],
                                 [
                                     '2025年度第17回札幌地区カブスリーグU-15 Aグループ 結果',
@@ -900,10 +900,10 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/%E9%AB%98%E4%BD%93%E9%80%A34%E6%97%A5%E7%9B%AE.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_KoutairenSapporoShibu/%E9%AB%98%E4%BD%93%E9%80%A3%EF%BC%95%E6%97%A5%E7%9B%AE.jpg',
                                 ],
                                 [
-                                    '第78回札幌支部高等学校サッカー選手権大会等 ３日目試合結果',
+                                    '第78回札幌支部高等学校サッカー選手権大会等 ５日目試合結果',
                                 ]
                             )
                         "
