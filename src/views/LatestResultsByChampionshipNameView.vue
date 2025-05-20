@@ -310,6 +310,17 @@ onMounted(async () => {
                                         合計
                                         {{ matchDetail.away_club.final_score }}
                                     </p>
+                                    <div v-if="matchDetail.has_pk">
+                                        <p>
+                                            {{
+                                                matchDetail.home_club.pk_score
+                                            }}
+                                            PK
+                                            {{
+                                                matchDetail.away_club.pk_score
+                                            }}
+                                        </p>
+                                    </div>
                                 </div>
                                 <span
                                     class="text-left whitespace-normal break-words"
@@ -321,6 +332,14 @@ onMounted(async () => {
                                 <span
                                     v-if="matchDetail.game_status === '試合前'"
                                     class="text-blue-500 cursor-pointer"
+                                    >{{ matchDetail.game_status }}</span
+                                >
+                                <span
+                                    v-if="
+                                        matchDetail.game_status !== '試合終了' &&
+                                        matchDetail.game_status !== '試合前'
+                                    "
+                                    class="text-red-500 cursor-pointer"
                                     >{{ matchDetail.game_status }}</span
                                 >
                                 <span
