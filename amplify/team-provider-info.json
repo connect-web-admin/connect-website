@@ -19,7 +19,7 @@
       "function": {
         "matchLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/matchLambda-3342514c31366f306248-build.zip"
+          "s3Key": "amplify-builds/matchLambda-66612b63554c35333039-build.zip"
         },
         "clubLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -35,7 +35,7 @@
         },
         "mediaLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/mediaLambda-4f313664554c3838746b-build.zip"
+          "s3Key": "amplify-builds/mediaLambda-374a7450343774747168-build.zip"
         },
         "memberLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
@@ -64,6 +64,10 @@
         "sessionIdDailyRemovalLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
           "s3Key": "amplify-builds/sessionIdDailyRemovalLambda-6757316578346d42797a-build.zip"
+        },
+        "monthlyPaymentLambda": {
+          "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
+          "s3Key": "amplify-builds/monthlyPaymentLambda-5761665562357a364162-build.zip"
         }
       },
       "storage": {
