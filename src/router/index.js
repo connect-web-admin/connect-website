@@ -38,7 +38,7 @@ import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
 import SelectReportingMatchU12View from '@/views/connecter/SelectReportingMatchU12View.vue';
 import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
-import SelectReportingMatchWomanView from '@/views/connecter/SelectReportingMatchWomanView.vue';
+import SelectReportingMatchWOMANView from '@/views/connecter/SelectReportingMatchWOMANView.vue';
 import TestRegisterMatchResultView from '@/views/connecter/TestRegisterMatchResultView.vue';
 import TestSelectReportingMatchU18View from '@/views/connecter/TestSelectReportingMatchU18View.vue';
 
@@ -241,7 +241,7 @@ const router = createRouter({
 		{
 			path: '/connecter/select-reporting-match-woman',
 			name: 'SelectReportingMatchWoman',
-			component: SelectReportingMatchWomanView,
+			component: SelectReportingMatchWOMANView,
 			props: (route) => ({ accessToken: route.query.access_token })
 		},
 
