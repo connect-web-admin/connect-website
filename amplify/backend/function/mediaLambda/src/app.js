@@ -129,7 +129,7 @@ app.get(path + '/all-articles', async function (req, res) {
  * HTTP Get method to クリックされた1つのニュースを取得 *
  ************************************/
 app.get(path + '/article' + '/:fiscalYear' + '/:articleId', async function (req, res) {
-	const fiscalYear = req.params.fiscalYear
+	const fiscalYear = req.params.fiscalYear;
 	const articleId = req.params.articleId;
 
 	const input = {
