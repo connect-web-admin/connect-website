@@ -34,9 +34,11 @@ import ConfirmMatchInputView from '@/views/ConfirmMatchInputView.vue';
 // コネクター用のページ
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
-import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMatchU12andWView.vue';
+// import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMatchU12andWView.vue';
+import SelectReportingMatchU12View from '@/views/connecter/SelectReportingMatchU12View.vue';
 import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
+import SelectReportingMatchWomanView from '@/views/connecter/SelectReportingMatchWomanView.vue';
 import TestRegisterMatchResultView from '@/views/connecter/TestRegisterMatchResultView.vue';
 import TestSelectReportingMatchU18View from '@/views/connecter/TestSelectReportingMatchU18View.vue';
 
@@ -209,10 +211,17 @@ const router = createRouter({
 			props: true
 		},
 
+		// {
+		// 	path: '/connecter/select-reporting-match-u12andw',
+		// 	name: 'SelectReportingMatchU12andW',
+		// 	component: SelectReportingMatchU12andWView,
+		// },
+
 		{
-			path: '/connecter/select-reporting-match-u12andw',
-			name: 'SelectReportingMatchU12andW',
-			component: SelectReportingMatchU12andWView,
+			path: '/connecter/select-reporting-match-u12',
+			name: 'SelectReportingMatchU12',
+			component: SelectReportingMatchU12View,
+			props: (route) => ({ accessToken: route.query.access_token })
 		},
 
 		{
@@ -226,6 +235,13 @@ const router = createRouter({
 			path: '/connecter/select-reporting-match-u18',
 			name: 'SelectReportingMatchU18',
 			component: SelectReportingMatchU18View,
+			props: (route) => ({ accessToken: route.query.access_token })
+		},
+
+		{
+			path: '/connecter/select-reporting-match-woman',
+			name: 'SelectReportingMatchWoman',
+			component: SelectReportingMatchWomanView,
 			props: (route) => ({ accessToken: route.query.access_token })
 		},
 
