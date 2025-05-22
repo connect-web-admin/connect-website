@@ -55,7 +55,7 @@ function selectClub(homeOrAway) {
 }
 
 function formatTimeZone(gameStatus) {
-	switch(gameStatus) {
+	switch (gameStatus) {
 		case '前半':
 			return 'first_half_score';
 		case '後半':
@@ -70,34 +70,34 @@ function formatTimeZone(gameStatus) {
 }
 
 function isWithinLastTuesdayToNextMonday(targetDateStr) {
-	  // １．JST の今日 00:00 を取得
-	  const todayJST = new Date(
+	// １．JST の今日 00:00 を取得
+	const todayJST = new Date(
 		new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
-	  );
-	  todayJST.setHours(0, 0, 0, 0);
-	
-	  const day = todayJST.getDay(); // 0:日曜 … 1:月曜 … 2:火曜 … 
-	
-	  // ２．過去の直近火曜
-	  const lastTuesday = new Date(todayJST);
-	  const diffToLastTue = (day - 2 + 7) % 7;
-	  lastTuesday.setDate(todayJST.getDate() - diffToLastTue);
-	
-	  // ３．未来の直近月曜（特例なし）
-	  const nextMonday = new Date(todayJST);
-	  const diffToNextMon = (1 - day + 7) % 7;
-	  nextMonday.setDate(todayJST.getDate() + diffToNextMon);
-	
-	  // ４．target を JST の当日 00:00 に丸める
-	  const tJST = new Date(
+	);
+	todayJST.setHours(0, 0, 0, 0);
+
+	const day = todayJST.getDay(); // 0:日曜 … 1:月曜 … 2:火曜 … 
+
+	// ２．過去の直近火曜
+	const lastTuesday = new Date(todayJST);
+	const diffToLastTue = (day - 2 + 7) % 7;
+	lastTuesday.setDate(todayJST.getDate() - diffToLastTue);
+
+	// ３．未来の直近月曜（特例なし）
+	const nextMonday = new Date(todayJST);
+	const diffToNextMon = (1 - day + 7) % 7;
+	nextMonday.setDate(todayJST.getDate() + diffToNextMon);
+
+	// ４．target を JST の当日 00:00 に丸める
+	const tJST = new Date(
 		new Date(targetDateStr).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
-	  );
-	  tJST.setHours(0, 0, 0, 0);
-	
-	  // ５．判定（inclusive）
-	  return tJST >= lastTuesday && tJST <= nextMonday;
+	);
+	tJST.setHours(0, 0, 0, 0);
+
+	// ５．判定（inclusive）
+	return tJST >= lastTuesday && tJST <= nextMonday;
 }
-  
+
 function canAccess(matchDate) {
 	// 現在の時刻（UTC epoch）にJST(+9h)を足して日本時間を表現
 	const now = new Date();
@@ -105,26 +105,24 @@ function canAccess(matchDate) {
 
 	// YYYY-MM-DD 形式に整形するヘルパー
 	const formatDate = date => {
-	const Y = date.getUTCFullYear();
-	const M = String(date.getUTCMonth() + 1).padStart(2, '0');
-	const D = String(date.getUTCDate()).padStart(2, '0');
-	return `${Y}-${M}-${D}`;
+		const Y = date.getUTCFullYear();
+		const M = String(date.getUTCMonth() + 1).padStart(2, '0');
+		const D = String(date.getUTCDate()).padStart(2, '0');
+		return `${Y}-${M}-${D}`;
 	};
 
-	const today    = formatDate(japanTime);
+	const today = formatDate(japanTime);
 	const tomorrow = formatDate(new Date(japanTime.getTime() + 24 * 60 * 60 * 1000));
 
-	// ■ 今日の場合
-	if (matchDate === today) {
-		// JSTの「時」だけ取得（getUTCHoursを使う点に注意）
-		const hour = japanTime.getUTCHours();
-		// 18時未満のみアクセス可
-		return hour < 18;
+	// ■ 過去の日付ならアクセス許可
+	if (matchDate < today) {
+		return true;
 	}
 
-	// ■ 明日の場合は時間関係なくアクセス可
-	if (matchDate === tomorrow) {
-		return true;
+	// ■ 今日の場合は 0:00–17:59 の間のみアクセス許可
+	if (matchDate === today) {
+		const hour = japanTime.getUTCHours();
+		return hour < 18;  // 18時未満：true、以降：false
 	}
 
 	// ■ それ以外の日付はアクセス不可
@@ -204,7 +202,7 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 		const filteredData = data.filter(item =>
 			item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
 		);
-console.log('filteredData', JSON.stringify((filteredData)));
+		console.log('filteredData', JSON.stringify((filteredData)));
 		res.status(200).json(filteredData);
 	} catch (err) {
 		console.error('Error getting data:', err);
@@ -219,7 +217,7 @@ console.log('filteredData', JSON.stringify((filteredData)));
 app.get(path + '/current-matches', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
 	const accessToken = req.query.accessToken;
-console.log('entering current matches', req.query)
+	console.log('entering current matches', req.query)
 	// U-12とWOMANはまとめて一つの扱いなので
 	// 配列化して長さが１ならばU-15（ジュニアユース）かU-18（ユース）、そうでなければU-12（ジュニア）とWOMAN
 	const category = (req.query.category).split(',').length === 1 ? req.query.category : (req.query.category).split(',')
@@ -269,7 +267,7 @@ console.log('entering current matches', req.query)
 			const filteredData = data.filter(item =>
 				item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
 			);
-			
+
 			res.status(200).json(filteredData);
 		} catch (err) {
 			console.error('Error getting data:', err);
@@ -316,7 +314,7 @@ console.log('entering current matches', req.query)
 				const filteredData = data.filter(item =>
 					item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
 				);
-				
+
 				passingData.push(filteredData);
 			} catch (err) {
 				console.error('Error getting data:', err);
@@ -483,11 +481,11 @@ app.put(path + '/plus-score', async function (req, res) {
 			UpdateExpression: `SET matches.#round.#match.#which_club.#time_zone_score = matches.#round.#match.#which_club.#time_zone_score + :increment, 
 									matches.#round.#match.#which_club.final_score = matches.#round.#match.#which_club.final_score + :increment`,
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
+				"#match": match,
+				"#round": round,
 				"#which_club": whichClub,
 				"#time_zone_score": timeZoneScore
-            },
+			},
 			ExpressionAttributeValues: {
 				':increment': 1
 			},
@@ -537,11 +535,11 @@ app.put(path + '/minus-score', async function (req, res) {
 			UpdateExpression: `SET matches.#round.#match.#which_club.#time_zone_score = matches.#round.#match.#which_club.#time_zone_score + :decrement, 
 									matches.#round.#match.#which_club.final_score = matches.#round.#match.#which_club.final_score + :decrement`,
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
+				"#match": match,
+				"#round": round,
 				"#which_club": whichClub,
 				"#time_zone_score": timeZoneScore,
-            },
+			},
 			ExpressionAttributeValues: {
 				':decrement': -1
 			},
@@ -619,13 +617,13 @@ app.put(path + '/manage-pk-score', async function (req, res) {
 			},
 			UpdateExpression: 'SET matches.#round.#match.#which_club.pk_score_list = :pk_score_list, matches.#round.#match.#which_club.pk_score = :pk_score',
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
+				"#match": match,
+				"#round": round,
 				"#which_club": whichClub,
-            },
+			},
 			ExpressionAttributeValues: {
-                ":pk_score_list": pkScoreList,
-                ":pk_score": pkScore
+				":pk_score_list": pkScoreList,
+				":pk_score": pkScore
 			},
 			ReturnValues: 'UPDATED_NEW'
 		};
@@ -654,7 +652,7 @@ app.put(path + '/handle-game-status', async function (req, res) {
 
 	// 証跡用出力
 	console.log('試合状態遷移先', req.body);
-	
+
 	try {
 		// 更新したアイテムを保存
 		const params = {
@@ -665,9 +663,9 @@ app.put(path + '/handle-game-status', async function (req, res) {
 			},
 			UpdateExpression: 'SET matches.#round.#match.game_status = :changingGameStatus',
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
-            },
+				"#match": match,
+				"#round": round,
+			},
 			ExpressionAttributeValues: {
 				':changingGameStatus': changingGameStatus
 			},
@@ -696,7 +694,7 @@ app.put(path + '/register-extra-halves', async function (req, res) {
 
 	// 証跡用出力
 	console.log('延長戦開始・取り消し操作', req.body);
-	
+
 	// 取得したアイテムをいったん格納する
 	let data = {};
 
@@ -829,7 +827,7 @@ app.put(path + '/register-pk', async function (req, res) {
 						data.matches[round][match]['has_pk'] = true;
 						data.matches[round][match]['game_status'] = 'PK戦';
 					}
-					
+
 					if (action === 'cancel') {
 						data.matches[round][match]['has_pk'] = false;
 
@@ -923,7 +921,7 @@ app.put(path + '/register-match-result', async function (req, res) {
 	if (fetchedData.Item?.matches?.[round]?.[match]?.has_pk) {
 		if (homeClubPkScore > awayClubPkScore) {
 			homeClubResult = 'win';
-			awayClubResult = 'lose';	
+			awayClubResult = 'lose';
 		} else if (homeClubPkScore < awayClubPkScore) { // PK戦の最終得点が同じになることはない
 			homeClubResult = 'lose';
 			awayClubResult = 'win';
@@ -955,15 +953,15 @@ app.put(path + '/register-match-result', async function (req, res) {
 									matches.#round.#match.away_club.#result = :awayClubResult
 							  `,
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
+				"#match": match,
+				"#round": round,
 				"#result": 'result'
-            },
+			},
 			ExpressionAttributeValues: {
 				":homeClubResult": homeClubResult,
 				":awayClubResult": awayClubResult,
-				":actualMatchStartTime": actualMatchStartTime, 
-                ":isResultRegistered": true
+				":actualMatchStartTime": actualMatchStartTime,
+				":isResultRegistered": true
 			},
 			ReturnValues: 'UPDATED_NEW'
 		};
@@ -1047,7 +1045,7 @@ app.put(path + '/register-edited-match-result', async function (req, res) {
 						targetMatchInfo['home_club']['second_half_score'] = homeClubSecondHalfScoreEdit;
 						targetMatchInfo['away_club']['first_half_score'] = awayClubFirstHalfScoreEdit;
 						targetMatchInfo['away_club']['second_half_score'] = awayClubSecondHalfScoreEdit;
-	
+
 						if (targetMatchInfo['has_extra_halves']) {
 							targetMatchInfo['home_club']['extra_first_half_score'] = homeClubExtraFirstHalfScoreEdit;
 							targetMatchInfo['home_club']['extra_second_half_score'] = homeClubExtraSecondHalfScoreEdit;
@@ -1064,34 +1062,34 @@ app.put(path + '/register-edited-match-result', async function (req, res) {
 							targetMatchInfo['away_club']['pk_score'] = awayClubPkScoreEdit;
 							targetMatchInfo['away_club']['pk_score_list'] = awayClubPkScoreListEdit;
 						}
-						
+
 
 						// 前後半（と延長戦前後半）の得点の合計またはPK戦の最終結果により勝敗を登録
 						if (targetMatchInfo['has_pk']) {
 							if (targetMatchInfo['home_club']['pk_score'] > targetMatchInfo['away_club']['pk_score']) {
 								targetMatchInfo['home_club']['result'] = 'win';
-								targetMatchInfo['away_club']['result'] = 'lose';	
-							} 
+								targetMatchInfo['away_club']['result'] = 'lose';
+							}
 							if (targetMatchInfo['home_club']['pk_score'] < targetMatchInfo['away_club']['pk_score']) {
 								targetMatchInfo['home_club']['result'] = 'lose';
-								targetMatchInfo['away_club']['result'] = 'win';	
+								targetMatchInfo['away_club']['result'] = 'win';
 							}
 							// 通常、PK戦の得点が同じなることはない
 							if (targetMatchInfo['home_club']['pk_score'] === targetMatchInfo['away_club']['pk_score']) {
 								targetMatchInfo['home_club']['result'] = 'draw';
-								targetMatchInfo['away_club']['result'] = 'draw';	
+								targetMatchInfo['away_club']['result'] = 'draw';
 							}
 						} else {
 							if (targetMatchInfo['home_club']['final_score'] > targetMatchInfo['away_club']['final_score']) {
 								targetMatchInfo['home_club']['result'] = 'win';
 								targetMatchInfo['away_club']['result'] = 'lose';
 							}
-							
+
 							if (targetMatchInfo['home_club']['final_score'] < targetMatchInfo['away_club']['final_score']) {
 								targetMatchInfo['home_club']['result'] = 'lose';
 								targetMatchInfo['away_club']['result'] = 'win';
 							}
-							
+
 							if (targetMatchInfo['home_club']['final_score'] === targetMatchInfo['away_club']['final_score']) {
 								targetMatchInfo['home_club']['result'] = 'draw';
 								targetMatchInfo['away_club']['result'] = 'draw';
