@@ -114,12 +114,12 @@ function canAccess(matchDate) {
 	const today = formatDate(japanTime);
 	const tomorrow = formatDate(new Date(japanTime.getTime() + 24 * 60 * 60 * 1000));
 
-	// ■ 過去の日付ならアクセス許可
-	if (matchDate < today) {
+	// ■ アクセス日がmatchDateより過去の日付ならアクセス許可
+	if (today < matchDate) {
 		return true;
 	}
 
-	// ■ 今日の場合は 0:00–17:59 の間のみアクセス許可
+	// ■ アクセス日当日の場合は 0:00–17:59 の間のみアクセス許可
 	if (matchDate === today) {
 		const hour = japanTime.getUTCHours();
 		return hour < 18;  // 18時未満：true、以降：false
@@ -212,7 +212,7 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 
 /************************************
 * HTTP Get method 速報対象試合検索画面へのアクセス許可を判定 *
-* 試合当日のみアクセス許可 *
+* 試合当日以前か試合当日18時以前のみアクセス許可 *
 ************************************/
 app.get(path + '/current-matches', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
