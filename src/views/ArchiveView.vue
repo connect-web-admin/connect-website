@@ -432,7 +432,7 @@ onMounted(() => {
                             openModal(
                                 [
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-S-1.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+2B%E7%B5%90%E6%9E%9C0522.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-2.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-3AB.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-3CD.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-4AB.jpg',
@@ -975,8 +975,8 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/%E9%AB%98%E5%86%86%E5%AE%AE%E6%9D%AF+JFA+U-18+%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC2025%E5%8C%97%E6%B5%B7%E9%81%93+%E3%83%95%E3%82%99%E3%83%AD%E3%83%83%E3%82%AF%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%9C%AD%E5%B9%8C%EF%BC%88%EF%BC%91%E9%83%A8%EF%BC%92%E9%83%A8%EF%BC%89%E7%B5%90%E6%9E%9C0507.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/%E9%AB%98%E5%86%86%E5%AE%AE%E6%9D%AF+JFA+U-18+%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC2025%E5%8C%97%E6%B5%B7%E9%81%93+%E3%83%95%E3%82%99%E3%83%AD%E3%83%83%E3%82%AF%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%9C%AD%E5%B9%8C%EF%BC%88%EF%BC%93%E9%83%A8%EF%BC%94%E9%83%A8%EF%BC%89%E7%B5%90%E6%9E%9C0507.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/2025_18TakaSapBlock_kekka1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/2025_18TakaSapBlock_kekka2.jpg',
                                 ],
                                 [
                                     '高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 試合結果1',
