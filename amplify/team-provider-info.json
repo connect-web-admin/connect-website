@@ -91,7 +91,8 @@
         "memberApi": {},
         "picsApi": {},
         "archiveApi": {},
-        "testMatchApi": {}
+        "testMatchApi": {},
+        "monthlyPaymentApi": {}
       }
     }
   }

@@ -25,6 +25,11 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
+    "monthlyPaymentApi": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
     "pickupNewsApi": {
       "ApiId": "string",
       "ApiName": "string",

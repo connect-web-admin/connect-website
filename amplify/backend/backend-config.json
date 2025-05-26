@@ -70,6 +70,20 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
+    "monthlyPaymentApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "monthlyPaymentLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "pickupNewsApi": {
       "dependsOn": [
         {
