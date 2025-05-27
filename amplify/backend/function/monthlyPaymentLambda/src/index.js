@@ -40,7 +40,6 @@ exports.handler = async (event) => {
         // ① can_login = true の有料会員を一括取得
         const scanParams = {
             TableName: tableName,
-			// 複数条件は AND / OR で結合
 			FilterExpression: "can_login = :trueVal AND email = :email",
 			ExpressionAttributeValues: {
 				":trueVal": true,

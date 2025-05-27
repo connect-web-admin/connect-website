@@ -67,7 +67,7 @@
         },
         "monthlyPaymentLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/monthlyPaymentLambda-4c3765594d4846586642-build.zip"
+          "s3Key": "amplify-builds/monthlyPaymentLambda-48312f4f6d7570587676-build.zip"
         }
       },
       "storage": {
