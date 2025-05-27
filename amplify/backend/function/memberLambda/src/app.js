@@ -939,10 +939,11 @@ console.log('queryResult', queryResult)
 		// 本日の日付により、月払い用の決済要求・確定要求を送信
 		if(paymentPlan === 'monthly') {
 			// const juneFirst2025 = new Date('2025-06-01T00:00:00');
-			const juneFirst2025 = new Date('2025-06-01T00:00:00+09:00');
+			// const juneFirst2025 = new Date('2025-06-01T00:00:00+09:00');
+			const isBeforeJstJuneFirst2025 = checkIsBeforeJstJuneFirst2025();
 
 			// 2025年5月いっぱいは決済しない。6月1日0時00分以降は決済を通す。
-			if (nowJST < juneFirst2025) {
+			if (isBeforeJstJuneFirst2025) {
 				console.log('2025年5月以前の月払い加入者の処理')
 				// can_loginをtrueに更新してログイン可能とする
 				const expirationDay = '2025-05-31';
@@ -952,7 +953,7 @@ console.log('queryResult', queryResult)
 				res.status(200).send('OK,');
 			}
 
-			if (juneFirst2025 <= nowJST){
+			if (!isBeforeJstJuneFirst2025){
 				console.log('2025年6月以降の月払い加入者の処理')
 				// チェックサム作成	
 				const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthly, free1, encrypted_flg, request_date];
@@ -1190,6 +1191,25 @@ console.log('queryResult', queryResult)
 
 		return formattedLastDay;
 	}
+
+	/**
+	 * 
+	 * @returns 2025年6月1日より前かどうかを判定
+	 */
+	function checkIsBeforeJstJuneFirst2025() {
+		// JST は UTC+9h なのでオフセットをミリ秒で用意
+		const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+	  
+		// 現在の UTC ミリ秒を取得
+		const nowUtcMs = Date.now();
+	  
+		// Date.UTC(2025, 5, 1, 0, 0, 0) は「2025-06-01T00:00:00Z」のタイムスタンプ
+		// これから JST の基準時刻との差（9h）を引くと、
+		// 「2025-06-01T00:00:00 JST」に相当する UTC タイムスタンプになる
+		const thresholdUtcMs = Date.UTC(2025, 5, 1, 0, 0, 0) - JST_OFFSET_MS;
+	  
+		return nowUtcMs < thresholdUtcMs;
+	  }
 });
 
 app.listen(3000, function () {

@@ -26,7 +26,7 @@ const merchant_id = process.env.MERCHANT_ID;
 const service_id = process.env.SERVICE_ID;
 const request_date = dateTimeCompact;
 const paymentPlan = process.env.FREE_1;
-const amount = '10'; // レギュラー会員月払い額
+const amount = '440'; // レギュラー会員月払い額
 const encodedPaymentPlan = btoa(decodeURIComponent(paymentPlan)); // free1項目はBase64にエンコードが必要
 const item_id = paymentPlan
 const encrypted_flg = '0'; // 暗号化フラグ。暗号化しない
@@ -43,7 +43,7 @@ exports.handler = async (event) => {
 			FilterExpression: "can_login = :trueVal AND email = :email",
 			ExpressionAttributeValues: {
 				":trueVal": true,
-				":email": 'testestest@gmail.com'
+				":email": 'pkpkggl@gmail.com'
 			}
         };
         const scanResult = await ddbDocClient.send(new ScanCommand(scanParams));
@@ -54,7 +54,7 @@ exports.handler = async (event) => {
             const member_id = member.member_id;
             const membership_type = member.membership_type;
             const cust_code = member.cust_code; // 顧客ID
-            const order_id = member_id; // order_id として member_id を流用
+            const order_id = member_id; // order_id として member_id を流用。年月日時分秒を付与してユニーク化
 
             // チェックサム作成
             const paymentElementsForHash = [
@@ -76,7 +76,8 @@ exports.handler = async (event) => {
 				//////////////////
 				const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amount, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
 				if (paymentResult['sps-api-response'].res_result !== 'OK') {
-					return res.status(404).json({ error: '決済に失敗しました。' });
+					console.error('決済に失敗しました。member_id:', member_id);
+					continue;
 				};
 
 				//////////////////
@@ -92,7 +93,7 @@ exports.handler = async (event) => {
             } catch (err) {
                 console.error(`Member ${member_id} payment error:`, err);
                 // 失敗時 DynamoDB 更新
-                await updateMemberInfoByFailure(member_id, membership_type, today, expirationDay);
+                await updateMemberInfoByFailure(member_id, membership_type, today);
             }
         }
 
@@ -223,8 +224,7 @@ async function updateMemberInfoBySuccess(member_id, membership_type, today, newE
 				member_id,
 				membership_type
 			},
-			UpdateExpression: `SET , 
-								expires_at = :expirationDay,
+			UpdateExpression: `SET expires_at = :expirationDay,
 								payment_success_history = list_append(
 									if_not_exists(payment_success_history, :empty_list),
 									:historyEntry
@@ -242,14 +242,13 @@ async function updateMemberInfoBySuccess(member_id, membership_type, today, newE
 		return updateResult;
 	} catch (err) {
 		console.error('更新エラー:', err);
-		return res.status(500).json({ error: 'サーバーエラーが発生しました' });
 	}
 }
 
 /**
  * メンバー情報を更新（決済失敗時）
  */
-async function updateMemberInfoByFailure(member_id, membership_type, today, expirationDay) {
+async function updateMemberInfoByFailure(member_id, membership_type, today) {
 	try {
 		// can_loginをtrueに更新してログイン可能とする
 		const updateParams = {
@@ -258,15 +257,14 @@ async function updateMemberInfoByFailure(member_id, membership_type, today, expi
 				member_id,
 				membership_type
 			},
-			UpdateExpression: `SET can_login = :trueVal, 
-								expires_at = :expirationDay,
-								is_credit_card_valid = :trueVal,
+			UpdateExpression: `SET can_login = :falseVal,
+								is_credit_card_valid = :falseVal,
 								payment_failure_history = list_append(
 									if_not_exists(payment_success_history, :empty_list),
 									:historyEntry
 								)`,
 			ExpressionAttributeValues: {
-				':trueVal': false,
+				':falseVal': false,
 				':empty_list': [],
 				':historyEntry': [ today ] 
 			}
@@ -278,7 +276,6 @@ async function updateMemberInfoByFailure(member_id, membership_type, today, expi
 		return updateResult;
 	} catch (err) {
 		console.error('更新エラー:', err);
-		return res.status(500).json({ error: 'サーバーエラーが発生しました' });
 	}
 }
 
