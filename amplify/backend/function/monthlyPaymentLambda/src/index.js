@@ -1,5 +1,5 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+const { DynamoDBDocumentClient, ScanCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
 const iconv = require("iconv-lite");
 const { parseStringPromise } = require("xml2js");
 const CryptoJS = require("crypto-js");
@@ -43,7 +43,7 @@ exports.handler = async (event) => {
 			FilterExpression: "can_login = :trueVal AND email = :email",
 			ExpressionAttributeValues: {
 				":trueVal": true,
-				":email": 'pkpkggl@gmail.com'
+				":email": 'testestest@gmail.com'
 			}
         };
         const scanResult = await ddbDocClient.send(new ScanCommand(scanParams));
