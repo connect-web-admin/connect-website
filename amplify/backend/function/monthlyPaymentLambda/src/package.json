@@ -11,6 +11,7 @@
     "@aws-sdk/client-cognito-identity-provider": "^3.817.0",
     "@aws-sdk/client-dynamodb": "^3.817.0",
     "@aws-sdk/client-ses": "^3.817.0",
+    "@aws-sdk/client-sqs": "^3.817.0",
     "@aws-sdk/lib-dynamodb": "^3.817.0",
     "crypto-js": "^4.2.0",
     "iconv-lite": "^0.6.3",

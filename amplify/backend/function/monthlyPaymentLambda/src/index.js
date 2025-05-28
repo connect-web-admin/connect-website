@@ -1,5 +1,6 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, ScanCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
+const { SQSClient, SendMessageCommand } = require('@aws-sdk/client-sqs');
 const iconv = require("iconv-lite");
 const { parseStringPromise } = require("xml2js");
 const CryptoJS = require("crypto-js");
@@ -7,8 +8,11 @@ const CryptoJS = require("crypto-js");
 // DynamoDB クライアント初期化
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
-
 const tableName = process.env.TABLE_NAME;
+
+// SQSクライアント初期化
+const sqsClient = new SQSClient({ region: process.env.REGION });
+const queueUrl = process.env.SQS_QUEUE_URL;
 
 // 今日の日付（月初の処理なので、実質当月の1日）
 const { today, dateTimeCompact } = getJSTDateTime();
@@ -54,7 +58,7 @@ exports.handler = async (event) => {
             const member_id = member.member_id;
             const membership_type = member.membership_type;
             const cust_code = member.cust_code; // 顧客ID
-            const order_id = member_id; // order_id として member_id を流用。年月日時分秒を付与してユニーク化
+            const order_id = member_id + dateTimeCompact; // order_id として member_id を流用。年月日時分秒を付与してユニーク化
 
             // チェックサム作成
             const paymentElementsForHash = [
@@ -77,6 +81,8 @@ exports.handler = async (event) => {
 				const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amount, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
 				if (paymentResult['sps-api-response'].res_result !== 'OK') {
 					console.error('決済に失敗しました。member_id:', member_id);
+					// 失敗時 DynamoDB 更新
+					await updateMemberInfoByFailure(member_id, membership_type, today);
 					continue;
 				};
 
@@ -92,8 +98,6 @@ exports.handler = async (event) => {
                 await updateMemberInfoBySuccess(member_id, membership_type, today, expirationDay);
             } catch (err) {
                 console.error(`Member ${member_id} payment error:`, err);
-                // 失敗時 DynamoDB 更新
-                await updateMemberInfoByFailure(member_id, membership_type, today);
             }
         }
 
@@ -217,6 +221,7 @@ async function confirmPayment(merchant_id, service_id, resSpsTransactionId, requ
  * メンバー情報を更新（決済成功時）
  */
 async function updateMemberInfoBySuccess(member_id, membership_type, today, newExpirationDay) {
+	console.log('決済に成功したので会員情報を更新します。：', member_id );
 	try {
 		const updateParams = {
 			TableName: tableName,
@@ -228,17 +233,22 @@ async function updateMemberInfoBySuccess(member_id, membership_type, today, newE
 								payment_success_history = list_append(
 									if_not_exists(payment_success_history, :empty_list),
 									:historyEntry
-								)`,
+								),
+								updated_at = :updated_at,
+								update_reason = :update_reason
+								`,
 			ExpressionAttributeValues: {
 				':expirationDay': newExpirationDay,
 				':empty_list': [],
-				':historyEntry': [ today ] 
+				':historyEntry': [ today ],
+				':updated_at': today,
+				':update_reason': '月払い決済成功'
 			}
 		};
 
 		const commandForUpdate = new UpdateCommand(updateParams);
 		const updateResult = await ddbDocClient.send(commandForUpdate);
-		console.log('DynamoDB更新結果', updateResult);
+		console.log('決済に成功したので会員情報を更新しました。：', member_id );
 		return updateResult;
 	} catch (err) {
 		console.error('更新エラー:', err);
@@ -249,8 +259,8 @@ async function updateMemberInfoBySuccess(member_id, membership_type, today, newE
  * メンバー情報を更新（決済失敗時）
  */
 async function updateMemberInfoByFailure(member_id, membership_type, today) {
+	console.log('決済に失敗したので会員資格を停止します：', member_id );
 	try {
-		// can_loginをtrueに更新してログイン可能とする
 		const updateParams = {
 			TableName: tableName,
 			Key: {
@@ -262,17 +272,21 @@ async function updateMemberInfoByFailure(member_id, membership_type, today) {
 								payment_failure_history = list_append(
 									if_not_exists(payment_success_history, :empty_list),
 									:historyEntry
-								)`,
+								),
+								updated_at = :updated_at,
+								update_reason = :update_reason`,
 			ExpressionAttributeValues: {
 				':falseVal': false,
 				':empty_list': [],
-				':historyEntry': [ today ] 
+				':historyEntry': [ today ],
+				':updated_at': today,
+				':update_reason': '月払い決済失敗'
 			}
 		};
 
 		const commandForUpdate = new UpdateCommand(updateParams);
 		const updateResult = await ddbDocClient.send(commandForUpdate);
-		console.log('更新結果', updateResult);
+		console.log('決済に失敗したので会員資格を停止しました：', member_id );
 		return updateResult;
 	} catch (err) {
 		console.error('更新エラー:', err);
