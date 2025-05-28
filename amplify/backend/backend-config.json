@@ -285,6 +285,11 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "monthlyPaymentProducerLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "pickupNewsLambda": {
       "build": true,
       "dependsOn": [
@@ -495,6 +500,22 @@
         {
           "category": "function",
           "resourceName": "monthlyPaymentLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_monthlyPaymentProducerLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "monthlyPaymentProducerLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_monthlyPaymentProducerLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "monthlyPaymentProducerLambda"
         }
       ]
     },

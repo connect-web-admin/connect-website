@@ -62,8 +62,10 @@ exports.handler = async (event) => {
         for (const member of members) {
             const member_id = member.member_id;
             const membership_type = member.membership_type;
+			const memberEmail = member.email;
+			const memberFullName = member.last_name + ' ' + member.first_name;
             const cust_code = member.cust_code; // 顧客ID
-            const order_id = member_id; // order_id として member_id を流用。年月日時分秒を付与してユニーク化
+            const order_id = member_id + dateTimeCompact; // order_id として member_id を流用。年月日時分秒を付与してユニーク化
 
             // チェックサム作成
             const paymentElementsForHash = [
@@ -88,7 +90,7 @@ exports.handler = async (event) => {
 					console.error('決済に失敗しました。member_id:', member_id);
 					// 失敗時 DynamoDB 更新
 					await updateMemberInfoByFailure(member_id, membership_type, today);
-					await sendPaymentFailureEmail();
+					await sendPaymentFailureEmail(memberEmail, memberFullName);
 					continue;
 				};
 
@@ -299,7 +301,7 @@ async function updateMemberInfoByFailure(member_id, membership_type, today) {
 	}
 }
 
-async function sendPaymentFailureEmail(memberEmail) {
+async function sendPaymentFailureEmail(memberEmail, memberFullName) {
 	try {
         console.log('メール送信開始');
 
@@ -309,18 +311,17 @@ async function sendPaymentFailureEmail(memberEmail) {
                 ToAddresses: [memberEmail], // 決済失敗した会員宛
             },
             Message: {
-                Subject: { Data: `【重要】クレジットカード決済失敗によるコネクトニュース自動退会のお知らせ` },
+                Subject: { Data: `【重要】クレジットカード決済不能によるコネクトニュース自動退会のお知らせ` },
                 Body: {
                     Text: { // TextのDataは受信側の表示がインデント等で乱れないようにするため行頭に書いている
                         Data: `
-株式会社Connect
-カスタマーサポート
+${memberFullName} 様
 
-平素よりコネクトニュースをご利用いただき、誠にありがとうございます。
+株式会社Connect　カスタマーサポートです。
 
 このたび、ご登録いただいているクレジットカードによる月額会費の決済が正常に完了しなかったため、  
-誠に残念ではございますが、ご利用規約に基づき自動的に退会処理いたしました。
-なお、決済が正常に完了しなかった理由については、ご利用のクレジットカード会社へお問い合わせください。
+誠に残念ではございますが、ご利用規約に基づき退会処理させていただきました。
+なお、決済が正常に完了しなかった理由につきましては、弊社では把握いたしかねますので、ご利用のクレジットカード会社へお問い合わせください。
 
 今後も引き続きコネクトニュースをご利用いただく場合は、お手数をおかけしますが、再度ご登録手続きをお願いいたします。
 
