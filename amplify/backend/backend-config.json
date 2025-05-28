@@ -275,6 +275,11 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "monthlyPaymentConsumerLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "monthlyPaymentLambda": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -458,6 +463,22 @@
         {
           "category": "function",
           "resourceName": "memberLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_monthlyPaymentConsumerLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "monthlyPaymentConsumerLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_monthlyPaymentConsumerLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "monthlyPaymentConsumerLambda"
         }
       ]
     },
