@@ -4,6 +4,7 @@ const { SQSClient, SendMessageCommand } = require('@aws-sdk/client-sqs');
 const iconv = require("iconv-lite");
 const { parseStringPromise } = require("xml2js");
 const CryptoJS = require("crypto-js");
+const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 
 // DynamoDB クライアント初期化
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
@@ -13,6 +14,10 @@ const tableName = process.env.TABLE_NAME;
 // SQSクライアント初期化
 const sqsClient = new SQSClient({ region: process.env.REGION });
 const queueUrl = process.env.SQS_QUEUE_URL;
+
+// SESクライアント初期化
+const sesClient = new SESClient({ region: process.env.REGION });
+const senderEmail = "info@connect-goals.com" // SESで確認済みの送信元メールアドレス
 
 // 今日の日付（月初の処理なので、実質当月の1日）
 const { today, dateTimeCompact } = getJSTDateTime();
@@ -58,7 +63,7 @@ exports.handler = async (event) => {
             const member_id = member.member_id;
             const membership_type = member.membership_type;
             const cust_code = member.cust_code; // 顧客ID
-            const order_id = member_id + dateTimeCompact; // order_id として member_id を流用。年月日時分秒を付与してユニーク化
+            const order_id = member_id; // order_id として member_id を流用。年月日時分秒を付与してユニーク化
 
             // チェックサム作成
             const paymentElementsForHash = [
@@ -83,6 +88,7 @@ exports.handler = async (event) => {
 					console.error('決済に失敗しました。member_id:', member_id);
 					// 失敗時 DynamoDB 更新
 					await updateMemberInfoByFailure(member_id, membership_type, today);
+					await sendPaymentFailureEmail();
 					continue;
 				};
 
@@ -291,6 +297,59 @@ async function updateMemberInfoByFailure(member_id, membership_type, today) {
 	} catch (err) {
 		console.error('更新エラー:', err);
 	}
+}
+
+async function sendPaymentFailureEmail(memberEmail) {
+	try {
+        console.log('メール送信開始');
+
+        const params = {
+            Source: senderEmail,
+            Destination: {
+                ToAddresses: [memberEmail], // 決済失敗した会員宛
+            },
+            Message: {
+                Subject: { Data: `【重要】クレジットカード決済失敗によるコネクトニュース自動退会のお知らせ` },
+                Body: {
+                    Text: { // TextのDataは受信側の表示がインデント等で乱れないようにするため行頭に書いている
+                        Data: `
+株式会社Connect
+カスタマーサポート
+
+平素よりコネクトニュースをご利用いただき、誠にありがとうございます。
+
+このたび、ご登録いただいているクレジットカードによる月額会費の決済が正常に完了しなかったため、  
+誠に残念ではございますが、ご利用規約に基づき自動的に退会処理いたしました。
+なお、決済が正常に完了しなかった理由については、ご利用のクレジットカード会社へお問い合わせください。
+
+今後も引き続きコネクトニュースをご利用いただく場合は、お手数をおかけしますが、再度ご登録手続きをお願いいたします。
+
+ご不明点やご質問等がございましたら、下記のメールアドレスまでお気軽にご連絡ください。
+
+──────────────────────────────  
+株式会社Connect
+カスタマーサポート
+E-mail：info@connect-goals.com
+──────────────────────────────
+                        `,
+                    },
+                },
+            },
+        }
+        
+        console.log('メール送信パラメータ', JSON.stringify(params));
+        
+        const command = new SendEmailCommand(params);
+        const sendResult = await sesClient.send(command);
+
+        console.log('sendResult', sendResult);
+
+        // 必要に応じてsendResult.MessageIdなど記録
+        return { success: true, messageId: sendResult.MessageId };
+    } catch (error) {
+        console.error("SES送信エラー:", error);
+        return { success: false, error: error.message || error };
+    }
 }
 
 /**
