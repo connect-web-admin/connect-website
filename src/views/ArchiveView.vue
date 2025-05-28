@@ -403,7 +403,7 @@ onMounted(() => {
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884C%EF%BC%89.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884D%EF%BC%89.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%EF%BC%95A%E7%B5%84%E5%90%88%E3%81%9B0508.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%88%EF%BC%95B%EF%BC%89.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/4%E7%A8%AE5B%E7%B5%84%E5%90%88%E3%81%9B%E4%BF%AE%E6%AD%A3%EF%BC%8805281040%EF%BC%89_pages-to-jpg-0001.jpg',
                                 ],
                                 [
                                     '４種リーグ戦 組合せ（S）',
@@ -644,7 +644,7 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9U-15(1%E9%83%A8)%E6%98%9F%E5%8F%96%E8%A1%A8.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9U15_1%E9%83%A8%E4%BF%AE%E6%AD%A3.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9U-15(2%E9%83%A8)%E6%98%9F%E5%8F%96%E8%A1%A8.jpg'
                                 ],
                                 [
@@ -960,7 +960,7 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/2025_18TakaSapBlock_kumi.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/U-18%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%8805281143%EF%BC%89_page-0001.jpg',
                                 ],
                                 [
                                     '高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 組み合わせ',
