@@ -641,6 +641,10 @@
     "TestMatchDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
+    },
+    "TestMemberDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
     }
   }
 }

@@ -44,8 +44,8 @@ exports.handler = async (event) => {
 		const body = JSON.parse(event.Records[0].body);
 		const member_id = body.member_id;
 		const membership_type = body.membership_type;
-		const memberEmail = body.email;
-		const memberFullName = `${body.last_name} ${body.first_name}`;
+		const memberEmail = body.memberEmail;
+		const memberFullName = body.memberFullName;
 		const cust_code = body.cust_code; // 顧客ID
 		const order_id = body.member_id + today; // order_idとしてmember_idを流用。年月日を付与してユニーク化
 

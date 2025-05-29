@@ -71,11 +71,11 @@
         },
         "monthlyPaymentConsumerLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/monthlyPaymentConsumerLambda-2b684b61487745415468-build.zip"
+          "s3Key": "amplify-builds/monthlyPaymentConsumerLambda-6d657039492f4a747338-build.zip"
         },
         "monthlyPaymentProducerLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/monthlyPaymentProducerLambda-386b4966386c65493568-build.zip"
+          "s3Key": "amplify-builds/monthlyPaymentProducerLambda-42452b39307563792b73-build.zip"
         }
       },
       "storage": {
@@ -88,7 +88,8 @@
         "CountersDDB": {},
         "PicsDDB": {},
         "ArchiveDDB": {},
-        "TestMatchDDB": {}
+        "TestMatchDDB": {},
+        "TestMemberDDB": {}
       },
       "api": {
         "matchApi": {},

@@ -1,0 +1,14 @@
+{
+  "resourceName": "TestMemberDDB",
+  "tableName": "TestMemberDDB",
+  "partitionKey": {
+    "fieldName": "member_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "membership_type",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

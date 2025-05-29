@@ -24,7 +24,7 @@ exports.handler = async (event) => {
             TableName: tableName,
 			FilterExpression: "can_login = :trueVal AND email = :email",
 			ExpressionAttributeValues: {
-				":trueVal": true,
+				":trueVal": false,
 				":email": 'pkpkggl@gmail.com'
 			}
 			// FilterExpression: "can_login = :trueVal AND cust_code = :cust_code",
@@ -45,17 +45,19 @@ exports.handler = async (event) => {
 				order_id: member.member_id + today, // order_id として member_id を流用。年月日を付与してユニーク化
 				payment_plan: member.payment_plan,
 				memberEmail: member.email,
-				memberFullName: member.last_name + ' ' + member.first_name,
+				memberFullName: `${member.last_name} ${member.first_name}`
 			};
 
 			await sqsClient.send(
 				new SendMessageCommand({
 					QueueUrl: queueUrl,
 					MessageBody: JSON.stringify(message),
+					MessageGroupId: member.member_id + 'MGID1',
+					MessageDeduplicationId : member.member_id + 'MDID1'
 				})
 			);
 
-			console.log(`キュー追加： ${member.member_id}, ${member.membership_type}, ${member.payment_plan}`);
+			console.log(`キューを追加しました。： ${member.member_id}, ${member.membership_type}, ${member.payment_plan}`);
 		}
     } catch (error) {
         console.error('キューの追加に失敗しました。', error);
