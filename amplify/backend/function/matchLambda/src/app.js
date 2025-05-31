@@ -211,6 +211,36 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 });
 
 /************************************
+* HTTP Get method 結果速報画面に表示する試合を取得 *
+************************************/
+app.get(path + '/matches-in-this-week-for-top', async function (req, res) {
+	const fiscalYear = req.query.fiscalYear;
+	const tryingEmail = req.query.tryingEmail;
+	console.log('watching member email', tryingEmail);
+
+	const scanParams = {
+		TableName: tableName,
+		FilterExpression: "fiscal_year = :fiscal_year",
+		ExpressionAttributeValues: {
+		  ":fiscal_year": fiscalYear
+		},
+		ProjectionExpression: "category, championship_id, championship_name, match_dates"
+	  };
+
+	try {
+		const command = new ScanCommand(scanParams);
+		const fetchedData = await ddbDocClient.send(command);
+		const data = fetchedData.Items;
+
+		console.log('data', JSON.stringify(data));
+		res.status(200).json(data);
+	} catch (err) {
+		console.error('Error getting data:', err);
+		res.status(500).json({ success: false, error: 'Error getting data' });
+	}
+});
+
+/************************************
 * HTTP Get method 速報対象試合検索画面へのアクセス許可を判定 *
 * 試合当日以前か試合当日18時以前のみアクセス許可 *
 ************************************/

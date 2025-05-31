@@ -17,8 +17,8 @@ const failedMsgMedia = ref('');
 /**
  * 速報対象試合が、このページにアクセスした日の翌日に存在するかどうかで、ページ内容を表示するか判断
  */
-const getMatchesInThisWeek = async () => {
-    const queryUrl = new URL(`${MATCH_API_URL}/matches-in-this-week`);
+const getMatchesInThisWeekForTop = async () => {
+    const queryUrl = new URL(`${MATCH_API_URL}/matches-in-this-week-for-top`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
     try {
@@ -37,7 +37,7 @@ const getMatchesInThisWeek = async () => {
         if (matchInfo.value.length > 0) {
             return true;
         } else {
-            noThisWeekMatchesMsg.value = '今週開催予定の試合はありません。';
+            noThisWeekMatchesMsg.value = '今週開催予定の試合がないか、まだ更新されていません。';
             return false;
         }
     } catch (error) {
@@ -129,7 +129,7 @@ const getLatestFourArticles = async () => {
 }
 
 onMounted(async () => {
-    await getMatchesInThisWeek();
+    await getMatchesInThisWeekForTop();
     await getLatestTwoNews();
     await getLatestFourArticles();
     // // データが読み込まれた後に少し待ってからスクロール

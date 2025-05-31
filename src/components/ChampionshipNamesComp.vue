@@ -54,32 +54,24 @@ const championshipsThisWeek = computed(() => {
     const targetMonday = new Date(nextMonday);
     targetMonday.setFullYear(THIS_FISCAL_YEAR);
     
+    // 今週の試合がある大会名を格納
     const championships = new Set();
-
+    
+    // matchInfoが持つmatch_datesを使って、今週の試合がある大会名等を取得
     props.matchInfo.forEach(championship => {
-        if (championship.matches) {
-            // 各試合ブロック（例：Aブロック、１部リーグ、4/26など）を処理
-            Object.entries(championship.matches).forEach(([blockName, blockData]) => {
-                // blockDataが試合データのオブジェクトを含む場合を処理
-                Object.entries(blockData).forEach(([key, value]) => {
-                    // round_idをスキップし、試合データのみを処理
-                    if (key !== 'round_id') {
-                        // valueが試合オブジェクトかチェック（match_dateプロパティがあるか）
-                        if (value && typeof value === 'object' && value.match_date) {
-                            const matchDate = new Date(value.match_date);
-                            
-                            // 日付の比較
-                            if (matchDate >= targetTuesday && matchDate <= targetMonday) {
-                                championships.add(JSON.stringify({
-                                    name: championship.championship_name,
-                                    id: championship.championship_id,
-                                    category: championship.category,
-                                }));
-                            }
-                        }
-                    }
-                });
+        if (championship.match_dates && Array.isArray(championship.match_dates)) {
+            const hasMatchThisWeek = championship.match_dates.some(dateStr => {
+                const matchDate = new Date(dateStr);
+                return matchDate >= targetTuesday && matchDate <= targetMonday;
             });
+
+            if (hasMatchThisWeek) {
+                championships.add(JSON.stringify({
+                    name: championship.championship_name,
+                    id: championship.championship_id,
+                    category: championship.category,
+                }));
+            }
         }
     });
     
@@ -87,6 +79,7 @@ const championshipsThisWeek = computed(() => {
     return Array.from(championships).map(item => JSON.parse(item));
 });
 
+// 大会名をカテゴリ順にソート
 const championshipsThisWeekSorted = computed(() => {
     return championshipsThisWeek.value.sort((a, b) => {
         if (a.category === b.category) {
@@ -109,7 +102,7 @@ const handleChampionshipClick = (championship) => {
         </div>
         <div v-else>
             <div v-if="championshipsThisWeek.length === 0">
-                <p></p>
+                <p>今週開催予定の試合がないか、まだ更新されていません。</p>
             </div>
             <div v-else>
                 <ul class="list-none p-0">
