@@ -272,7 +272,7 @@ async function updateMemberInfoByFailure(member_id, membership_type, today) {
 
 		const commandForUpdate = new UpdateCommand(updateParams);
 		const updateResult = await ddbDocClient.send(commandForUpdate);
-		console.log('決済に失敗したので会員資格を停止しました：', member_id );
+		console.log('決済に失敗したので会員資格を停止しました：', member_id, today );
 		return updateResult;
 	} catch (err) {
 		console.error('更新エラー:', err);

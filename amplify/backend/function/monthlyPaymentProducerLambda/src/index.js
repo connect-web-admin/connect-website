@@ -26,10 +26,11 @@ exports.handler = async (event) => {
         // 月払い決済のアクティブな会員の未取得
         const scanParams = {
             TableName: tableName,
-			FilterExpression: "can_login = :trueVal AND is_free_account = :falseVal AND payment_plan = :paymentPlan",
+			FilterExpression: "can_login = :trueVal AND is_free_account = :falseVal AND deleted_at = :emptyVal AND payment_plan = :paymentPlan",
 			ExpressionAttributeValues: {
 				":trueVal": true,
 				":falseVal": false,
+				":emptyVal": "",
 				":paymentPlan": 'monthly'
 			}
         };
@@ -70,8 +71,7 @@ exports.handler = async (event) => {
 		}
     } catch (error) {
 		failureCount++;
-		failedMembers.push(member.member_id);
-		console.error(`キュー追加失敗：${member.member_id}, error:`, e);
+		console.error(`キュー追加失敗：`, error);
     }
 };
 
