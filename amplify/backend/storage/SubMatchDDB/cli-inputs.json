@@ -1,0 +1,14 @@
+{
+  "resourceName": "SubMatchDDB",
+  "tableName": "SubMatchDDB",
+  "partitionKey": {
+    "fieldName": "championship_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "fiscal_year",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

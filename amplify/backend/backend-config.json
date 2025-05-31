@@ -638,6 +638,10 @@
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },
+    "SubMatchDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
     "TestMatchDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
