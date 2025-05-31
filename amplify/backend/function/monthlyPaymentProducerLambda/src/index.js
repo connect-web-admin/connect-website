@@ -18,20 +18,20 @@ const { today, dateTimeCompact } = getJSTDateTime();
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 exports.handler = async (event) => {
+	let successCount = 0;
+    let failureCount = 0;
+    const failedMembers = [];
+
 	try {
         // 月払い決済のアクティブな会員の未取得
         const scanParams = {
             TableName: tableName,
-			FilterExpression: "can_login = :trueVal AND email = :email",
+			FilterExpression: "can_login = :trueVal AND is_free_account = :falseVal AND payment_plan = :paymentPlan",
 			ExpressionAttributeValues: {
-				":trueVal": false,
-				":email": 'pkpkggl@gmail.com'
+				":trueVal": true,
+				":falseVal": false,
+				":paymentPlan": 'monthly'
 			}
-			// FilterExpression: "can_login = :trueVal AND cust_code = :cust_code",
-			// ExpressionAttributeValues: {
-			// 	":trueVal": true,
-			// 	":cust_code": 'mock'
-			// }
         };
         const scanResult = await ddbDocClient.send(new ScanCommand(scanParams));
         const members = scanResult.Items || [];
@@ -52,15 +52,26 @@ exports.handler = async (event) => {
 				new SendMessageCommand({
 					QueueUrl: queueUrl,
 					MessageBody: JSON.stringify(message),
-					MessageGroupId: member.member_id + 'MGID1',
-					MessageDeduplicationId : member.member_id + 'MDID1'
+					MessageGroupId: member.member_id + 'MGID20250601',
+					MessageDeduplicationId : member.member_id + 'MDID20250601'
 				})
 			);
 
+			successCount++;
 			console.log(`キューを追加しました。： ${member.member_id}, ${member.membership_type}, ${member.payment_plan}`);
 		}
+
+		// 全件投入後に集計ログを出力
+		console.log(`SQS投入成功件数: ${successCount}件, 失敗件数: ${failureCount}件`);
+		if (failedMembers.length > 0) {
+			console.log(`投入に失敗したmember_idリスト: ${failedMembers.join(', ')}`);
+		} else {
+			console.log('全件成功');
+		}
     } catch (error) {
-        console.error('キューの追加に失敗しました。', error);
+		failureCount++;
+		failedMembers.push(member.member_id);
+		console.error(`キュー追加失敗：${member.member_id}, error:`, e);
     }
 };
 
@@ -89,7 +100,7 @@ function getJSTDateTime() {
 	const dateTimeCompact = `${YYYY}${MM}${DD}${hh}${mm_}${ss}`; // "YYYYMMDDhhmmss"
 
 	return {
-	today:            dateOnly,
-	dateTimeCompact:  dateTimeCompact
+		today:            dateOnly,
+		dateTimeCompact:  dateTimeCompact
 	};
 }

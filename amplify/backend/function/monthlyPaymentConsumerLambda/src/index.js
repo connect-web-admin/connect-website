@@ -44,10 +44,10 @@ exports.handler = async (event) => {
 		const body = JSON.parse(event.Records[0].body);
 		const member_id = body.member_id;
 		const membership_type = body.membership_type;
+		const cust_code = body.cust_code; // 顧客ID
+		const order_id = body.order_id;
 		const memberEmail = body.memberEmail;
 		const memberFullName = body.memberFullName;
-		const cust_code = body.cust_code; // 顧客ID
-		const order_id = body.member_id + today; // order_idとしてmember_idを流用。年月日を付与してユニーク化
 
 		// チェックサム作成
 		const paymentElementsForHash = [
@@ -71,7 +71,7 @@ exports.handler = async (event) => {
 			console.error('決済に失敗しました。member_id:', member_id);
 			// 失敗時 DynamoDB 更新
 			await updateMemberInfoByFailure(member_id, membership_type, today);
-			await sendPaymentFailureEmail(memberEmail, memberFullName);
+			// await sendPaymentFailureEmail(memberEmail, memberFullName);
             return;
 		};
 
@@ -266,7 +266,7 @@ async function updateMemberInfoByFailure(member_id, membership_type, today) {
 				':empty_list': [],
 				':historyEntry': [ today ],
 				':updated_at': today,
-				':update_reason': '月払い決済失による自動退会'
+				':update_reason': '月払い決済失敗による自動退会'
 			}
 		};
 
