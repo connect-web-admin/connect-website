@@ -54,12 +54,12 @@ const getLatestTwoNews = async () => {
     const queryUrl = new URL(`${PICKUP_NEWS_API_URL}/latest-four-news`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
-    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
-    if (!idToken) {
-        failedMsgPickupNews.value = '認証トークンが見つかりません。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
-        console.error('認証トークンが見つかりません。');
-        return;
-    }
+    // const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    // if (!idToken) {
+    //     failedMsgPickupNews.value = '認証トークンが見つかりません。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+    //     console.error('認証トークンが見つかりません。');
+    //     return;
+    // }
     try {
         const response = await fetch(queryUrl, {
             method: 'GET',
@@ -94,12 +94,12 @@ const getLatestFourArticles = async () => {
     const queryUrl = new URL(`${MEDIA_API_URL}/latest-four-articles`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
 
-    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
-    if (!idToken) {
-        failedMsgMedia.value = '認証トークンが見つかりません。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
-        console.error('認証トークンが見つかりません。');
-        return;
-    }
+    // const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    // if (!idToken) {
+    //     failedMsgMedia.value = '認証トークンが見つかりません。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+    //     console.error('認証トークンが見つかりません。');
+    //     return;
+    // }
 
     try {
         const response = await fetch(queryUrl, {
@@ -147,20 +147,10 @@ onMounted(async () => {
     <div class="px-2 pt-2">
         <div>
             <h1 class="text-xl pt-2">☆お知らせ☆</h1>
-            <div class="mb-4">
-                <h2 class="font-bold underline">再ログインのお願い(5月15日更新)</h2>
-                <p class="text-sm">
-                    5月12日のシステムメンテナンス時よりお知らせしておりましたように、当サイトを正常にご利用いただくために再ログインが必要となっております。ご不便をおかけしておりますことをお詫び申し上げます。<br>以前よりログイン状態を維持されている場合は、次の方法にて一度ログアウトした後に再ログインしていただきますようお願いいたします。<br><span class="font-bold text-sm underline">5月15日追記</span>：ブラウザがプライベート（シークレット）モードの場合、ログイン・ログアウトが正常に動作しない場合があります。通常モードでご利用ください。<br>
-                    ●画面右上の三本線のMenuをタップしてメニュー項目を表示<br>
-                    ●最下部に表示されるログアウトという項目をタップ<br>
-                    ●ログイン画面に移動しますので、メールアドレスとパスワードを入力してログイン
-                </p>
-            </div>
             <p class="font-bold underline">
                 U-18プリンスリーグの大会詳細結果<br><a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank" class="text-blue-500 underline">→こちら</a>
             </p>
             <p class="font-bold underline">北海道カブスリーグの試合結果速報につきまして<br><a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E3%80%90%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B%E3%80%91%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E3%81%AE%E8%A9%A6%E5%90%88%E7%B5%90%E6%9E%9C%E9%80%9F%E5%A0%B1%E3%81%AB%E3%81%A4%E3%81%8D%E3%81%BE%E3%81%97%E3%81%A6.jpg" target="_blank" class="text-blue-500">→こちら</a></p>
-            <p class="font-bold underline">結果速報につきまして<br><a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E3%80%90%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B%E3%80%91%E7%B5%90%E6%9E%9C%E9%80%9F%E5%A0%B1%E3%81%AB%E3%81%A4%E3%81%8D%E3%81%BE%E3%81%97%E3%81%A6.jpg" target="_blank" class="text-blue-500">→こちら</a></p>
         </div>
         <div>
             <h1 class="text-xl pt-2">今週の大会<span class="text-sm text-gray-400">（タップで結果速報へ移動）</span></h1>
