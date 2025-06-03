@@ -201,7 +201,7 @@ const signOutAndDeleteItemsInLocalStorage = async () => {
     // Authenticator備え付けのログアウト用の関数
     props.signOut();
 
-    router.push('/top');
+    router.push('/');
 }
 
 // isMenuOpenの監視を追加
@@ -426,10 +426,10 @@ const handleImageClick = (url) => {
                                         </router-link>
                                     </li> -->
                                 </ul>
-                                <router-link @click="signOutAndDeleteItemsInLocalStorage" to="/top" :class="routerLinkClass"
+                                <!-- <router-link @click="signOutAndDeleteItemsInLocalStorage" to="/top" :class="routerLinkClass"
                                     class="text-gray-500 pl-4">
                                     ログアウト
-                                </router-link>
+                                </router-link> -->
                             </div>
                         </div>
                     </Transition>
