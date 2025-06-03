@@ -109,7 +109,7 @@ const handleChampionshipClick = (championship) => {
                     <li v-for="championship in championshipsThisWeekSorted" 
                         :key="championship.id"
                         @click="handleChampionshipClick(championship)"
-                        class="cursor-pointer hover:bg-gray-200 text-blue-600 p-1 underline">
+                        class="cursor-pointer hover:bg-gray-200 text-blue-500 p-1 underline">
                         ■ {{ championship.name }}
                     </li>
                 </ul>
