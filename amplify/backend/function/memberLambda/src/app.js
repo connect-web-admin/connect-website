@@ -940,20 +940,20 @@ console.log('queryResult', queryResult)
 		if(paymentPlan === 'monthly') {
 			// const juneFirst2025 = new Date('2025-06-01T00:00:00');
 			// const juneFirst2025 = new Date('2025-06-01T00:00:00+09:00');
-			const isBeforeJstJuneFirst2025 = checkIsBeforeJstJuneFirst2025();
+			// const isBeforeJstJuneFirst2025 = checkIsBeforeJstJuneFirst2025();
 
 			// 2025年5月いっぱいは決済しない。6月1日0時00分以降は決済を通す。
-			if (isBeforeJstJuneFirst2025) {
-				console.log('2025年5月以前の月払い加入者の処理')
-				// can_loginをtrueに更新してログイン可能とする
-				const expirationDay = '2025-05-31';
-				await updateMemberInfo(member_id, membership_type, today, expirationDay);
+			// if (isBeforeJstJuneFirst2025) {
+			// 	console.log('2025年5月以前の月払い加入者の処理')
+			// 	// can_loginをtrueに更新してログイン可能とする
+			// 	const expirationDay = '2025-05-31';
+			// 	await updateMemberInfo(member_id, membership_type, today, expirationDay);
 
-				res.set('Content-Type', 'text/plain');
-				res.status(200).send('OK,');
-			}
+			// 	res.set('Content-Type', 'text/plain');
+			// 	res.status(200).send('OK,');
+			// }
 
-			if (!isBeforeJstJuneFirst2025){
+			// if (!isBeforeJstJuneFirst2025){
 				console.log('2025年6月以降の月払い加入者の処理')
 				// チェックサム作成	
 				const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthly, free1, encrypted_flg, request_date];
@@ -986,7 +986,7 @@ console.log('queryResult', queryResult)
 
 				res.set('Content-Type', 'text/plain');
 				res.status(200).send('OK,');
-			}
+			// }
 		}
 	} catch (err) {
 		console.error('更新エラー:', err);

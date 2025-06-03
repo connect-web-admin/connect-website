@@ -1,19 +1,5 @@
 {
   "api": {
-    "archiveApi": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "archiveLambda"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    },
     "clubApi": {
       "dependsOn": [
         {
@@ -172,25 +158,6 @@
   "function": {
     "addSessionIdLambda": {
       "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
-    "archiveLambda": {
-      "build": true,
-      "dependsOn": [
-        {
-          "attributeEnvMap": {
-            "Arn": "TABLE_ARN",
-            "Name": "TABLE_NAME"
-          },
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "storage",
-          "resourceName": "ArchiveDDB"
-        }
-      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
@@ -372,22 +339,6 @@
         {
           "category": "function",
           "resourceName": "addSessionIdLambda"
-        }
-      ]
-    },
-    "AMPLIFY_function_archiveLambda_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "archiveLambda"
-        }
-      ]
-    },
-    "AMPLIFY_function_archiveLambda_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "archiveLambda"
         }
       ]
     },
@@ -601,10 +552,6 @@
     }
   },
   "storage": {
-    "ArchiveDDB": {
-      "providerPlugin": "awscloudformation",
-      "service": "DynamoDB"
-    },
     "ClubDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
