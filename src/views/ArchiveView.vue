@@ -584,7 +584,7 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="space-y-1border-b border-gray-200 pb-3">
+            <div class="space-y-1 border-b border-gray-200 pb-3">
                 <h2>
                     第19回北海道カブスリーグU-15 兼
                     高円宮杯JFAサッカーリーグ2025北海道 １部・２部
