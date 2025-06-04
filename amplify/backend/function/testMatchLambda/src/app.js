@@ -13,11 +13,12 @@ const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryComm
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')
+const jwt = require("jsonwebtoken");
 
 const ddbClient = new DynamoDBClient({ region: process.env.TABLE_REGION });
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
-let tableName = "TestMatchDDB";
+let tableName = "MatchDDB";
 if (process.env.ENV && process.env.ENV !== "NONE") {
 	tableName = tableName + '-' + process.env.ENV;
 }
@@ -54,7 +55,7 @@ function selectClub(homeOrAway) {
 }
 
 function formatTimeZone(gameStatus) {
-	switch(gameStatus) {
+	switch (gameStatus) {
 		case '前半':
 			return 'first_half_score';
 		case '後半':
@@ -69,51 +70,63 @@ function formatTimeZone(gameStatus) {
 }
 
 function isWithinLastTuesdayToNextMonday(targetDateStr) {
-	// ── １．JST の今日 00:00 を取得 ──
+	// １．JST の今日 00:00 を取得
 	const todayJST = new Date(
-	  new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+		new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
 	);
 	todayJST.setHours(0, 0, 0, 0);
-  
-	const day = todayJST.getDay(); // 0: 日曜 … 2: 火曜 … 1: 月曜
-  
-	// ── ２．過去の直近火曜 ──
+
+	const day = todayJST.getDay(); // 0:日曜 … 1:月曜 … 2:火曜 … 
+
+	// ２．過去の直近火曜
 	const lastTuesday = new Date(todayJST);
 	const diffToLastTue = (day - 2 + 7) % 7;
 	lastTuesday.setDate(todayJST.getDate() - diffToLastTue);
-  
-	// ── ３．未来の直近月曜 ──
+
+	// ３．未来の直近月曜（特例なし）
 	const nextMonday = new Date(todayJST);
-	let diffToNextMon = (1 - day + 7) % 7;
-	if (diffToNextMon === 0) diffToNextMon = 7;  // 今日が月曜なら「来週の月曜」
+	const diffToNextMon = (1 - day + 7) % 7;
 	nextMonday.setDate(todayJST.getDate() + diffToNextMon);
-  
-	// ── ４．target も JST の当日 00:00 に丸める ──
+
+	// ４．target を JST の当日 00:00 に丸める
 	const tJST = new Date(
-	  new Date(targetDateStr).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+		new Date(targetDateStr).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
 	);
 	tJST.setHours(0, 0, 0, 0);
-  
-	// ── ５．判定 ──
+
+	// ５．判定（inclusive）
 	return tJST >= lastTuesday && tJST <= nextMonday;
-  }
-  
+}
 
 function canAccess(matchDate) {
-	// 日本時間での現在の日付を取得（YYYY-MM-DD形式）
+	// 現在の時刻（UTC epoch）にJST(+9h)を足して日本時間を表現
 	const now = new Date();
 	const japanTime = new Date(now.getTime() + 9 * 60 * 60 * 1000);
 
-	// YYYY-MM-DD 形式に整形
-	const year = japanTime.getUTCFullYear();
-	const month = String(japanTime.getUTCMonth() + 1).padStart(2, "0");
-	const day = String(japanTime.getUTCDate()).padStart(2, "0");
-	const today = `${year}-${month}-${day}`;
+	// YYYY-MM-DD 形式に整形するヘルパー
+	const formatDate = date => {
+		const Y = date.getUTCFullYear();
+		const M = String(date.getUTCMonth() + 1).padStart(2, '0');
+		const D = String(date.getUTCDate()).padStart(2, '0');
+		return `${Y}-${M}-${D}`;
+	};
 
-	// 試合日と今日を比較
-	const isMatchDateToday = matchDate === today;
+	const today = formatDate(japanTime);
+	const tomorrow = formatDate(new Date(japanTime.getTime() + 24 * 60 * 60 * 1000));
 
-	return isMatchDateToday;
+	// ■ アクセス日がmatchDateより過去の日付ならアクセス許可
+	if (today < matchDate) {
+		return true;
+	}
+
+	// ■ アクセス日当日の場合は 0:00–17:59 の間のみアクセス許可
+	if (matchDate === today) {
+		const hour = japanTime.getUTCHours();
+		return hour < 18;  // 18時未満：true、以降：false
+	}
+
+	// ■ それ以外の日付はアクセス不可
+	return false;
 }
 
 /************************************
@@ -149,6 +162,8 @@ app.get(path + '/championship-names-ids', async function (req, res) {
 ************************************/
 app.get(path + '/matches-in-this-week', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
+	const tryingEmail = req.query.tryingEmail;
+	console.log('watching member email', tryingEmail);
 
 	const queryItemParams = {
 		TableName: tableName,
@@ -187,7 +202,7 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 		const filteredData = data.filter(item =>
 			item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
 		);
-console.log('filteredData', JSON.stringify((filteredData)));
+		console.log('filteredData', JSON.stringify((filteredData)));
 		res.status(200).json(filteredData);
 	} catch (err) {
 		console.error('Error getting data:', err);
@@ -196,18 +211,56 @@ console.log('filteredData', JSON.stringify((filteredData)));
 });
 
 /************************************
+* HTTP Get method 結果速報画面に表示する試合を取得 *
+************************************/
+app.get(path + '/matches-in-this-week-for-top', async function (req, res) {
+	const fiscalYear = req.query.fiscalYear;
+	const tryingEmail = req.query.tryingEmail;
+	console.log('watching member email', tryingEmail);
+
+	const scanParams = {
+		TableName: tableName,
+		FilterExpression: "fiscal_year = :fiscal_year",
+		ExpressionAttributeValues: {
+		  ":fiscal_year": fiscalYear
+		},
+		ProjectionExpression: "category, championship_id, championship_name, match_dates"
+	  };
+
+	try {
+		const command = new ScanCommand(scanParams);
+		const fetchedData = await ddbDocClient.send(command);
+		const data = fetchedData.Items;
+
+		console.log('data', JSON.stringify(data));
+		res.status(200).json(data);
+	} catch (err) {
+		console.error('Error getting data:', err);
+		res.status(500).json({ success: false, error: 'Error getting data' });
+	}
+});
+
+/************************************
 * HTTP Get method 速報対象試合検索画面へのアクセス許可を判定 *
-* 試合当日のみアクセス許可 *
+* 試合当日以前か試合当日18時以前のみアクセス許可 *
 ************************************/
 app.get(path + '/current-matches', async function (req, res) {
 	const fiscalYear = req.query.fiscalYear;
 	const accessToken = req.query.accessToken;
-console.log('entering current matches', req.body)
+	const category = req.query.category;
+	console.log('entering current matches', req.query)
+
+	if(accessToken === "" || accessToken === null) {
+		res.status(500).json({ success: false, error: 'Error accessToken is not valid' });
+		return;
+	}
+
 	// U-12とWOMANはまとめて一つの扱いなので
 	// 配列化して長さが１ならばU-15（ジュニアユース）かU-18（ユース）、そうでなければU-12（ジュニア）とWOMAN
-	const category = (req.query.category).split(',').length === 1 ? req.query.category : (req.query.category).split(',')
+	// const category = (req.query.category).split(',').length === 1 ? req.query.category : (req.query.category).split(',')
 
-	if (category === 'U-15（ジュニアユース）' || category === 'U-18（ユース）') {
+
+	// if (category === 'U-15（ジュニアユース）' || category === 'U-18（ユース）') {
 		const queryItemParams = {
 			TableName: tableName,
 			IndexName: "gsiByFiscalYearAndCategory",
@@ -252,63 +305,63 @@ console.log('entering current matches', req.body)
 			const filteredData = data.filter(item =>
 				item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
 			);
-			
+
 			res.status(200).json(filteredData);
 		} catch (err) {
 			console.error('Error getting data:', err);
 			res.status(500).json({ success: false, error: 'Error getting data' });
 		}
-	} else {
-		const passingData = [];
+	// } else {
+	// 	const passingData = [];
 
-		for (const eachCategory of category) {
-			const queryItemParams = {
-				TableName: tableName,
-				IndexName: "gsiByFiscalYearAndCategory",
-				KeyConditionExpression: "fiscal_year = :fiscalYear and category = :category",
-				ExpressionAttributeValues: {
-					":fiscalYear": fiscalYear,
-					":category": eachCategory
-				},
-			};
+	// 	for (const eachCategory of category) {
+	// 		const queryItemParams = {
+	// 			TableName: tableName,
+	// 			IndexName: "gsiByFiscalYearAndCategory",
+	// 			KeyConditionExpression: "fiscal_year = :fiscalYear and category = :category",
+	// 			ExpressionAttributeValues: {
+	// 				":fiscalYear": fiscalYear,
+	// 				":category": eachCategory
+	// 			},
+	// 		};
 
-			try {
-				const command = new QueryCommand(queryItemParams);
-				const fetchedData = await ddbDocClient.send(command);
-				const data = fetchedData.Items;
+	// 		try {
+	// 			const command = new QueryCommand(queryItemParams);
+	// 			const fetchedData = await ddbDocClient.send(command);
+	// 			const data = fetchedData.Items;
 
-				// アクセス日に開催される試合であり、試合パスワードmatch_passwordが一致する試合のみを抽出
-				// ある大会が一つも速報対象試合を持たない場合、その大会自体をspliceする。
-				data.forEach(item => {
-					if (item['item_type'] === 'championship') {
-						for (const round in item['matches']) {
-							for (const match in item['matches'][round]) {
-								// round_idは文字列なので、それ以外の場合のみmatch_dateについて判定
-								if (typeof item['matches'][round][match] !== 'string') {
-									if (!canAccess(item['matches'][round][match]['match_date'])) {
-										delete item['matches'][round][match];
-									}
-								}
-							}
-						}
-					}
-				});
+	// 			// アクセス日に開催される試合であり、試合パスワードmatch_passwordが一致する試合のみを抽出
+	// 			// ある大会が一つも速報対象試合を持たない場合、その大会自体をspliceする。
+	// 			data.forEach(item => {
+	// 				if (item['item_type'] === 'championship') {
+	// 					for (const round in item['matches']) {
+	// 						for (const match in item['matches'][round]) {
+	// 							// round_idは文字列なので、それ以外の場合のみmatch_dateについて判定
+	// 							if (typeof item['matches'][round][match] !== 'string') {
+	// 								if (!canAccess(item['matches'][round][match]['match_date'])) {
+	// 									delete item['matches'][round][match];
+	// 								}
+	// 							}
+	// 						}
+	// 					}
+	// 				}
+	// 			});
 
-				// 各大会の各ラウンドの各試合の中身を走査して、一つでもdeleteされていない試合があれば。trueとしてfilteredDataに追加
-				// round_idはdeleteされないので、必ず一つはキー・バリューが残っている。二つ以上のキー・バリュがあれば、一つ以上の試合が残っていると判定
-				const filteredData = data.filter(item =>
-					item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
-				);
-				
-				passingData.push(filteredData);
-			} catch (err) {
-				console.error('Error getting data:', err);
-				res.status(500).json({ success: false, error: 'Error getting data' });
-			}
-		}
+	// 			// 各大会の各ラウンドの各試合の中身を走査して、一つでもdeleteされていない試合があれば。trueとしてfilteredDataに追加
+	// 			// round_idはdeleteされないので、必ず一つはキー・バリューが残っている。二つ以上のキー・バリュがあれば、一つ以上の試合が残っていると判定
+	// 			const filteredData = data.filter(item =>
+	// 				item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
+	// 			);
 
-		res.status(200).json(passingData);
-	}
+	// 			passingData.push(filteredData);
+	// 		} catch (err) {
+	// 			console.error('Error getting data:', err);
+	// 			res.status(500).json({ success: false, error: 'Error getting data' });
+	// 		}
+	// 	}
+
+		// res.status(200).json(passingData);
+	// }
 });
 
 /************************************
@@ -466,11 +519,11 @@ app.put(path + '/plus-score', async function (req, res) {
 			UpdateExpression: `SET matches.#round.#match.#which_club.#time_zone_score = matches.#round.#match.#which_club.#time_zone_score + :increment, 
 									matches.#round.#match.#which_club.final_score = matches.#round.#match.#which_club.final_score + :increment`,
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
+				"#match": match,
+				"#round": round,
 				"#which_club": whichClub,
 				"#time_zone_score": timeZoneScore
-            },
+			},
 			ExpressionAttributeValues: {
 				':increment': 1
 			},
@@ -520,11 +573,11 @@ app.put(path + '/minus-score', async function (req, res) {
 			UpdateExpression: `SET matches.#round.#match.#which_club.#time_zone_score = matches.#round.#match.#which_club.#time_zone_score + :decrement, 
 									matches.#round.#match.#which_club.final_score = matches.#round.#match.#which_club.final_score + :decrement`,
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
+				"#match": match,
+				"#round": round,
 				"#which_club": whichClub,
 				"#time_zone_score": timeZoneScore,
-            },
+			},
 			ExpressionAttributeValues: {
 				':decrement': -1
 			},
@@ -602,13 +655,13 @@ app.put(path + '/manage-pk-score', async function (req, res) {
 			},
 			UpdateExpression: 'SET matches.#round.#match.#which_club.pk_score_list = :pk_score_list, matches.#round.#match.#which_club.pk_score = :pk_score',
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
+				"#match": match,
+				"#round": round,
 				"#which_club": whichClub,
-            },
+			},
 			ExpressionAttributeValues: {
-                ":pk_score_list": pkScoreList,
-                ":pk_score": pkScore
+				":pk_score_list": pkScoreList,
+				":pk_score": pkScore
 			},
 			ReturnValues: 'UPDATED_NEW'
 		};
@@ -637,7 +690,7 @@ app.put(path + '/handle-game-status', async function (req, res) {
 
 	// 証跡用出力
 	console.log('試合状態遷移先', req.body);
-	
+
 	try {
 		// 更新したアイテムを保存
 		const params = {
@@ -648,9 +701,9 @@ app.put(path + '/handle-game-status', async function (req, res) {
 			},
 			UpdateExpression: 'SET matches.#round.#match.game_status = :changingGameStatus',
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
-            },
+				"#match": match,
+				"#round": round,
+			},
 			ExpressionAttributeValues: {
 				':changingGameStatus': changingGameStatus
 			},
@@ -679,7 +732,7 @@ app.put(path + '/register-extra-halves', async function (req, res) {
 
 	// 証跡用出力
 	console.log('延長戦開始・取り消し操作', req.body);
-	
+
 	// 取得したアイテムをいったん格納する
 	let data = {};
 
@@ -812,7 +865,7 @@ app.put(path + '/register-pk', async function (req, res) {
 						data.matches[round][match]['has_pk'] = true;
 						data.matches[round][match]['game_status'] = 'PK戦';
 					}
-					
+
 					if (action === 'cancel') {
 						data.matches[round][match]['has_pk'] = false;
 
@@ -906,7 +959,7 @@ app.put(path + '/register-match-result', async function (req, res) {
 	if (fetchedData.Item?.matches?.[round]?.[match]?.has_pk) {
 		if (homeClubPkScore > awayClubPkScore) {
 			homeClubResult = 'win';
-			awayClubResult = 'lose';	
+			awayClubResult = 'lose';
 		} else if (homeClubPkScore < awayClubPkScore) { // PK戦の最終得点が同じになることはない
 			homeClubResult = 'lose';
 			awayClubResult = 'win';
@@ -938,15 +991,15 @@ app.put(path + '/register-match-result', async function (req, res) {
 									matches.#round.#match.away_club.#result = :awayClubResult
 							  `,
 			ExpressionAttributeNames: {
-                "#match": match,
-                "#round": round,
+				"#match": match,
+				"#round": round,
 				"#result": 'result'
-            },
+			},
 			ExpressionAttributeValues: {
 				":homeClubResult": homeClubResult,
 				":awayClubResult": awayClubResult,
-				":actualMatchStartTime": actualMatchStartTime, 
-                ":isResultRegistered": true
+				":actualMatchStartTime": actualMatchStartTime,
+				":isResultRegistered": true
 			},
 			ReturnValues: 'UPDATED_NEW'
 		};
@@ -1030,7 +1083,7 @@ app.put(path + '/register-edited-match-result', async function (req, res) {
 						targetMatchInfo['home_club']['second_half_score'] = homeClubSecondHalfScoreEdit;
 						targetMatchInfo['away_club']['first_half_score'] = awayClubFirstHalfScoreEdit;
 						targetMatchInfo['away_club']['second_half_score'] = awayClubSecondHalfScoreEdit;
-	
+
 						if (targetMatchInfo['has_extra_halves']) {
 							targetMatchInfo['home_club']['extra_first_half_score'] = homeClubExtraFirstHalfScoreEdit;
 							targetMatchInfo['home_club']['extra_second_half_score'] = homeClubExtraSecondHalfScoreEdit;
@@ -1047,34 +1100,34 @@ app.put(path + '/register-edited-match-result', async function (req, res) {
 							targetMatchInfo['away_club']['pk_score'] = awayClubPkScoreEdit;
 							targetMatchInfo['away_club']['pk_score_list'] = awayClubPkScoreListEdit;
 						}
-						
+
 
 						// 前後半（と延長戦前後半）の得点の合計またはPK戦の最終結果により勝敗を登録
 						if (targetMatchInfo['has_pk']) {
 							if (targetMatchInfo['home_club']['pk_score'] > targetMatchInfo['away_club']['pk_score']) {
 								targetMatchInfo['home_club']['result'] = 'win';
-								targetMatchInfo['away_club']['result'] = 'lose';	
-							} 
+								targetMatchInfo['away_club']['result'] = 'lose';
+							}
 							if (targetMatchInfo['home_club']['pk_score'] < targetMatchInfo['away_club']['pk_score']) {
 								targetMatchInfo['home_club']['result'] = 'lose';
-								targetMatchInfo['away_club']['result'] = 'win';	
+								targetMatchInfo['away_club']['result'] = 'win';
 							}
 							// 通常、PK戦の得点が同じなることはない
 							if (targetMatchInfo['home_club']['pk_score'] === targetMatchInfo['away_club']['pk_score']) {
 								targetMatchInfo['home_club']['result'] = 'draw';
-								targetMatchInfo['away_club']['result'] = 'draw';	
+								targetMatchInfo['away_club']['result'] = 'draw';
 							}
 						} else {
 							if (targetMatchInfo['home_club']['final_score'] > targetMatchInfo['away_club']['final_score']) {
 								targetMatchInfo['home_club']['result'] = 'win';
 								targetMatchInfo['away_club']['result'] = 'lose';
 							}
-							
+
 							if (targetMatchInfo['home_club']['final_score'] < targetMatchInfo['away_club']['final_score']) {
 								targetMatchInfo['home_club']['result'] = 'lose';
 								targetMatchInfo['away_club']['result'] = 'win';
 							}
-							
+
 							if (targetMatchInfo['home_club']['final_score'] === targetMatchInfo['away_club']['final_score']) {
 								targetMatchInfo['home_club']['result'] = 'draw';
 								targetMatchInfo['away_club']['result'] = 'draw';
@@ -1123,7 +1176,7 @@ app.put(path + '/register-edited-match-result', async function (req, res) {
 /************************************
 * HTTP Put method to register 試合延期 *
 ************************************/
-app.put(path + '/register-match-delay', async function (req, res) {
+app.put(path + '/register-match-postponement', async function (req, res) {
 	// フロントから渡されるリクエストボディの内容
 	const championshipId = req.body.championshipId;
 	const matchId = req.body.matchId;
@@ -1157,7 +1210,7 @@ app.put(path + '/register-match-delay', async function (req, res) {
 			for (const round in data.matches) {
 				for (const match in data.matches[round]) {
 					if (data.matches[round][match]['match_id'] === matchId) {
-						data.matches[round][match]['is_delayed'] = true;
+						data.matches[round][match]['is_postponed'] = true;
 						data.matches[round][match]['match_date'] = '2099-12-31';
 						updated = true;
 					}

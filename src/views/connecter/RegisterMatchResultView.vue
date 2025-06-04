@@ -3,7 +3,7 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import RegisterScoreModal from '@/components/connecter/RegisterScoreModal.vue';
 import RegisterMatchResultModal from '@/components/connecter/RegisterMatchResultModal.vue';
-import RegisterMatchDelayModal from '@/components/connecter/RegisterMatchDelayModal.vue';
+import RegisterMatchPostponementModal from '@/components/connecter/RegisterMatchPostponementModal.vue';
 import RegisterPkModal from '@/components/connecter/RegisterPkModal.vue';
 import RegisterExtraHalvesModal from '@/components/connecter/RegisterExtraHalvesModal.vue';
 import SelectExtraHalvesPkModal from '@/components/connecter/SelectExtraHalvesPkModal.vue';
@@ -28,7 +28,7 @@ const showAwayClubPlusModal = ref(false);
 const showHomeClubMinusModal = ref(false);
 const showAwayClubMinusModal = ref(false);
 const showMatchResultModal = ref(false);
-const showMatchDelayModal = ref(false);
+const showMatchPostponementModal = ref(false);
 const showExtraHalvesApplyModal = ref(false);
 const showExtraHalvesCancelModal = ref(false);
 const showPkApplyModal = ref(false);
@@ -51,7 +51,7 @@ const isResultRegistered = ref(false); // 試合結果登録済みフラグ
 const gameStatus = ref('');// 試合進行状況。試合前、前半、後半、延長前半、延長後半、PK戦、試合終了のいずれかが入る
 
 // 試合結果入力フォームのデータを格納する
-const isDelayed = ref(false); // 試合順延フラグ
+const isPostponed = ref(false); // 試合順延フラグ
 const championshipId = route.params.championshipId; // 大会ID ルーティング時にパラメタで渡される
 const matchId = route.params.matchId; // 試合ID ルーティング時にパラメタで渡される
 const hasExtraHalves = ref(false); // 延長戦有無
@@ -814,11 +814,11 @@ const registerMatchResult = async () => {
 /**
  * 試合延期登録
  */
-const registerMatchDelay = async () => {
+const registerMatchPostponement = async () => {
     isLoading.value = true;
 
     try {
-        const putUrl = new URL(`${MATCH_API_URL}/register-match-delay`);
+        const putUrl = new URL(`${MATCH_API_URL}/register-match-postponement`);
 
         const requestBody = {
             fiscalYear: THIS_FISCAL_YEAR, // constantファイルから取得
@@ -1114,19 +1114,19 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
                     <p>または、この試合の延期を登録します。</p>
                     <div :class="flexRow" class="justify-center mt-2">
                         <div class="mx-4">
-                            <input type="radio" id="isDelayedRadio1" v-model="isDelayed" :value="true" />
-                            <label for="isDelayedRadio1">はい</label>
+                            <input type="radio" id="isPostponedRadio1" v-model="isPostponed" :value="true" />
+                            <label for="isPostponedRadio1">はい</label>
                         </div>
                         <div class="mx-4">
-                            <input type="radio" id="isDelayedRadio2" v-model="isDelayed" :value="false" />
-                            <label for="isDelayedRadio2">いいえ</label>
+                            <input type="radio" id="isPostponedRadio2" v-model="isPostponed" :value="false" />
+                            <label for="isPostponedRadio2">いいえ</label>
                         </div>
                     </div>
                     <div class="pt-5">
-                        <button type="button" @click="showMatchDelayModal = true" :disabled="!isDelayed"
-                            :class="[registerBtnBase, isDelayed ? 'bg-amber-600' : 'bg-gray-300 cursor-not-allowed']"><span
+                        <button type="button" @click="showMatchPostponementModal = true" :disabled="!isPostponed"
+                            :class="[registerBtnBase, isPostponed ? 'bg-amber-600' : 'bg-gray-300 cursor-not-allowed']"><span
                                 class="text-xl text-white"
-                                :class="isDelayed ? 'bg-amber-600' : 'bg-gray-300 '">延期登録</span></button>
+                                :class="isPostponed ? 'bg-amber-600' : 'bg-gray-300 '">延期登録</span></button>
                     </div>
                 </div>
             </div>
@@ -1231,12 +1231,12 @@ const borderTopBottom = 'border-t-1 border-b-1 border-black';
             </register-match-result-modal>
         </Teleport>
         <Teleport to="body">
-            <register-match-delay-modal :show="showMatchDelayModal" @close="showMatchDelayModal = false; isLoading = false;"
-                @register-match-delay="registerMatchDelay">
+            <register-match-postponement-modal :show="showMatchPostponementModal" @close="showMatchPostponementModal = false; isLoading = false;"
+                @register-match-postponement="registerMatchPostponement">
                 <template v-slot:body>
                     <p>試合の延期を登録します。<br />よろしいですか？</p>
                 </template>
-            </register-match-delay-modal>
+            </register-match-postponement-modal>
         </Teleport>
     </div>
 </template>

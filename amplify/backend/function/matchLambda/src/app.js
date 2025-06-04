@@ -1176,7 +1176,7 @@ app.put(path + '/register-edited-match-result', async function (req, res) {
 /************************************
 * HTTP Put method to register 試合延期 *
 ************************************/
-app.put(path + '/register-match-delay', async function (req, res) {
+app.put(path + '/register-match-postponement', async function (req, res) {
 	// フロントから渡されるリクエストボディの内容
 	const championshipId = req.body.championshipId;
 	const matchId = req.body.matchId;
@@ -1210,7 +1210,7 @@ app.put(path + '/register-match-delay', async function (req, res) {
 			for (const round in data.matches) {
 				for (const match in data.matches[round]) {
 					if (data.matches[round][match]['match_id'] === matchId) {
-						data.matches[round][match]['is_delayed'] = true;
+						data.matches[round][match]['is_postponed'] = true;
 						data.matches[round][match]['match_date'] = '2099-12-31';
 						updated = true;
 					}

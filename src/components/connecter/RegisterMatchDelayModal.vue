@@ -18,7 +18,7 @@ const btnBase = 'w-1/4 py-1 text-white rounded-md';
                 <div class="modal-footer flex justify-around">
                     <slot name="footer">
                         <button type="submit" @click="$emit('close')" :class="btnBase" class="bg-gray-400">いいえ</button>
-                        <button type="submit" @click="$emit('close'), $emit('registerMatchDelay')" :class="btnBase" class="bg-blue-400">はい</button>
+                        <button type="submit" @click="$emit('close'), $emit('registerMatchPostponement')" :class="btnBase" class="bg-blue-400">はい</button>
                     </slot>
                 </div>
             </div>
