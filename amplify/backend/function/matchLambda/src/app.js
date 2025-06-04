@@ -222,10 +222,10 @@ app.get(path + '/matches-in-this-week-for-top', async function (req, res) {
 		TableName: tableName,
 		FilterExpression: "fiscal_year = :fiscal_year",
 		ExpressionAttributeValues: {
-		  ":fiscal_year": fiscalYear
+			":fiscal_year": fiscalYear
 		},
-		ProjectionExpression: "category, championship_id, championship_name, match_dates"
-	  };
+		ProjectionExpression: "category, championship_id, abbreviation, championship_name, match_dates"
+	};
 
 	try {
 		const command = new ScanCommand(scanParams);
@@ -250,7 +250,7 @@ app.get(path + '/current-matches', async function (req, res) {
 	const category = req.query.category;
 	console.log('entering current matches', req.query)
 
-	if(accessToken === "" || accessToken === null) {
+	if (accessToken === "" || accessToken === null) {
 		res.status(500).json({ success: false, error: 'Error accessToken is not valid' });
 		return;
 	}
@@ -261,56 +261,56 @@ app.get(path + '/current-matches', async function (req, res) {
 
 
 	// if (category === 'U-15（ジュニアユース）' || category === 'U-18（ユース）') {
-		const queryItemParams = {
-			TableName: tableName,
-			IndexName: "gsiByFiscalYearAndCategory",
-			KeyConditionExpression: "fiscal_year = :fiscalYear and category = :category",
-			ExpressionAttributeValues: {
-				":fiscalYear": fiscalYear,
-				":category": category
-			},
-		};
+	const queryItemParams = {
+		TableName: tableName,
+		IndexName: "gsiByFiscalYearAndCategory",
+		KeyConditionExpression: "fiscal_year = :fiscalYear and category = :category",
+		ExpressionAttributeValues: {
+			":fiscalYear": fiscalYear,
+			":category": category
+		},
+	};
 
-		try {
-			const command = new QueryCommand(queryItemParams);
-			const fetchedData = await ddbDocClient.send(command);
-			const data = fetchedData.Items;
+	try {
+		const command = new QueryCommand(queryItemParams);
+		const fetchedData = await ddbDocClient.send(command);
+		const data = fetchedData.Items;
 
-			// アクセス日に開催される試合であり、試合パスワードaccess_tokenが一致する試合のみを抽出
-			// ある大会が一つも速報対象試合を持たない場合、その大会自体をspliceする。
-			data.forEach(item => {
-				if (item['item_type'] === 'championship') {
-					for (const round in item['matches']) {
-						for (const match in item['matches'][round]) {
-							// round_idは直接試合と無関係なので、それ以外の場合についてmatch_dateについて判定
-							if (match !== 'round_id') {
-								if (!canAccess(item['matches'][round][match]['match_date'])) {
+		// アクセス日に開催される試合であり、試合パスワードaccess_tokenが一致する試合のみを抽出
+		// ある大会が一つも速報対象試合を持たない場合、その大会自体をspliceする。
+		data.forEach(item => {
+			if (item['item_type'] === 'championship') {
+				for (const round in item['matches']) {
+					for (const match in item['matches'][round]) {
+						// round_idは直接試合と無関係なので、それ以外の場合についてmatch_dateについて判定
+						if (match !== 'round_id') {
+							if (!canAccess(item['matches'][round][match]['match_date'])) {
+								delete item['matches'][round][match];
+								continue;
+							}
+
+							if (canAccess(item['matches'][round][match]['match_date']) && item['matches'][round][match]['access_token'] !== undefined) {
+								if (item['matches'][round][match]['access_token'] !== accessToken) {
 									delete item['matches'][round][match];
-									continue;
-								}
-
-								if (canAccess(item['matches'][round][match]['match_date']) && item['matches'][round][match]['access_token'] !== undefined) {
-									if (item['matches'][round][match]['access_token'] !== accessToken) {
-										delete item['matches'][round][match];
-									}
 								}
 							}
 						}
 					}
 				}
-			});
+			}
+		});
 
-			// 各大会の各ラウンドの各試合の中身を走査して、一つでもdeleteされていない試合があれば。trueとしてfilteredDataに追加
-			// round_idはdeleteされないので、必ず一つはキー・バリューが残っている。二つ以上のキー・バリューがあれば、一つ以上の試合が残っていると判定
-			const filteredData = data.filter(item =>
-				item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
-			);
+		// 各大会の各ラウンドの各試合の中身を走査して、一つでもdeleteされていない試合があれば。trueとしてfilteredDataに追加
+		// round_idはdeleteされないので、必ず一つはキー・バリューが残っている。二つ以上のキー・バリューがあれば、一つ以上の試合が残っていると判定
+		const filteredData = data.filter(item =>
+			item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
+		);
 
-			res.status(200).json(filteredData);
-		} catch (err) {
-			console.error('Error getting data:', err);
-			res.status(500).json({ success: false, error: 'Error getting data' });
-		}
+		res.status(200).json(filteredData);
+	} catch (err) {
+		console.error('Error getting data:', err);
+		res.status(500).json({ success: false, error: 'Error getting data' });
+	}
 	// } else {
 	// 	const passingData = [];
 
@@ -360,7 +360,7 @@ app.get(path + '/current-matches', async function (req, res) {
 	// 		}
 	// 	}
 
-		// res.status(200).json(passingData);
+	// res.status(200).json(passingData);
 	// }
 });
 

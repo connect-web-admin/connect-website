@@ -68,6 +68,7 @@ const championshipsThisWeek = computed(() => {
             if (hasMatchThisWeek) {
                 championships.add(JSON.stringify({
                     name: championship.championship_name,
+                    abbr: championship.abbreviation,
                     id: championship.championship_id,
                     category: championship.category,
                 }));
@@ -89,31 +90,58 @@ const championshipsThisWeekSorted = computed(() => {
     });
 });
 
-const handleChampionshipClick = (championship) => {
+const handleChampionshipClick = (championshipId) => {
     router.push({
-        path: `/latest-results-by-championship/${championship.id}`,
+        path: `/latest-results-by-championship/${championshipId}`,
     });
 };
 </script>
 <template>
-    <div>
+    <div class="mt-2">
         <div v-if="isLoading" class="flex flex-col items-center justify-center p-5">
             <img src="../assets/icons/loading.gif" alt="Loading..." class="w-10 h-10 mb-2.5" />
         </div>
-        <div v-else>
-            <div v-if="championshipsThisWeek.length === 0">
-                <p>今週開催予定の試合がないか、まだ更新されていません。</p>
-            </div>
-            <div v-else>
-                <ul class="list-none p-0">
-                    <li v-for="championship in championshipsThisWeekSorted" 
-                        :key="championship.id"
-                        @click="handleChampionshipClick(championship)"
-                        class="cursor-pointer hover:bg-gray-200 text-blue-500 p-1 underline">
-                        ■ {{ championship.name }}
-                    </li>
-                </ul>
-            </div>
+        <div v-else class="space-y-4">
+            <select class="w-full border-1 border-gray-600 p-1 rounded-sm" @change="handleChampionshipClick($event.target.value)">
+                <option value="" selected>U-12（ジュニア）</option>
+                <option v-if="championshipsThisWeekSorted.filter(c => c.category === 'U-12（ジュニア）').length === 0" 
+                    value="" disabled>今週開催予定の試合がないか、まだ更新されていません。</option>
+                <option v-for="championship in championshipsThisWeekSorted.filter(c => c.category === 'U-12（ジュニア）')" 
+                    :key="championship.id"
+                    :value="championship.id">
+                    {{ championship.abbr }}
+                </option>
+            </select>
+            <select class="w-full border-1 border-gray-600 p-1 rounded-sm" @change="handleChampionshipClick($event.target.value)">
+                <option value="" selected>U-15（ジュニアユース）</option>
+                <option v-if="championshipsThisWeekSorted.filter(c => c.category === 'U-15（ジュニアユース）').length === 0" 
+                    value="" disabled>今週開催予定の試合がないか、まだ更新されていません。</option>
+                <option v-for="championship in championshipsThisWeekSorted.filter(c => c.category === 'U-15（ジュニアユース）')" 
+                    :key="championship.id"
+                    :value="championship.id">
+                    {{ championship.abbr }}
+                </option>
+            </select>
+            <select class="w-full border-1 border-gray-600 p-1 rounded-sm" @change="handleChampionshipClick($event.target.value)">
+                <option value="" selected>U-18（ユース）</option>
+                <option v-if="championshipsThisWeekSorted.filter(c => c.category === 'U-18（ユース）').length === 0" 
+                    value="" disabled>今週開催予定の試合がないか、まだ更新されていません。</option>
+                <option v-for="championship in championshipsThisWeekSorted.filter(c => c.category === 'U-18（ユース）')" 
+                    :key="championship.id"
+                    :value="championship.id">
+                    {{ championship.abbr }}
+                </option>
+            </select>
+            <select class="w-full border-1 border-gray-600 p-1 rounded-sm" @change="handleChampionshipClick($event.target.value)">
+                <option value="" selected>WOMAN</option>
+                <option v-if="championshipsThisWeekSorted.filter(c => c.category === 'WOMAN').length === 0" 
+                    value="" disabled>今週開催予定の試合がないか、まだ更新されていません。</option>
+                <option v-for="championship in championshipsThisWeekSorted.filter(c => c.category === 'WOMAN')" 
+                    :key="championship.id"
+                    :value="championship.id">
+                    {{ championship.abbr }}
+                </option>
+            </select>
         </div>
     </div>
 </template>

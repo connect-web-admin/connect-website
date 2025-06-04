@@ -34,6 +34,7 @@ const getMatchesInThisWeekForTop = async () => {
         }
 
         matchInfo.value = await response.json();
+        console.log(matchInfo.value);
         if (matchInfo.value.length > 0) {
             return true;
         } else {
