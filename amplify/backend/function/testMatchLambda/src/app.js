@@ -13,12 +13,12 @@ const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryComm
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')
-//const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 
 const ddbClient = new DynamoDBClient({ region: process.env.TABLE_REGION });
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
-let tableName = "MatchDDB";
+let tableName = "TestMatchDDB";
 if (process.env.ENV && process.env.ENV !== "NONE") {
 	tableName = tableName + '-' + process.env.ENV;
 }
