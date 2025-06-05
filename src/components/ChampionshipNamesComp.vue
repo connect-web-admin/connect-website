@@ -56,7 +56,7 @@ const championshipsThisWeek = computed(() => {
     
     // 今週の試合がある大会名を格納
     const championships = new Set();
-    
+
     // matchInfoが持つmatch_datesを使って、今週の試合がある大会名等を取得
     props.matchInfo.forEach(championship => {
         if (championship.match_dates && Array.isArray(championship.match_dates)) {

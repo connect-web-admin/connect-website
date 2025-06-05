@@ -17,7 +17,6 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const idTokenForAuth = localStorage.getItem(ID_TOKEN_FOR_AUTH);
 const isLoading = ref(false);
 const isFetchingSuccessful = ref(false);
 const failedFetchingMsg = ref('');
