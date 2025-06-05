@@ -371,7 +371,17 @@ onMounted(() => {
                 <h2>第22回岩内町長杯全道少年U-10サッカー南北海道大会</h2>
                 <div class="flex flex-row justify-between gap-4">
                     <p
-                        class="border-1 w-1/3 py-1 text-xs text-center"
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U10_2025_IwanaiChochoCup/2025_iwanai_U-10_sap_yoko.jpg'
+                                ],
+                                [
+                                    '第22回岩内町長杯全道少年U-10サッカー南北海道大会 大会概要'
+                                ]
+                            )
+                        "
                     >
                         大 会 概 要
                     </p>
@@ -546,8 +556,8 @@ onMounted(() => {
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_17th_HokkaidoCubsLeague/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U13_2%E9%83%A8%E7%B5%90%E6%9E%9C.jpg'
                                 ],
                                 [
-                                '2025年度第17回北海道カブスリーグU-13 １部 結果',
-                                '2025年度第17回北海道カブスリーグU-13 ２部 結果'
+                                    '2025年度第17回北海道カブスリーグU-13 １部 結果',
+                                    '2025年度第17回北海道カブスリーグU-13 ２部 結果'
                                 ]
                             )
                         "
@@ -607,7 +617,7 @@ onMounted(() => {
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-13_2025_7th_HokkaidoCubsLeague_Div3/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U13_3%E9%83%A8%E7%B5%90%E6%9E%9C.jpg',
                                 ],
                                 [
-                                '2025年度第7回北海道カブスリーグU-13 ３部 結果',
+                                    '2025年度第7回北海道カブスリーグU-13 ３部 結果',
                                 ]
                             )
                         "
@@ -638,13 +648,13 @@ onMounted(() => {
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/%E7%AC%AC19%E5%9B%9E%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U-15+%E5%85%BC+%E9%AB%98%E5%86%86%E5%AE%AE%E6%9D%AFJFA+U-15%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%992025%E5%8C%97%E6%B5%B7%E9%81%93+%E9%96%8B%E5%82%AC%E8%A6%81%E9%A0%85_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_7.jpg',
                                 ],
                                 [
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_1.jpg',
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_2.jpg',
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_3.jpg',
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_4.jpg',
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_5.jpg',
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_6.jpg',
-                                '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_7.jpg',
+                                    '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_1.jpg',
+                                    '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_2.jpg',
+                                    '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_3.jpg',
+                                    '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_4.jpg',
+                                    '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_5.jpg',
+                                    '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_6.jpg',
+                                    '第19回北海道カブスリーグU-15 兼 高円宮杯JFA U-15サッカーリーグ2025北海道 開催要項_ページ_7.jpg',
                                 ]
                             )
                         "
@@ -1031,8 +1041,8 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_WOMAN_41th_KaichoCup/2025_Kaicho_yoko-1.jpg',
-                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_WOMAN_41th_KaichoCup/2025_Kaicho_yoko-2.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_WOMAN_41th_KaichoCup/2025_Kaicho_yoko-1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/2025_WOMAN_41th_KaichoCup/2025_Kaicho_yoko-2.jpg',
                                 ],
                                 [
                                     '２０２５年度第４１回会長杯札幌女子サッカー大会 開催要項1',
