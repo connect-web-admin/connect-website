@@ -155,8 +155,8 @@ const displayMatches = computed(() => {
                     v-model="sortOrder"
                     class="border border-gray-300 rounded px-1 py-0.5 text-sm ml-2"
                 >
-                    <option value="asc">昇順</option>
-                    <option value="desc">降順</option>
+                    <option value="asc">早い順</option>
+                    <option value="desc">遅い順</option>
                 </select>
             </div>
             <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
