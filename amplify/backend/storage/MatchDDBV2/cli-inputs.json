@@ -1,0 +1,40 @@
+{
+  "resourceName": "MatchDDBV2",
+  "tableName": "MatchDDBV2",
+  "partitionKey": {
+    "fieldName": "championship_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "match_id",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "gsiByFiscalYear",
+      "partitionKey": {
+        "fieldName": "fiscal_year",
+        "fieldType": "string"
+      }
+    },
+    {
+      "name": "gsiByFiscalYearAndCategory",
+      "partitionKey": {
+        "fieldName": "fiscal_year",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "category",
+        "fieldType": "string"
+      }
+    },
+    {
+      "name": "gsiByCategory",
+      "partitionKey": {
+        "fieldName": "category",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

@@ -42,6 +42,20 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
+    "matchApiV2": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "matchLambdaV2"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "mediaApi": {
       "dependsOn": [
         {
@@ -237,6 +251,25 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "matchLambdaV2": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "MatchDDBV2"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "mediaLambda": {
       "build": true,
       "dependsOn": [
@@ -420,6 +453,22 @@
         {
           "category": "function",
           "resourceName": "clubLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_matchLambdaV2_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "matchLambdaV2"
+        }
+      ]
+    },
+    "AMPLIFY_function_matchLambdaV2_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "matchLambdaV2"
         }
       ]
     },
@@ -619,6 +668,10 @@
       "service": "DynamoDB"
     },
     "MatchDDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "MatchDDBV2": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },

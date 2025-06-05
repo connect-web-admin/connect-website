@@ -15,6 +15,11 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
+    "matchApiV2": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
     "mediaApi": {
       "ApiId": "string",
       "ApiName": "string",
@@ -92,6 +97,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "matchLambda": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "matchLambdaV2": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
@@ -203,6 +215,16 @@ export type AmplifyDependentResourcesAttributes = {
       "StreamArn": "string"
     },
     "MatchDDB": {
+      "Arn": "string",
+      "Name": "string",
+      "PartitionKeyName": "string",
+      "PartitionKeyType": "string",
+      "Region": "string",
+      "SortKeyName": "string",
+      "SortKeyType": "string",
+      "StreamArn": "string"
+    },
+    "MatchDDBV2": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",
