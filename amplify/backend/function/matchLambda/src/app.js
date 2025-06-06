@@ -122,7 +122,7 @@ function canAccess(matchDate) {
 	// ■ アクセス日当日の場合は 0:00–17:59 の間のみアクセス許可
 	if (matchDate === today) {
 		const hour = japanTime.getUTCHours();
-		return hour < 18;  // 18時未満：true、以降：false
+		return hour < 23;  // 18時未満：true、以降：false
 	}
 
 	// ■ それ以外の日付はアクセス不可
