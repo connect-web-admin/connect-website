@@ -446,7 +446,7 @@ onMounted(() => {
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884C%EF%BC%89.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%884D%EF%BC%89.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/%EF%BC%94%E7%A8%AE%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E6%88%A6+%EF%BC%95A%E7%B5%84%E5%90%88%E3%81%9B0508.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/4%E7%A8%AE5B%E7%B5%84%E5%90%88%E3%81%9B%E4%BF%AE%E6%AD%A3%EF%BC%8805281040%EF%BC%89_pages-to-jpg-0001.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kumi-5B.jpg',
                                 ],
                                 [
                                     '４種リーグ戦 組合せ（S）',
