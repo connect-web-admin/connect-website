@@ -213,9 +213,8 @@ onMounted(async () => {
                     :key="divisionKey"
                     class="text-center"
                 >
-                    <h2 class="text-center bg-amber-200 font-normal h-5">{{ divisionKey }}</h2>
-
-                    <div
+                    <h2 class="text-center bg-amber-200 font-normal h-5" v-if="divisionKey !== 'match_dates'">{{ divisionKey }}</h2>
+                    <div v-if="divisionKey !== 'match_dates'"
                         v-for="(
                             matchDetail, matchKey, index
                         ) in divisionMatches"
