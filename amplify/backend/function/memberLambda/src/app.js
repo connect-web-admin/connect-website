@@ -13,7 +13,7 @@ const { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminDeleteUserCo
 const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand, TransactWriteCommand } = require('@aws-sdk/lib-dynamodb');
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 const bodyParser = require('body-parser');
-const validator = require('validator'); 
+const validator = require('validator');
 
 const express = require('express');
 const iconv = require('iconv-lite');
@@ -207,63 +207,63 @@ app.put(path + '/add-session-id', async function (req, res) {
 app.put(path + '/remove-session-id', async function (req, res) {
 	const inputEmail = req.body.email;
 	const targetSessionId = req.body.sessionId;
-  
+
 	try {
-	  // 1. email からアイテム取得
-	  const queryParams = {
-		TableName: tableName,
-		IndexName: GSI_BY_EMAIL,
-		KeyConditionExpression: 'email = :email',
-		ExpressionAttributeValues: {
-		  ':email': inputEmail
-		},
-	  };
-	  console.log('セッションID削除用会員情報取得パラメタ', queryParams);
-  
-	  const commandForQuery = new QueryCommand(queryParams);
-	  const queryResult = await ddbDocClient.send(commandForQuery);
-  
-	  if (!queryResult.Items || queryResult.Items.length === 0) {
-		console.log('指定のメールアドレスが見つかりませんでした', inputEmail)
-		return res.status(404).json({ message: '対象のアイテムが見つかりませんでした' });
-	  }
-  
-	  const fetchedMemberInfo = queryResult.Items[0];
-	  const { member_id, membership_type } = fetchedMemberInfo;
-	  // session_id がない場合は空配列にフォールバック
-	  const sessionList = Array.isArray(fetchedMemberInfo.session_id)
-		? fetchedMemberInfo.session_id
-		: [];
-  
-	  // 2. targetSessionId が含まれているか確認
-	  if (!sessionList.includes(targetSessionId)) {
-		console.log('指定のセッションIDが見つかりませんでした', inputEmail)
-		return res.status(404).json({ message: '指定のセッションIDが見つかりませんでした' });
-	  }
-  
-	  // 3. 見つかった要素を除外
-	  const filteredSessionIds = sessionList.filter(id => id !== targetSessionId);
-  
-	  // 4. フィルタ済みリストで上書き更新
-	  const updateParams = {
-		TableName: tableName,
-		Key: { member_id, membership_type },
-		UpdateExpression: 'SET session_id = :new_list',
-		ExpressionAttributeValues: {
-		  ':new_list': filteredSessionIds
+		// 1. email からアイテム取得
+		const queryParams = {
+			TableName: tableName,
+			IndexName: GSI_BY_EMAIL,
+			KeyConditionExpression: 'email = :email',
+			ExpressionAttributeValues: {
+				':email': inputEmail
+			},
+		};
+		console.log('セッションID削除用会員情報取得パラメタ', queryParams);
+
+		const commandForQuery = new QueryCommand(queryParams);
+		const queryResult = await ddbDocClient.send(commandForQuery);
+
+		if (!queryResult.Items || queryResult.Items.length === 0) {
+			console.log('指定のメールアドレスが見つかりませんでした', inputEmail)
+			return res.status(404).json({ message: '対象のアイテムが見つかりませんでした' });
 		}
-	  };
-  
-	  const commandForUpdate = new UpdateCommand(updateParams);
-	  const result = await ddbDocClient.send(commandForUpdate);
-	  console.log('セッションID削除成功:', JSON.stringify(result));
-  
-	  res.status(200).json({ success: true });
+
+		const fetchedMemberInfo = queryResult.Items[0];
+		const { member_id, membership_type } = fetchedMemberInfo;
+		// session_id がない場合は空配列にフォールバック
+		const sessionList = Array.isArray(fetchedMemberInfo.session_id)
+			? fetchedMemberInfo.session_id
+			: [];
+
+		// 2. targetSessionId が含まれているか確認
+		if (!sessionList.includes(targetSessionId)) {
+			console.log('指定のセッションIDが見つかりませんでした', inputEmail)
+			return res.status(404).json({ message: '指定のセッションIDが見つかりませんでした' });
+		}
+
+		// 3. 見つかった要素を除外
+		const filteredSessionIds = sessionList.filter(id => id !== targetSessionId);
+
+		// 4. フィルタ済みリストで上書き更新
+		const updateParams = {
+			TableName: tableName,
+			Key: { member_id, membership_type },
+			UpdateExpression: 'SET session_id = :new_list',
+			ExpressionAttributeValues: {
+				':new_list': filteredSessionIds
+			}
+		};
+
+		const commandForUpdate = new UpdateCommand(updateParams);
+		const result = await ddbDocClient.send(commandForUpdate);
+		console.log('セッションID削除成功:', JSON.stringify(result));
+
+		res.status(200).json({ success: true });
 	} catch (err) {
-	  console.error('Error updating data:', err);
-	  res.status(500).json({ success: false, error: 'Error removing session ID' });
+		console.error('Error updating data:', err);
+		res.status(500).json({ success: false, error: 'Error removing session ID' });
 	}
-  });  
+});
 
 /************************************
  * HTTP Get method to 既存のアイテムのcust_codeに上書き *
@@ -280,7 +280,7 @@ app.put(path + '/put-cust-code', async function (req, res) {
 			Key: { member_id: memberId, membership_type: 'regular' },
 			UpdateExpression: 'SET cust_code = :cust_code',
 			ExpressionAttributeValues: {
-                ":cust_code": custCode
+				":cust_code": custCode
 			},
 			ReturnValues: 'UPDATED_NEW'
 		};
@@ -336,7 +336,7 @@ app.get(path + '/member-info-to-register-card', async function (req, res) {
 		const userResp = await cognitoClient.send(getUserCmd);
 		// 'email_verified' は "true" / "false" 文字列で返る
 		const emailVerifiedAttr = userResp.UserAttributes?.find(
-		  (attr) => attr.Name === 'email_verified'
+			(attr) => attr.Name === 'email_verified'
 		);
 		// アイテムにCognitoのメアド認証状態をつけて返却
 		const isEmailVerified = emailVerifiedAttr?.Value === 'true';
@@ -363,57 +363,57 @@ app.get(path + '/member-info-to-register-card', async function (req, res) {
 *************************************/
 app.post(path + '/check-for-duplicate-email-in-database', async function (req, res) {
 	try {
-        const inputEmail = req.body?.inputEmail?.trim();
+		const inputEmail = req.body?.inputEmail?.trim();
 
-        console.log('登録試行メールアドレス:', inputEmail);
+		console.log('登録試行メールアドレス:', inputEmail);
 
-        // 1. 入力バリデーション
-        if (!inputEmail || !validator.isEmail(inputEmail)) {
-            return res.status(400).json({
-                status: 'INVALID_EMAIL_FORMAT',
-                message: '有効なメールアドレスを正しく入力してください。'
-            });
-        }
+		// 1. 入力バリデーション
+		if (!inputEmail || !validator.isEmail(inputEmail)) {
+			return res.status(400).json({
+				status: 'INVALID_EMAIL_FORMAT',
+				message: '有効なメールアドレスを正しく入力してください。'
+			});
+		}
 
-        // 2. DynamoDBクエリ準備
-        const queryParams = {
-            TableName: tableName,
-            IndexName: GSI_BY_EMAIL,
-            KeyConditionExpression: 'email = :email',
-            ExpressionAttributeValues: {
-                ':email': inputEmail
-            }
-        };
+		// 2. DynamoDBクエリ準備
+		const queryParams = {
+			TableName: tableName,
+			IndexName: GSI_BY_EMAIL,
+			KeyConditionExpression: 'email = :email',
+			ExpressionAttributeValues: {
+				':email': inputEmail
+			}
+		};
 
-        console.log('DynamoDBクエリパラメータ:', queryParams);
+		console.log('DynamoDBクエリパラメータ:', queryParams);
 
-        // 3. DynamoDBクエリ実行
-        const command = new QueryCommand(queryParams);
-        const result = await ddbDocClient.send(command);
+		// 3. DynamoDBクエリ実行
+		const command = new QueryCommand(queryParams);
+		const result = await ddbDocClient.send(command);
 
-        // 4. 結果チェック
-        if (result.Count && result.Count > 0) {
-            console.log('重複メールアドレス検出');
-            return res.status(409).json({ // 409 Conflict
-                status: 'ALREADY_REGISTERED_IN_DATABASE',
-                message: 'このメールアドレスはすでに登録されています。'
-            });
-        }
+		// 4. 結果チェック
+		if (result.Count && result.Count > 0) {
+			console.log('重複メールアドレス検出');
+			return res.status(409).json({ // 409 Conflict
+				status: 'ALREADY_REGISTERED_IN_DATABASE',
+				message: 'このメールアドレスはすでに登録されています。'
+			});
+		}
 
-        console.log('重複なし、新規登録可能');
-        return res.status(200).json({
-            status: 'NEW_USER',
-            message: '新規登録が可能です。'
-        });
+		console.log('重複なし、新規登録可能');
+		return res.status(200).json({
+			status: 'NEW_USER',
+			message: '新規登録が可能です。'
+		});
 
-    } catch (error) {
-        console.error('重複チェックエラー:', error);
+	} catch (error) {
+		console.error('重複チェックエラー:', error);
 
-        return res.status(500).json({
-            status: 'SERVER_ERROR',
-            message: 'サーバー内部エラーが発生しました。時間を置いて再度お試しください。'
-        });
-    }
+		return res.status(500).json({
+			status: 'SERVER_ERROR',
+			message: 'サーバー内部エラーが発生しました。時間を置いて再度お試しください。'
+		});
+	}
 });
 
 /************************************
@@ -421,8 +421,8 @@ app.post(path + '/check-for-duplicate-email-in-database', async function (req, r
 *************************************/
 app.post(path + '/register-user-to-database', async (req, res) => {
 	const COUNTER_TABLE = process.env.COUNTER_TABLE;
-	const maxRetries    = 3;
-  
+	const maxRetries = 3;
+
 	try {
 		const {
 			lastName, firstName, lastNameKana, firstNameKana,
@@ -430,7 +430,7 @@ app.post(path + '/register-user-to-database', async (req, res) => {
 			inputEmail, membershipType, paymentPlan,
 			isTermsAgreed, custCode
 		} = req.body || {};
-	
+
 		// 1. バリデーション（省略）
 		if (!lastName || !firstName || !lastNameKana || !firstNameKana ||
 			!phoneNumber || !postalCode || !address ||
@@ -462,67 +462,67 @@ app.post(path + '/register-user-to-database', async (req, res) => {
 				const newCounterValue = counterResult.Attributes.current_value;
 				console.log('新しく作成されたmember_id', newCounterValue);
 				newMemberId = String(newCounterValue).padStart(10, '0');
-		
+
 				// --- ステップ 3: 日付生成 ---
 				const today = new Date(Date.now() + 9 * 60 * 60 * 1000)
-								.toISOString()
-								.slice(0, 10);
-		
+					.toISOString()
+					.slice(0, 10);
+
 				// --- ステップ 4: トランザクション実行 ---
 				const transactParams = {
 					TransactItems: [
-					{
-						ConditionCheck: {
-						TableName: COUNTER_TABLE,
-						Key: { counter_id: 'member_id' },
-						ConditionExpression: '#val = :expected',
-						ExpressionAttributeNames: { '#val': 'current_value' },
-						ExpressionAttributeValues: { ':expected': newCounterValue }
-						}
-					},
-					{
-						Put: {
-						TableName: tableName,
-						Item: {
-							member_id:             newMemberId,
-							membership_type:       membershipType,
-							email:                 inputEmail,
-							last_name:             lastName,
-							first_name:            firstName,
-							last_name_kana:        lastNameKana,
-							first_name_kana:       firstNameKana,
-							postal_code:           postalCode,
-							phone_number:          phoneNumber,
-							address:               address,
-							is_credit_card_valid:  false,
-							can_login:             false,
-							cust_code:             custCode,
-							payment_plan:          paymentPlan,
-							payment_success_history: [],
-							payment_failure_history: [],
-							is_terms_agreed:       isTermsAgreed,
-							is_free_account:       false,
-							update_reason:         '新規登録',
-							expires_at:            '',
-							created_at:            today,
-							updated_at:            today,
-							deleted_at:            ''
+						{
+							ConditionCheck: {
+								TableName: COUNTER_TABLE,
+								Key: { counter_id: 'member_id' },
+								ConditionExpression: '#val = :expected',
+								ExpressionAttributeNames: { '#val': 'current_value' },
+								ExpressionAttributeValues: { ':expected': newCounterValue }
+							}
 						},
-						ConditionExpression: 'attribute_not_exists(member_id)'
+						{
+							Put: {
+								TableName: tableName,
+								Item: {
+									member_id: newMemberId,
+									membership_type: membershipType,
+									email: inputEmail,
+									last_name: lastName,
+									first_name: firstName,
+									last_name_kana: lastNameKana,
+									first_name_kana: firstNameKana,
+									postal_code: postalCode,
+									phone_number: phoneNumber,
+									address: address,
+									is_credit_card_valid: false,
+									can_login: false,
+									cust_code: custCode,
+									payment_plan: paymentPlan,
+									payment_success_history: [],
+									payment_failure_history: [],
+									is_terms_agreed: isTermsAgreed,
+									is_free_account: false,
+									update_reason: '新規登録',
+									expires_at: '',
+									created_at: today,
+									updated_at: today,
+									deleted_at: ''
+								},
+								ConditionExpression: 'attribute_not_exists(member_id)'
+							}
 						}
-					}
 					]
 				};
 				await ddbDocClient.send(new TransactWriteCommand(transactParams));
-		
+
 				// 成功したらループを抜ける
 				break;
-	
+
 			} catch (error) {
 				// トランザクションの条件失敗時のみリトライ
 				const isTxnCancel = error.name === 'TransactionCanceledException'
 					&& error.CancellationReasons?.some(r => r.Code === 'ConditionalCheckFailed');
-		
+
 				if (isTxnCancel && attempt < maxRetries) {
 					// エクスポネンシャル＆ランダムバックオフ
 					const backoffMs = Math.pow(2, attempt) * 100 + Math.random() * 100;
@@ -532,11 +532,11 @@ app.post(path + '/register-user-to-database', async (req, res) => {
 				// それ以外、またはリトライ上限に達したら throw
 				throw error;
 			}
-	 	}
-  
+		}
+
 		// 5. 成功レスポンス
 		return res.status(200).json({
-			status:  'USER_SUCCESSFULLY_REGISTERED_TO_DATABASE',
+			status: 'USER_SUCCESSFULLY_REGISTERED_TO_DATABASE',
 			message: 'ユーザー情報をトランザクションで登録しました。',
 			memberId: newMemberId
 		});
@@ -546,101 +546,101 @@ app.post(path + '/register-user-to-database', async (req, res) => {
 			console.error('CancellationReasons:', error.CancellationReasons);
 		}
 		return res.status(500).json({
-			status:  'SERVER_ERROR',
+			status: 'SERVER_ERROR',
 			message: 'サーバー内部エラーが発生しました。再度お試しください。'
 		});
 	}
 });
-  
+
 /************************************
 * HTTP post method for insert object *
 *************************************/
 app.post(path + '/register-user-to-cognito', async function (req, res) {
-    const inputEmail = req.body?.inputEmail?.trim();
-    const inputPassword = req.body?.inputPassword;
+	const inputEmail = req.body?.inputEmail?.trim();
+	const inputPassword = req.body?.inputPassword;
 
-    console.log('Cognito登録試行メールアドレス:', inputEmail);
+	console.log('Cognito登録試行メールアドレス:', inputEmail);
 
-    // 1. 入力バリデーション
-    if (!inputEmail || !validator.isEmail(inputEmail) || !inputPassword) {
-        return res.status(400).json({
-            status: 'INVALID_REQUEST',
-            message: '有効なメールアドレスとパスワードを入力してください。'
-        });
-    }
+	// 1. 入力バリデーション
+	if (!inputEmail || !validator.isEmail(inputEmail) || !inputPassword) {
+		return res.status(400).json({
+			status: 'INVALID_REQUEST',
+			message: '有効なメールアドレスとパスワードを入力してください。'
+		});
+	}
 
-    try {
-        // 2. Cognitoに新規登録
-        const signUpParams = {
-            ClientId: CLIENT_ID,
-            Username: inputEmail,
-            Password: inputPassword,
-            UserAttributes: [
-                { Name: 'email', Value: inputEmail }
-            ]
-        };
-        console.log('Cognito SignUpパラメータ:', signUpParams);
+	try {
+		// 2. Cognitoに新規登録
+		const signUpParams = {
+			ClientId: CLIENT_ID,
+			Username: inputEmail,
+			Password: inputPassword,
+			UserAttributes: [
+				{ Name: 'email', Value: inputEmail }
+			]
+		};
+		console.log('Cognito SignUpパラメータ:', signUpParams);
 
-        const signUpCommand = new SignUpCommand(signUpParams);
-        const signUpResponse = await cognitoClient.send(signUpCommand);
+		const signUpCommand = new SignUpCommand(signUpParams);
+		const signUpResponse = await cognitoClient.send(signUpCommand);
 
-        console.log('Cognito登録成功レスポンス:', signUpResponse);
+		console.log('Cognito登録成功レスポンス:', signUpResponse);
 
-        return res.status(200).json({
-            status: 'SUCCESSFULLY_REGISTERED_TO_COGNITO_AND_PENDING_CONFIRMATION',
-            message: '認証コードを送信しました。'
-        });
+		return res.status(200).json({
+			status: 'SUCCESSFULLY_REGISTERED_TO_COGNITO_AND_PENDING_CONFIRMATION',
+			message: '認証コードを送信しました。'
+		});
 
-    } catch (error) {
-        console.error('Cognito登録エラー:', error);
+	} catch (error) {
+		console.error('Cognito登録エラー:', error);
 
-        // 3. Cognito登録に失敗したらDynamoDBに仮登録されたデータを削除する
-        try {
-            const queryParams = {
-                TableName: tableName,
-                IndexName: GSI_BY_EMAIL,
-                KeyConditionExpression: 'email = :email',
-                ExpressionAttributeValues: {
-                    ':email': inputEmail
-                }
-            };
+		// 3. Cognito登録に失敗したらDynamoDBに仮登録されたデータを削除する
+		try {
+			const queryParams = {
+				TableName: tableName,
+				IndexName: GSI_BY_EMAIL,
+				KeyConditionExpression: 'email = :email',
+				ExpressionAttributeValues: {
+					':email': inputEmail
+				}
+			};
 
-            console.log('DynamoDB削除対象クエリパラメータ:', queryParams);
+			console.log('DynamoDB削除対象クエリパラメータ:', queryParams);
 
-            const queryCommand = new QueryCommand(queryParams);
-            const queryResult = await ddbDocClient.send(queryCommand);
+			const queryCommand = new QueryCommand(queryParams);
+			const queryResult = await ddbDocClient.send(queryCommand);
 
-            if (!queryResult.Items || queryResult.Items.length === 0) {
-                console.warn('削除対象データが存在しませんでした');
-            } else {
-                const itemToDelete = queryResult.Items[0];
+			if (!queryResult.Items || queryResult.Items.length === 0) {
+				console.warn('削除対象データが存在しませんでした');
+			} else {
+				const itemToDelete = queryResult.Items[0];
 
-                const deleteParams = {
-                    TableName: tableName,
-                    Key: {
-                        member_id: itemToDelete.member_id,
-                        ...(itemToDelete.membership_type && {
-                            membership_type: itemToDelete.membership_type
-                        })
-                    }
-                };
+				const deleteParams = {
+					TableName: tableName,
+					Key: {
+						member_id: itemToDelete.member_id,
+						...(itemToDelete.membership_type && {
+							membership_type: itemToDelete.membership_type
+						})
+					}
+				};
 
-                console.log('DynamoDB削除実行パラメータ:', deleteParams);
+				console.log('DynamoDB削除実行パラメータ:', deleteParams);
 
-                const deleteCommand = new DeleteCommand(deleteParams);
-                await ddbDocClient.send(deleteCommand);
+				const deleteCommand = new DeleteCommand(deleteParams);
+				await ddbDocClient.send(deleteCommand);
 
-                console.log('仮登録データ削除成功');
-            }
-        } catch (deleteError) {
-            console.error('DynamoDB仮登録データ削除失敗:', deleteError);
-        }
+				console.log('仮登録データ削除成功');
+			}
+		} catch (deleteError) {
+			console.error('DynamoDB仮登録データ削除失敗:', deleteError);
+		}
 
-        return res.status(500).json({
-            status: 'COGNITO_SIGNUP_FAILED',
-            message: 'ユーザー登録に失敗しました。時間を置いて再度お試しください。'
-        });
-    }
+		return res.status(500).json({
+			status: 'COGNITO_SIGNUP_FAILED',
+			message: 'ユーザー登録に失敗しました。時間を置いて再度お試しください。'
+		});
+	}
 });
 
 /************************************
@@ -648,76 +648,76 @@ app.post(path + '/register-user-to-cognito', async function (req, res) {
 *************************************/
 app.post(path + '/confirm-signup', async (req, res) => {
 	const inputEmail = req.body?.inputEmail?.trim();
-    const verificationCode = req.body?.verificationCode?.trim();
+	const verificationCode = req.body?.verificationCode?.trim();
 
-    // 1. 入力チェック
-    if (!inputEmail || !validator.isEmail(inputEmail) || !verificationCode) {
-        return res.status(400).json({
-            status: 'INVALID_REQUEST',
-            message: '有効なメールアドレスと認証コードを入力してください。'
-        });
-    }
+	// 1. 入力チェック
+	if (!inputEmail || !validator.isEmail(inputEmail) || !verificationCode) {
+		return res.status(400).json({
+			status: 'INVALID_REQUEST',
+			message: '有効なメールアドレスと認証コードを入力してください。'
+		});
+	}
 
-    try {
-        console.log(`認証コード確認開始: ${inputEmail}`);
+	try {
+		console.log(`認証コード確認開始: ${inputEmail}`);
 
-        // 2. Cognito 認証確認
-        const command = new ConfirmSignUpCommand({
-            ClientId: CLIENT_ID,
-            Username: inputEmail,
-            ConfirmationCode: verificationCode
-        });
+		// 2. Cognito 認証確認
+		const command = new ConfirmSignUpCommand({
+			ClientId: CLIENT_ID,
+			Username: inputEmail,
+			ConfirmationCode: verificationCode
+		});
 
-        await cognitoClient.send(command);
+		await cognitoClient.send(command);
 
-        console.log(`Cognito認証コード確認成功: ${inputEmail}`);
+		console.log(`Cognito認証コード確認成功: ${inputEmail}`);
 
 
 
-        return res.status(200).json({
-            status: 'EMAIL_CONFIRMED',
-            message: 'メールアドレスの認証が完了しました。'
-        });
+		return res.status(200).json({
+			status: 'EMAIL_CONFIRMED',
+			message: 'メールアドレスの認証が完了しました。'
+		});
 
-    } catch (error) {
-        console.error('認証コード確認エラー:', {
-            name: error.name,
-            message: error.message,
-            stack: error.stack
-        });
+	} catch (error) {
+		console.error('認証コード確認エラー:', {
+			name: error.name,
+			message: error.message,
+			stack: error.stack
+		});
 
-        // エラー種類ごとにメッセージとステータスを分岐
-        let errorMessage = '認証に失敗しました。';
-        let statusCode = 400; // 基本はBad Requestとする
+		// エラー種類ごとにメッセージとステータスを分岐
+		let errorMessage = '認証に失敗しました。';
+		let statusCode = 400; // 基本はBad Requestとする
 
-        switch (error.name) {
-            case 'UserNotFoundException':
-                errorMessage = '指定されたメールアドレスのユーザーが見つかりません。';
-                break;
-            case 'CodeMismatchException':
-                errorMessage = '認証コードが正しくありません。';
-                break;
-            case 'ExpiredCodeException':
-                errorMessage = '認証コードの有効期限が切れています。新しいコードをリクエストしてください。';
-                break;
-            case 'NotAuthorizedException':
-                errorMessage = 'ユーザーはすでに認証済みです。';
-                statusCode = 409; // すでに認証済みならConflictが適切
-                break;
-            case 'InvalidParameterException':
-                errorMessage = '無効なパラメータが指定されました。';
-                break;
-            default:
-                statusCode = 500; // 未知エラーはサーバーエラー
-                errorMessage = '内部エラーが発生しました。時間を置いて再度お試しください。';
-                break;
-        }
+		switch (error.name) {
+			case 'UserNotFoundException':
+				errorMessage = '指定されたメールアドレスのユーザーが見つかりません。';
+				break;
+			case 'CodeMismatchException':
+				errorMessage = '認証コードが正しくありません。';
+				break;
+			case 'ExpiredCodeException':
+				errorMessage = '認証コードの有効期限が切れています。新しいコードをリクエストしてください。';
+				break;
+			case 'NotAuthorizedException':
+				errorMessage = 'ユーザーはすでに認証済みです。';
+				statusCode = 409; // すでに認証済みならConflictが適切
+				break;
+			case 'InvalidParameterException':
+				errorMessage = '無効なパラメータが指定されました。';
+				break;
+			default:
+				statusCode = 500; // 未知エラーはサーバーエラー
+				errorMessage = '内部エラーが発生しました。時間を置いて再度お試しください。';
+				break;
+		}
 
-        return res.status(statusCode).json({
-            status: 'CONFIRM_SIGNUP_FAILED',
-            message: errorMessage
-        });
-    }
+		return res.status(statusCode).json({
+			status: 'CONFIRM_SIGNUP_FAILED',
+			message: errorMessage
+		});
+	}
 });
 
 /************************************
@@ -726,64 +726,64 @@ app.post(path + '/confirm-signup', async (req, res) => {
 app.post(path + '/resend-code', async (req, res) => {
 	const inputEmail = req.body?.inputEmail?.trim();
 
-    // 1. 入力バリデーション
-    if (!inputEmail || !validator.isEmail(inputEmail)) {
-        return res.status(400).json({
-            status: 'INVALID_REQUEST',
-            message: '有効なメールアドレスを正しく入力してください。'
-        });
-    }
+	// 1. 入力バリデーション
+	if (!inputEmail || !validator.isEmail(inputEmail)) {
+		return res.status(400).json({
+			status: 'INVALID_REQUEST',
+			message: '有効なメールアドレスを正しく入力してください。'
+		});
+	}
 
-    try {
-        console.log('認証コード再送信開始:', inputEmail);
+	try {
+		console.log('認証コード再送信開始:', inputEmail);
 
-        // 2. 認証コード再送信コマンド
-        const command = new ResendConfirmationCodeCommand({
-            ClientId: CLIENT_ID,
-            Username: inputEmail
-        });
+		// 2. 認証コード再送信コマンド
+		const command = new ResendConfirmationCodeCommand({
+			ClientId: CLIENT_ID,
+			Username: inputEmail
+		});
 
-        await cognitoClient.send(command);
+		await cognitoClient.send(command);
 
-        console.log('認証コード再送信成功:', inputEmail);
+		console.log('認証コード再送信成功:', inputEmail);
 
-        return res.status(200).json({
-            status: 'RESEND_CODE_SUCCESS',
-            message: '認証コードを再送信しました。'
-        });
+		return res.status(200).json({
+			status: 'RESEND_CODE_SUCCESS',
+			message: '認証コードを再送信しました。'
+		});
 
-    } catch (error) {
-        console.error('認証コード再送信エラー:', {
-            name: error.name,
-            message: error.message,
-            stack: error.stack
-        });
+	} catch (error) {
+		console.error('認証コード再送信エラー:', {
+			name: error.name,
+			message: error.message,
+			stack: error.stack
+		});
 
-        let errorMessage = '認証コードの再送信に失敗しました。';
-        let statusCode = 400; // デフォルトはBad Request
+		let errorMessage = '認証コードの再送信に失敗しました。';
+		let statusCode = 400; // デフォルトはBad Request
 
-        switch (error.name) {
-            case 'UserNotFoundException':
-                errorMessage = '指定されたメールアドレスのユーザーが見つかりません。';
-                break;
-            case 'InvalidParameterException':
-                errorMessage = '無効なパラメータが指定されました。';
-                break;
-            case 'LimitExceededException':
-                errorMessage = '試行回数制限を超えました。しばらく時間を空けてから再試行してください。';
-                statusCode = 429; // リクエスト制限
-                break;
-            default:
-                statusCode = 500; // その他はサーバーエラー
-                errorMessage = '内部エラーが発生しました。時間を置いて再度お試しください。';
-                break;
-        }
+		switch (error.name) {
+			case 'UserNotFoundException':
+				errorMessage = '指定されたメールアドレスのユーザーが見つかりません。';
+				break;
+			case 'InvalidParameterException':
+				errorMessage = '無効なパラメータが指定されました。';
+				break;
+			case 'LimitExceededException':
+				errorMessage = '試行回数制限を超えました。しばらく時間を空けてから再試行してください。';
+				statusCode = 429; // リクエスト制限
+				break;
+			default:
+				statusCode = 500; // その他はサーバーエラー
+				errorMessage = '内部エラーが発生しました。時間を置いて再度お試しください。';
+				break;
+		}
 
-        return res.status(statusCode).json({
-            status: 'RESEND_CODE_FAILED',
-            message: errorMessage
-        });
-    }
+		return res.status(statusCode).json({
+			status: 'RESEND_CODE_FAILED',
+			message: errorMessage
+		});
+	}
 });
 
 /************************************
@@ -885,10 +885,10 @@ app.post(path + '/pagecon_url', async (req, res) => {
 				':cust_code': cust_code
 			}
 		};
-console.log('queryParams',queryParams)
+		console.log('queryParams', queryParams)
 		const commandForQuery = new QueryCommand(queryParams);
 		const queryResult = await ddbDocClient.send(commandForQuery);
-console.log('queryResult', queryResult)
+		console.log('queryResult', queryResult)
 		if (!queryResult.Items || queryResult.Items.length === 0) {
 			return res.status(404).json({ error: '指定されたemailのアイテムが見つかりませんでした' });
 		}
@@ -896,7 +896,8 @@ console.log('queryResult', queryResult)
 		// 最初の一致アイテムのみ処理（通常はユニークemailの前提）
 		queryFetchedItem = queryResult.Items[0];
 		console.log('queryFetchedItem', queryFetchedItem)
-		const order_id = queryFetchedItem.member_id; // member_idをorder_idとして使用
+		const salt = getJSTDateTime();
+		const order_id = queryFetchedItem.member_id + salt; // member_idをorder_idとして使用
 		const { member_id, membership_type } = queryFetchedItem; // membership_typeはupdateParamsのソートキーとして使う
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -937,7 +938,7 @@ console.log('queryResult', queryResult)
 		}
 
 		// 本日の日付により、月払い用の決済要求・確定要求を送信
-		if(paymentPlan === 'monthly') {
+		if (paymentPlan === 'monthly') {
 			// const juneFirst2025 = new Date('2025-06-01T00:00:00');
 			// const juneFirst2025 = new Date('2025-06-01T00:00:00+09:00');
 			// const isBeforeJstJuneFirst2025 = checkIsBeforeJstJuneFirst2025();
@@ -954,38 +955,38 @@ console.log('queryResult', queryResult)
 			// }
 
 			// if (!isBeforeJstJuneFirst2025){
-				console.log('2025年6月以降の月払い加入者の処理')
-				// チェックサム作成	
-				const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthly, free1, encrypted_flg, request_date];
-				const sbps_hashcode = generateHash(paymentElementsForHash);
+			console.log('2025年6月以降の月払い加入者の処理')
+			// チェックサム作成	
+			const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthly, free1, encrypted_flg, request_date];
+			const sbps_hashcode = generateHash(paymentElementsForHash);
 
-				//////////////////
-				// 決済要求を送信 //
-				//////////////////
-				const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthly, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
-				if (paymentResult['sps-api-response'].res_result !== 'OK') {
-					return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
-				}
+			//////////////////
+			// 決済要求を送信 //
+			//////////////////
+			const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthly, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
+			if (paymentResult['sps-api-response'].res_result !== 'OK') {
+				return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
+			}
 
-				//////////////////
-				// 確定要求を送信 //
-				//////////////////
-				const resSpsTransactionId = paymentResult['sps-api-response'].res_sps_transaction_id;
-				const confirmElementsForHash = [merchant_id, service_id, resSpsTransactionId, request_date];
-				const res_sps_hashcode = generateHash(confirmElementsForHash);
-				// 決済要求が成功したら、確定要求を送信
-				const confirmResult = await confirmPayment(merchant_id, service_id, resSpsTransactionId, request_date, res_sps_hashcode);
-				// 購入要求・確定要求が成功したら、DynamoDBのアトリビュート変更（GSI使用）
-				if (confirmResult['sps-api-response'].res_result !== 'OK') {
-					return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
-				}
+			//////////////////
+			// 確定要求を送信 //
+			//////////////////
+			const resSpsTransactionId = paymentResult['sps-api-response'].res_sps_transaction_id;
+			const confirmElementsForHash = [merchant_id, service_id, resSpsTransactionId, request_date];
+			const res_sps_hashcode = generateHash(confirmElementsForHash);
+			// 決済要求が成功したら、確定要求を送信
+			const confirmResult = await confirmPayment(merchant_id, service_id, resSpsTransactionId, request_date, res_sps_hashcode);
+			// 購入要求・確定要求が成功したら、DynamoDBのアトリビュート変更（GSI使用）
+			if (confirmResult['sps-api-response'].res_result !== 'OK') {
+				return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
+			}
 
-				// can_loginをtrueに更新してログイン可能とする
-				const expirationDay = getLastDayOfMonth(nowJST);
-				await updateMemberInfo(member_id, membership_type, today, expirationDay);
+			// can_loginをtrueに更新してログイン可能とする
+			const expirationDay = getLastDayOfMonth(nowJST);
+			await updateMemberInfo(member_id, membership_type, today, expirationDay);
 
-				res.set('Content-Type', 'text/plain');
-				res.status(200).send('OK,');
+			res.set('Content-Type', 'text/plain');
+			res.status(200).send('OK,');
 			// }
 		}
 	} catch (err) {
@@ -1126,7 +1127,7 @@ console.log('queryResult', queryResult)
 					':trueVal': true,
 					':expirationDay': expirationDay,
 					':empty_list': [],
-					':historyEntry': [ today ] 
+					':historyEntry': [today]
 				}
 			};
 
@@ -1139,7 +1140,7 @@ console.log('queryResult', queryResult)
 			return res.status(500).json({ error: 'サーバーエラーが発生しました' });
 		}
 	}
-	
+
 	/**
 	 * チェックサム（ハッシュコード）生成
 	 */
@@ -1156,7 +1157,7 @@ console.log('queryResult', queryResult)
 	/**
 	 * 翌年の登録月と同じ日の前日を取得
 	 */
-	function getTheDayBeforeInNextYear (nowJST) {
+	function getTheDayBeforeInNextYear(nowJST) {
 		// 来年の同じ日
 		const nextYearSameDay = new Date(nowJST);
 		nextYearSameDay.setFullYear(nextYearSameDay.getFullYear() + 1);
@@ -1164,8 +1165,8 @@ console.log('queryResult', queryResult)
 		nextYearSameDay.setDate(nextYearSameDay.getDate() - 1);
 		// YYYY-MM-DDに整形
 		const yyyy = nextYearSameDay.getFullYear();
-		const mm   = String(nextYearSameDay.getMonth() + 1).padStart(2, '0');
-		const dd   = String(nextYearSameDay.getDate()).padStart(2, '0');
+		const mm = String(nextYearSameDay.getMonth() + 1).padStart(2, '0');
+		const dd = String(nextYearSameDay.getDate()).padStart(2, '0');
 		const formattedDate = `${yyyy}-${mm}-${dd}`;
 
 		return formattedDate;
@@ -1176,7 +1177,7 @@ console.log('queryResult', queryResult)
 	 */
 	function getLastDayOfMonth(nowJST) {
 		// 年と月を取得
-		const year  = nowJST.getFullYear();
+		const year = nowJST.getFullYear();
 		const month = nowJST.getMonth();  // 0～11
 		// 「来月の1日」の前日＝今月の末日 を取得
 		// new Date(年, 月＋1, 0) で“月＋1”の0日目＝“当月末日”が得られる
@@ -1185,8 +1186,8 @@ console.log('queryResult', queryResult)
 		const lastDayOfMonth = new Date(year, month + 1, 0);
 		// YYYY‑MM‑DDに整形
 		const yyyy = lastDayOfMonth.getFullYear();
-		const mm   = String(lastDayOfMonth.getMonth() + 1).padStart(2, '0');
-		const dd   = String(lastDayOfMonth.getDate()).padStart(2, '0');
+		const mm = String(lastDayOfMonth.getMonth() + 1).padStart(2, '0');
+		const dd = String(lastDayOfMonth.getDate()).padStart(2, '0');
 		const formattedLastDay = `${yyyy}-${mm}-${dd}`;
 
 		return formattedLastDay;
@@ -1199,18 +1200,45 @@ console.log('queryResult', queryResult)
 	function checkIsBeforeJstJuneFirst2025() {
 		// JST は UTC+9h なのでオフセットをミリ秒で用意
 		const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
-	  
+
 		// 現在の UTC ミリ秒を取得
 		const nowUtcMs = Date.now();
-	  
+
 		// Date.UTC(2025, 5, 1, 0, 0, 0) は「2025-06-01T00:00:00Z」のタイムスタンプ
 		// これから JST の基準時刻との差（9h）を引くと、
 		// 「2025-06-01T00:00:00 JST」に相当する UTC タイムスタンプになる
 		const thresholdUtcMs = Date.UTC(2025, 5, 1, 0, 0, 0) - JST_OFFSET_MS;
-	  
+
 		return nowUtcMs < thresholdUtcMs;
-	  }
+	}
 });
+
+/**
+* 日本時間の日時情報をオブジェクトで返す関数
+* ・dateTime         : "YYYY-MM-DDThh:mm:ss"
+* ・date             : "YYYY-MM-DD"
+* ・dateTimeCompact  : "YYYYMMDDhhmmss"
+*/
+function getJSTDateTime() {
+	// 1) 現在の UTC ミリ秒に +9h して JST のタイムスタンプを作成
+	const jstMs = Date.now() + 9 * 60 * 60 * 1000;
+	const jstDate = new Date(jstMs);
+
+	// 2) 各パーツを UTC 扱いで取得（+9h 済みなので UTC 表示＝JST 表示）
+	const YYYY = jstDate.getUTCFullYear();
+	const MM = String(jstDate.getUTCMonth() + 1).padStart(2, '0');
+	const DD = String(jstDate.getUTCDate()).padStart(2, '0');
+	const hh = String(jstDate.getUTCHours()).padStart(2, '0');
+	const mm_ = String(jstDate.getUTCMinutes()).padStart(2, '0');
+	const ss = String(jstDate.getUTCSeconds()).padStart(2, '0');
+
+	// 3) それぞれのフォーマットを組み立て
+	const dateOnly = `${YYYY}-${MM}-${DD}`;           // "YYYY-MM-DD"
+	const dateTimeFull = `${dateOnly}T${hh}:${mm_}:${ss}`;// "YYYY-MM-DDThh:mm:ss"
+	const dateTimeCompact = `${YYYY}${MM}${DD}${hh}${mm_}${ss}`; // "YYYYMMDDhhmmss"
+
+	return dateTimeCompact
+}
 
 app.listen(3000, function () {
 	console.log("App started")
