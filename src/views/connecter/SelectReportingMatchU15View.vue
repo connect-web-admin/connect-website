@@ -239,7 +239,8 @@ const matchesFilteredByCategoryAndChampionshipAndVenue = computed(() => {
                 awayClubFinalScore: match['away_club']['final_score'],
                 homeClubPkScore: match['home_club']['pk_score'],
                 awayClubPkScore: match['away_club']['pk_score'],
-                isResultRegistered: match['is_result_registered']
+                isResultRegistered: match['is_result_registered'],
+                isPostponed: match['is_postponed']
             };
 
             displayDataOfMatches.push(data);
@@ -424,7 +425,7 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                         <div v-if="selectedVenue">
                             <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx">
                                 <!-- 速報がまだ終わっていない試合情報を先にループ。速報終了済みの試合を下段に表示するため -->
-                                <div v-if="!(match.isResultRegistered)" class="px-2 py-1 flex flex-row items-center border-b-1 border-gray-300">
+                                <div v-if="!(match.isResultRegistered) && !(match.isPostponed)" class="px-2 py-1 flex flex-row items-center border-b-1 border-gray-300">
                                     <button type="button" @click="moveToRegisterMatchResult(match.matchId)"
                                         :class="selectBtn"
                                         class="bg-green-200 border-1 border-black rounded-xl">選択</button>
@@ -458,6 +459,17 @@ const selectBtn = 'mr-2 min-w-12 h-10';
                                                 (PK {{ match.homeClubPkScore }}&nbsp;-&nbsp;{{ match.awayClubPkScore }})
                                             </span>
                                         </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-for="(match, idx) in matchesFilteredByCategoryAndChampionshipAndVenue" :key="idx">
+                                <div v-if="match.isPostponed"
+                                    class="flex flex-row items-center px-2 py-1 bg-gray-200 border-b-1 border-gray-300">
+                                    <div class="w-full pl-2 bg-white">
+
+                                            <p class="text-left text-red-600 ml-5">延期設定済み</p>
+                                        <p>{{ match.homeClubName }}&nbsp;vs&nbsp;{{ match.awayClubName }}</p>
+                                
                                     </div>
                                 </div>
                             </div>
