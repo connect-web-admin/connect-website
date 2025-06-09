@@ -403,9 +403,19 @@ onMounted(() => {
                         組 み 合 せ
                     </p>
                     <p
-                        class="border-1 w-1/3 py-1 text-xs text-center"
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U10_2025_IwanaiChochoCup/%E7%AC%AC22%E5%9B%9E%E5%B2%A9%E5%86%85%E7%94%BA%E9%95%B7%E6%9D%AF%E5%85%A8%E9%81%93%E5%B0%91%E5%B9%B4U-10%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E5%8D%97%E5%8C%97%E6%B5%B7%E9%81%93%E5%A4%A7%E4%BC%9A+%E7%B5%90%E6%9E%9C0609.jpg'
+                                ],
+                                [
+                                    '第22回岩内町長杯全道少年U-10サッカー南北海道大会 結果'
+                                ]
+                            )
+                        "
                     >
-                        試 合 結 果
+                    試 合 結 果
                     </p>
                 </div>
             </div>
@@ -688,7 +698,7 @@ onMounted(() => {
                             openModal(
                                 [
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U15_1%E9%83%A8%E7%B5%90%E6%9E%9C.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U15_%EF%BC%92%E9%83%A8%E7%B5%90%E6%9E%9C.jpg'
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_19th_Hokkaido_CubsLeague/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99U15_2%E9%83%A8%E7%B5%90%E6%9E%9C.jpg'
                                 ],
                                 [
                                     '第19回北海道カブスリーグU-15 兼 高円宮杯JFAサッカーリーグ2025北海道１部',
@@ -752,7 +762,7 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_TikuCabs_kekka-A.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_TikuCabs_kekka-A.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_TikuCabs_kekka-B.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_TikuCabs_kekka-C.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_17th_SapporoRegion_CubsLeague/2025_U15_TikuCabs_kekka-D.jpg'
@@ -1027,6 +1037,37 @@ onMounted(() => {
                                 ]
                             )
                         "
+                    >
+                        試 合 結 果
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-gray-200 pb-3">
+                <h2>２０２５年度第４１回会長杯札幌女子サッカー大会</h2>
+                <div class="flex flex-row justify-between gap-4">
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
+                    >
+                        大 会 概 要
+                    </p>
+                    <p
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/WOMAN_2025_20th_Nadeshiko_League/%EF%BC%92%EF%BC%90%EF%BC%92%EF%BC%95%E5%B9%B4%E5%BA%A6++%E7%AC%AC%EF%BC%92%EF%BC%90%E5%9B%9E%E6%9C%AD%E5%B9%8C%E3%81%AA%E3%81%A6%E3%82%99%E3%81%97%E3%81%93%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99+%E7%B5%84%E5%90%88%E3%81%9B.jpg',
+                                ],
+                                [
+                                    '２０２５年度 第２０回札幌なでしこリーグ 組合せ',
+                                ]
+                            )
+                        "
+                    >
+                        組 み 合 せ
+                    </p>
+                    <p
+                        class="border-1 w-1/3 py-1 text-xs text-center"
                     >
                         試 合 結 果
                     </p>
