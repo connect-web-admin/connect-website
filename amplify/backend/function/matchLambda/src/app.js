@@ -1026,8 +1026,8 @@ app.put(path + '/register-edited-match-result', async function (req, res) {
 	const hasExtraHalvesEdit = req.body.hasExtraHalvesEdit;
 	const hasPkEdit = req.body.hasPkEdit;
 
-	const homeClubFirstHalfScoreEdit = req.body.homeClubExtraFirstHalfScoreEdit;
-	const homeClubSecondHalfScoreEdit = req.body.homeClubExtraSecondHalfScoreEdit;
+	const homeClubFirstHalfScoreEdit = req.body.homeClubFirstHalfScoreEdit;
+	const homeClubSecondHalfScoreEdit = req.body.homeClubSecondHalfScoreEdit;
 	const homeClubExtraFirstHalfScoreEdit = req.body.homeClubExtraFirstHalfScoreEdit;
 	const homeClubExtraSecondHalfScoreEdit = req.body.homeClubExtraSecondHalfScoreEdit;
 	const homeClubFinalScoreEdit = req.body.homeClubFinalScoreEdit;
