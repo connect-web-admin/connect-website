@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { ref } from 'vue';
 import App from '@/App.vue';
 import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-vue";
-import { USER_ATTR_SESSION_ID, USER_ATTR_EMAIL, MEMBER_API_URL } from '@/utils/constants';
+import { USER_ATTR_SESSION_ID, USER_ATTR_EMAIL, USER_ATTR_MEMBERSHIP_TYPE, MEMBER_API_URL } from '@/utils/constants';
 
 // レギュラー会員用のページ
 import LoginView from '@/views/LoginView.vue';
@@ -44,6 +45,8 @@ import TestSelectReportingMatchU18View from '@/views/connecter/TestSelectReporti
 
 // 404ルート
 import NotFoundView from '@/views/NotFoundView.vue';
+
+const memberInfo = ref({});
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -211,12 +214,6 @@ const router = createRouter({
 			props: true
 		},
 
-		// {
-		// 	path: '/connecter/select-reporting-match-u12andw',
-		// 	name: 'SelectReportingMatchU12andW',
-		// 	component: SelectReportingMatchU12andWView,
-		// },
-
 		{
 			path: '/connecter/select-reporting-match-u12',
 			name: 'SelectReportingMatchU12',
@@ -352,7 +349,44 @@ router.beforeEach(async (to, from, next) => {
 			return;
 		}
 	}
+
+	if (!localStorage.getItem(USER_ATTR_MEMBERSHIP_TYPE)) {
+		// ログインしている会員の会員情報を取得
+		await getTargetMemberInfo();
+
+		// 取得した会員情報のうちmembership_typeをローカルストレージに保存
+		// regularかlightのどちらかを保存することになる。これにより閲覧権限を管理
+		localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, memberInfo.value.membership_type);
+	}
+	
 	next();
 });
+
+
+/**
+ * アクセス日から次の月曜日までに開催予定の試合を取得
+ */
+const getTargetMemberInfo = async () => {
+    const queryUrl = new URL(`${MEMBER_API_URL}/member-info`);
+    queryUrl.searchParams.append("email", localStorage.getItem(USER_ATTR_EMAIL));
+
+    try {
+        const response = await fetch(queryUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        memberInfo.value = await response.json();
+        console.log("memberInfo.value", memberInfo.value);
+    } catch (error) {
+        console.error("会員情報の取得に失敗しました。");
+    }
+};
 
 export default router
