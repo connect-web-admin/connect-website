@@ -25,7 +25,7 @@ if (process.env.ENV && process.env.ENV !== "NONE") {
 const userIdPresent = false; // TODO: update in case is required to use that definition
 const partitionKeyName = "championship_id";
 const partitionKeyType = "S";
-const sortKeyName = "fiscal_year";
+const sortKeyName = "division";
 const sortKeyType = "S";
 const hasSortKey = sortKeyName !== "";
 const path = "/items";

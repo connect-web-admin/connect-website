@@ -38,10 +38,10 @@
     "monthlyPaymentApi": {
       "Type": "String"
     },
-    "archiveApi": {
+    "matchApiV2": {
       "Type": "String"
     },
-    "matchApiV2": {
+    "archiveApi": {
       "Type": "String"
     }
   },
@@ -2242,7 +2242,7 @@
                       },
                       ":",
                       {
-                        "Ref": "archiveApi"
+                        "Ref": "matchApiV2"
                       },
                       "/",
                       {
@@ -2272,7 +2272,7 @@
                       },
                       ":",
                       {
-                        "Ref": "archiveApi"
+                        "Ref": "matchApiV2"
                       },
                       "/",
                       {
@@ -2302,7 +2302,7 @@
                       },
                       ":",
                       {
-                        "Ref": "archiveApi"
+                        "Ref": "matchApiV2"
                       },
                       "/",
                       {
@@ -2332,7 +2332,7 @@
                       },
                       ":",
                       {
-                        "Ref": "archiveApi"
+                        "Ref": "matchApiV2"
                       },
                       "/",
                       {
@@ -2385,7 +2385,7 @@
                       },
                       ":",
                       {
-                        "Ref": "archiveApi"
+                        "Ref": "matchApiV2"
                       },
                       "/",
                       {
@@ -2415,7 +2415,7 @@
                       },
                       ":",
                       {
-                        "Ref": "archiveApi"
+                        "Ref": "matchApiV2"
                       },
                       "/",
                       {
@@ -2445,7 +2445,7 @@
                       },
                       ":",
                       {
-                        "Ref": "archiveApi"
+                        "Ref": "matchApiV2"
                       },
                       "/",
                       {
@@ -2475,7 +2475,7 @@
                       },
                       ":",
                       {
-                        "Ref": "archiveApi"
+                        "Ref": "matchApiV2"
                       },
                       "/",
                       {
@@ -2505,7 +2505,7 @@
                       },
                       ":",
                       {
-                        "Ref": "matchApiV2"
+                        "Ref": "archiveApi"
                       },
                       "/",
                       {
@@ -2535,7 +2535,7 @@
                       },
                       ":",
                       {
-                        "Ref": "matchApiV2"
+                        "Ref": "archiveApi"
                       },
                       "/",
                       {
@@ -2565,7 +2565,7 @@
                       },
                       ":",
                       {
-                        "Ref": "matchApiV2"
+                        "Ref": "archiveApi"
                       },
                       "/",
                       {
@@ -2595,7 +2595,7 @@
                       },
                       ":",
                       {
-                        "Ref": "matchApiV2"
+                        "Ref": "archiveApi"
                       },
                       "/",
                       {
@@ -2625,7 +2625,7 @@
                       },
                       ":",
                       {
-                        "Ref": "matchApiV2"
+                        "Ref": "archiveApi"
                       },
                       "/",
                       {
@@ -2655,7 +2655,7 @@
                       },
                       ":",
                       {
-                        "Ref": "matchApiV2"
+                        "Ref": "archiveApi"
                       },
                       "/",
                       {
@@ -2685,7 +2685,7 @@
                       },
                       ":",
                       {
-                        "Ref": "matchApiV2"
+                        "Ref": "archiveApi"
                       },
                       "/",
                       {
@@ -2715,7 +2715,7 @@
                       },
                       ":",
                       {
-                        "Ref": "matchApiV2"
+                        "Ref": "archiveApi"
                       },
                       "/",
                       {

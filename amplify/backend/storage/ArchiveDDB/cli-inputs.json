@@ -6,7 +6,7 @@
     "fieldType": "string"
   },
   "sortKey": {
-    "fieldName": "fiscal_year",
+    "fieldName": "division",
     "fieldType": "string"
   },
   "gsi": [],
