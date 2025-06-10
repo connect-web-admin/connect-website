@@ -489,8 +489,8 @@ onMounted(() => {
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-3AB.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-3CD.jpg',
                                     'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-4AB.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/U-12%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99+in+%E5%8C%97%E6%B5%B7%E9%81%93%E3%80%80%E6%9C%AD%E5%B9%8C%E5%9C%B0%E5%8C%BA%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99+4C4D.jpg',
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/U-12%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99+in+%E5%8C%97%E6%B5%B7%E9%81%93%E3%80%80%E6%9C%AD%E5%B9%8C%E5%9C%B0%E5%8C%BA%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99+5A.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-4CD.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U-12_2025_SoccerLeagueInHokkaido_SapporoRegionalLeague/2025_U-12League_kekka-5AB.jpg',
                                 ],
                                 [
                                     'U-12サッカーリーグ in 北海道 札幌地区リーグ ４種リーグ戦 S.1部.jpg',
@@ -1044,10 +1044,24 @@ onMounted(() => {
             </div>
 
             <div class="space-y-3 border-b border-gray-200 pb-3">
-                <h2>２０２５年度第４１回会長杯札幌女子サッカー大会</h2>
+                <h2>２０２５年度 第２０回札幌なでしこリーグ（第４２回札幌女子サッカーリーグ）</h2>
                 <div class="flex flex-row justify-between gap-4">
                     <p
-                        class="border-1 w-1/3 py-1 text-xs text-center"
+                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        @click="
+                            openModal(
+                                [
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/WOMAN_2025_20th_Nadeshiko_League/2025_Nadesiko_yoko_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_1.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/WOMAN_2025_20th_Nadeshiko_League/2025_Nadesiko_yoko_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_2.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/WOMAN_2025_20th_Nadeshiko_League/2025_Nadesiko_yoko_%E3%83%98%E3%82%9A%E3%83%BC%E3%82%B7%E3%82%99_3.jpg'
+                                ],
+                                [
+                                    '２０２５年度 第２０回札幌なでしこリーグ 開催要項1',
+                                    '２０２５年度 第２０回札幌なでしこリーグ 開催要項2',
+                                    '２０２５年度 第２０回札幌なでしこリーグ 開催要項3',
+                                ]
+                            )
+                        "
                     >
                         大 会 概 要
                     </p>
