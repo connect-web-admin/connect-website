@@ -819,7 +819,7 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_TakamadonomiyaCup_17th_SapporoBlock_CubsLeague/%E9%AB%98%E5%86%86%E5%AE%AE%E6%9D%AF+JFA+U-15%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%992025+%E7%AC%AC17%E5%9B%9E%E6%9C%AD%E5%B9%8C%E3%83%95%E3%82%99%E3%83%AD%E3%83%83%E3%82%AF%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E7%B5%84%E5%90%88%E3%81%9B0504.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/U15_2025_JFA_TakamadonomiyaCup_17th_SapporoBlock_CubsLeague/2025_U15_SapBloCab_kumi.jpg',
                                 ],
                                 [
                                     '高円宮杯 JFA U-15サッカーリーグ2025 第17回札幌ブロックカブスリーグ日程表５月４日版',
