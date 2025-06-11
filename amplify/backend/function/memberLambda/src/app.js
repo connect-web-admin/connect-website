@@ -672,8 +672,6 @@ app.post(path + '/confirm-signup', async (req, res) => {
 
 		console.log(`Cognito認証コード確認成功: ${inputEmail}`);
 
-
-
 		return res.status(200).json({
 			status: 'EMAIL_CONFIRMED',
 			message: 'メールアドレスの認証が完了しました。'
@@ -852,22 +850,17 @@ app.post(path + '/pagecon_url', async (req, res) => {
 	const encodedPaymentPlan = btoa(decodeURIComponent(paymentPlan));
 	const item_id = paymentPlan
 
-	// 課金額は2025年4月中は3,960円、5月以降は4,840円にする
 	// 日本時間を取得
-	// const nowJST = new Date(Date.now() + 9 * 60 * 60 * 1000); // UTC+9時間。YYYY-MM-DDThh:mm:ssZ表記
-	// // 比較対象の日付（日本時間として扱う。本日との比較に使うのはtodayだけであり、todayは日本時間（UTC+9時間）にしてある）
-	// const mayFirst2025 = new Date('2025-05-01T00:00:00');
-	// 1. 今の日本時間を表す Date オブジェクトを作成
 	const now = new Date();
 	const nowUTC = now.getTime() + now.getTimezoneOffset() * 60000; // UTC へ変換
 	const nowJST = new Date(nowUTC + 9 * 60 * 60000); // UTC → JST (＋9時間)
 	const today = nowJST.toISOString().slice(0, 10); // YYYY-MM-DD表記
-	const mayFirst2025 = new Date('2025-05-01T00:00:00+09:00');
 
 	// 課金額
 	// const amountOfYearly = (nowJST < mayFirst2025) ? '3960' : '4840';
 	const amountOfYearly = '4840';
 	const amountOfMonthly = '440';
+	const amountOfMonthlyLight = '220';
 
 	// 暗号化フラグ
 	const encrypted_flg = '0'; // 暗号化しない
@@ -970,7 +963,6 @@ app.post(path + '/pagecon_url', async (req, res) => {
 
 			res.set('Content-Type', 'text/plain');
 			res.status(200).send('OK,');
-			// }
 		}
 	} catch (err) {
 		console.error('更新エラー:', err);
