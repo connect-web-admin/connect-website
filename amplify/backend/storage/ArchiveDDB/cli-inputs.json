@@ -9,6 +9,14 @@
     "fieldName": "division",
     "fieldType": "string"
   },
-  "gsi": [],
+  "gsi": [
+    {
+      "name": "gsiByFiscalYear",
+      "partitionKey": {
+        "fieldName": "fiscal_year",
+        "fieldType": "string"
+      }
+    }
+  ],
   "triggerFunctions": []
 }
