@@ -32,6 +32,7 @@ const prevImage = () => {
     }
 };
 
+// 2024年度の結果等の画像
 const category2 = [
     {
         championshipName:
@@ -97,7 +98,6 @@ const category2 = [
         ],
     },
 ];
-
 const category3 = [
     {
         championshipName:
@@ -177,7 +177,6 @@ const category3 = [
         ],
     },
 ];
-
 const category4 = [
     {
         championshipName: "U-12サッカーリーグ in 北海道 札幌地区リーグ2024",
@@ -1013,7 +1012,7 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/U-18%E7%B5%84%E5%90%88%E3%81%9B%EF%BC%8805281143%EF%BC%89_page-0001.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/TakamadonomiyaCup_JFA_U-18_2025_Hokkaido_BlockLeague_Sapporo/2025_18TakaSapBlock_kumi.jpg',
                                 ],
                                 [
                                     '高円宮杯 JFA U-18サッカーリーグ2025北海道 ブロックリーグ札幌 組み合わせ',
