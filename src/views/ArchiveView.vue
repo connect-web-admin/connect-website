@@ -1070,7 +1070,7 @@ onMounted(() => {
                         @click="
                             openModal(
                                 [
-                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/WOMAN_2025_20th_Nadeshiko_League/%EF%BC%92%EF%BC%90%EF%BC%92%EF%BC%95%E5%B9%B4%E5%BA%A6++%E7%AC%AC%EF%BC%92%EF%BC%90%E5%9B%9E%E6%9C%AD%E5%B9%8C%E3%81%AA%E3%81%A6%E3%82%99%E3%81%97%E3%81%93%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99+%E7%B5%84%E5%90%88%E3%81%9B.jpg',
+                                    'https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/archive/WOMAN_2025_20th_Nadeshiko_League/2025_Nadesiko_kumi.jpg',
                                 ],
                                 [
                                     '２０２５年度 第２０回札幌なでしこリーグ 組合せ',
