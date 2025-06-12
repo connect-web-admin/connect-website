@@ -145,14 +145,17 @@ onMounted(async () => {
 
 <template>
     <div class="px-2 pt-2">
-        <div>
+        <div class="mb-3">
             <h1 class="text-xl pt-2">☆お知らせ☆</h1>
-            <p class="font-bold underline">北海道カブスリーグの試合結果速報につきまして<br><a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E3%80%90%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B%E3%80%91%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%AB%E3%83%95%E3%82%99%E3%82%B9%E3%83%AA%E3%83%BC%E3%82%AF%E3%82%99%E3%81%AE%E8%A9%A6%E5%90%88%E7%B5%90%E6%9E%9C%E9%80%9F%E5%A0%B1%E3%81%AB%E3%81%A4%E3%81%8D%E3%81%BE%E3%81%97%E3%81%A6.jpg" target="_blank" class="text-blue-500">→こちら</a></p>
+            <p class="font-bold underline">北海道サッカー協会との業務提携につきまして<span class="text-red-500">（６月１２日更新）</span>→<a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E5%8D%94%E4%BC%9A%E3%81%A8%E3%81%AE%E6%A5%AD%E5%8B%99%E6%8F%90%E6%90%BA%E5%A5%91%E7%B4%84%E3%81%AB%E3%81%A4%E3%81%8D%E3%81%BE%E3%81%97%E3%81%A6.pdf" target="_blank" class="text-blue-500" rel="noopener noreferrer">こちら</a></p>
         </div>
         <div>
-            <h1 class="text-xl pt-2">今週の大会<span class="text-sm text-gray-400">（タップで結果速報へ移動）</span></h1>
-            <p class="pl-1 mt-1 mb-3">
+            <h1 class="text-xl pt-2">今週の大会</h1>
+            <p class="pl-1 mt-1">
                 ■ U-18プリンスリーグの大会詳細結果→<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank"  rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
+            </p>
+            <p class="pl-1 mb-1">
+                ■ 高校総体北海道大会結果→<a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E5%8C%97%E6%B5%B7%E9%81%93%E9%AB%98%E7%AD%89%E5%AD%A6%E6%A0%A1%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E9%81%B8%E6%89%8B%E6%A8%A9%E5%A4%A7%E4%BC%9A0611_%E7%B5%90%E6%9E%9C.pdf" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
             </p>
             <p class="text-sm text-red-500">毎週火曜日更新</p>
             <div v-if="isLoading" class="flex justify-center items-center py-8">
