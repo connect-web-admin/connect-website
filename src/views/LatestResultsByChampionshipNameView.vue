@@ -10,18 +10,9 @@ const sortKey = ref("date_and_time");
 const sortOrder = ref("asc");
 
 /**
- * 直近の過去の火曜日から直近の未来の月曜日ま（つまり火曜日始まり月曜日終わり）の試合を抽出
+ * 日本時間で現在の火曜日から次の月曜日までの期間を取得
  */
-const filteredMatches = computed(() => {
-    if (!matchInfo.value.matches) return {};
-
-    // round_idを削除する処理
-    Object.entries(matchInfo.value.matches).forEach(([division, matches]) => {
-        if (matches.round_id) {
-            delete matches.round_id;
-        }
-    });
-
+const getDateRange = () => {
     // 日本時間で現在の日時を取得
     const now = new Date();
     const jstOffset = 9 * 60; // 日本時間のオフセット（分）
@@ -55,62 +46,146 @@ const filteredMatches = computed(() => {
         nextMonday.setHours(23, 59, 59, 999);
     }
 
+    return { lastTuesday, nextMonday };
+};
+
+/**
+ * round_idを削除する処理
+ */
+const removeRoundIds = (matches) => {
+    Object.entries(matches).forEach(([division, divisionMatches]) => {
+        if (divisionMatches.round_id) {
+            delete divisionMatches.round_id;
+        }
+    });
+};
+
+/**
+ * 指定した日付範囲内の試合のみを抽出
+ */
+const filterMatchesByDateRange = (matches, startDate, endDate) => {
     const result = {};
     
-    // 各部の試合をフィルタリング
-    Object.entries(matchInfo.value.matches).forEach(([division, matches]) => {
+    Object.entries(matches).forEach(([division, divisionMatches]) => {
         const filteredDivisionMatches = {};
-        
-        Object.entries(matches).forEach(([key, match]) => {
+
+        Object.entries(divisionMatches).forEach(([key, match]) => {
             if (key === 'round_id') {
                 filteredDivisionMatches[key] = match;
                 return;
             }
-
+            
             // 試合日付を日本時間で比較
             const matchDate = new Date(match.match_date);
             matchDate.setHours(0, 0, 0, 0);
             
-            if (matchDate >= lastTuesday && matchDate <= nextMonday) {
+            if (matchDate >= startDate && matchDate <= endDate) {
                 filteredDivisionMatches[key] = match;
             }
         });
         
-        /**
-         * ラジオボタンや表示順プルダウンメニューの値をもとに試合を並び替える
-         */
         if (Object.keys(filteredDivisionMatches).length > 0) {
-            // 試合を並び替え
-            const sortedMatches = Object.entries(filteredDivisionMatches)
-                .filter(([key]) => key !== 'round_id')
-                .sort(([, a], [, b]) => {
-                    if (sortKey.value === 'date_and_time') {
-                        const dateA = new Date(a.match_date);
-                        const dateB = new Date(b.match_date);
-                        if (dateA.getTime() === dateB.getTime()) {
-                            return sortOrder.value === 'asc' 
-                                ? a.scheduled_match_start_time.localeCompare(b.scheduled_match_start_time)
-                                : b.scheduled_match_start_time.localeCompare(a.scheduled_match_start_time);
-                        }
-                        return sortOrder.value === 'asc'
-                            ? dateA.getTime() - dateB.getTime()
-                            : dateB.getTime() - dateA.getTime();
-                    } else if (sortKey.value === 'scheduled_match_start_time') {
-                        return sortOrder.value === 'asc'
+            result[division] = filteredDivisionMatches;
+        }
+    });
+
+    return result;
+};
+
+/**
+ * 試合を指定したキーと順序で並び替え
+ */
+const sortMatches = (matches, key, order) => {
+    const result = {};
+    
+    Object.entries(matches).forEach(([division, divisionMatches]) => {
+        // 試合を並び替え
+        const sortedMatches = Object.entries(divisionMatches)
+            .filter(([matchKey]) => matchKey !== 'round_id')
+            .sort(([, a], [, b]) => {
+                if (key === 'date_and_time') {
+                    const dateA = new Date(a.match_date);
+                    const dateB = new Date(b.match_date);
+                    if (dateA.getTime() === dateB.getTime()) {
+                        return order === 'asc' 
                             ? a.scheduled_match_start_time.localeCompare(b.scheduled_match_start_time)
                             : b.scheduled_match_start_time.localeCompare(a.scheduled_match_start_time);
                     }
-                });
-
-            // 並び替えた結果を新しいオブジェクトに格納
-            const sortedDivisionMatches = {};
-            sortedMatches.forEach(([key, match]) => {
-                sortedDivisionMatches[key] = match;
+                    return order === 'asc'
+                        ? dateA.getTime() - dateB.getTime()
+                        : dateB.getTime() - dateA.getTime();
+                } else if (key === 'scheduled_match_start_time') {
+                    return order === 'asc'
+                        ? a.scheduled_match_start_time.localeCompare(b.scheduled_match_start_time)
+                        : b.scheduled_match_start_time.localeCompare(a.scheduled_match_start_time);
+                }
             });
 
-            result[division] = sortedDivisionMatches;
-        }
+        // 並び替えた結果を新しいオブジェクトに格納
+        const sortedDivisionMatches = {};
+        sortedMatches.forEach(([matchKey, match]) => {
+            sortedDivisionMatches[matchKey] = match;
+        });
+
+        result[division] = sortedDivisionMatches;
     });
+
+    return result;
+};
+
+/**
+ * divisionをround_idの値を使って昇順に並び替え
+ */
+const sortDivisions = (matches) => {
+    const sortedResult = {};
+    const sortedDivisionKeys = Object.keys(matches).sort((a, b) => {
+        const aRoundId = matches[a].round_id;
+        const bRoundId = matches[b].round_id;
+        
+        if (aRoundId && bRoundId) {
+            // round_idの値を使って比較
+            return aRoundId.localeCompare(bRoundId);
+        }
+        
+        // round_idがない場合は元の方法で比較
+        const aMatch = a.match(/(\d+)/);
+        const bMatch = b.match(/(\d+)/);
+        
+        if (aMatch && bMatch) {
+            return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+        }
+        
+        // 数値が見つからない場合は文字列として比較
+        return a.localeCompare(b);
+    });
+    
+    sortedDivisionKeys.forEach(key => {
+        sortedResult[key] = matches[key];
+    });
+
+    return sortedResult;
+};
+
+/**
+ * 直近の過去の火曜日から直近の未来の月曜日まで（つまり火曜日始まり月曜日終わり）の試合を抽出
+ */
+const filteredMatches = computed(() => {
+    if (!matchInfo.value.matches) return {};
+
+    // 日付範囲を取得
+    const { lastTuesday, nextMonday } = getDateRange();
+
+    // 日付範囲でフィルタリング
+    let result = filterMatchesByDateRange(matchInfo.value.matches, lastTuesday, nextMonday);
+
+    // 試合を並び替え
+    result = sortMatches(result, sortKey.value, sortOrder.value);
+
+    // divisionを並び替え（round_idを使用）
+    result = sortDivisions(result);
+
+    // round_idを削除
+    removeRoundIds(result);
 
     return result;
 });
