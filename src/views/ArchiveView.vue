@@ -1,10 +1,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { THIS_FISCAL_YEAR, ARCHIVE_API_URL, ID_TOKEN_FOR_AUTH } from "@/utils/constants";
 
 const selectedImages = ref([]);
 const selectedImgAlts = ref([]);
 const isModalOpen = ref(false);
 const currentImageIndex = ref(0);
+const isLoading = ref(true);
+const failedMsg = ref('');
+const thisYearArchive = ref([]);
 
 const openModal = (imgUrls, imgAlts) => {
     selectedImages.value = Array.isArray(imgUrls) ? imgUrls : [imgUrls];
@@ -346,13 +350,64 @@ const category4 = [
     },
 ];
 
+/**
+ * ログイン中の会員情報取得
+ */
+const getThisYearArchive = async () => {
+    isLoading.value = true;
+
+    const idToken = localStorage.getItem(ID_TOKEN_FOR_AUTH);
+    if (!idToken) {
+        failedMsg.value = '認証トークンが見つかりません。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+        console.error('認証トークンが見つかりません。');
+        isLoading.value = false;
+        return;
+    }
+
+    const queryUrl = new URL(`${ARCHIVE_API_URL}/this-year-archive`);
+    queryUrl.searchParams.append("fiscalYear", THIS_FISCAL_YEAR);
+
+    try {
+        const response = await fetch(queryUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+
+        if (response.status === 401) {
+            failedMsg.value = '認証が無効です。ブラウザを更新しても改善しない場合は、画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。';
+            console.error('認証が無効です。');
+            isLoading.value = false;
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        thisYearArchive.value = await response.json();
+        console.log(thisYearArchive.value);
+    } catch (error) {
+        failedMsg.value =
+            "大会情報の取得に失敗しました。画面右上のMenu最下部のログアウトボタンで一度ログアウトしてからログインをし直し、再度お試しください。または、ブラウザを更新するか、時間を置いてからアクセスしてください。";
+        console.error("会員情報の取得に失敗しました。");
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+
 // 共通のスタイルクラス
 const categorySectionClass = "mt-2 p-2 border border-gray-300 rounded-lg";
 const listItemClass = "py-2 border-b border-gray-200 last:border-b-0";
 const imageNumberClass =
     "inline-block px-1 mx-2 text-blue-500 border-b-1 cursor-pointer";
 
-onMounted(() => {
+onMounted(async () => {
+    // 今年度の大会情報を取得
+    await getThisYearArchive();
+
     // ページ遷移時に最上部へスクロール
     window.scrollTo({
         top: 0,
@@ -402,7 +457,7 @@ onMounted(() => {
                         組 み 合 せ
                     </p>
                     <p
-                        class="text-white bg-black w-1/3 py-1 text-xs text-center"
+                        class="text-white bg-[#55948B]  w-1/3 py-1 text-xs text-center"
                         @click="
                             openModal(
                                 [
