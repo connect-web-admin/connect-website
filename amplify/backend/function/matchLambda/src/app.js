@@ -241,6 +241,36 @@ app.get(path + '/matches-in-this-week-for-top', async function (req, res) {
 });
 
 /************************************
+* HTTP Get method 結果速報画面に表示する試合を取得 *
+************************************/
+app.get(path + '/matches-in-two-weeks-for-top', async function (req, res) {
+	const fiscalYear = req.query.fiscalYear;
+	const tryingEmail = req.query.tryingEmail;
+	console.log('watching member email', tryingEmail);
+
+	const scanParams = {
+		TableName: tableName,
+		FilterExpression: "fiscal_year = :fiscal_year",
+		ExpressionAttributeValues: {
+			":fiscal_year": fiscalYear
+		},
+		ProjectionExpression: "category, championship_id, abbreviation, championship_name, match_dates"
+	};
+
+	try {
+		const command = new ScanCommand(scanParams);
+		const fetchedData = await ddbDocClient.send(command);
+		const data = fetchedData.Items;
+
+		console.log('data', JSON.stringify(data));
+		res.status(200).json(data);
+	} catch (err) {
+		console.error('Error getting data:', err);
+		res.status(500).json({ success: false, error: 'Error getting data' });
+	}
+});
+
+/************************************
 * HTTP Get method 速報対象試合検索画面へのアクセス許可を判定 *
 * 試合当日以前か試合当日18時以前のみアクセス許可 *
 ************************************/
@@ -255,12 +285,6 @@ app.get(path + '/current-matches', async function (req, res) {
 		return;
 	}
 
-	// U-12とWOMANはまとめて一つの扱いなので
-	// 配列化して長さが１ならばU-15（ジュニアユース）かU-18（ユース）、そうでなければU-12（ジュニア）とWOMAN
-	// const category = (req.query.category).split(',').length === 1 ? req.query.category : (req.query.category).split(',')
-
-
-	// if (category === 'U-15（ジュニアユース）' || category === 'U-18（ユース）') {
 	const queryItemParams = {
 		TableName: tableName,
 		IndexName: "gsiByFiscalYearAndCategory",
@@ -311,57 +335,6 @@ app.get(path + '/current-matches', async function (req, res) {
 		console.error('Error getting data:', err);
 		res.status(500).json({ success: false, error: 'Error getting data' });
 	}
-	// } else {
-	// 	const passingData = [];
-
-	// 	for (const eachCategory of category) {
-	// 		const queryItemParams = {
-	// 			TableName: tableName,
-	// 			IndexName: "gsiByFiscalYearAndCategory",
-	// 			KeyConditionExpression: "fiscal_year = :fiscalYear and category = :category",
-	// 			ExpressionAttributeValues: {
-	// 				":fiscalYear": fiscalYear,
-	// 				":category": eachCategory
-	// 			},
-	// 		};
-
-	// 		try {
-	// 			const command = new QueryCommand(queryItemParams);
-	// 			const fetchedData = await ddbDocClient.send(command);
-	// 			const data = fetchedData.Items;
-
-	// 			// アクセス日に開催される試合であり、試合パスワードmatch_passwordが一致する試合のみを抽出
-	// 			// ある大会が一つも速報対象試合を持たない場合、その大会自体をspliceする。
-	// 			data.forEach(item => {
-	// 				if (item['item_type'] === 'championship') {
-	// 					for (const round in item['matches']) {
-	// 						for (const match in item['matches'][round]) {
-	// 							// round_idは文字列なので、それ以外の場合のみmatch_dateについて判定
-	// 							if (typeof item['matches'][round][match] !== 'string') {
-	// 								if (!canAccess(item['matches'][round][match]['match_date'])) {
-	// 									delete item['matches'][round][match];
-	// 								}
-	// 							}
-	// 						}
-	// 					}
-	// 				}
-	// 			});
-
-	// 			// 各大会の各ラウンドの各試合の中身を走査して、一つでもdeleteされていない試合があれば。trueとしてfilteredDataに追加
-	// 			// round_idはdeleteされないので、必ず一つはキー・バリューが残っている。二つ以上のキー・バリュがあれば、一つ以上の試合が残っていると判定
-	// 			const filteredData = data.filter(item =>
-	// 				item['item_type'] === 'championship' && Object.values(item.matches).some(match => Object.keys(match).length >= 2)
-	// 			);
-
-	// 			passingData.push(filteredData);
-	// 		} catch (err) {
-	// 			console.error('Error getting data:', err);
-	// 			res.status(500).json({ success: false, error: 'Error getting data' });
-	// 		}
-	// 	}
-
-	// res.status(200).json(passingData);
-	// }
 });
 
 /************************************

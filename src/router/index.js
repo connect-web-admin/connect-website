@@ -32,10 +32,10 @@ import PrivacyPolicyView from '@/views/site-info/PrivacyPolicyView.vue';
 import TermsOfServiceView from '@/views/site-info/TermsOfServiceView.vue';
 import SctlNotationsView from '@/views/site-info/SctlNotationsView.vue';
 import ConfirmMatchInputView from '@/views/ConfirmMatchInputView.vue';
+
 // コネクター用のページ
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
-// import SelectReportingMatchU12andWView from '@/views/connecter/SelectReportingMatchU12andWView.vue';
 import SelectReportingMatchU12View from '@/views/connecter/SelectReportingMatchU12View.vue';
 import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
@@ -43,10 +43,12 @@ import SelectReportingMatchWOMANView from '@/views/connecter/SelectReportingMatc
 import TestRegisterMatchResultView from '@/views/connecter/TestRegisterMatchResultView.vue';
 import TestSelectReportingMatchU18View from '@/views/connecter/TestSelectReportingMatchU18View.vue';
 
+// 星取表作成用の試合結果表示用のページ
+import AdminLatestResultsView from '@/views/admin/AdminLatestResultsView.vue';
+import AdminLatestResultsByChampionshipNameView from '@/views/admin/AdminLatestResultsByChampionshipNameView.vue';
+
 // 404ルート
 import NotFoundView from '@/views/NotFoundView.vue';
-
-const memberInfo = ref({});
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -118,7 +120,6 @@ const router = createRouter({
 			name: 'Pics',
 			component: PicsView
 		},
-
 		
 		{
 			path: '/pics-match-list/:championshipName/:championshipId',
@@ -202,6 +203,18 @@ const router = createRouter({
 		},
 
 		{
+			path: '/admin-latest-results',
+			name: 'AdminLatestResults',
+			component: AdminLatestResultsView,
+		},
+
+		{
+			path: '/admin-latest-results-by-championship-name/:championshipId',
+			name: 'AdminLatestResultsByChampionshipName',
+			component: AdminLatestResultsByChampionshipNameView,
+		},
+
+		{
 			path: '/confirm-match-input',
 			name: 'ConfirmMatchInput',
 			component: ConfirmMatchInputView,
@@ -272,6 +285,9 @@ const router = createRouter({
 	]
 })
 
+// 会員情報を格納する変数
+const memberInfo = ref({});
+
 // 保護されたルートのリスト
 const protectedRoutes = [
 	'Top',
@@ -287,6 +303,12 @@ const protectedRoutes = [
 	'MediaArticle',
 	'Media',
 	'ClubList'
+];
+
+// 管理者専用ルートのリスト (test@testest.com のみアクセス可能)
+const adminRoutes = [
+	'AdminLatestResults',
+	'AdminLatestResultsByChampionshipName'
 ];
 
 /**
@@ -321,6 +343,16 @@ const removeSessionIdInMemberDDB = async () => {
 
 // ナビゲーションガードの実装
 router.beforeEach(async (to, from, next) => {
+	// 管理者専用ルートのアクセス制御
+	if (adminRoutes.includes(to.name)) {
+		const adminEmail = localStorage.getItem('email');
+		if (adminEmail !== 'm3jyo4tyome@iCloud.com' && adminEmail !== 'pkpkggl@gmail.com') {
+			// 管理者権限がない場合はホームページにリダイレクト
+			next({ name: 'Top' });
+			return;
+		}
+	}
+
 	if (protectedRoutes.includes(to.name)) {
 		const idToken = localStorage.getItem('idTokenForAuth');
 		if (!idToken) {
@@ -362,7 +394,6 @@ router.beforeEach(async (to, from, next) => {
 	next();
 });
 
-
 /**
  * アクセス日から次の月曜日までに開催予定の試合を取得
  */
@@ -383,7 +414,6 @@ const getTargetMemberInfo = async () => {
         }
 
         memberInfo.value = await response.json();
-        console.log("memberInfo.value", memberInfo.value);
     } catch (error) {
         console.error("会員情報の取得に失敗しました。");
     }
