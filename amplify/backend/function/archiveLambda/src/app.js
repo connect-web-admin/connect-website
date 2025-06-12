@@ -56,6 +56,43 @@ const convertUrlType = (param, type) => {
 }
 
 /************************************
+* HTTP Get method 今年度の全ての大会情報を取得 *
+************************************/
+app.get(path + '/this-year-archive', async function (req, res) {
+	const fiscalYear = req.query.fiscalYear;
+
+  try {
+		const queryParams = {
+			TableName: tableName,
+			IndexName: 'gsiByFiscalYearAndDivision',
+			KeyConditionExpression: 'fiscal_year = :fiscalYear AND division = :division',
+			ExpressionAttributeValues: {
+				':fiscalYear': fiscalYear,
+        ':division': 'all'
+			},
+		};
+
+		console.log('大会情報取得パラメタ', queryParams);
+
+		const commandForQuery = new QueryCommand(queryParams);
+		const queryResult = await ddbDocClient.send(commandForQuery);
+
+		if (!queryResult.Items || queryResult.Items.length === 0) {
+			return {
+				statusCode: 404,
+				body: JSON.stringify({ message: '対象のアイテムが見つかりませんでした' })
+			};
+		}
+
+		console.log('取得されたアイテム', queryResult)
+		res.status(200).json(queryResult.Items);
+	} catch (err) {
+		res.statusCode = 500;
+		res.json({ error: 'Could not load items: ' + err.message })
+	}
+});
+
+/************************************
 * HTTP Get method to list objects *
 ************************************/
 

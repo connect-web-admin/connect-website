@@ -79,7 +79,7 @@
         },
         "archiveLambda": {
           "deploymentBucketName": "amplify-connectwebsite-dev-0c0f1-deployment",
-          "s3Key": "amplify-builds/archiveLambda-584a73573244476d6444-build.zip"
+          "s3Key": "amplify-builds/archiveLambda-69327a4b79772f754272-build.zip"
         }
       },
       "storage": {
