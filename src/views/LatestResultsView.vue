@@ -1,20 +1,18 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { MATCH_API_URL, ID_TOKEN_FOR_AUTH, THIS_FISCAL_YEAR, USER_ATTR_EMAIL } from '@/utils/constants';
-import MatchesInThisWeekComp from '@/components/MatchesInThisWeekComp.vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { MATCH_API_URL, THIS_FISCAL_YEAR, USER_ATTR_EMAIL } from '@/utils/constants';
+import ChampionshipNamesComp from '@/components/ChampionshipNamesComp.vue';
 
 const matchInfo = ref([]);
 const noThisWeekMatchesMsg = ref('');
 const isLoading = ref(false);
-const route = useRoute();
 
 /**
- * アクセス日から次の月曜日までに開催予定の試合を取得（火曜日始まり月曜終わり）
- */
+* アクセス日から次の月曜日までに開催予定の試合を取得（火曜日始まり月曜終わり）
+*/
 const getMatchesInThisWeek = async () => {
     isLoading.value = true;
-    const queryUrl = new URL(`${MATCH_API_URL}/matches-in-this-week`);
+    const queryUrl = new URL(`${MATCH_API_URL}/matches-in-this-week-for-top`);
     queryUrl.searchParams.append('fiscalYear', THIS_FISCAL_YEAR);
     queryUrl.searchParams.append('tryingEmail', localStorage.getItem(USER_ATTR_EMAIL));
 
@@ -34,7 +32,7 @@ const getMatchesInThisWeek = async () => {
         if (matchInfo.value.length > 0) {
             return true;
         } else {
-            noThisWeekMatchesMsg.value = '今週開催予定の試合はありません。';
+            noThisWeekMatchesMsg.value = '今週開催予定の試合が存在しないか、まだ更新されていません。';
             return false;
         }
     } catch (error) {
@@ -44,100 +42,8 @@ const getMatchesInThisWeek = async () => {
     }
 }
 
-const scrollToTodayMatch = () => {
-    // 日本時間で今日の日付を取得（YYYY-MM-DD形式）
-    const today = new Date().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' }).split('/').map((num, index) => {
-        if (index === 0) return num;
-        return num.padStart(2, '0');
-    }).join('-');
-    
-    // 今日の日付の要素を探す
-    const todayElement = document.querySelector(`[data-date="${today}"]`);
-    
-    // 要素が見つかった場合、その要素の50ピクセル上までスクロール
-    if (todayElement) {
-        const elementPosition = todayElement.getBoundingClientRect().top + window.scrollY;
-        window.scrollTo({
-            top: elementPosition - 110,
-            behavior: 'smooth'
-        });
-    }
-}
-
-const scrollToCategory = (category) => {
-    // カテゴリーに対応するmatch_categoryの値を設定
-    const categoryMapping = {
-        '２種': 'U-18',
-        '３種': 'U-15',
-        '４種・女子': 'U-12'
-    };
-
-    // 対応するmatch_categoryを持つ要素を探す
-    const targetElement = document.querySelector(`[data-match-category="${categoryMapping[category]}"]`);
-    
-    // 要素が見つかった場合、その要素までスクロール
-    if (targetElement) {
-        const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
-        window.scrollTo({
-            top: elementPosition - 110,
-            behavior: 'smooth'
-        });
-    }
-}
-
-const scrollToChampionship = (championshipName) => {
-    // 大会名に対応する要素を探す
-    const targetElement = document.querySelector(`[data-championship="${championshipName}"]`);
-    
-    // 要素が見つかった場合、その要素までスクロール
-    if (targetElement) {
-        const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
-        window.scrollTo({
-            top: elementPosition - 110,
-            behavior: 'smooth'
-        });
-    }
-}
-
-// URLのクエリパラメータが変更されたときの処理
-const handleRouteChange = () => {
-    // データが読み込まれている場合のみスクロール処理を実行
-    if (matchInfo.value.length > 0) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const matchCategory = urlParams.get('match_category');
-        const championship = urlParams.get('championship');
-        
-        if (championship) {
-            scrollToChampionship(championship);
-        } else if (matchCategory) {
-            // match_categoryの値に基づいて対応するカテゴリー名を取得
-            const categoryMapping = {
-                'U-18': '２種',
-                'U-15': '３種',
-                'U-12': '４種・女子'
-            };
-            
-            const category = categoryMapping[matchCategory];
-            if (category) {
-                scrollToCategory(category);
-            }
-        } else {
-            scrollToTodayMatch();
-        }
-    }
-};
-
-// ルートのクエリパラメータの変更を監視
-watch(() => route.query, () => {
-    handleRouteChange();
-});
-
 onMounted(async () => {
     await getMatchesInThisWeek();
-    // データが読み込まれた後に少し待ってからスクロール
-    setTimeout(() => {
-        handleRouteChange();
-    }, 500);
 });
 </script>
 
@@ -148,11 +54,15 @@ onMounted(async () => {
                 <img src="../assets/icons/loading.gif" alt="loading" class="w-10 h-10">
             </div>
             <div v-else>
-                <p class="pl-1 mt-1 mb-3">
-                    ■ U-18プリンスリーグの大会詳細結果→<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank"  rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
+                <p class="pl-1 mt-1">
+                    ■ U-18プリンスリーグの大会詳細結果→<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/"
+                        target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
+                </p>
+                <p class="pl-1 mb-1">
+                    ■ 高校総体北海道大会結果→<a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E5%8C%97%E6%B5%B7%E9%81%93%E9%AB%98%E7%AD%89%E5%AD%A6%E6%A0%A1%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E9%81%B8%E6%89%8B%E6%A8%A9%E5%A4%A7%E4%BC%9A0611_%E7%B5%90%E6%9E%9C.pdf" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
                 </p>
                 <p class="text-sm text-red-500">毎週火曜日更新<br>会場の状況や天候により、定刻通りの速報とならない場合があります。</p>
-                <MatchesInThisWeekComp :match-info="matchInfo" />
+                <ChampionshipNamesComp :match-info="matchInfo" />
             </div>
         </div>
     </div>
