@@ -21,7 +21,7 @@ const filteredMatches = computed(() => {
             delete matches.round_id;
         }
     });
-    
+
     // 日本時間で現在の日時を取得
     const now = new Date();
     const jstOffset = 9 * 60; // 日本時間のオフセット（分）
@@ -75,11 +75,11 @@ const filteredMatches = computed(() => {
                 filteredDivisionMatches[key] = match;
             }
         });
-
+        
         /**
          * ラジオボタンや表示順プルダウンメニューの値をもとに試合を並び替える
          */
-        if (Object.keys(filteredDivisionMatches).length > 1) { // round_id以外の試合が存在する場合のみ追加
+        if (Object.keys(filteredDivisionMatches).length > 0) {
             // 試合を並び替え
             const sortedMatches = Object.entries(filteredDivisionMatches)
                 .filter(([key]) => key !== 'round_id')
