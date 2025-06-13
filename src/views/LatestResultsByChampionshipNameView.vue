@@ -84,7 +84,9 @@ const filterMatchesByDateRange = (matches, startDate, endDate) => {
             }
         });
         
-        if (Object.keys(filteredDivisionMatches).length > 0) {
+        // round_id以外の実際の試合データが存在するかチェック	if (Object.keys(filteredDivisionMatches).length > 0) {
+        const matchKeys = Object.keys(filteredDivisionMatches).filter(key => key !== 'round_id');	
+        if (matchKeys.length > 0) {
             result[division] = filteredDivisionMatches;
         }
     });
