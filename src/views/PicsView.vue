@@ -111,6 +111,12 @@ onMounted(async () => {
                                     <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
                                 </router-link>
                             </div>
+                            <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name === 'U11 RISE LEAGUE'">
+                                <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
+                                    <p class="pr-2">{{ championship.championship_name }}</p>
+                                    <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
+                                </router-link>
+                            </div>
                         </div>
                     </div>
                     <div v-if="category === 'U-15（ジュニアユース）'">
