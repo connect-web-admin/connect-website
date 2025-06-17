@@ -155,7 +155,7 @@ onMounted(async () => {
                 ■ U-18プリンスリーグの大会詳細結果→<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank"  rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
             </p>
             <p class="pl-1 mb-1">
-                ■ 高校総体北海道大会結果→<a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E5%8C%97%E6%B5%B7%E9%81%93%E9%AB%98%E7%AD%89%E5%AD%A6%E6%A0%A1%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E9%81%B8%E6%89%8B%E6%A8%A9%E5%A4%A7%E4%BC%9A0613_%E7%B5%90%E6%9E%9C.pdf" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">こちら</a> <span class="text-red-500">New!</span>
+                ■ 高校総体北海道大会結果→<a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E3%82%A4%E3%83%B3%E3%83%8F%E3%82%A4%E7%B5%90%E6%9E%9C0617.pdf" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">こちら</a> <span class="text-red-500">New!</span>
             </p>
             <p class="text-sm text-red-500">毎週火曜日更新</p>
             <div v-if="isLoading" class="flex justify-center items-center py-8">
