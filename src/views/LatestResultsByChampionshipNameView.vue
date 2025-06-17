@@ -53,11 +53,15 @@ const getDateRange = () => {
  * round_idを削除する処理
  */
 const removeRoundIds = (matches) => {
+    const result = {};
     Object.entries(matches).forEach(([division, divisionMatches]) => {
-        if (divisionMatches.round_id) {
-            delete divisionMatches.round_id;
+        const newDivisionMatches = { ...divisionMatches };
+        if (newDivisionMatches.round_id) {
+            delete newDivisionMatches.round_id;
         }
+        result[division] = newDivisionMatches;
     });
+    return result;
 };
 
 /**
@@ -101,6 +105,9 @@ const sortMatches = (matches, key, order) => {
     const result = {};
     
     Object.entries(matches).forEach(([division, divisionMatches]) => {
+        // round_idを保存
+        const roundId = divisionMatches.round_id;
+        
         // 試合を並び替え
         const sortedMatches = Object.entries(divisionMatches)
             .filter(([matchKey]) => matchKey !== 'round_id')
@@ -121,10 +128,18 @@ const sortMatches = (matches, key, order) => {
                         ? a.scheduled_match_start_time.localeCompare(b.scheduled_match_start_time)
                         : b.scheduled_match_start_time.localeCompare(a.scheduled_match_start_time);
                 }
+                return 0;
             });
 
         // 並び替えた結果を新しいオブジェクトに格納
         const sortedDivisionMatches = {};
+        
+        // round_idを最初に追加
+        if (roundId) {
+            sortedDivisionMatches.round_id = roundId;
+        }
+        
+        // ソートされた試合を追加
         sortedMatches.forEach(([matchKey, match]) => {
             sortedDivisionMatches[matchKey] = match;
         });
@@ -185,10 +200,59 @@ const filteredMatches = computed(() => {
 
     // divisionを並び替え（round_idを使用）
     result = sortDivisions(result);
-
+    
+    // デバッグ用ログ
+    console.log('sortKey:', sortKey.value, 'sortOrder:', sortOrder.value);
+    console.log('sorted result:', result);
+    
     // round_idを削除
-    removeRoundIds(result);
+    result = removeRoundIds(result);
 
+    return result;
+});
+
+/**
+ * 表示用にソート済み配列に変換したマッチ情報
+ */
+const sortedMatchesForDisplay = computed(() => {
+    const result = [];
+    
+    Object.entries(filteredMatches.value).forEach(([divisionKey, divisionMatches]) => {
+        if (divisionKey === 'match_dates') return;
+        
+        // 試合をソートして配列に変換
+        const matchArray = Object.entries(divisionMatches)
+            .filter(([matchKey]) => matchKey !== 'round_id')
+            .map(([matchKey, matchDetail]) => ({
+                matchKey,
+                matchDetail
+            }))
+            .sort((a, b) => {
+                if (sortKey.value === 'date_and_time') {
+                    const dateA = new Date(a.matchDetail.match_date);
+                    const dateB = new Date(b.matchDetail.match_date);
+                    if (dateA.getTime() === dateB.getTime()) {
+                        return sortOrder.value === 'asc' 
+                            ? a.matchDetail.scheduled_match_start_time.localeCompare(b.matchDetail.scheduled_match_start_time)
+                            : b.matchDetail.scheduled_match_start_time.localeCompare(a.matchDetail.scheduled_match_start_time);
+                    }
+                    return sortOrder.value === 'asc'
+                        ? dateA.getTime() - dateB.getTime()
+                        : dateB.getTime() - dateA.getTime();
+                } else if (sortKey.value === 'scheduled_match_start_time') {
+                    return sortOrder.value === 'asc'
+                        ? a.matchDetail.scheduled_match_start_time.localeCompare(b.matchDetail.scheduled_match_start_time)
+                        : b.matchDetail.scheduled_match_start_time.localeCompare(a.matchDetail.scheduled_match_start_time);
+                }
+                return 0;
+            });
+        
+        result.push({
+            divisionKey,
+            matches: matchArray
+        });
+    });
+    
     return result;
 });
 
@@ -297,39 +361,35 @@ onMounted(async () => {
                 </div>
 
                 <div
-                    v-for="(divisionMatches, divisionKey) in filteredMatches"
-                    :key="divisionKey"
+                    v-for="division in sortedMatchesForDisplay"
+                    :key="division.divisionKey"
                     class="text-center"
                 >
                     <h2
                         class="text-center bg-amber-200 font-normal h-5"
-                        v-if="divisionKey !== 'match_dates'"
                     >
-                        {{ divisionKey }}
+                        {{ division.divisionKey }}
                     </h2>
 
                     <div
-                        v-if="divisionKey !== 'match_dates'"
-                        v-for="(
-                            matchDetail, matchKey, index
-                        ) in divisionMatches"
-                        :key="matchDetail.match_id || matchKey"
+                        v-for="(match, index) in division.matches"
+                        :key="match.matchDetail.match_id || match.matchKey"
                         class="my-1 rounded-md p-2"
                         :class="{ 'bg-blue-50': index % 2 === 1 }"
                     >
-                        <div v-if="matchDetail.match_id">
+                        <div v-if="match.matchDetail.match_id">
                             <div class="text-center text-sm leading-[15px]">
-                                試合日：{{ matchDetail.match_date }}<br />
-                                会場：{{ matchDetail.venue }}<br />
-                                {{ matchKey }}
+                                試合日：{{ match.matchDetail.match_date }}<br />
+                                会場：{{ match.matchDetail.venue }}<br />
+                                {{ match.matchKey }}
                             </div>
 
                             <div
-                                v-if="matchDetail.game_status === '試合終了'"
+                                v-if="match.matchDetail.game_status === '試合終了'"
                                 class="text-center text-sm leading-[15px]"
                             >
                                 試合開始時刻：{{
-                                    matchDetail.scheduled_match_start_time
+                                    match.matchDetail.scheduled_match_start_time
                                 }}
                             </div>
 
@@ -339,78 +399,78 @@ onMounted(async () => {
                                 <span
                                     class="text-right whitespace-normal break-words"
                                 >
-                                    {{ matchDetail.home_club.club_name }}
+                                    {{ match.matchDetail.home_club.club_name }}
                                 </span>
 
                                 <div
-                                    v-if="matchDetail.game_status === '試合前'"
+                                    v-if="match.matchDetail.game_status === '試合前'"
                                     class="text-center text-2xl"
                                 >
-                                    {{ matchDetail.scheduled_match_start_time }}
+                                    {{ match.matchDetail.scheduled_match_start_time }}
                                 </div>
 
                                 <div v-else class="text-center">
                                     <p>
                                         {{
-                                            matchDetail.home_club
+                                            match.matchDetail.home_club
                                                 .first_half_score
                                         }}
                                         前半
                                         {{
-                                            matchDetail.away_club
+                                            match.matchDetail.away_club
                                                 .first_half_score
                                         }}
                                     </p>
 
                                     <p>
                                         {{
-                                            matchDetail.home_club
+                                            match.matchDetail.home_club
                                                 .second_half_score
                                         }}
                                         後半
                                         {{
-                                            matchDetail.away_club
+                                            match.matchDetail.away_club
                                                 .second_half_score
                                         }}
                                     </p>
 
-                                    <div v-if="matchDetail.has_extra_halves">
+                                    <div v-if="match.matchDetail.has_extra_halves">
                                         <p>
                                             {{
-                                                matchDetail.home_club
+                                                match.matchDetail.home_club
                                                     .extra_first_half_score
                                             }}
                                             延長前半
                                             {{
-                                                matchDetail.away_club
+                                                match.matchDetail.away_club
                                                     .extra_first_half_score
                                             }}
                                         </p>
 
                                         <p>
                                             {{
-                                                matchDetail.home_club
+                                                match.matchDetail.home_club
                                                     .extra_second_half_score
                                             }}
                                             延長後半
                                             {{
-                                                matchDetail.away_club
+                                                match.matchDetail.away_club
                                                     .extra_second_half_score
                                             }}
                                         </p>
                                     </div>
 
                                     <p class="font-bold">
-                                        {{ matchDetail.home_club.final_score }}
+                                        {{ match.matchDetail.home_club.final_score }}
                                         合計
-                                        {{ matchDetail.away_club.final_score }}
+                                        {{ match.matchDetail.away_club.final_score }}
                                     </p>
 
-                                    <div v-if="matchDetail.has_pk">
+                                    <div v-if="match.matchDetail.has_pk">
                                         <p>
-                                            {{ matchDetail.home_club.pk_score }}
+                                            {{ match.matchDetail.home_club.pk_score }}
                                             PK
-                                            {{ matchDetail.away_club.pk_score }}
+                                            {{ match.matchDetail.away_club.pk_score }}
                                         </p>
                                     </div>
                                 </div>
@@ -418,33 +478,33 @@ onMounted(async () => {
                                 <span
                                     class="text-left whitespace-normal break-words"
                                 >
-                                    {{ matchDetail.away_club.club_name }}
+                                    {{ match.matchDetail.away_club.club_name }}
                                 </span>
                             </div>
 
                             <div class="text-center mt-1">
                                 <span
-                                    v-if="matchDetail.game_status === '試合前'"
+                                    v-if="match.matchDetail.game_status === '試合前'"
                                     class="text-blue-500 cursor-pointer"
-                                    >{{ matchDetail.game_status }}</span
+                                    >{{ match.matchDetail.game_status }}</span
                                 >
 
                                 <span
                                     v-if="
-                                        matchDetail.game_status !==
+                                        match.matchDetail.game_status !==
                                             '試合終了' &&
-                                        matchDetail.game_status !== '試合前'
+                                        match.matchDetail.game_status !== '試合前'
                                     "
                                     class="text-red-500 cursor-pointer"
-                                    >{{ matchDetail.game_status }}</span
+                                    >{{ match.matchDetail.game_status }}</span
                                 >
 
                                 <span
                                     v-if="
-                                        matchDetail.game_status === '試合終了'
+                                        match.matchDetail.game_status === '試合終了'
                                     "
                                     class="text-green-600 cursor-pointer"
-                                    >{{ matchDetail.game_status }}</span
+                                    >{{ match.matchDetail.game_status }}</span
                                 >
                             </div>
                         </div>
