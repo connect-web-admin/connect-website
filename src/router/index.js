@@ -382,14 +382,16 @@ router.beforeEach(async (to, from, next) => {
 		}
 	}
 
-	// if (!localStorage.getItem(USER_ATTR_MEMBERSHIP_TYPE)) {
-	// 	// ログインしている会員の会員情報を取得
-	// 	await getTargetMemberInfo();
+	// ユーザーの閲覧権限（加入プラン）に合わせる
+	// ただしコネクターのページは会員情報を取得しない
+	if (!localStorage.getItem(USER_ATTR_MEMBERSHIP_TYPE) && !to.path.startsWith('/connecter')) {
+		// ログインしている会員の会員情報を取得
+		await getTargetMemberInfo();
 
-	// 	// 取得した会員情報のうちmembership_typeをローカルストレージに保存
-	// 	// regularかlightのどちらかを保存することになる。これにより閲覧権限を管理
-	// 	localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, memberInfo.value.membership_type);
-	// }
+		// 取得した会員情報のうちmembership_typeをローカルストレージに保存
+		// regularかlightのどちらかを保存することになる。これにより閲覧権限を管理
+		localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, memberInfo.value.membership_type);
+	}
 	
 	next();
 });
