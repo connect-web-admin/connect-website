@@ -319,11 +319,9 @@ onMounted(async () => {
                     >
                         <div v-if="matchDetail.match_id">
                             <div class="text-center text-sm leading-[15px]">
-                                試合日：{{ matchDetail.match_date }}
-                            </div>
-
-                            <div class="text-center text-sm leading-[15px]">
-                                会場：{{ matchDetail.venue }}
+                                試合日：{{ matchDetail.match_date }}<br />
+                                会場：{{ matchDetail.venue }}<br />
+                                {{ matchKey }}
                             </div>
 
                             <div
