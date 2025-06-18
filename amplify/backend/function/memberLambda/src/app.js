@@ -677,8 +677,9 @@ app.post(path + '/register-user-to-cognito', async function (req, res) {
 			Username: inputEmail,
 			Password: inputPassword,
 			UserAttributes: [
-				{ Name: 'email', Value: inputEmail }
-			]
+				{ Name: 'email', Value: inputEmail },
+				{ Name: 'custom:membership_type', Value: 'regular' }
+			],
 		};
 		console.log('Cognito SignUpパラメータ:', signUpParams);
 
