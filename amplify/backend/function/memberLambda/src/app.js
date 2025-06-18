@@ -9,7 +9,7 @@ See the License for the specific language governing permissions and limitations 
 
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminDeleteUserCommand, ConfirmSignUpCommand, ResendConfirmationCodeCommand, SignUpCommand, AdminGetUserCommand } = require('@aws-sdk/client-cognito-identity-provider');
+const { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminDeleteUserCommand, ConfirmSignUpCommand, ResendConfirmationCodeCommand, SignUpCommand, AdminGetUserCommand, ListUsersCommand } = require('@aws-sdk/client-cognito-identity-provider');
 const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand, TransactWriteCommand } = require('@aws-sdk/lib-dynamodb');
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 const bodyParser = require('body-parser');
@@ -106,8 +106,109 @@ const convertUrlType = (param, type) => {
 /************************************
  * HTTP Get method to 会員情報を取得 *
  ************************************/
+app.get(path + '/check-auth-with-membership-type', async function (req, res) {
+	const email = req.query.email;
+	const membershipType = req.query.membershipType;
+
+	// 入力バリデーション
+	if (!email || !validator.isEmail(email)) {
+		return res.status(400).json({
+			status: 'INVALID_REQUEST',
+			message: 'メールアドレスを確認できませんでした。FAQにあるログアウトボタンを押してログアウトしてからログインし直し、再度お試しください。'
+		});
+	}
+
+	try {
+		console.log('Cognitoでメンバーシップタイプ取得開始:', email);
+
+		// Cognitoでメールアドレスからユーザーを検索
+		const listUsersCommand = new ListUsersCommand({
+			UserPoolId: USER_POOL_ID,
+			Filter: `email = "${email}"`,
+			Limit: 1
+		});
+
+		const listUsersResult = await cognitoClient.send(listUsersCommand);
+
+		if (!listUsersResult.Users || listUsersResult.Users.length === 0) {
+			return res.status(404).json({
+				status: 'USER_NOT_FOUND',
+				message: '指定されたメールアドレスのユーザーが見つかりませんでした。'
+			});
+		}
+
+		const user = listUsersResult.Users[0];
+		console.log('Cognitoから取得したユーザー:', user);
+
+		// custom:membership_type 属性を取得
+		const membershipTypeInCognito = user.Attributes?.find(
+			attr => attr.Name === 'custom:membership_type'
+		);
+
+		if (!membershipTypeInCognito) {
+			return res.status(404).json({
+				status: 'MEMBERSHIP_TYPE_NOT_FOUND',
+				message: 'メンバーシップタイプが設定されていません。'
+			});
+		}
+
+		console.log('取得したmembership_type:', membershipTypeInCognito);
+
+		if (membershipType !== membershipTypeInCognito.Value) {
+			return res.status(400).json({
+				status: 'MEMBERSHIP_TYPE_NOT_MATCH',
+				message: 'メンバーシップタイプが一致しません。'
+			});
+		}
+
+		res.status(200).json({
+			status: 'SUCCESS',
+			message: 'メンバーシップタイプが一致しました。'
+		});
+	} catch (err) {
+		console.error('Cognitoメンバーシップタイプ取得エラー:', err);
+		
+		let errorMessage = 'メンバーシップタイプの取得に失敗しました。';
+		let statusCode = 500;
+
+		switch (err.name) {
+			case 'UserNotFoundException':
+				errorMessage = '指定されたメールアドレスのユーザーが見つかりませんでした。';
+				statusCode = 404;
+				break;
+			case 'InvalidParameterException':
+				errorMessage = '無効なパラメータが指定されました。';
+				statusCode = 400;
+				break;
+			case 'TooManyRequestsException':
+				errorMessage = 'リクエスト制限に達しました。しばらく時間を空けてから再試行してください。';
+				statusCode = 429;
+				break;
+			default:
+				statusCode = 500;
+				errorMessage = '内部エラーが発生しました。時間を置いて再度お試しください。';
+				break;
+		}
+
+		res.status(statusCode).json({
+			status: 'ERROR',
+			message: errorMessage
+		});
+	}
+});
+
+/************************************
+ * HTTP Get method to 会員情報を取得 *
+ ************************************/
 app.get(path + '/member-info', async function (req, res) {
 	const inputEmail = req.query.email;
+
+	if (!inputEmail || !validator.isEmail(inputEmail)) {
+		return res.status(400).json({
+			status: 'INVALID_REQUEST',
+			message: 'メールアドレスを確認できませんでした。FAQにあるログアウトボタンを押してログアウトしてからログインし直し、再度お試しください。'
+		});
+	}
 
 	try {
 		const queryParams = {
