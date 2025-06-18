@@ -58,11 +58,8 @@ const signOutAndDeleteItemsInLocalStorage = async () => {
     // ローカルストレージのアイテムを削除
     localStorage.removeItem('email');
     localStorage.removeItem('idTokenForAuth');
-    localStorage.removeItem('isAccountAvailable');
-    localStorage.removeItem('userAttrSub');
-    localStorage.removeItem('custom:membership_type');
+    localStorage.removeItem('membershipType');
     localStorage.removeItem(USER_ATTR_SESSION_ID);
-    localStorage.removeItem(USER_ATTR_EMAIL);
 
     // Authenticator備え付けのログアウト用の関数
     props.signOut();
