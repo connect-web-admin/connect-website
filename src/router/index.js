@@ -403,7 +403,7 @@ router.beforeEach(async (to, from, next) => {
 		let membershipTypeInLs = localStorage.getItem(USER_ATTR_MEMBERSHIP_TYPE);
 
 		// ローカルストレージに会員情報がない場合は会員情報を取得
-		if (!membershipTypeInLs) {
+		if (!membershipTypeInLs || membershipTypeInLs === 'undefined') {
 			// ログインしている会員の会員情報を取得
 			const fetchedMembershipType = await getTargetMemberInfo();
 
@@ -464,6 +464,7 @@ const getTargetMemberInfo = async () => {
  * コネクターURL以外へのページ遷移に際してmembership_typeをチェック
  */
 const checkAuthWithMembershipType = async (membershipType) => {
+	console.log('checkAuthWithMembershipType', membershipType);
 	const queryUrl = new URL(`${MEMBER_API_URL}/check-auth-with-membership-type`);
     queryUrl.searchParams.append("email", localStorage.getItem(USER_ATTR_EMAIL));
 	queryUrl.searchParams.append("membershipType", membershipType);
@@ -490,7 +491,7 @@ const checkAuthWithMembershipType = async (membershipType) => {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
     } catch (error) {
-        console.error("会員情報の取得に失敗しました。");
+        console.error("権限の確認に失敗しました。");
     }
 }
 
