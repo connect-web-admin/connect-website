@@ -47,6 +47,12 @@ import TestSelectReportingMatchU18View from '@/views/connecter/TestSelectReporti
 import AdminLatestResultsView from '@/views/admin/AdminLatestResultsView.vue';
 import AdminLatestResultsByChampionshipNameView from '@/views/admin/AdminLatestResultsByChampionshipNameView.vue';
 
+// アクセス権限エラー用のページ
+import UnauthenticatedView from '@/views/UnauthenticatedView.vue';
+
+// セッションの有効期限が切れた場合（emailがローカルストレージにない場合）のページ
+import ReloginNavView from '@/views/ReloginNavView.vue';
+
 // 404ルート
 import NotFoundView from '@/views/NotFoundView.vue';
 
@@ -276,6 +282,20 @@ const router = createRouter({
 			props: (route) => ({ accessToken: route.query.access_token })
 		},
 
+		// アクセス権限エラー用のページ
+		{
+			path: '/unauthenticated',
+			name: 'Unauthenticated',
+			component: UnauthenticatedView
+		},
+
+		// セッションの有効期限が切れた場合（emailがローカルストレージにない場合）のページ
+		{
+			path: '/relogin-nav',
+			name: 'ReloginNav',
+			component: ReloginNavView
+		},
+
 		// 404ルート この記載場所は最下部から動かさないこと
 		{
 			path: '/:pathMatch(.*)*',
@@ -303,6 +323,16 @@ const protectedRoutes = [
 	'MediaArticle',
 	'Media',
 	'ClubList'
+];
+
+// lightメンバーがアクセス可能なルートのリスト
+const lightMemberAllowedRoutes = [
+	'LatestResults',
+	'LatestResultsByChampionship',
+	'Top', // トップページは基本的にアクセス可能
+	'Login',
+	'Home',
+	'MemberInfo', // 会員情報は確認できるようにする
 ];
 
 // 管理者専用ルートのリスト (test@testest.com のみアクセス可能)
@@ -343,6 +373,12 @@ const removeSessionIdInMemberDDB = async () => {
 
 // ナビゲーションガードの実装
 router.beforeEach(async (to, from, next) => {
+	// Unauthenticatedページへの遷移時は認証チェックをスキップしてループを防ぐ
+	if (to.name === 'Unauthenticated' || to.name === 'ReloginNav') {
+		next();
+		return;
+	}
+
 	// 管理者専用ルートのアクセス制御
 	if (adminRoutes.includes(to.name)) {
 		const adminEmail = localStorage.getItem('email');
@@ -351,53 +387,54 @@ router.beforeEach(async (to, from, next) => {
 			next({ name: 'Top' });
 			return;
 		}
+		// 管理者権限がある場合は処理を続行
+		next();
+		return;
 	}
 
-	if (protectedRoutes.includes(to.name)) {
-		const idToken = localStorage.getItem('idTokenForAuth');
-		if (!idToken) {
-			try {
-				const authState = useAuthenticator();
-				if (authState.user) {
-					await removeSessionIdInMemberDDB();
-
-					// ローカルストレージのアイテムを削除
-					localStorage.removeItem('email');
-					localStorage.removeItem('idTokenForAuth');
-					localStorage.removeItem('isAccountAvailable');
-					localStorage.removeItem('userAttrSub');
-					localStorage.removeItem('custom:membership_type');
-					localStorage.removeItem(USER_ATTR_SESSION_ID);
-					localStorage.removeItem(USER_ATTR_EMAIL);
-
-					// ユーザーが存在する場合はサインアウト
-					await authState.signOut();
-				}
-			} catch (error) {
-				console.error('認証エラー:', error);
-			}
-			// ログインページにリダイレクト
-			next({ name: 'Home' });
+	// コネクターURL以外のページ遷移には、ユーザーの閲覧権限（加入プラン）に合わせる
+	if (!(to.path.startsWith('/connecter'))) {
+		const emailInLs = localStorage.getItem(USER_ATTR_EMAIL);
+		if (!emailInLs) {
+			next({ name: 'ReloginNav' });
 			return;
 		}
-	}
+		
+		let membershipTypeInLs = localStorage.getItem(USER_ATTR_MEMBERSHIP_TYPE);
 
-	// ユーザーの閲覧権限（加入プラン）に合わせる
-	// ただしコネクターのページは会員情報を取得しない
-	if (!localStorage.getItem(USER_ATTR_MEMBERSHIP_TYPE) && !to.path.startsWith('/connecter')) {
+		// ローカルストレージに会員情報がない場合は会員情報を取得
+		if (!membershipTypeInLs) {
+			// ログインしている会員の会員情報を取得
+			const fetchedMembershipType = await getTargetMemberInfo();
+
+			if (fetchedMembershipType === 'failed') {
+				next({ name: 'Top' });
+				return;
+			}
+
+			// 取得した会員情報のうちmembership_typeをローカルストレージに保存
+			// regularかlightのどちらかを保存することになる。これにより閲覧権限を管理
+			localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, fetchedMembershipType);
+			membershipTypeInLs = fetchedMembershipType;
+		}
+
 		// ログインしている会員の会員情報を取得
-		await getTargetMemberInfo();
-
-		// 取得した会員情報のうちmembership_typeをローカルストレージに保存
-		// regularかlightのどちらかを保存することになる。これにより閲覧権限を管理
-		localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, memberInfo.value.membership_type);
+		const authResult = await checkAuthWithMembershipType(membershipTypeInLs);
+		if (authResult === 'NG') {
+			next({ name: 'Unauthenticated' });
+			return;
+		}
+		if (authResult === 'OK') {
+			next();
+			return;
+		}
 	}
 	
 	next();
 });
 
 /**
- * アクセス日から次の月曜日までに開催予定の試合を取得
+ * ログインしている会員の会員情報を取得
  */
 const getTargetMemberInfo = async () => {
     const queryUrl = new URL(`${MEMBER_API_URL}/member-info`);
@@ -416,9 +453,45 @@ const getTargetMemberInfo = async () => {
         }
 
         memberInfo.value = await response.json();
+		return memberInfo.value.membership_type;
+    } catch (error) {
+        console.error("会員情報の取得に失敗しました。");
+		return 'failed';
+    }
+};
+
+/**
+ * コネクターURL以外へのページ遷移に際してmembership_typeをチェック
+ */
+const checkAuthWithMembershipType = async (membershipType) => {
+	const queryUrl = new URL(`${MEMBER_API_URL}/check-auth-with-membership-type`);
+    queryUrl.searchParams.append("email", localStorage.getItem(USER_ATTR_EMAIL));
+	queryUrl.searchParams.append("membershipType", membershipType);
+
+    try {
+        const response = await fetch(queryUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+		const responseJson = await response.json();
+		
+		if (responseJson.status === 'MEMBERSHIP_TYPE_NOT_MATCH') {
+			return 'NG';
+		} else if (responseJson.status === 'SUCCESS') {
+			return 'OK';
+		} else {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
     } catch (error) {
         console.error("会員情報の取得に失敗しました。");
     }
-};
+}
 
 export default router
