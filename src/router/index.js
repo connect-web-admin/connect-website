@@ -371,10 +371,25 @@ const removeSessionIdInMemberDDB = async () => {
     }
 }
 
+// site-info関連のルートのリスト (誰でもアクセス可能)
+const siteInfoRoutes = [
+	'CompanyInfo',
+	'CopyrightInfo',
+	'PrivacyPolicy',
+	'TermsOfService',
+	'SctlNotations'
+];
+
 // ナビゲーションガードの実装
 router.beforeEach(async (to, from, next) => {
 	// Unauthenticatedページへの遷移時は認証チェックをスキップしてループを防ぐ
 	if (to.name === 'Unauthenticated' || to.name === 'ReloginNav') {
+		next();
+		return;
+	}
+
+	// site-info関連のページへの遷移時は認証チェックをスキップ
+	if (siteInfoRoutes.includes(to.name)) {
 		next();
 		return;
 	}
