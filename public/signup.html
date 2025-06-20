@@ -223,9 +223,12 @@
 
             <!-- 支払いプラン -->
             <div class="form-group">
-                <p style="font-weight: bold; margin-top:10px;">お支払いプラン選択</p>
+                <p style="font-weight: bold; margin-top:10px;">プラン選択</p>
+                <p style="font-weight: bold; margin-top:10px;">・レギュラー会員</p>
+                <p>札幌地区サッカー協会と北海道サッカー協会が主催する大会が見れるプラン
+                    （速報又は結果と各種コンテンツが閲覧可能）</p>
                 <label><input type="radio" id="monthly" name="paymentPlan" value="monthly" /> 毎月払い 440円</label>
-                <label><input type="radio" id="yearly" name="paymentPlan" value="yearly" checked /> 年払い 4,840円<span style="font-size:0.8em;">（ご登録日から、翌年の同じ日の前日までサービス利用可能です。システムの仕様上、「※ご指定のお支払い情報にて、次回以降のご請求をさせていただきます。」という案内が表示される場合がありますが、継続課金はされません。）</span></label><br />
+                <label><input type="radio" id="yearly" name="paymentPlan" value="yearly" checked /> 年払い 4,840円<span style="font-size:0.8em;">（ご登録日から、翌年の同じ日の前日までサービス利用可能です。システムの仕様上、「※ご指定のお支払い情報にて、次回以降のご請求をさせていただきます。」という案内が表示される場合がありますが、継続課金はされません。）</span></label>
             </div>
 
             <!-- 利用規約確認 -->
@@ -308,9 +311,21 @@
             }
 
             // ---------------------
+            // パスワードハッシュ化関数
+            // ---------------------
+            async function hashPassword(password) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                return hashHex;
+            }
+
+            // ---------------------
             // 送信処理＋バリデーション
             // ---------------------
-            form.addEventListener('submit', (event) => {
+            form.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 document.querySelectorAll('.error-message').forEach(el => el.remove());
                 let isValid = true;
@@ -362,21 +377,33 @@
                 }
 
                 if (isValid) {
-                    const formData = new FormData(form);
-                    const obj = {};
-                    formData.forEach((value, key) => {
-                        obj[key] = value;
-                    });
+                    try {
+                        // パスワードをハッシュ化
+                        const hashedPassword = await hashPassword(password);
+                        
+                        const formData = new FormData(form);
+                        const obj = {};
+                        formData.forEach((value, key) => {
+                            obj[key] = value;
+                        });
 
-                    // paymentPlanを代入
-                    obj['free1'] = form.elements['paymentPlan'].value;
+                        // ハッシュ化されたパスワードで置き換え
+                        obj['inputPassword'] = hashedPassword;
+                        obj['confirmPassword'] = hashedPassword;
 
-                    // cust_codeを生成
-                    const custCode = generateCustCode();
-                    obj['custCode'] = custCode;
+                        // paymentPlanを代入
+                        obj['free1'] = form.elements['paymentPlan'].value;
 
-                    sessionStorage.setItem('registrationData', JSON.stringify(obj));
-                    window.location.href = 'confirm-entry.html';
+                        // cust_codeを生成
+                        const custCode = generateCustCode();
+                        obj['custCode'] = custCode;
+
+                        sessionStorage.setItem('registrationData', JSON.stringify(obj));
+                        window.location.href = 'confirm-entry.html';
+                    } catch (error) {
+                        console.error('パスワードのハッシュ化エラー:', error);
+                        showError(form.elements['inputPassword'], 'パスワードの処理中にエラーが発生しました。再度お試しください。');
+                    }
                 }
             });
 

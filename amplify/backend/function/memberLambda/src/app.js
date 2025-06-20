@@ -1066,6 +1066,41 @@ app.post(path + '/pagecon_url', async (req, res) => {
 			res.set('Content-Type', 'text/plain');
 			res.status(200).send('OK,');
 		}
+
+		// 本日の日付により、月払い用の決済要求・確定要求を送信
+		if (paymentPlan === 'monthly-light') {
+			// チェックサム作成	
+			const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLight, free1, encrypted_flg, request_date];
+			const sbps_hashcode = generateHash(paymentElementsForHash);
+
+			//////////////////
+			// 決済要求を送信 //
+			//////////////////
+			const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLight, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
+			if (paymentResult['sps-api-response'].res_result !== 'OK') {
+				return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
+			}
+
+			//////////////////
+			// 確定要求を送信 //
+			//////////////////
+			const resSpsTransactionId = paymentResult['sps-api-response'].res_sps_transaction_id;
+			const confirmElementsForHash = [merchant_id, service_id, resSpsTransactionId, request_date];
+			const res_sps_hashcode = generateHash(confirmElementsForHash);
+			// 決済要求が成功したら、確定要求を送信
+			const confirmResult = await confirmPayment(merchant_id, service_id, resSpsTransactionId, request_date, res_sps_hashcode);
+			// 購入要求・確定要求が成功したら、DynamoDBのアトリビュート変更（GSI使用）
+			if (confirmResult['sps-api-response'].res_result !== 'OK') {
+				return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
+			}
+
+			// can_loginをtrueに更新してログイン可能とする
+			const expirationDay = getLastDayOfMonth(nowJST);
+			await updateMemberInfo(member_id, membership_type, today, expirationDay);
+
+			res.set('Content-Type', 'text/plain');
+			res.status(200).send('OK,');
+		}
 	} catch (err) {
 		console.error('更新エラー:', err);
 		return res.status(500).json({ error: 'サーバーエラーが発生しました' });
