@@ -28,6 +28,7 @@ const getChampionshipInfo = async () => {
         isLoading.value = false;
         return;
     }
+
     try {
         const response = await fetch(queryUrl, {
             method: 'GET',
@@ -62,10 +63,15 @@ const getChampionshipInfo = async () => {
         const sortedData = {};
         categoryOrder.forEach(category => {
             // データが存在しない場合でも空の配列を設定
-            sortedData[category] = groupedData[category] || [];
+            const categoryData = groupedData[category] || [];
+            // 各カテゴリー内でchampionship_idの昇順でソート
+            sortedData[category] = categoryData.sort((a, b) => {
+                return a.championship_id.localeCompare(b.championship_id);
+            });
         });
 
         championshipInfo.value = sortedData;
+        console.log('championshipInfo', championshipInfo.value);
 
         if (Object.keys(championshipInfo.value).length > 0) {
             return true;
@@ -129,6 +135,12 @@ onMounted(async () => {
                                 </router-link>
                             </div>
                             <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name === '2025年度 第17回札幌地区カブスリーグU-15 Bグループ'">
+                                <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
+                                    <p class="pr-2">{{ championship.championship_name }}</p>
+                                    <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
+                                </router-link>
+                            </div>
+                            <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name === '2025年度 第17回札幌地区カブスリーグU-15 Cグループ'">
                                 <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
                                     <p class="pr-2">{{ championship.championship_name }}</p>
                                     <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
