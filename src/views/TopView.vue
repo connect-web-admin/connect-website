@@ -132,8 +132,6 @@ onMounted(async () => {
     await getMatchesInThisWeekForTop();
     await getLatestTwoNews();
     await getLatestFourArticles();
-    // // データが読み込まれた後に少し待ってからスクロール
-    // setTimeout(scrollToTodayMatch, 500);
 
     // ページ遷移時に最上部へスクロール
     window.scrollTo({
