@@ -962,7 +962,7 @@ app.post(path + '/pagecon_url', async (req, res) => {
 	// const amountOfYearly = (nowJST < mayFirst2025) ? '3960' : '4840';
 	const amountOfYearly = '4840';
 	const amountOfMonthly = '440';
-	const amountOfMonthlyLight = '220';
+	const amountOfMonthlyLimited = '220';
 
 	// 暗号化フラグ
 	const encrypted_flg = '0'; // 暗号化しない
@@ -1068,15 +1068,15 @@ app.post(path + '/pagecon_url', async (req, res) => {
 		}
 
 		// 本日の日付により、月払い用の決済要求・確定要求を送信
-		if (paymentPlan === 'monthly-light') {
+		if (paymentPlan === 'monthly-limited') {
 			// チェックサム作成	
-			const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLight, free1, encrypted_flg, request_date];
+			const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLimited, free1, encrypted_flg, request_date];
 			const sbps_hashcode = generateHash(paymentElementsForHash);
 
 			//////////////////
 			// 決済要求を送信 //
 			//////////////////
-			const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLight, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
+			const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLimited, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
 			if (paymentResult['sps-api-response'].res_result !== 'OK') {
 				return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
 			}
