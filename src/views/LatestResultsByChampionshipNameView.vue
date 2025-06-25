@@ -202,8 +202,8 @@ const filteredMatches = computed(() => {
     result = sortDivisions(result);
     
     // デバッグ用ログ
-    console.log('sortKey:', sortKey.value, 'sortOrder:', sortOrder.value);
-    console.log('sorted result:', result);
+    // console.log('sortKey:', sortKey.value, 'sortOrder:', sortOrder.value);
+    // console.log('sorted result:', result);
     
     // round_idを削除
     result = removeRoundIds(result);
