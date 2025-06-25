@@ -30,11 +30,11 @@ const btnBase = 'w-1/4 py-1 text-white rounded-md';
         <div v-if="show" class="fixed inset-0 z-[9998] flex bg-black/20 transition-opacity duration-300">
             <div class="m-auto w-[350px] rounded-lg p-[20px_30px] shadow-[0_2px_8px_rgba(0,0,0,0.33)] transition-all duration-300 bg-white">
                 <div v-if="targetMembershipType === 'regular'" class="my-5">
-                    <p>会員種別を{{ membershipTypeNames[targetMembershipType] }}に変更します。<br />変更は即時反映され、レギュラー会員の会費との差額が決済されます。<br /><span class="text-red-500">翌月1日まで再度{{ membershipTypeNames[currentMembershipType] }}会員に変更することができません。</span><br />
+                    <p>会員種別を{{ membershipTypeNames[targetMembershipType] }}に変更します。<br />変更は即時反映され、レギュラー会員の会費との差額が決済されます。<br /><span class="text-red-500">翌月1日まで{{ membershipTypeNames[currentMembershipType] }}会員に再変更することができません。</span><br />
                     よろしいですか？</p>
                 </div>
                 <div v-if="targetMembershipType === 'limited'" class="my-5">
-                    <p>会員種別を{{ membershipTypeNames[targetMembershipType] }}に変更します。<br />変更は翌月1日から反映されます。<br /><span class="text-red-500">翌月1日まで再度{{ membershipTypeNames[currentMembershipType] }}会員に変更することができません。</span><br />
+                    <p>会員種別を{{ membershipTypeNames[targetMembershipType] }}に変更します。<br />変更は翌月1日から反映されます。<br /><span class="text-red-500">翌月1日まで{{ membershipTypeNames[currentMembershipType] }}会員に再変更することができません。</span><br />
                     よろしいですか？</p>
                 </div>
 
