@@ -71,7 +71,6 @@ const getChampionshipInfo = async () => {
         });
 
         championshipInfo.value = sortedData;
-        console.log('championshipInfo', championshipInfo.value);
 
         if (Object.keys(championshipInfo.value).length > 0) {
             return true;
