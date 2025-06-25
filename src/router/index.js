@@ -325,8 +325,8 @@ const protectedRoutes = [
 	'ClubList'
 ];
 
-// lightメンバーがアクセス可能なルートのリスト
-const lightMemberAllowedRoutes = [
+// limited会員がアクセス可能なルートのリスト
+const limitedMemberAllowedRoutes = [
 	'LatestResults',
 	'LatestResultsByChampionship',
 	'Top', // トップページは基本的にアクセス可能
@@ -408,7 +408,7 @@ router.beforeEach(async (to, from, next) => {
 	}
 
 	// コネクターURL以外のページ遷移には、ユーザーの閲覧権限（加入プラン）に合わせる
-	if (!(to.path.startsWith('/connecter'))) {
+	if (!(to.path.startsWith('/connecter')) && !(siteInfoRoutes.includes(to.name))) {
 		const emailInLs = localStorage.getItem(USER_ATTR_EMAIL);
 		if (!emailInLs) {
 			next({ name: 'ReloginNav' });
@@ -433,15 +433,13 @@ router.beforeEach(async (to, from, next) => {
 			membershipTypeInLs = fetchedMembershipType;
 		}
 
-		// ログインしている会員の会員情報を取得
-		const authResult = await checkAuthWithMembershipType(membershipTypeInLs);
-		if (authResult === 'NG') {
-			next({ name: 'Unauthenticated' });
-			return;
-		}
-		if (authResult === 'OK') {
-			next();
-			return;
+		// Cognitoのcustom:membership_typeをチェック。limited会員がregular会員専用のページにはアクセスできないようにする
+		if(protectedRoutes.includes(to.name) && !(limitedMemberAllowedRoutes.includes(to.name))) {
+			const membershipTypeInCognito = await fetchUserAttributes();
+			if (membershipTypeInCognito['custom:membership_type'] === 'limited') {
+				next({ name: 'Unauthenticated' });
+				return;
+			}
 		}
 	}
 	
@@ -474,40 +472,5 @@ const getTargetMemberInfo = async () => {
 		return 'failed';
     }
 };
-
-/**
- * コネクターURL以外へのページ遷移に際してmembership_typeをチェック
- */
-const checkAuthWithMembershipType = async (membershipType) => {
-	console.log('checkAuthWithMembershipType', membershipType);
-	const queryUrl = new URL(`${MEMBER_API_URL}/check-auth-with-membership-type`);
-    queryUrl.searchParams.append("email", localStorage.getItem(USER_ATTR_EMAIL));
-	queryUrl.searchParams.append("membershipType", membershipType);
-
-    try {
-        const response = await fetch(queryUrl, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-		const responseJson = await response.json();
-		
-		if (responseJson.status === 'MEMBERSHIP_TYPE_NOT_MATCH') {
-			return 'NG';
-		} else if (responseJson.status === 'SUCCESS') {
-			return 'OK';
-		} else {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-    } catch (error) {
-        console.error("権限の確認に失敗しました。");
-    }
-}
 
 export default router

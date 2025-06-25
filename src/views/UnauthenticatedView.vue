@@ -10,10 +10,11 @@ onMounted(() => {
 });
 </script>
 <template>
-    <div class="p-4 h-100 flex items-center justify-center">
-        <h1 class="text-2xl font-bold absolute top-4">アクセス権限エラー</h1>
-        <div class="text-xl">
-            本コンテンツはレギュラー会員専用です。
+    <div class="p-4 h-100">
+        <h1 class="text-xl font-bold">アクセス権限エラー</h1>
+        <div>
+            本コンテンツはレギュラー会員専用です。<br />
+            <router-link to="/member-info" class="text-blue-600 underline">会員情報</router-link>から会員種別を変更すると、ご利用いただけるようになります。
         </div>
     </div>
 </template>
