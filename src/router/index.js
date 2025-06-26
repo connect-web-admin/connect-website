@@ -408,40 +408,40 @@ router.beforeEach(async (to, from, next) => {
 	}
 
 	// コネクターURL以外のページ遷移には、ユーザーの閲覧権限（加入プラン）に合わせる
-	if (!(to.path.startsWith('/connecter')) && !(siteInfoRoutes.includes(to.name))) {
-		const emailInLs = localStorage.getItem(USER_ATTR_EMAIL);
-		if (!emailInLs) {
-			next({ name: 'ReloginNav' });
-			return;
-		}
+	// if (!(to.path.startsWith('/connecter')) && !(siteInfoRoutes.includes(to.name))) {
+	// 	const emailInLs = localStorage.getItem(USER_ATTR_EMAIL);
+	// 	if (!emailInLs) {
+	// 		next({ name: 'ReloginNav' });
+	// 		return;
+	// 	}
 		
-		let membershipTypeInLs = localStorage.getItem(USER_ATTR_MEMBERSHIP_TYPE);
+	// 	let membershipTypeInLs = localStorage.getItem(USER_ATTR_MEMBERSHIP_TYPE);
 
-		// ローカルストレージに会員情報がない場合は会員情報を取得
-		if (!membershipTypeInLs || membershipTypeInLs === 'undefined') {
-			// ログインしている会員の会員情報を取得
-			const fetchedMembershipType = await getTargetMemberInfo();
+	// 	// ローカルストレージに会員情報がない場合は会員情報を取得
+	// 	if (!membershipTypeInLs || membershipTypeInLs === 'undefined') {
+	// 		// ログインしている会員の会員情報を取得
+	// 		const fetchedMembershipType = await getTargetMemberInfo();
 
-			if (fetchedMembershipType === 'failed') {
-				next({ name: 'Top' });
-				return;
-			}
+	// 		if (fetchedMembershipType === 'failed') {
+	// 			next({ name: 'Top' });
+	// 			return;
+	// 		}
 
-			// 取得した会員情報のうちmembership_typeをローカルストレージに保存
-			// regularかlightのどちらかを保存することになる。これにより閲覧権限を管理
-			localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, fetchedMembershipType);
-			membershipTypeInLs = fetchedMembershipType;
-		}
+	// 		// 取得した会員情報のうちmembership_typeをローカルストレージに保存
+	// 		// regularかlightのどちらかを保存することになる。これにより閲覧権限を管理
+	// 		localStorage.setItem(USER_ATTR_MEMBERSHIP_TYPE, fetchedMembershipType);
+	// 		membershipTypeInLs = fetchedMembershipType;
+	// 	}
 
-		// Cognitoのcustom:membership_typeをチェック。limited会員がregular会員専用のページにはアクセスできないようにする
-		if(protectedRoutes.includes(to.name) && !(limitedMemberAllowedRoutes.includes(to.name))) {
-			const membershipTypeInCognito = await fetchUserAttributes();
-			if (membershipTypeInCognito['custom:membership_type'] === 'limited') {
-				next({ name: 'Unauthenticated' });
-				return;
-			}
-		}
-	}
+	// 	// Cognitoのcustom:membership_typeをチェック。limited会員がregular会員専用のページにはアクセスできないようにする
+	// 	if(protectedRoutes.includes(to.name) && !(limitedMemberAllowedRoutes.includes(to.name))) {
+	// 		const membershipTypeInCognito = await fetchUserAttributes();
+	// 		if (membershipTypeInCognito['custom:membership_type'] === 'limited') {
+	// 			next({ name: 'Unauthenticated' });
+	// 			return;
+	// 		}
+	// 	}
+	// }
 	
 	next();
 });
