@@ -110,6 +110,12 @@ onMounted(async () => {
                     <div v-if="category === 'U-12（ジュニア）'">
                         <h2 class="font-bold bg-gray-200 p-2">{{ category }}</h2>
                         <div v-for="championship in championships" :key="championship.championship_id">
+                            <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name === 'フジパングループPresents 2025ロバパンCUP 第57回全道（U-12）サッカー少年団大会 札幌地区予選'">
+                                <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
+                                    <p class="pr-2">{{ championship.championship_name }}</p>
+                                    <img src="../assets/icons/arrow-right.png" alt="右矢印" class="w-4 h-4 inline-block">
+                                </router-link>
+                            </div>
                             <div class="px-4 py-2 not-last:border-b-1 border-gray-300" v-if="championship.championship_name === 'Ｕ―１２サッカーリーグｉｎ北海道 札幌地区リーグ2025（2部Aブロック）'">
                                 <router-link :to="`/pics-match-list/${championship.championship_name}/${championship.championship_id}`" class="w-full text-blue-600 flex justify-between items-center">
                                     <p class="pr-2">{{ championship.championship_name }}</p>
