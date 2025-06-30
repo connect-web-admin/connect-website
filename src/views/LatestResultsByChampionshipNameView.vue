@@ -308,8 +308,11 @@ onMounted(async () => {
                 <p class="text-sm text-red-500">
                     会場の状況や天候により、定刻通りの速報とならない場合があります。
                 </p>
+                <p class="text-sm font-bold text-red-500">
+                    対戦カードをタップすると、その試合速報のみを表示します。
+                </p>
 
-                <h1 class="text-lg font-bold">
+                <h1 class="font-bold">
                     {{ matchInfo.championship_name }}
                 </h1>
 
@@ -371,11 +374,13 @@ onMounted(async () => {
                         {{ division.divisionKey }}
                     </h2>
 
-                    <div
+                    <router-link
+                        :to="`/indv-result/${matchInfo.championship_id}/${match.matchDetail.match_id}`"
                         v-for="(match, index) in division.matches"
                         :key="match.matchDetail.match_id || match.matchKey"
-                        class="my-1 rounded-md p-2"
+                        class="block my-1 rounded-md p-2 active:bg-green-100 touch-manipulation"
                         :class="{ 'bg-blue-50': index % 2 === 1 }"
+                        style="-webkit-tap-highlight-color: rgba(34, 197, 94, 0.2);"
                     >
                         <div v-if="match.matchDetail.match_id">
                             <div class="text-center text-sm leading-[15px]">
@@ -508,7 +513,7 @@ onMounted(async () => {
                                 >
                             </div>
                         </div>
-                    </div>
+                    </router-link>
                 </div>
             </div>
         </div>

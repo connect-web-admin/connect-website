@@ -10,6 +10,7 @@ import LoginView from '@/views/LoginView.vue';
 import TopView from '@/views/TopView.vue';
 import LatestResultsView from '@/views/LatestResultsView.vue';
 import LatestResultsByChampionshipView from '@/views/LatestResultsByChampionshipNameView.vue';
+import IndvResultView from '@/views/IndvResultView.vue';
 import MediaView from '@/views/MediaView.vue';
 import PickupNewsView from '@/views/PickupNewsView.vue';
 import PickupNewsArticleView from '@/views/PickupNewsArticleView.vue';
@@ -206,6 +207,12 @@ const router = createRouter({
 			path: '/latest-results-by-championship/:championshipId',
 			name: 'LatestResultsByChampionship',
 			component: LatestResultsByChampionshipView,
+		},
+
+		{
+			path: '/indv-result/:championshipId/:matchId',
+			name: 'IndvResult',
+			component: IndvResultView,
 		},
 
 		{
@@ -449,28 +456,28 @@ router.beforeEach(async (to, from, next) => {
 /**
  * ログインしている会員の会員情報を取得
  */
-const getTargetMemberInfo = async () => {
-    const queryUrl = new URL(`${MEMBER_API_URL}/member-info`);
-    queryUrl.searchParams.append("email", localStorage.getItem(USER_ATTR_EMAIL));
+// const getTargetMemberInfo = async () => {
+//     const queryUrl = new URL(`${MEMBER_API_URL}/member-info`);
+//     queryUrl.searchParams.append("email", localStorage.getItem(USER_ATTR_EMAIL));
 
-    try {
-        const response = await fetch(queryUrl, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+//     try {
+//         const response = await fetch(queryUrl, {
+//             method: "GET",
+//             headers: {
+//                 "Content-Type": "application/json",
+//             },
+//         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
 
-        memberInfo.value = await response.json();
-		return memberInfo.value.membership_type;
-    } catch (error) {
-        console.error("会員情報の取得に失敗しました。");
-		return 'failed';
-    }
-};
+//         memberInfo.value = await response.json();
+// 		return memberInfo.value.membership_type;
+//     } catch (error) {
+//         console.error("会員情報の取得に失敗しました。");
+// 		return 'failed';
+//     }
+// };
 
 export default router
