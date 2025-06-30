@@ -53,8 +53,8 @@ exports.handler = async (event) => {
 				new SendMessageCommand({
 					QueueUrl: queueUrl,
 					MessageBody: JSON.stringify(message),
-					MessageGroupId: member.member_id + 'MGID20250601',
-					MessageDeduplicationId : member.member_id + 'MDID20250601'
+					MessageGroupId: member.member_id + 'MGID' + today,
+					MessageDeduplicationId : member.member_id + 'MDID' + today
 				})
 			);
 
