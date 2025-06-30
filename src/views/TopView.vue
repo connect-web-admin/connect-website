@@ -152,9 +152,6 @@ onMounted(async () => {
             <p class="pl-1 mt-1">
                 ■ U-18プリンスリーグの大会詳細結果→<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank"  rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
             </p>
-            <p class="pl-1 mb-1">
-                ■ 高校総体北海道大会結果→<a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E3%82%A4%E3%83%B3%E3%83%8F%E3%82%A4618.pdf" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">こちら</a> <span class="text-red-500">New!</span>
-            </p>
             <p class="text-sm text-red-500">毎週火曜日更新</p>
             <div v-if="isLoading" class="flex justify-center items-center py-8">
                 <img src="../assets/icons/loading.gif" alt="loading" class="w-10 h-10">
