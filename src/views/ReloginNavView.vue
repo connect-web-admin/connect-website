@@ -76,7 +76,7 @@ onMounted(() => {
     <div class="p-4 h-100 flex items-center justify-center">
         <h1 class="text-2xl font-bold absolute top-4">アクセス権限エラー</h1>
         <div class="text-xl">
-            セッションの有効期限が切れています。<br /><span class="text-blue-500 underline" @click="signOutAndDeleteItemsInLocalStorage">ログアウト</span>してから再度ログインしてください。
+            会員情報の確認に失敗しました。<br /><span class="text-blue-500 underline" @click="signOutAndDeleteItemsInLocalStorage">ログアウト</span>してから再度ログインしてください。
         </div>
     </div>
 </template>
