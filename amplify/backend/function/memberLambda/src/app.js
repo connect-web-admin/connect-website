@@ -433,14 +433,14 @@ app.post(path + '/register-user-to-database', async (req, res) => {
 	try {
 		const {
 			lastName, firstName, lastNameKana, firstNameKana,
-			phoneNumber, postalCode, address,
+			phoneNumber, address,
 			inputEmail, membershipType, paymentPlan,
 			isTermsAgreed, custCode
 		} = req.body || {};
 
 		// 1. バリデーション（省略）
 		if (!lastName || !firstName || !lastNameKana || !firstNameKana ||
-			!phoneNumber || !postalCode || !address ||
+			!phoneNumber || !address ||
 			!inputEmail || !membershipType || !paymentPlan || isTermsAgreed === undefined) {
 			return res.status(400).json({
 				status: 'INVALID_REQUEST',
@@ -498,7 +498,7 @@ app.post(path + '/register-user-to-database', async (req, res) => {
 									first_name: firstName,
 									last_name_kana: lastNameKana,
 									first_name_kana: firstNameKana,
-									postal_code: postalCode,
+									postal_code: '',
 									phone_number: phoneNumber,
 									address: address,
 									is_credit_card_valid: false,
