@@ -236,9 +236,9 @@
                         content.appendChild(phoneP);
                         
                         // 郵便番号
-                        const postalP = document.createElement('p');
-                        postalP.textContent = `郵便番号: ${sanitizeInput(data.postalPart1)}-${sanitizeInput(data.postalPart2)}`;
-                        content.appendChild(postalP);
+                        // const postalP = document.createElement('p');
+                        // postalP.textContent = `郵便番号: ${sanitizeInput(data.postalPart1)}-${sanitizeInput(data.postalPart2)}`;
+                        // content.appendChild(postalP);
                         
                         // 住所
                         const addressP = document.createElement('p');
@@ -281,7 +281,7 @@
                         const inputPassword = data.inputPassword;
 
                         const phoneNumber = `${data.phonePart1}${data.phonePart2}${data.phonePart3}`;
-                        const postalCode = `${data.postalPart1}${data.postalPart2}`;
+                        // const postalCode = `${data.postalPart1}${data.postalPart2}`;
 
                         const isDuplicate =
                             await checkForDuplicateEmailInDatabase(inputEmail);
@@ -293,7 +293,7 @@
                         const dbSuccess = await registerUserToDatabase(
                             data,
                             phoneNumber,
-                            postalCode
+                            // postalCode
                         );
                         if (!dbSuccess) {
                             alert("データベース登録に失敗しました。");
@@ -349,7 +349,7 @@
             async function registerUserToDatabase(
                 data,
                 phoneNumber,
-                postalCode
+                // postalCode
             ) {
                 try {
                     const res = await fetch(
@@ -365,7 +365,7 @@
                                 lastNameKana: data.lastNameKana,
                                 firstNameKana: data.firstNameKana,
                                 phoneNumber,
-                                postalCode,
+                                // postalCode,
                                 address: data.address,
                                 inputEmail: data.inputEmail,
                                 paymentPlan: data.paymentPlan,

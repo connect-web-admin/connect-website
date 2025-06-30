@@ -179,19 +179,10 @@
                 </div>
             </div>
 
-            <!-- 郵便番号 -->
-            <div class="form-group">
-                <label>郵便番号（半角数字）</label>
-                <div class="flex-inputs">
-                    <input type="text" name="postalPart1" maxlength="3" required />
-                    <span>-</span>
-                    <input type="text" name="postalPart2" maxlength="4" required />
-                </div>
-            </div>
-
             <!-- 住所 -->
             <div class="form-group">
                 <label for="address">住所（都道府県から入力）</label>
+                <p class="helper-text">都道府県と市区町村など、大まかな地域までのご登録で構いません（例：札幌市清田区、小樽市朝里など）。番地や建物名のご記入は不要です。</p>
                 <input type="text" id="address" name="address" required />
             </div>
 
@@ -205,7 +196,7 @@
             <!-- パスワード -->
             <div class="form-group">
                 <label for="inputPassword">パスワード</label>
-                <p class="helper-text">（半角英数字8〜20字。大文字、小文字、数字をそれぞれ1文字以上）</p>
+                <p class="helper-text">（半角英数字6〜25字）</p>
                 <div class="password-container">
                     <input type="password" id="inputPassword" name="inputPassword" required autocomplete="new-password" />
                     <button type="button" class="toggle-password" data-target="inputPassword">表示</button>
@@ -313,14 +304,14 @@
             // ---------------------
             // パスワードハッシュ化関数
             // ---------------------
-            async function hashPassword(password) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(password);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                return hashHex;
-            }
+            // async function hashPassword(password) {
+            //     const encoder = new TextEncoder();
+            //     const data = encoder.encode(password);
+            //     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            //     const hashArray = Array.from(new Uint8Array(hashBuffer));
+            //     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            //     return hashHex;
+            // }
 
             // ---------------------
             // 送信処理＋バリデーション
@@ -339,14 +330,14 @@
                     }
                 });
 
-                const postalParts = ['postalPart1', 'postalPart2'];
-                postalParts.forEach(part => {
-                    const input = form.elements[part];
-                    if (!/^\d+$/.test(input.value)) {
-                        showError(input, '半角数字で入力してください。');
-                        isValid = false;
-                    }
-                });
+                // const postalParts = ['postalPart1', 'postalPart2'];
+                // postalParts.forEach(part => {
+                //     const input = form.elements[part];
+                //     if (!/^\d+$/.test(input.value)) {
+                //         showError(input, '半角数字で入力してください。');
+                //         isValid = false;
+                //     }
+                // });
 
                 const kanaFields = ['lastNameKana', 'firstNameKana'];
                 kanaFields.forEach(field => {
@@ -359,10 +350,10 @@
 
                 const password = form.elements['inputPassword'].value;
                 const confirmPassword = form.elements['confirmPassword'].value;
-                const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,20}$/;
+                const passwordPattern = /^[a-zA-Z0-9]{6,25}$/;
 
                 if (!passwordPattern.test(password)) {
-                    showError(form.elements['inputPassword'], '8〜20字の半角英数字で、大文字・小文字・数字を含めてください。');
+                    showError(form.elements['inputPassword'], '6〜25字の半角英数字で入力してください。');
                     isValid = false;
                 }
 
@@ -379,7 +370,7 @@
                 if (isValid) {
                     try {
                         // パスワードをハッシュ化
-                        const hashedPassword = await hashPassword(password);
+                        // const hashedPassword = await hashPassword(password);
                         
                         const formData = new FormData(form);
                         const obj = {};
@@ -388,8 +379,8 @@
                         });
 
                         // ハッシュ化されたパスワードで置き換え
-                        obj['inputPassword'] = hashedPassword;
-                        obj['confirmPassword'] = hashedPassword;
+                        // obj['inputPassword'] = hashedPassword;
+                        // obj['confirmPassword'] = hashedPassword;
 
                         // paymentPlanを代入
                         obj['free1'] = form.elements['paymentPlan'].value;
