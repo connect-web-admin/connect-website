@@ -313,7 +313,7 @@ onMounted(async () => {
                     {{ matchInfo.championship_name }}
                 </h1>
 
-                <div
+                <!-- <div
                     class="flex flex-col gap-2 border-1 border-gray-300 rounded-md py-1 px-3 my-4"
                 >
                     <div class="flex flex-row gap-3 items-center">
@@ -358,7 +358,7 @@ onMounted(async () => {
                             <span>試合開始時刻</span>
                         </label>
                     </div>
-                </div>
+                </div> -->
 
                 <div
                     v-for="division in sortedMatchesForDisplay"
