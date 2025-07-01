@@ -305,6 +305,14 @@ onMounted(async () => {
             </div>
 
             <div v-else>
+                <div class="flex justify-end">
+                    <img 
+                        src="../assets/icons/icon-refresh.svg" 
+                        alt="更新" 
+                        class="w-8 h-8 cursor-pointer shadow-md rounded-md border-1 border-gray-200 p-1 bg-white mb-2" 
+                        @click="getTargetChampionship"
+                    />
+                </div>
                 <p class="text-sm text-red-500">
                     会場の状況や天候により、定刻通りの速報とならない場合があります。
                 </p>
@@ -369,7 +377,7 @@ onMounted(async () => {
                     class="text-center"
                 >
                     <h2
-                        class="text-center bg-amber-200 font-normal h-5"
+                        class="text-center bg-amber-200 font-normal h-5 leading-none"
                     >
                         {{ division.divisionKey }}
                     </h2>
