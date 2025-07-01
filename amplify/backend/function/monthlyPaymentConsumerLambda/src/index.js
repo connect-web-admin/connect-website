@@ -256,7 +256,7 @@ async function updateMemberInfoByFailure(member_id, membership_type, today) {
 			UpdateExpression: `SET can_login = :falseVal,
 								is_credit_card_valid = :falseVal,
 								payment_failure_history = list_append(
-									if_not_exists(payment_success_history, :empty_list),
+									if_not_exists(payment_failure_history, :empty_list),
 									:historyEntry
 								),
 								updated_at = :updated_at,
