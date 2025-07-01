@@ -143,10 +143,6 @@ onMounted(async () => {
 
 <template>
     <div class="px-2 pt-2">
-        <div class="mb-3">
-            <h1 class="text-xl pt-2">☆お知らせ☆</h1>
-            <p class="font-bold underline">北海道サッカー協会との業務提携につきまして<span class="text-red-500">（６月１２日更新）</span>→<a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E5%8C%97%E6%B5%B7%E9%81%93%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC%E5%8D%94%E4%BC%9A%E3%81%A8%E3%81%AE%E6%A5%AD%E5%8B%99%E6%8F%90%E6%90%BA%E5%A5%91%E7%B4%84%E3%81%AB%E3%81%A4%E3%81%8D%E3%81%BE%E3%81%97%E3%81%A6.pdf" target="_blank" class="text-blue-500" rel="noopener noreferrer">こちら</a></p>
-        </div>
         <div>
             <h1 class="text-xl pt-2">今週の大会</h1>
             <p class="pl-1 mt-1">
