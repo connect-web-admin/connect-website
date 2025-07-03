@@ -410,6 +410,10 @@
                         }
                     );
                     const result = await res.json();
+
+                    // セッションストレージからregistrationDataを削除
+                    sessionStorage.removeItem('registrationData');
+
                     return (
                         result.status ===
                         "SUCCESSFULLY_REGISTERED_TO_COGNITO_AND_PENDING_CONFIRMATION"
