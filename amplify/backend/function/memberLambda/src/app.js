@@ -429,7 +429,7 @@ app.post(path + '/check-for-duplicate-email-in-database', async function (req, r
 app.post(path + '/register-user-to-database', async (req, res) => {
 	const COUNTER_TABLE = process.env.COUNTER_TABLE;
 	const maxRetries = 3;
-console.log(JSON.stringify(req.body))
+
 	try {
 		const {
 			lastName, firstName, lastNameKana, firstNameKana,
