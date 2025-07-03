@@ -429,25 +429,28 @@ app.post(path + '/check-for-duplicate-email-in-database', async function (req, r
 app.post(path + '/register-user-to-database', async (req, res) => {
 	const COUNTER_TABLE = process.env.COUNTER_TABLE;
 	const maxRetries = 3;
-
+console.log(JSON.stringify(req.body))
 	try {
 		const {
 			lastName, firstName, lastNameKana, firstNameKana,
 			phoneNumber, address,
 			inputEmail, membershipType, paymentPlan,
-			isTermsAgreed, custCode
+			isTermsAgreed, custCode,
+			category, trigger
 		} = req.body || {};
 
 		// 1. バリデーション（省略）
 		if (!lastName || !firstName || !lastNameKana || !firstNameKana ||
 			!phoneNumber || !address ||
-			!inputEmail || !membershipType || !paymentPlan || isTermsAgreed === undefined) {
+			!inputEmail || !membershipType || !category || !trigger || !paymentPlan || isTermsAgreed === undefined) {
+				console.log('バリデーションエラー');
 			return res.status(400).json({
 				status: 'INVALID_REQUEST',
 				message: '入力必須項目が不足しています。'
 			});
 		}
 		if (!validator.isEmail(inputEmail)) {
+			console.log('メアドエラー');
 			return res.status(400).json({
 				status: 'INVALID_EMAIL_FORMAT',
 				message: '有効なメールアドレスを入力してください。'
@@ -504,6 +507,8 @@ app.post(path + '/register-user-to-database', async (req, res) => {
 									is_credit_card_valid: false,
 									can_login: false,
 									cust_code: custCode,
+									interest_category: category,
+									referral_source: trigger,
 									payment_plan: paymentPlan,
 									payment_success_history: [],
 									payment_failure_history: [],
@@ -868,7 +873,7 @@ app.post(path + '/pagecon_url', async (req, res) => {
 	// const amountOfYearly = (nowJST < mayFirst2025) ? '3960' : '4840';
 	const amountOfYearly = '4840';
 	const amountOfMonthly = '440';
-	const amountOfMonthlyLimited = '220';
+	// const amountOfMonthlyLimited = '220';
 
 	// 暗号化フラグ
 	const encrypted_flg = '0'; // 暗号化しない
@@ -974,39 +979,39 @@ app.post(path + '/pagecon_url', async (req, res) => {
 		}
 
 		// 本日の日付により、月払い用の決済要求・確定要求を送信
-		if (paymentPlan === 'monthly-limited') {
-			// チェックサム作成	
-			const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLimited, free1, encrypted_flg, request_date];
-			const sbps_hashcode = generateHash(paymentElementsForHash);
+		// if (paymentPlan === 'monthly-limited') {
+		// 	// チェックサム作成	
+		// 	const paymentElementsForHash = [merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLimited, free1, encrypted_flg, request_date];
+		// 	const sbps_hashcode = generateHash(paymentElementsForHash);
 
-			//////////////////
-			// 決済要求を送信 //
-			//////////////////
-			const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLimited, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
-			if (paymentResult['sps-api-response'].res_result !== 'OK') {
-				return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
-			}
+		// 	//////////////////
+		// 	// 決済要求を送信 //
+		// 	//////////////////
+		// 	const paymentResult = await paymentRequest(merchant_id, service_id, cust_code, order_id, item_id, amountOfMonthlyLimited, encodedPaymentPlan, encrypted_flg, request_date, sbps_hashcode);
+		// 	if (paymentResult['sps-api-response'].res_result !== 'OK') {
+		// 		return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
+		// 	}
 
-			//////////////////
-			// 確定要求を送信 //
-			//////////////////
-			const resSpsTransactionId = paymentResult['sps-api-response'].res_sps_transaction_id;
-			const confirmElementsForHash = [merchant_id, service_id, resSpsTransactionId, request_date];
-			const res_sps_hashcode = generateHash(confirmElementsForHash);
-			// 決済要求が成功したら、確定要求を送信
-			const confirmResult = await confirmPayment(merchant_id, service_id, resSpsTransactionId, request_date, res_sps_hashcode);
-			// 購入要求・確定要求が成功したら、DynamoDBのアトリビュート変更（GSI使用）
-			if (confirmResult['sps-api-response'].res_result !== 'OK') {
-				return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
-			}
+		// 	//////////////////
+		// 	// 確定要求を送信 //
+		// 	//////////////////
+		// 	const resSpsTransactionId = paymentResult['sps-api-response'].res_sps_transaction_id;
+		// 	const confirmElementsForHash = [merchant_id, service_id, resSpsTransactionId, request_date];
+		// 	const res_sps_hashcode = generateHash(confirmElementsForHash);
+		// 	// 決済要求が成功したら、確定要求を送信
+		// 	const confirmResult = await confirmPayment(merchant_id, service_id, resSpsTransactionId, request_date, res_sps_hashcode);
+		// 	// 購入要求・確定要求が成功したら、DynamoDBのアトリビュート変更（GSI使用）
+		// 	if (confirmResult['sps-api-response'].res_result !== 'OK') {
+		// 		return res.status(404).json({ error: '会員登録には成功しましたが、決済情報登録に失敗しました。' });
+		// 	}
 
-			// can_loginをtrueに更新してログイン可能とする
-			const expirationDay = getLastDayOfMonth(nowJST);
-			await updateMemberInfo(member_id, membership_type, today, expirationDay);
+		// 	// can_loginをtrueに更新してログイン可能とする
+		// 	const expirationDay = getLastDayOfMonth(nowJST);
+		// 	await updateMemberInfo(member_id, membership_type, today, expirationDay);
 
-			res.set('Content-Type', 'text/plain');
-			res.status(200).send('OK,');
-		}
+		// 	res.set('Content-Type', 'text/plain');
+		// 	res.status(200).send('OK,');
+		// }
 	} catch (err) {
 		console.error('更新エラー:', err);
 		return res.status(500).json({ error: 'サーバーエラーが発生しました' });
@@ -1154,7 +1159,7 @@ app.post(path + '/pagecon_url', async (req, res) => {
 			console.log('更新結果', updateResult);
 			return updateResult;
 		} catch (err) {
-			console.error('更新エラー:', err);
+			console.error('決済後更新エラー:', err);
 			return res.status(500).json({ error: 'サーバーエラーが発生しました' });
 		}
 	}

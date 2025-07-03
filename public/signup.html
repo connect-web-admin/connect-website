@@ -115,6 +115,18 @@
             .container {
                 padding: 1.5rem;
             }
+
+            /* きっかけアンケートの選択肢を縦並びにする */
+            .trigger-options {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .trigger-options .category-label {
+                text-align: left;
+                min-width: auto;
+                width: 100%;
+            }
         }
 
         .form-group {
@@ -135,6 +147,42 @@
             cursor: pointer;
             color: var(--primary-color);
             font-size: 0.9em;
+        }
+
+        .category-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .category-option {
+            position: relative;
+        }
+
+        .category-option input[type="radio"] {
+            display: none;
+        }
+
+        .category-label {
+            display: inline-block;
+            padding: 10px 20px;
+            border: 2px solid #ccc;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .category-label:hover {
+            border-color: var(--primary-color);
+        }
+
+        .category-option input[type="radio"]:checked + .category-label {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
         }
     </style>
 </head>
@@ -183,7 +231,7 @@
             <div class="form-group">
                 <label for="address">住所</label>
                 <p class="helper-text">都道府県と市区町村など、大まかな地域までのご登録で差し支えございません。</p>
-                <input type="text" id="address" name="address" placeholder="（例）札幌市清田区や小樽市朝里" required />
+                <input type="text" id="address" name="address" placeholder="（例）札幌市清田区、小樽市朝里" required />
             </div>
 
             <!-- メールアドレス -->
@@ -209,6 +257,52 @@
                 <div class="password-container">
                     <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password" />
                     <button type="button" class="toggle-password" data-target="confirmPassword">表示</button>
+                </div>
+            </div>
+
+            <!-- カテゴリーアンケート -->
+            <div class="form-group">
+                <label>興味があるカテゴリーはどれですか？（一つ選択）</label>
+                <div class="category-options">
+                    <div class="category-option">
+                        <input type="radio" id="category-u12" name="category" value="U12" required />
+                        <label for="category-u12" class="category-label">U-12</label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="category-u15" name="category" value="U15" />
+                        <label for="category-u15" class="category-label">U-15</label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="category-u18" name="category" value="U18" />
+                        <label for="category-u18" class="category-label">U-18</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- きっかけアンケート -->
+            <div class="form-group">
+                <label>コネクトを知ったきっかけはどれですか？（一つ選択）</label>
+                <div class="category-options trigger-options">
+                    <div class="category-option">
+                        <input type="radio" id="trigger-flyer" name="trigger" value="チラシ・紙面" required />
+                        <label for="trigger-flyer" class="category-label">チラシ・紙面</label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="trigger-soccer" name="trigger" value="サッカー関係者" />
+                        <label for="trigger-soccer" class="category-label">サッカー関係者</label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="trigger-friend" name="trigger" value="知人・友人" />
+                        <label for="trigger-friend" class="category-label">知人・友人</label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="trigger-youtube" name="trigger" value="YouTube" />
+                        <label for="trigger-youtube" class="category-label">YouTube</label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="trigger-sns" name="trigger" value="SNS（インスタグラム等）" />
+                        <label for="trigger-sns" class="category-label">SNS（インスタグラム等）</label>
+                    </div>
                 </div>
             </div>
 
@@ -276,6 +370,24 @@
                 try {
                     const obj = JSON.parse(savedData);
                     Object.keys(obj).forEach(key => {
+                        if (key === 'category') {
+                            // カテゴリーの復元
+                            const radio = form.querySelector(`input[name="category"][value="${obj[key]}"]`);
+                            if (radio) {
+                                radio.checked = true;
+                            }
+                            return;
+                        }
+
+                        if (key === 'trigger') {
+                            // きっかけアンケートの復元
+                            const radio = form.querySelector(`input[name="trigger"][value="${obj[key]}"]`);
+                            if (radio) {
+                                radio.checked = true;
+                            }
+                            return;
+                        }
+
                         const field = form.elements[key];
                         if (!field) return;
 
@@ -362,6 +474,20 @@
                     isValid = false;
                 }
 
+                // カテゴリーアンケートの選択チェック
+                const selectedCategory = form.querySelector('input[name="category"]:checked');
+                if (!selectedCategory) {
+                    showError(form.querySelector('input[name="category"]'), '興味があるカテゴリーを選択してください。');
+                    isValid = false;
+                }
+
+                // きっかけアンケートの選択チェック
+                const selectedTrigger = form.querySelector('input[name="trigger"]:checked');
+                if (!selectedTrigger) {
+                    showError(form.querySelector('input[name="trigger"]'), 'コネクトを知ったきっかけを選択してください。');
+                    isValid = false;
+                }
+
                 if (!form.elements['termsAgreed'].checked) {
                     showError(form.elements['termsAgreed'], '利用規約に同意してください。');
                     isValid = false;
@@ -377,6 +503,18 @@
                         formData.forEach((value, key) => {
                             obj[key] = value;
                         });
+
+                        // カテゴリーの選択を保存
+                        const selectedCategory = form.querySelector('input[name="category"]:checked');
+                        if (selectedCategory) {
+                            obj['category'] = selectedCategory.value;
+                        }
+
+                        // きっかけアンケートの選択を保存
+                        const selectedTrigger = form.querySelector('input[name="trigger"]:checked');
+                        if (selectedTrigger) {
+                            obj['trigger'] = selectedTrigger.value;
+                        }
 
                         // ハッシュ化されたパスワードで置き換え
                         // obj['inputPassword'] = hashedPassword;
@@ -423,8 +561,16 @@
                 error.style.fontSize = '0.8em';
                 error.textContent = sanitizeInput(message);
 
-                if (input.type === 'checkbox' || input.type === 'radio') {
+                if (input.type === 'checkbox') {
                     input.parentElement.appendChild(error);
+                } else if (input.type === 'radio') {
+                    // ラジオボタンの場合、選択肢のコンテナの後にエラーメッセージを表示
+                    const optionsContainer = input.closest('.form-group').querySelector('.category-options');
+                    if (optionsContainer) {
+                        optionsContainer.insertAdjacentElement('afterend', error);
+                    } else {
+                        input.parentElement.appendChild(error);
+                    }
                 } else {
                     input.insertAdjacentElement('afterend', error);
                 }

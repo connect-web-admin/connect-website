@@ -250,6 +250,16 @@
                         emailP.textContent = `メールアドレス: ${sanitizeInput(data.inputEmail)}`;
                         content.appendChild(emailP);
                         
+                        // 興味があるカテゴリー
+                        const categoryP = document.createElement('p');
+                        categoryP.textContent = `興味があるカテゴリー: ${sanitizeInput(data.category)}`;
+                        content.appendChild(categoryP);
+                        
+                        // コネクトを知ったきっかけ
+                        const triggerP = document.createElement('p');
+                        triggerP.textContent = `コネクトを知ったきっかけ: ${sanitizeInput(data.trigger)}`;
+                        content.appendChild(triggerP);
+                        
                         // お支払いプラン
                         const planP = document.createElement('p');
                         planP.textContent = `お支払いプラン: ${data.paymentPlan === "yearly" ? "年払い" : "毎月払い"}`;
@@ -365,6 +375,8 @@
                                 lastNameKana: data.lastNameKana,
                                 firstNameKana: data.firstNameKana,
                                 phoneNumber,
+                                category: data.category,
+                                trigger: data.trigger,
                                 // postalCode,
                                 address: data.address,
                                 inputEmail: data.inputEmail,
