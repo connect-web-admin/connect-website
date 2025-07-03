@@ -109,11 +109,12 @@ app.get(path + '/latest-four-news', async function (req, res) {
 
 		// 最新の4件だけを残すためにupdated_atで降順ソートして5個目以降の要素は削除
 		// 20250502時点、2件に減らすよう指示があった
+		// 20250703時点、3件に増やすよう指示があった
 		const latest2 = [...passingData]
 			.sort((a, b) => {
 				return b.updated_at.localeCompare(a.updated_at);
 			})
-			.slice(0, 2);
+			.slice(0, 3);
 
 		res.status(200).json(latest2);
 	} catch (err) {
