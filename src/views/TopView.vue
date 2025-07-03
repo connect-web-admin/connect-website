@@ -145,9 +145,6 @@ onMounted(async () => {
     <div class="px-2 pt-2">
         <div>
             <h1 class="text-xl pt-2">今週の大会</h1>
-            <p class="pl-1 mt-1">
-                ■ U-18プリンスリーグの大会詳細結果→<a href="https://www.jfa.jp/match/takamado_jfa_u18_prince2025/hokkaido/" target="_blank"  rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
-            </p>
             <p class="text-sm text-red-500">毎週火曜日更新</p>
             <div v-if="isLoading" class="flex justify-center items-center py-8">
                 <img src="../assets/icons/loading.gif" alt="loading" class="w-10 h-10">
