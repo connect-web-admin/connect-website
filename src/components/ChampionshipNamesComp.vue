@@ -12,47 +12,49 @@ const props = defineProps({
     },
 });
 
-// 今週の日付範囲を取得する関数（火曜日始まり月曜日終わり）
+// 今週の日付範囲を取得する関数（金曜日始まり木曜日終わり）
 const getCurrentWeekDates = () => {
-    // 日本時間の現在時刻を取得
-    const today = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+    // 日本時間の現在時刻を取得（UTCから9時間加算）
+    const now = new Date();
+    const today = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC+9時間
     const currentDay = today.getDay(); // 0: 日曜日, 1: 月曜日, ..., 6: 土曜日
     
-    // 直近の過去の火曜日を計算
+    // 直近の過去の金曜日を計算
     let daysToSubtract;
-    if (currentDay === 2) { // 今日が火曜日
+    if (currentDay === 5) { // 今日が金曜日
         daysToSubtract = 0;
-    } else if (currentDay > 2) { // 水曜日〜土曜日
-        daysToSubtract = currentDay - 2;
-    } else { // 日曜日(0)または月曜日(1)
-        daysToSubtract = currentDay + 5; // 7 - (2 - currentDay)
+    } else if (currentDay > 5) { // 土曜日
+        daysToSubtract = currentDay - 5;
+    } else { // 日曜日(0)〜木曜日(4)
+        daysToSubtract = currentDay + 2; // 7 - (5 - currentDay)
     }
     
-    const tuesday = new Date(today);
-    tuesday.setDate(today.getDate() - daysToSubtract);
-    tuesday.setHours(0, 0, 0, 0);
+    const friday = new Date(today);
+    friday.setDate(today.getDate() - daysToSubtract);
+    friday.setHours(0, 0, 0, 0);
     
-    const nextMonday = new Date(tuesday);
-    nextMonday.setDate(tuesday.getDate() + 6); // 火曜日から6日後が月曜日
-    nextMonday.setHours(23, 59, 59, 999);
+    const nextThursday = new Date(friday);
+    nextThursday.setDate(friday.getDate() + 6); // 金曜日から6日後が木曜日
+    nextThursday.setHours(23, 59, 59, 999);
     
-    return { tuesday, nextMonday };
+    return { friday: friday, nextThursday: nextThursday };
 };
 
 // 今週の試合がある大会名を取得
 const championshipsThisWeek = computed(() => {
     isLoading.value = true;
 
-    // 現在の年を取得
-    const currentDate = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+    // 現在の年を取得（UTCから9時間加算）
+    const now = new Date();
+    const currentDate = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC+9時間
     const currentYear = currentDate.getFullYear();
     
-    // 現在の週の日付範囲を取得（火曜日始まり月曜日終わり）
-    const { tuesday, nextMonday } = getCurrentWeekDates();    
-    const targetTuesday = new Date(tuesday);
-    targetTuesday.setFullYear(THIS_FISCAL_YEAR);
-    const targetMonday = new Date(nextMonday);
-    targetMonday.setFullYear(THIS_FISCAL_YEAR);
+    // 現在の週の日付範囲を取得（金曜日始まり木曜日終わり）
+    const { friday, nextThursday } = getCurrentWeekDates();    
+    const targetFriday = new Date(friday);
+    targetFriday.setFullYear(THIS_FISCAL_YEAR);
+    const targetThursday = new Date(nextThursday);
+    targetThursday.setFullYear(THIS_FISCAL_YEAR);
     
     // 今週の試合がある大会名を格納
     const championships = new Set();
@@ -62,7 +64,7 @@ const championshipsThisWeek = computed(() => {
         if (championship.match_dates && Array.isArray(championship.match_dates)) {
             const hasMatchThisWeek = championship.match_dates.some(dateStr => {
                 const matchDate = new Date(dateStr);
-                return matchDate >= targetTuesday && matchDate <= targetMonday;
+                return matchDate >= targetFriday && matchDate <= targetThursday;
             });
 
             if (hasMatchThisWeek) {

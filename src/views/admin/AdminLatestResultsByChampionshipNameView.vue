@@ -10,7 +10,7 @@ const sortKey = ref("date_and_time");
 const sortOrder = ref("asc");
 
 /**
- * 日本時間で現在の火曜日から次の月曜日までの期間を取得
+ * 日本時間で直近の過去の金曜日の一週間前の金曜日から直近の未来の木曜日までの期間を取得
  */
 const getDateRange = () => {
     // 日本時間で現在の日時を取得
@@ -22,33 +22,33 @@ const getDateRange = () => {
     
     const dayOfWeek = today.getDay(); // 0: 日曜日, 1: 月曜日, ..., 6: 土曜日
 
-    // もう一つ前の火曜日を計算（直近の過去の火曜日からさらに1週間前）
-    const tuesdayBeforeLastTuesday = new Date(today);
-    const daysToLastTuesday = (dayOfWeek + 5) % 7; // 火曜日までの日数を計算
-    if (daysToLastTuesday === 0) {
-        // 今日が火曜日の場合、今日を直近の火曜日とする
-        tuesdayBeforeLastTuesday.setHours(0, 0, 0, 0);
+    // もう一つ前の金曜日を計算（直近の過去の金曜日からさらに1週間前）
+    const fridayBeforeLastFriday = new Date(today);
+    const daysToLastFriday = (dayOfWeek + 2) % 7; // 金曜日までの日数を計算
+    if (daysToLastFriday === 0) {
+        // 今日が金曜日の場合、今日を直近の金曜日とする
+        fridayBeforeLastFriday.setHours(0, 0, 0, 0);
     } else {
-        // 今日が火曜日以外の場合、直近の過去の火曜日を計算
-        tuesdayBeforeLastTuesday.setDate(today.getDate() - daysToLastTuesday);
-        tuesdayBeforeLastTuesday.setHours(0, 0, 0, 0);
+        // 今日が金曜日以外の場合、直近の過去の金曜日を計算
+        fridayBeforeLastFriday.setDate(today.getDate() - daysToLastFriday);
+        fridayBeforeLastFriday.setHours(0, 0, 0, 0);
     }
-    // さらに1週間前の火曜日に設定
-    tuesdayBeforeLastTuesday.setDate(tuesdayBeforeLastTuesday.getDate() - 7);
+    // さらに1週間前の金曜日に設定
+    fridayBeforeLastFriday.setDate(fridayBeforeLastFriday.getDate() - 7);
 
-    // 直近の未来の月曜日を計算
-    const nextMonday = new Date(today);
-    const daysToNextMonday = (8 - dayOfWeek) % 7; // 月曜日までの日数を計算
-    if (daysToNextMonday === 0) {
-        // 今日が月曜日の場合、今日を直近の月曜日とする
-        nextMonday.setHours(23, 59, 59, 999);
+    // 直近の未来の木曜日を計算
+    const nextThursday = new Date(today);
+    const daysToNextThursday = (11 - dayOfWeek) % 7; // 木曜日までの日数を計算
+    if (daysToNextThursday === 0) {
+        // 今日が木曜日の場合、今日を直近の木曜日とする
+        nextThursday.setHours(23, 59, 59, 999);
     } else {
-        // 今日が月曜日以外の場合、直近の未来の月曜日を計算
-        nextMonday.setDate(today.getDate() + daysToNextMonday);
-        nextMonday.setHours(23, 59, 59, 999);
+        // 今日が木曜日以外の場合、直近の未来の木曜日を計算
+        nextThursday.setDate(today.getDate() + daysToNextThursday);
+        nextThursday.setHours(23, 59, 59, 999);
     }
 
-    return { tuesdayBeforeLastTuesday, nextMonday };
+    return { fridayBeforeLastFriday, nextThursday };
 };
 
 /**
@@ -171,16 +171,16 @@ const sortDivisions = (matches) => {
 };
 
 /**
- * 直近の過去の火曜日のもう一つ前の火曜日から直近の未来の月曜日までの試合を抽出
+ * 直近の過去の金曜日の一週間前の金曜日から直近の未来の木曜日までの試合を抽出
  */
 const filteredMatches = computed(() => {
     if (!matchInfo.value.matches) return {};
 
     // 日付範囲を取得
-    const { tuesdayBeforeLastTuesday, nextMonday } = getDateRange();
+    const { fridayBeforeLastFriday, nextThursday } = getDateRange();
 
     // 日付範囲でフィルタリング
-    let result = filterMatchesByDateRange(matchInfo.value.matches, tuesdayBeforeLastTuesday, nextMonday);
+    let result = filterMatchesByDateRange(matchInfo.value.matches, fridayBeforeLastFriday, nextThursday);
 
     // 試合を並び替え
     result = sortMatches(result, sortKey.value, sortOrder.value);
@@ -195,7 +195,7 @@ const filteredMatches = computed(() => {
 });
 
 /**
- * アクセス日から次の月曜日までに開催予定の試合を取得
+ * アクセス日から次の木曜日までに開催予定の試合を取得
  */
 const getTargetChampionship = async () => {
     isLoading.value = true;

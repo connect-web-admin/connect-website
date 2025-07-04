@@ -69,33 +69,31 @@ function formatTimeZone(gameStatus) {
 	}
 }
 
-function isWithinLastTuesdayToNextMonday(targetDateStr) {
-	// １．JST の今日 00:00 を取得
-	const todayJST = new Date(
-		new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
-	);
-	todayJST.setHours(0, 0, 0, 0);
+function isWithinLastFridayToNextThursday(targetDateStr) {
+	// １．JST の今日 00:00 を取得（UTC + 9時間）
+	const nowUTC = new Date();
+	const todayJST = new Date(nowUTC.getTime() + 9 * 60 * 60 * 1000);
+	todayJST.setUTCHours(0, 0, 0, 0);
 
-	const day = todayJST.getDay(); // 0:日曜 … 1:月曜 … 2:火曜 … 
+	const day = todayJST.getUTCDay(); // 0:日曜 … 1:月曜 … 2:火曜 … 5:金曜 … 
 
-	// ２．過去の直近火曜
-	const lastTuesday = new Date(todayJST);
-	const diffToLastTue = (day - 2 + 7) % 7;
-	lastTuesday.setDate(todayJST.getDate() - diffToLastTue);
+	// ２．過去の直近金曜
+	const lastFriday = new Date(todayJST);
+	const diffToLastFri = (day - 5 + 7) % 7;
+	lastFriday.setUTCDate(todayJST.getUTCDate() - diffToLastFri);
 
-	// ３．未来の直近月曜（特例なし）
-	const nextMonday = new Date(todayJST);
-	const diffToNextMon = (1 - day + 7) % 7;
-	nextMonday.setDate(todayJST.getDate() + diffToNextMon);
+	// ３．未来の直近木曜（特例なし）
+	const nextThursday = new Date(todayJST);
+	const diffToNextThu = (4 - day + 7) % 7;
+	nextThursday.setUTCDate(todayJST.getUTCDate() + diffToNextThu);
 
 	// ４．target を JST の当日 00:00 に丸める
-	const tJST = new Date(
-		new Date(targetDateStr).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
-	);
-	tJST.setHours(0, 0, 0, 0);
+	const targetDate = new Date(targetDateStr);
+	const tJST = new Date(targetDate.getTime() + 9 * 60 * 60 * 1000);
+	tJST.setUTCHours(0, 0, 0, 0);
 
 	// ５．判定（inclusive）
-	return tJST >= lastTuesday && tJST <= nextMonday;
+	return tJST >= lastFriday && tJST <= nextThursday;
 }
 
 function canAccess(matchDate) {
@@ -187,8 +185,8 @@ app.get(path + '/matches-in-this-week', async function (req, res) {
 						// round_idはのバリューは文字列なので、それ以外の場合のみmatch_dateについて判定
 						if (typeof item['matches'][round][match] !== 'string') {
 							// console.log('date', item['matches'][round][match]['match_date']);
-							// console.log('bool',isWithinLastTuesdayToNextMonday(item['matches'][round][match]['match_date']))
-							if (!isWithinLastTuesdayToNextMonday(item['matches'][round][match]['match_date'])) {
+							// console.log('bool',isWithinLastFridayToNextThursday(item['matches'][round][match]['match_date']))
+							if (!isWithinLastFridayToNextThursday(item['matches'][round][match]['match_date'])) {
 								delete item['matches'][round][match];
 							}
 						}

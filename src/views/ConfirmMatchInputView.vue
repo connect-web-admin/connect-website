@@ -152,7 +152,7 @@ onMounted(() => {
                         <p class="text-sm mb-1">定刻：{{ match.scheduled_match_start_time }}</p>
                         <p class="text-sm mb-1">対戦カード：{{ match.home_club }} vs {{ match.away_club }}</p>
                         <p class="text-sm">試合会場：{{ match.venue }}</p>
-                        <p>アクセストークン：<span class="text-red-600">{{ match.access_token }}</span><span v-if="match.match_category === 'U-12'">４種</span></p>
+                        <p>アクセストークン：<span class="text-red-600">{{ match.access_token }}</span></p>
                         <p class="text-sm">マッチID：{{ match.match_id }}</p>
                     </div>
                 </div>

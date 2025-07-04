@@ -37,19 +37,17 @@ exports.handler = async (event) => {
 
 	const { member_id, membership_type } = queryResult.Items[0];
 
-	// 3. Tokyo時間でのセッションID生成
+	// 3. Tokyo時間でのセッションID生成（UTC + 9時間）
 	const now = new Date();
-	const tokyo = new Date(
-		now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
-	);
+	const tokyo = new Date(now.getTime() + 9 * 60 * 60 * 1000);
 	const z2 = v => String(v).padStart(2, '0');
 	const datetime = [
-		tokyo.getFullYear(),
-		z2(tokyo.getMonth() + 1),
-		z2(tokyo.getDate()),
-		z2(tokyo.getHours()),
-		z2(tokyo.getMinutes()),
-		z2(tokyo.getSeconds())
+		tokyo.getUTCFullYear(),
+		z2(tokyo.getUTCMonth() + 1),
+		z2(tokyo.getUTCDate()),
+		z2(tokyo.getUTCHours()),
+		z2(tokyo.getUTCMinutes()),
+		z2(tokyo.getUTCSeconds())
 	].join('');
 	const rand4 = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
 	const newSessionId = datetime + rand4;
