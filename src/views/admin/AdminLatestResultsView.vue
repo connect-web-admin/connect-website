@@ -8,7 +8,7 @@ const noThisWeekMatchesMsg = ref('');
 const isLoading = ref(false);
 
 /**
-* アクセス日から次の月曜日までに開催予定の試合を取得（火曜日始まり月曜終わり）
+* アクセス日から次の月曜日までに開催予定の試合を取得（金曜日始まり木曜日終わり）
 */
 const getMatchesInTwoWeeks = async () => {
     isLoading.value = true;

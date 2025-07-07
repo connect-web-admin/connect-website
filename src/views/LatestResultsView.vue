@@ -8,7 +8,7 @@ const noThisWeekMatchesMsg = ref('');
 const isLoading = ref(false);
 
 /**
-* アクセス日から次の月曜日までに開催予定の試合を取得（火曜日始まり月曜終わり）
+* アクセス日から次の月曜日までに開催予定の試合を取得（金曜日始まり木曜終わり）
 */
 const getMatchesInThisWeek = async () => {
     isLoading.value = true;
@@ -61,7 +61,7 @@ onMounted(async () => {
                 <p class="pl-1 mb-1">
                     ■ 高校総体北海道大会結果→<a href="https://connect-website-bucket0c0f1-dev.s3.ap-northeast-1.amazonaws.com/notion/%E3%82%A4%E3%83%B3%E3%83%8F%E3%82%A4618.pdf" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">こちら</a>
                 </p>
-                <p class="text-sm text-red-500">毎週火曜日更新<br>会場の状況や天候により、定刻通りの速報とならない場合があります。</p>
+                <p class="text-sm text-red-500">毎週金曜日更新<br>会場の状況や天候により、定刻通りの速報とならない場合があります。</p>
                 <ChampionshipNamesComp :match-info="matchInfo" />
             </div>
         </div>
