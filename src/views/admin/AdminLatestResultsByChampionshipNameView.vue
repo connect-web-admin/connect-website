@@ -10,7 +10,7 @@ const sortKey = ref("date_and_time");
 const sortOrder = ref("asc");
 
 /**
- * 日本時間で直近の過去の金曜日の一週間前の金曜日から直近の未来の木曜日までの期間を取得
+ * 日本時間で直近の過去の金曜日から更に一週間前の金曜日と、直近の未来の木曜日から更に一週間後の木曜日の間にある試合のみを抽出
  */
 const getDateRange = () => {
     // 日本時間で現在の日時を取得
@@ -37,18 +37,20 @@ const getDateRange = () => {
     fridayBeforeLastFriday.setDate(fridayBeforeLastFriday.getDate() - 7);
 
     // 直近の未来の木曜日を計算
-    const nextThursday = new Date(today);
+    const thursdayAfterNextThursday = new Date(today);
     const daysToNextThursday = (11 - dayOfWeek) % 7; // 木曜日までの日数を計算
     if (daysToNextThursday === 0) {
         // 今日が木曜日の場合、今日を直近の木曜日とする
-        nextThursday.setHours(23, 59, 59, 999);
+        thursdayAfterNextThursday.setHours(23, 59, 59, 999);
     } else {
         // 今日が木曜日以外の場合、直近の未来の木曜日を計算
-        nextThursday.setDate(today.getDate() + daysToNextThursday);
-        nextThursday.setHours(23, 59, 59, 999);
+        thursdayAfterNextThursday.setDate(today.getDate() + daysToNextThursday);
+        thursdayAfterNextThursday.setHours(23, 59, 59, 999);
     }
+    // さらに1週間後の木曜日に設定
+    thursdayAfterNextThursday.setDate(thursdayAfterNextThursday.getDate() + 7);
 
-    return { fridayBeforeLastFriday, nextThursday };
+    return { fridayBeforeLastFriday, thursdayAfterNextThursday };
 };
 
 /**
@@ -177,10 +179,10 @@ const filteredMatches = computed(() => {
     if (!matchInfo.value.matches) return {};
 
     // 日付範囲を取得
-    const { fridayBeforeLastFriday, nextThursday } = getDateRange();
+    const { fridayBeforeLastFriday, thursdayAfterNextThursday } = getDateRange();
 
     // 日付範囲でフィルタリング
-    let result = filterMatchesByDateRange(matchInfo.value.matches, fridayBeforeLastFriday, nextThursday);
+    let result = filterMatchesByDateRange(matchInfo.value.matches, fridayBeforeLastFriday, thursdayAfterNextThursday);
 
     // 試合を並び替え
     result = sortMatches(result, sortKey.value, sortOrder.value);
@@ -250,7 +252,7 @@ onMounted(async () => {
                 <h1 class="text-lg font-bold">
                     {{ matchInfo.championship_name }}
                 </h1>
-
+<!-- 
                 <div
                     class="flex flex-col gap-2 border-1 border-gray-300 rounded-md py-1 px-3 my-4"
                 >
@@ -296,7 +298,7 @@ onMounted(async () => {
                             <span>試合開始時刻</span>
                         </label>
                     </div>
-                </div>
+                </div> -->
 
                 <div
                     v-for="(divisionMatches, divisionKey) in filteredMatches"
