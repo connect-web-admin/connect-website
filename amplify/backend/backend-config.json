@@ -14,20 +14,6 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
-    "clubApi": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "clubLambda"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    },
     "matchApi": {
       "dependsOn": [
         {
@@ -210,25 +196,6 @@
     },
     "checkUserBeforeLoginLambda": {
       "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
-    "clubLambda": {
-      "build": true,
-      "dependsOn": [
-        {
-          "attributeEnvMap": {
-            "Arn": "TABLE_ARN",
-            "Name": "TABLE_NAME"
-          },
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "storage",
-          "resourceName": "ClubDDB"
-        }
-      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
@@ -440,22 +407,6 @@
         }
       ]
     },
-    "AMPLIFY_function_clubLambda_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "clubLambda"
-        }
-      ]
-    },
-    "AMPLIFY_function_clubLambda_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "clubLambda"
-        }
-      ]
-    },
     "AMPLIFY_function_matchLambdaV2_deploymentBucketName": {
       "usedBy": [
         {
@@ -651,10 +602,6 @@
   },
   "storage": {
     "ArchiveDDB": {
-      "providerPlugin": "awscloudformation",
-      "service": "DynamoDB"
-    },
-    "ClubDDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },

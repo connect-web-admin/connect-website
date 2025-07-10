@@ -5,11 +5,6 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
-    "clubApi": {
-      "ApiId": "string",
-      "ApiName": "string",
-      "RootUrl": "string"
-    },
     "matchApi": {
       "ApiId": "string",
       "ApiName": "string",
@@ -83,13 +78,6 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "checkUserBeforeLoginLambda": {
-      "Arn": "string",
-      "LambdaExecutionRole": "string",
-      "LambdaExecutionRoleArn": "string",
-      "Name": "string",
-      "Region": "string"
-    },
-    "clubLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
@@ -183,16 +171,6 @@ export type AmplifyDependentResourcesAttributes = {
   },
   "storage": {
     "ArchiveDDB": {
-      "Arn": "string",
-      "Name": "string",
-      "PartitionKeyName": "string",
-      "PartitionKeyType": "string",
-      "Region": "string",
-      "SortKeyName": "string",
-      "SortKeyType": "string",
-      "StreamArn": "string"
-    },
-    "ClubDDB": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",
