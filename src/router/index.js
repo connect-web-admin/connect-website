@@ -242,7 +242,7 @@ const router = createRouter({
 		},
 
 		{
-			path: '/connecter/select-reporting-match/:championshipId',
+			path: '/connecter/select-reporting-match/:championshipId/:urlAccessToken',
 			name: 'SelectReportingMatch',
 			component: SelectReportingMatchView,
 			props: true

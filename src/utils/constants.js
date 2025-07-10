@@ -41,7 +41,7 @@ export const MEDIA_API_URL = "https://fyxwvf4vfc.execute-api.ap-northeast-1.amaz
 // お問い合わせのAPIGatewayのエンドポイント
 export const INQUIRY_API_URL = "https://ihdezl8qwe.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // クラブ情報のAPIGatewayのエンドポイント
-export const CLUB_API_URL = "https://tpkjy2xfx1.execute-api.ap-northeast-1.amazonaws.com/prod/items";
+export const CLUB_INFO_API_URL = "https://r9w3fg2ip8.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // 試合情報のAPIGatewayのエンドポイント
 export const MATCH_API_URL = "https://dvk11mi4fh.execute-api.ap-northeast-1.amazonaws.com/prod/items";
 // 試合情報のAPIGatewayのエンドポイント
