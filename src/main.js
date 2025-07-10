@@ -26,6 +26,7 @@ I18n.putVocabularies({
         'Incorrect username or password.': 'メールアドレスまたはパスワードが間違っています。',
         'Your passwords must match': 'パスワードが一致しません。',
         'Password must be at least 6 characters.': 'パスワードは6文字以上で入力してください。',
+        'Password must have at least 6 characters': 'パスワードは6文字以上で入力してください。',
         'Password must contain at least one uppercase letter, one lowercase letter, and one number.': 'パスワードは大文字と小文字のうち少なくとも1つ、数字のうち少なくとも1つを含めてください。',
         'Cannot resend codes. Auto verification not turned on.': '自動検証がオフのため、コードを再送信できません。',
         'PreAuthentication failed with error SyntaxError: Cannot use import statement outside a module.': '認証前チェックでエラーが発生しました。',
