@@ -34,6 +34,13 @@
         "fieldName": "category",
         "fieldType": "string"
       }
+    },
+    {
+      "name": "gsiByUrlAccessToken",
+      "partitionKey": {
+        "fieldName": "url_access_token",
+        "fieldType": "string"
+      }
     }
   ],
   "triggerFunctions": []
