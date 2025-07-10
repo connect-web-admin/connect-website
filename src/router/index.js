@@ -37,6 +37,7 @@ import ConfirmMatchInputView from '@/views/ConfirmMatchInputView.vue';
 // コネクター用のページ
 import RegisterMatchResultView from '@/views/connecter/RegisterMatchResultView.vue';
 import EditMatchResultView from '@/views/connecter/EditMatchResultView.vue';
+import SelectReportingMatchView from '@/views/connecter/SelectReportingMatchView.vue';
 import SelectReportingMatchU12View from '@/views/connecter/SelectReportingMatchU12View.vue';
 import SelectReportingMatchU15View from '@/views/connecter/SelectReportingMatchU15View.vue';
 import SelectReportingMatchU18View from '@/views/connecter/SelectReportingMatchU18View.vue';
@@ -237,6 +238,13 @@ const router = createRouter({
 			path: '/connecter/register-match-result/:championshipId/:matchId',
 			name: 'RegisterMatchResult',
 			component: RegisterMatchResultView,
+			props: true
+		},
+
+		{
+			path: '/connecter/select-reporting-match/:championshipId',
+			name: 'SelectReportingMatch',
+			component: SelectReportingMatchView,
 			props: true
 		},
 
