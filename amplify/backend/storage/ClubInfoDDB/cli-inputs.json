@@ -1,0 +1,10 @@
+{
+  "resourceName": "ClubInfoDDB",
+  "tableName": "ClubInfoDDB",
+  "partitionKey": {
+    "fieldName": "club_id",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}
